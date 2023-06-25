@@ -1,6 +1,6 @@
 import { type FC } from 'react';
 
-import { Field } from '@/components/ui/fields';
+import { Field } from '@/components/ui/field';
 import { Form, useZodForm } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 
