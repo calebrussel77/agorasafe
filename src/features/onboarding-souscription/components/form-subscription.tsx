@@ -14,12 +14,7 @@ const FormSubscription: FC<FormSubscriptionProps> = ({ onSubmit, formId }) => {
   const { register } = form;
 
   return (
-    <Form
-      form={form}
-      onSubmit={onSubmit}
-      id={formId}
-      className="space-y-6"
-    >
+    <Form form={form} onSubmit={onSubmit} id={formId} className="space-y-6">
       <Field required aria-label="Nom" label="Nom">
         <Input autoFocus placeholder="Entrez votre nom" {...register('name')} />
       </Field>
