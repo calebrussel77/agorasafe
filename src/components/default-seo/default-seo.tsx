@@ -2,7 +2,7 @@ import { DefaultSeo as DefaultNextSeo } from 'next-seo';
 import Head from 'next/head';
 import Script from 'next/script';
 
-const DOMAIN_URL = 'https://www.agorasafe.vercel.app';
+const DOMAIN_URL = 'https://agorasafe.vercel.app';
 
 const DefaultSeo = () => {
   return (
