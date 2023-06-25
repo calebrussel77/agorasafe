@@ -1,7 +1,7 @@
 import { type FC } from 'react';
 
-import { Field } from '@/components/ui/field';
-import Form, { useZodForm } from '@/components/ui/form/form';
+import { Field } from '@/components/ui/fields';
+import { Form, useZodForm } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 
 interface FormSubscriptionProps {

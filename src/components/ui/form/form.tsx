@@ -59,14 +59,12 @@ const Form = <T extends FieldValues>({
   </FormProvider>
 );
 
-export default Form;
-
 interface UseZodFormProps<S extends z.ZodSchema>
   extends Exclude<UseFormProps<z.infer<S>>, 'resolver'> {
   schema?: S;
 }
 
-export const useZodForm = <S extends z.ZodSchema>({
+const useZodForm = <S extends z.ZodSchema>({
   schema,
   ...formProps
 }: UseZodFormProps<S>) =>
@@ -75,3 +73,5 @@ export const useZodForm = <S extends z.ZodSchema>({
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
     resolver: schema ? zodResolver(schema) : undefined,
   });
+
+export { Form, useZodForm };

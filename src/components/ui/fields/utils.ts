@@ -41,4 +41,4 @@ export const getVariant = ({
 };
 
 export const generateRandomId = (): string =>
-  `app-name-field-${makeRandomId()}}`;
+  `agorasafe-field-${makeRandomId()}}`;
