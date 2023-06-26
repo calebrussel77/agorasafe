@@ -1,4 +1,5 @@
 import { Boxes, CalendarDays } from 'lucide-react';
+import Image from 'next/image';
 import React, { type FC } from 'react';
 
 import { Animate } from '@/components/ui/animate';
@@ -73,10 +74,11 @@ const FeaturesSection: FC<FeaturesSectionProps> = ({}) => {
       </div>
       <div className="relative overflow-hidden pt-16">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <img
+          <Image
             src="/images/femme-charpentière.jpg"
             alt="maman-africaine-phone"
             className="mb-[-12%] rounded-xl shadow-2xl ring-1 ring-gray-900/10"
+            fill={false}
             width={2432}
             height={1442}
           />

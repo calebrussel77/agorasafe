@@ -34,11 +34,11 @@ interface FooterProps {
   className?: string;
 }
 
-const Footer: FC<FooterProps> = ({ className }) => {
+const Footer: FC<FooterProps> = () => {
   return (
     <footer className="w-full mt-32">
       <div className="max-w-7xl mx-auto border-t border-gray-200 py-10">
-        <LogoIcon className="mx-auto h-8 w-auto" />
+        <LogoIcon className="mx-auto h-6 md:h-8 w-auto" />
         <p className="mt-5 text-center text-sm leading-6 text-slate-500">
           &copy; {new Date().getFullYear()} Agorasafe. Tous droits réservés.
         </p>
