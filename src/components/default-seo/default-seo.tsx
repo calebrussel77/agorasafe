@@ -22,8 +22,6 @@ const DefaultSeo = () => {
           images: [
             {
               url: `${DOMAIN_URL}/preview-agorasafe.png`,
-              width: 500,
-              height: 500,
               alt: 'agorasafe preview',
               type: 'image/png',
             },
@@ -38,10 +36,10 @@ const DefaultSeo = () => {
         <meta name="apple-mobile-web-app-title" content="agorasafe" />
         <meta name="theme-color" content="#ffff" />
         <meta name="msapplication-navbutton-color" content="#ffff" />
-        <meta name="author" content="Caleb russel" />
+        <meta name="author" content="Caleb Russel" />
         <meta
           name="keywords"
-          content="agorasafe,mise en relation, services à domicile, cameroun, prestataire amateurs, prix abordables, services abordables, vente, shop"
+          content="agorasafe, mise en relation, services à domicile, cameroun, prestataire amateurs, prix abordables, services abordables, vente, shop"
         />
         <meta
           name="apple-mobile-web-app-status-bar-style"

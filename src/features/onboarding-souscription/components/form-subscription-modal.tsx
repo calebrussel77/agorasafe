@@ -2,7 +2,15 @@ import React, { type FC, type ReactElement } from 'react';
 
 import { Animate } from '@/components/ui/animate';
 import { Button } from '@/components/ui/button';
-import { Dialog } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 import { SectionMessage } from '@/components/ui/section-message';
 
 import { useOnboardingSubscriber } from '../services';
@@ -22,20 +30,16 @@ const FormSubscriptionModal: FC<FormSubscriptionModalProps> = ({
 
   return (
     <Dialog>
-      <Dialog.Trigger asChild>{children}</Dialog.Trigger>
-      <Dialog.Content className="sm:max-w-[525px]">
+      <DialogTrigger asChild>{children}</DialogTrigger>
+      <DialogContent className="sm:max-w-[525px]">
         <Animate>
-          <Dialog.Header>
-            <Dialog.Title>
-              S'inscrire pour le lancement d'Agorasafe
-            </Dialog.Title>
-            <Dialog.Description>
-              Nous sommes en cours de développement. Si vous souhaitez
-              bénéficier d'une exclusivité inédite et être parmi les premiers à
-              découvrir nos fonctionnalités avant tout le monde, remplissez le
-              formulaire d'inscription ci-dessous.
-            </Dialog.Description>
-          </Dialog.Header>
+          <DialogHeader>
+            <DialogTitle>S'inscrire pour le lancement d'Agorasafe</DialogTitle>
+            <DialogDescription>
+              Nous sommes en cours de développement. Inscrivez-vous pour
+              découvrir nos nouveautés en exclusivité.
+            </DialogDescription>
+          </DialogHeader>
           {isSuccess ? (
             <SectionMessage
               title="Inscription réussie"
@@ -43,9 +47,8 @@ const FormSubscriptionModal: FC<FormSubscriptionModalProps> = ({
               appareance="success"
             >
               <p className="text-sm md:text-base">
-                Merci d'avoir souscrit à l'enregistrement ! Un mail vous a été
-                envoyé à votre adresse email afin de confirmer votre
-                inscription.
+                Un email de confirmation a été envoyé à votre adresse suite à
+                votre souscription. Nous vous remercions.
               </p>
             </SectionMessage>
           ) : (
@@ -57,7 +60,7 @@ const FormSubscriptionModal: FC<FormSubscriptionModalProps> = ({
             </div>
           )}
           {!isSuccess && (
-            <Dialog.Footer>
+            <DialogFooter>
               <Button
                 type="submit"
                 disabled={isLoading}
@@ -65,10 +68,10 @@ const FormSubscriptionModal: FC<FormSubscriptionModalProps> = ({
               >
                 {isLoading ? 'Chargement...' : "M'inscrire"}
               </Button>
-            </Dialog.Footer>
+            </DialogFooter>
           )}
         </Animate>
-      </Dialog.Content>
+      </DialogContent>
     </Dialog>
   );
 };
