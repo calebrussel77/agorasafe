@@ -38,7 +38,7 @@ const Footer: FC<FooterProps> = () => {
   return (
     <footer className="w-full mt-32">
       <div className="max-w-7xl mx-auto border-t border-gray-200 py-10">
-        <LogoIcon className="mx-auto h-6 md:h-8 w-auto" />
+        <LogoIcon className="mx-auto h-5 md:h-7 w-auto" />
         <p className="mt-5 text-center text-sm leading-6 text-slate-500">
           &copy; {new Date().getFullYear()} Agorasafe. Tous droits réservés.
         </p>
@@ -46,7 +46,7 @@ const Footer: FC<FooterProps> = () => {
           Réalisé par{' '}
           <Inline>
             <a
-              href="https://www.facebook.com/MrYannickParleMarketing?mibextid=LQQJ4d"
+              href="https://twitter.com/CalebElat"
               target="_blank"
               rel="noreferrer"
               className="font-semibold hover:underline hover:text-primary-500"
