@@ -1,14 +1,11 @@
 import { useMutation } from '@tanstack/react-query';
+import axios from 'axios';
 
 const URL = 'https://app.convertkit.com/forms/3997673/subscriptions';
 
 function postData(data: FormData) {
-  return fetch(URL, {
-    method: 'POST',
-    body: data,
-    headers: {
-      'Content-Type': 'multipart/form-data',
-    },
+  return axios.post(URL, data, {
+    headers: { 'content-type': 'multipart/form-data' },
   });
 }
 

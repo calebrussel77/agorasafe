@@ -47,8 +47,9 @@ const FormSubscriptionModal: FC<FormSubscriptionModalProps> = ({
               appareance="success"
             >
               <p className="text-sm md:text-base">
-                Un email de confirmation a été envoyé à votre adresse suite à
-                votre souscription. Nous vous remercions.
+                Un email de confirmation a été envoyé à votre adresse email
+                (Consultez vos <b>spams</b> si vous ne le voyez pas) suite à
+                votre souscription. Nous vous remercions !
               </p>
             </SectionMessage>
           ) : (
