@@ -1,10 +1,13 @@
+import { type TRPCClientErrorLike } from '@trpc/client';
 import { useRouter } from 'next/router';
+
+import { type AppRouter } from '@/server/api/root';
 
 import { Accordion } from '../accordion';
 import { Button } from '../button/button';
 
 type TFullPageError = {
-  error: { name: string; message: string };
+  error: TRPCClientErrorLike<AppRouter> | null;
   onRetry?: () => void;
 };
 
@@ -12,7 +15,7 @@ export function SectionError({ onRetry, error }: TFullPageError) {
   const router = useRouter();
   const isNetworkError = false;
   const mustRetry = !!onRetry;
-  const errorMessage = `ERROR: ${error?.name} ${error?.message}`;
+  const errorMessage = `ERROR: ${error ? error.message : ""}`;
 
   const title = isNetworkError ? `Connection Lost` : `Application Error`;
   const message = isNetworkError

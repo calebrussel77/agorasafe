@@ -49,12 +49,6 @@ const Label = React.forwardRef<
     // Wrap strings in span to allow for required asterisk
     const content = wrapChildren(children as JSX.Element);
 
-    const afterClassName = useCss({
-      '*:not(:last-child)': {
-        marginRight: '6px',
-      },
-    });
-
     return (
       <LabelPrimitive.Root
         ref={ref}
@@ -62,7 +56,6 @@ const Label = React.forwardRef<
           required &&
             "after:content-['*'] after:text-red-500 after:font-bold after:ml-1",
           variant && getVariantColor(variant),
-          afterClassName,
           className
         )}
         {...props}

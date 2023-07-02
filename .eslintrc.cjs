@@ -30,6 +30,13 @@ const config = {
     ],
     '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
     'react/no-unescaped-entities': 0,
+    '@typescript-eslint/no-unsafe-return': 0,
+    '@typescript-eslint/no-unsafe-assignment': 'off',
+    'react/no-unknown-property': 0,
+    'no-unused-vars': [1, { args: 'after-used', varsIgnorePattern: '^_' }],
+    'no-console': 'off',
+    'no-unsafe-optional-chaining': 0,
+    '@typescript-eslint/no-unsafe-call': 'off',
     // 'testing-library/no-render-in-setup': [
     //   'warn',
     //   { allowTestingFrameworkSetupHook: 'beforeEach' },

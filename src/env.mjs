@@ -35,6 +35,7 @@ export const env = createEnv({
    */
   client: {
     // NEXT_PUBLIC_CLIENTVAR: z.string().min(1),
+    NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN: z.string(),
   },
 
   /**
@@ -52,6 +53,8 @@ export const env = createEnv({
     CLOUDINARY_NAME: process.env.CLOUDINARY_NAME,
     CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY,
     CLOUDINARY_SECRET: process.env.CLOUDINARY_SECRET,
+    NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN:
+      process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation.

@@ -13,7 +13,12 @@ interface MainProps extends Omit<NextSeoProps, 'children'> {
   footer?: ReactNode | JSX.Element;
 }
 
-const Main: FC<MainProps> = ({
+type Options = {
+  title: string;
+  description: string;
+};
+
+const MainLayout: FC<MainProps> = ({
   title,
   description,
   children,
@@ -34,4 +39,8 @@ const Main: FC<MainProps> = ({
   );
 };
 
-export { Main as MainLayout };
+// const getLayout = (page: React.ReactElement<Options>) => {
+//   return <MainLayout {...page.props}>{page}</MainLayout>;
+// };
+
+export { MainLayout };

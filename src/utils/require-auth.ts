@@ -1,9 +1,10 @@
+import { type GetServerSidePropsContext, GetServerSidePropsResult } from 'next';
 import { type Session } from 'next-auth';
 
 import { getServerAuthSession } from '@/server/auth';
 
-type TRequireAuthProps = {
-  ctx: never;
+type RequireAuthProps = {
+  ctx: GetServerSidePropsContext;
   redirectUrl?: string;
   cb?: ({ session }: { session: Session }) => unknown;
   allowedRoles?: Array<string>;
@@ -11,13 +12,11 @@ type TRequireAuthProps = {
 
 export const requireAuth = async ({
   ctx,
-  redirectUrl = '/login',
+  redirectUrl = '/auth/login',
   cb,
-  allowedRoles = ['ADMIN', 'SUPER_ADMIN'],
-}: TRequireAuthProps) => {
+}: RequireAuthProps) => {
   const session = await getServerAuthSession(ctx);
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-  const redirect_url = (ctx as any).resolvedUrl as string;
+  const redirect_url = ctx.resolvedUrl;
   const destination = `${redirectUrl}?source=${redirect_url}`;
 
   if (!session) {
@@ -38,5 +37,7 @@ export const requireAuth = async ({
   //   };
   // }
 
-  return cb ? cb({ session: session as unknown as Session }) : undefined;
+  return (
+    cb ? cb({ session: session as unknown as Session }) : undefined
+  ) as GetServerSidePropsResult<{ session: Session }>;
 };

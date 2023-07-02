@@ -8,6 +8,8 @@ import {
 } from 'next-auth';
 import GoogleProvider from 'next-auth/providers/google';
 
+import { makeRandomId } from '@/utils/misc';
+
 import { prisma } from '@/server/db';
 
 /**
@@ -20,15 +22,17 @@ declare module 'next-auth' {
   interface Session extends DefaultSession {
     user: {
       id: string;
-      // ...other properties
-      // role: UserRole;
-    } & DefaultSession['user'];
+      name: string;
+      email: string;
+      avatar: string;
+    };
   }
 
-  // interface User {
-  //   // ...other properties
-  //   // role: UserRole;
-  // }
+  interface User {
+    // ...other properties
+    full_name: string;
+    picture: string;
+  }
 }
 
 /**
@@ -38,30 +42,63 @@ declare module 'next-auth' {
  */
 export const authOptions: NextAuthOptions = {
   callbacks: {
-    session: ({ session, user }) => ({
-      ...session,
-      user: {
-        ...session.user,
-        id: user.id,
-      },
-    }),
+    session: ({ session, token }) => {
+      session.user = {
+        id: token.id as string,
+        name: token.name as string,
+        email: token.email as string,
+        avatar: token.avatar as string,
+      };
+      return Promise.resolve(session);
+    },
+    jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+        token.email = user?.email;
+        token.name = user?.full_name;
+        token.avatar = user.picture;
+      }
+      return Promise.resolve(token);
+    },
   },
   adapter: PrismaAdapter(prisma),
   providers: [
     GoogleProvider({
+      allowDangerousEmailAccountLinking: true,
+      httpOptions: {
+        timeout: 20_000,
+      },
       clientId: env.GOOGLE_CLIENT_ID,
       clientSecret: env.GOOGLE_CLIENT_SECRET,
+      profile(profile: {
+        name: string;
+        given_name: string;
+        family_name: string;
+        picture: string;
+        email: string;
+      }) {
+        return {
+          id: makeRandomId(),
+          first_name: profile.given_name,
+          last_name: profile.family_name,
+          email: profile?.email,
+          picture: profile?.picture,
+          full_name: `${profile.given_name} ${profile.family_name}`,
+        };
+      },
     }),
-    /**
-     * ...add more providers here.
-     *
-     * Most other providers require a bit more work than the Discord provider. For example, the
-     * GitHub provider requires you to add the `refresh_token_expires_in` field to the Account
-     * model. Refer to the NextAuth.js docs for the provider you want to use. Example:
-     *
-     * @see https://next-auth.js.org/providers/github
-     */
   ],
+  session: {
+    strategy: 'jwt',
+  },
+  pages: {
+    signIn: '/auth/login',
+    error: '/auth/login',
+  },
+  debug: env.NODE_ENV === 'development',
+  jwt: {
+    secret: env.NEXTAUTH_JWT_SECRET,
+  },
 };
 
 /**

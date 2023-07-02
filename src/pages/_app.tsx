@@ -20,10 +20,10 @@ import { useNotificationNetwork } from '@/hooks/use-notification-network';
 import { AppContext } from '@/contexts/app-context';
 
 const progress = new ProgressBar({
-  size: 2,
-  className: 'bar-of-progress',
+  size: 3,
+  className: 'bar-of-progress shadow-md',
   delay: 100,
-  color: '#145ee1',
+  color: '#30389d',
 });
 
 // this fixes safari jumping to the bottom of the page

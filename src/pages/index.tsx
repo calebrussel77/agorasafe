@@ -1,6 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
+import { withProfile } from '@/hoc/with-profile';
 import { MainLayout } from '@/layouts';
-import { type ReactElement } from 'react';
 
 import {
   FeaturesSection,
@@ -10,7 +10,7 @@ import {
 
 const HomePage = () => {
   return (
-    <>
+    <MainLayout>
       {/* Hero section */}
       <HeroSection />
       {/* Features section */}
@@ -21,12 +21,8 @@ const HomePage = () => {
       {/* Pricing section */}
 
       {/* FAQ section */}
-    </>
+    </MainLayout>
   );
 };
 
-HomePage.getLayout = function getLayout(page: ReactElement) {
-  return <MainLayout>{page}</MainLayout>;
-};
-
-export default HomePage;
+export default withProfile(HomePage);

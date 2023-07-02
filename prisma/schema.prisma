@@ -15,95 +15,112 @@ datasource db {
 }
 
 model Skill {
-    id         String   @id @default(cuid())
-    name       String   @unique
+    id         String     @id @default(cuid())
+    name       String     @unique
     slug       String
-    created_at DateTime @default(now())
-    updated_at DateTime @updatedAt
-    users      User[]
+    created_at DateTime   @default(now())
+    updated_at DateTime   @updatedAt
+    providers  Provider[]
 }
 
 model Profile {
-    id          String   @id @default(cuid())
-    name        String   @unique
-    description String?
-    is_verified Boolean?
+    id     String      @id @default(cuid())
+    slug   String      @unique
+    name   String      @unique
+    avatar String?
+    bio    String?
+    type   ProfileType
 
-    User    User   @relation(fields: [user_id], references: [id], onDelete: Cascade)
-    user_id String @unique
+    user    User   @relation(fields: [user_id], references: [id], onDelete: Cascade)
+    user_id String
+
+    provider Provider?
+
+    customer Customer?
 
     created_at DateTime @default(now())
     updated_at DateTime @updatedAt
 }
 
-model Service {
-    id                  String           @id @default(cuid())
-    slug                String?          @unique
-    name                String           @unique
-    description         String?
-    service_requests    ServiceRequest[]
-    users               User[]
-    CategoryService     CategoryService  @relation(fields: [category_service_id], references: [id], onDelete: Cascade)
-    category_service_id String
-    created_at          DateTime         @default(now())
-    updated_at          DateTime         @updatedAt
+model Provider {
+    id                   String   @id @default(cuid())
+    website_url          String?
+    is_face_to_face      Boolean? @default(true)
+    is_remote            Boolean? @default(true)
+    showcase_photo_one   String?
+    showcase_photo_two   String?
+    showcase_photo_three String?
+
+    skills                     Skill[]
+    service_requests_responses ProviderServiceRequestResponse[]
+
+    profile    Profile @relation(fields: [profile_id], references: [id])
+    profile_id String  @unique
+
+    created_at DateTime @default(now())
+    updated_at DateTime @updatedAt
+}
+
+model Customer {
+    id               String           @id @default(cuid())
+    service_requests ServiceRequest[]
+
+    profile    Profile @relation(fields: [profile_id], references: [id])
+    profile_id String  @unique
+
+    created_at DateTime @default(now())
+    updated_at DateTime @updatedAt
 }
 
 model CategoryService {
-    id          String    @id @default(cuid())
-    name        String    @unique
-    slug        String?   @unique
+    id          String  @id @default(cuid())
+    name        String  @unique
+    slug        String? @unique
     description String?
-    created_at  DateTime  @default(now())
-    updated_at  DateTime  @updatedAt
-    services    Service[]
-}
 
-model Photo {
-    id                 String          @id @default(cuid())
-    slug               String?         @unique
-    name               String
-    url                String
-    description        String?
-    created_at         DateTime        @default(now())
-    updated_at         DateTime        @updatedAt
-    ServiceRequest     ServiceRequest? @relation(fields: [service_request_id], references: [id], onDelete: Cascade)
-    service_request_id String?
-    User               User?           @relation(fields: [userId], references: [id], onDelete: Cascade)
-    userId             String?
+    service_requests ServiceRequest[]
+
+    created_at DateTime @default(now())
+    updated_at DateTime @updatedAt
 }
 
 model ServiceRequest {
-    id                             String                           @id @default(cuid())
-    title                          String
-    slug                           String                           @unique
-    content                        String
-    phone_to_contact               String?
-    Photos                         Photo[]
-    number_of_provider_needed      Int
-    duration                       String?
-    start_date                     DateTime?
-    end_date                       DateTime?
-    estimated_price                String
-    adresse                        String?
-    status                         ServiceRequestStatus
-    created_at                     DateTime                         @default(now())
-    updated_at                     DateTime                         @updatedAt
-    User                           User?                            @relation(fields: [author_id], references: [id])
-    author_id                      String
-    Service                        Service?                         @relation(fields: [service_id], references: [id])
-    service_id                     String
-    ProviderServiceRequestResponse ProviderServiceRequestResponse[]
+    id                        String                           @id @default(cuid())
+    title                     String
+    slug                      String                           @unique
+    content                   String
+    phone_to_contact          String
+    photo_one                 String?
+    photo_two                 String?
+    photo_three               String?
+    number_of_provider_needed Int
+    duration                  String?
+    start_date                String
+    end_date                  String?
+    estimated_price           String
+    location                  String
+    status                    ServiceRequestStatus
+    provider_responses        ProviderServiceRequestResponse[]
+
+    author    Customer @relation(fields: [author_id], references: [id])
+    author_id String
+
+    Category_service    CategoryService @relation(fields: [category_service_id], references: [id])
+    category_service_id String
+
+    created_at DateTime @default(now())
+    updated_at DateTime @updatedAt
 }
 
 model ProviderServiceRequestResponse {
-    id                 String          @id @default(cuid())
-    is_selected        Boolean         @default(false)
-    text               String
-    proposed_price     String?
-    User               User?           @relation(fields: [user_id], references: [id])
-    user_id            String
-    ServiceRequest     ServiceRequest? @relation(fields: [service_request_id], references: [id])
+    id             String  @id @default(cuid())
+    text           String
+    proposed_price String?
+
+    author    Provider @relation(fields: [author_id], references: [id])
+    author_id String
+
+    ServiceRequest     ServiceRequest @relation(fields: [service_request_id], references: [id])
     service_request_id String
 }
 
@@ -112,7 +129,7 @@ model Account {
     id                String  @id @default(cuid())
     type              String
     provider          String
-    providerAccountId String  @map("provider_account_id")
+    providerAccountId String  @map(name: "provider_account_id")
     refresh_token     String?
     access_token      String?
     expires_at        Int?
@@ -121,7 +138,7 @@ model Account {
     id_token          String?
     session_state     String?
     user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-    userId            String  @map("user_id")
+    userId            String  @map(name: "user_id")
 
     @@unique([provider, providerAccountId])
 }
@@ -129,40 +146,43 @@ model Account {
 model Session {
     id           String   @id @default(cuid())
     sessionToken String   @unique
-    userId       String
     expires      DateTime
-    user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+    userId String
+}
+
+model Location {
+    id       String  @id @default(cuid())
+    name     String
+    lat      String
+    long     String
+    wikidata String?
+
+    users User[]
 }
 
 model User {
-    id                             String                           @id @default(cuid())
-    slug                           String                           @unique
-    first_name                     String
-    last_name                      String
-    is_provider                    Boolean?                         @default(true)
-    is_purchaser                   Boolean?                         @default(true)
-    is_home_service_provider       Boolean?                         @default(true)
-    is_remote_service_provider     Boolean?                         @default(true)
-    email                          String                           @unique
-    emailVerified                  DateTime?                        @map("email_verified")
-    bio                            String?
-    website_url                    String?
-    avatar                         String?
-    password                       String?
-    phone                          String?
-    adresse                        String?
-    birthdate                      DateTime?
-    sex                            Sex?                             @default(value: MALE)
-    created_at                     DateTime                         @default(now())
-    updated_at                     DateTime                         @updatedAt
-    accounts                       Account[]
-    sessions                       Session[]
-    service_requests               ServiceRequest[]
-    profile                        Profile?
-    services                       Service[]
-    skills                         Skill[]
-    show_case_photos               Photo[]
-    ProviderServiceRequestResponse ProviderServiceRequestResponse[]
+    id            String    @id @default(cuid())
+    first_name    String
+    last_name     String
+    full_name     String
+    picture       String?
+    birthdate     String?
+    email         String    @unique
+    emailVerified DateTime? @map(name: "email_verified")
+    phone         String?
+    sex           Sex?      @default(value: MALE)
+
+    accounts Account[]
+    sessions Session[]
+    profile  Profile[]
+
+    location    Location? @relation(fields: [location_id], references: [id])
+    location_id String?
+
+    created_at DateTime @default(now())
+    updated_at DateTime @updatedAt
 }
 
 model VerificationToken {
@@ -181,4 +201,9 @@ enum Sex {
 enum ServiceRequestStatus {
     OPEN
     CLOSED
+}
+
+enum ProfileType {
+    CUSTOMER
+    PROVIDER
 }

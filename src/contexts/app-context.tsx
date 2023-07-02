@@ -15,12 +15,11 @@ const AppContext: FC<TAppContextProps> = ({ children, session }) => {
   return (
     <ErrorBoundary FallbackComponent={FullPageError}>
       <ToastContainer
-        position="bottom-right"
-        autoClose={false}
+        hideProgressBar
+        position="bottom-center"
+        newestOnTop
         closeButton={false}
         className="w-full max-w-md bg-transparent px-3"
-        hideProgressBar={true}
-        newestOnTop={true}
         closeOnClick={false}
         rtl={false}
         pauseOnFocusLoss

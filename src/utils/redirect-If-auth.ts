@@ -1,17 +1,22 @@
-import { getServerAuthSession } from '@/server/auth';
+import {
+  type GetServerSidePropsContext,
+  type GetServerSidePropsResult,
+} from 'next';
 import { type Session } from 'next-auth';
 
-type TRedirectIfAuthProps = {
-  ctx: never;
+import { getServerAuthSession } from '@/server/auth';
+
+type RedirectIfAuthProps = {
+  ctx: GetServerSidePropsContext;
   redirectUrl?: string;
   cb?: ({ session }: { session: Session }) => unknown;
 };
 
 export const redirectIfAuth = async ({
   ctx,
-  redirectUrl = '/dashboard',
+  redirectUrl = '/',
   cb,
-}: TRedirectIfAuthProps) => {
+}: RedirectIfAuthProps) => {
   const session = await getServerAuthSession(ctx);
 
   if (session) {
@@ -23,5 +28,7 @@ export const redirectIfAuth = async ({
     };
   }
 
-  return cb ? cb({ session: session as unknown as Session }) : undefined;
+  return (
+    cb ? cb({ session: session as unknown as Session }) : undefined
+  ) as GetServerSidePropsResult<{ session: Session }>;
 };

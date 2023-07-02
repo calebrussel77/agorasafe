@@ -1,0 +1,57 @@
+/* eslint-disable @next/next/no-img-element */
+import { MainLayout } from '@/layouts';
+import { type GetServerSideProps } from 'next';
+import { type Session } from 'next-auth';
+import { useSession } from 'next-auth/react';
+import { type ReactElement } from 'react';
+
+import { Avatar } from '@/components/ui/avatar';
+import { Card } from '@/components/ui/card';
+import { GroupItem } from '@/components/ui/group-item';
+
+import { ChooseProfileTypeForm } from '@/features/auth-onboarding';
+
+import { requireAuth } from '@/utils/require-auth';
+
+const ChooseAccountTypePage = () => {
+  const { data: session } = useSession();
+  return (
+    <Card className="max-w-xl w-full m-auto mt-6">
+      <Card.Header>
+        <Card.Title className="text-xl">
+          Avec quel type de profile souhaitez-vous interagir ?
+        </Card.Title>
+        <div className="mx-auto">
+          <GroupItem
+            className="bg-gray-100 rounded-full"
+            iconBefore={<Avatar src={session?.user?.avatar} />}
+            title={session?.user?.name as never}
+          />
+        </div>
+      </Card.Header>
+      <Card.Content>
+        <ChooseProfileTypeForm />
+      </Card.Content>
+    </Card>
+  );
+};
+
+ChooseAccountTypePage.getLayout = function getLayout(page: ReactElement) {
+  const title = `Choisir le type de profile`;
+  return <MainLayout title={title}>{page}</MainLayout>;
+};
+
+export const getServerSideProps: GetServerSideProps<{
+  session: Session;
+}> = async ctx => {
+  return requireAuth({
+    ctx,
+    cb({ session }) {
+      return {
+        props: { session },
+      };
+    },
+  });
+};
+
+export default ChooseAccountTypePage;

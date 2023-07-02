@@ -18,8 +18,8 @@ const COLORS = {
 
 interface DotsLoaderProps {
   className?: string;
-  size: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxl';
-  color: 'primary' | 'white';
+  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxl';
+  color?: 'primary' | 'white';
 }
 
 const DotsLoader: FC<DotsLoaderProps> = ({

@@ -66,8 +66,9 @@ export const Field = forwardRef<HTMLDivElement, FieldProps>(
     );
     const isCheckbox = baseType === 'checkbox';
     const isRadio = baseType === 'radio';
+    const isRadioGroupItem = baseType === 'RadioGroupItem';
 
-    const isCheckable = isRadio || isCheckbox;
+    const isCheckable = isRadio || isCheckbox || isRadioGroupItem;
 
     const layout = isCheckable ? 'flex-row' : 'flex-col';
 
@@ -110,7 +111,11 @@ export const Field = forwardRef<HTMLDivElement, FieldProps>(
                 htmlFor={htmlFor}
                 required={required}
                 withDisabledIcon={!isCheckable}
-                className={clsx('font-semibold', labelClassName)}
+                className={clsx(
+                  'font-semibold',
+                  layout === 'flex-row' ? 'flex flex-row items-center' : '',
+                  labelClassName
+                )}
               >
                 {isCheckable && child}
                 {label}
