@@ -16,7 +16,7 @@ const FormSubscription: FC<FormSubscriptionProps> = ({ onSubmit, formId }) => {
   return (
     <Form form={form} onSubmit={onSubmit} id={formId} className="space-y-6">
       <Field required aria-label="Nom" label="Nom">
-        <Input autoFocus placeholder="Entrez votre nom" {...register('name')} />
+        <Input placeholder="Entrez votre nom" {...register('name')} />
       </Field>
       <Field required aria-label="Adresse email" label="Adresse email">
         <Input

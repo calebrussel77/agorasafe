@@ -62,8 +62,8 @@ const RegisterInfosPage = () => {
   }
 
   return (
-    <MainLayout title={meta.title}>
-      <div className="max-w-xl w-full m-auto mt-6">
+    <div className="container flex min-h-screen w-full max-w-xl flex-col items-center justify-center">
+      <div>
         <Link
           href="/choose-profile-type"
           className="mb-6 flex items-center gap-2"
@@ -89,7 +89,7 @@ const RegisterInfosPage = () => {
           </Card.Content>
         </Card>
       </div>
-    </MainLayout>
+    </div>
   );
 };
 

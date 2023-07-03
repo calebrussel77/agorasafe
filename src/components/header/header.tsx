@@ -46,7 +46,7 @@ const Header = () => {
       <header
         ref={headerRef}
         className={cn(
-          'sticky -mt-24 top-0 border-t-2 border-primary inset-x-0 z-50 transition-all duration-300 ease-in-out',
+          'sticky -mt-24 top-0 inset-x-0 z-50 transition-all duration-300 ease-in-out',
           !isHomePage && classNameList,
           !isHomePage && 'mt-0'
         )}

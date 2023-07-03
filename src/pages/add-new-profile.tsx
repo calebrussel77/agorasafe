@@ -55,32 +55,34 @@ const AddNewProfilePage = () => {
   }
 
   return (
-    <div className="max-w-xl w-full m-auto mt-6">
-      <Link href="/" className="mb-6 flex items-center gap-2">
-        <MoveLeft className="h-5 w-5" />
-        <span>Retour</span>
-      </Link>
-      <Card>
-        <Card.Header>
-          <Card.Title className="text-xl">
-            Ajouter un profile{' '}
-            {getProfileType(profile_type as ProfileType).toLowerCase()}
-          </Card.Title>
-          <Card.Description>
-            Renseignez les informations ci-dessous pour facilement gérer vos
-            projets, consulter vos candidatures, rechercher des prestataires ou
-            des demandes de service, etc.
-          </Card.Description>
-        </Card.Header>
-        <Card.Content>
-          <AddProfileForm
-            onSubmit={onRegister}
-            error={error}
-            isLoading={isLoading}
-            selectedProfile={profile_type as ProfileType}
-          />
-        </Card.Content>
-      </Card>
+    <div className="container flex min-h-screen w-full max-w-xl flex-col items-center justify-center">
+      <div>
+        <Link href="/" className="mb-6 flex items-center gap-2">
+          <MoveLeft className="h-5 w-5" />
+          <span>Retour</span>
+        </Link>
+        <Card>
+          <Card.Header>
+            <Card.Title className="text-xl">
+              Ajouter un profile{' '}
+              {getProfileType(profile_type as ProfileType).toLowerCase()}
+            </Card.Title>
+            <Card.Description>
+              Renseignez les informations ci-dessous pour facilement gérer vos
+              projets, consulter vos candidatures, rechercher des prestataires
+              ou des demandes de service, etc.
+            </Card.Description>
+          </Card.Header>
+          <Card.Content>
+            <AddProfileForm
+              onSubmit={onRegister}
+              error={error}
+              isLoading={isLoading}
+              selectedProfile={profile_type as ProfileType}
+            />
+          </Card.Content>
+        </Card>
+      </div>
     </div>
   );
 };

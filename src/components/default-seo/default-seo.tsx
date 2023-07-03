@@ -28,6 +28,10 @@ const DefaultSeo = () => {
           ],
           site_name: 'agorasafe',
         }}
+        twitter={{
+          cardType: 'summary_large_image',
+          handle: '@CalebElat',
+        }}
       />
       <Head>
         <meta name="mobile-web-app-capable" content="yes" />
