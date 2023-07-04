@@ -63,10 +63,12 @@ const UserProfileDropdown: FC<UserProfileDropdownProps> = ({
             <>
               <DropdownMenu.Label>
                 {isLoading ? (
-                  <div className="space-y-1.5 px-2">
-                    <Skeleton className="w-1/2 h-4" />
-                    <Skeleton className="w-full h-3" />
-                    <Skeleton className="w-2/3 h-3" />
+                  <div className="flex items-center gap-2 px-2">
+                    <Skeleton className="w-8 h-8 rounded-full" />
+                    <div className="flex-1 w-full space-y-1.5">
+                      <Skeleton className="w-1/2 h-4" />
+                      <Skeleton className="w-full h-4" />
+                    </div>
                   </div>
                 ) : (
                   <GroupItem
@@ -100,12 +102,14 @@ const UserProfileDropdown: FC<UserProfileDropdownProps> = ({
               </DropdownMenu.Label>
               <DropdownMenu.Separator />
               {isLoading ? (
-                generateArray(6).map(el => (
-                  <div key={el} className="mb-3 space-y-1.5 px-2">
-                    <Skeleton className="w-1/2 h-4" />
-                    <Skeleton className="w-full" />
-                  </div>
-                ))
+                <div className="grid gap-3 my-6">
+                  {generateArray(8).map(el => (
+                    <div key={el} className="space-y-1.5 px-2">
+                      <Skeleton className="w-1/2 h-4" />
+                      <Skeleton className="w-full h-4" />
+                    </div>
+                  ))}
+                </div>
               ) : (
                 <>
                   {userProfileConfig?.addProfileInfos?.canAddNewProfile && (
@@ -170,7 +174,11 @@ const UserProfileDropdown: FC<UserProfileDropdownProps> = ({
                   ))}
                   <DropdownMenu.Separator />
                   <DropdownMenu.Item
-                    onClick={() => void signOut()}
+                    onClick={() => {
+                      signOut()
+                        .then(() => reset())
+                        .catch(e => console.log(e));
+                    }}
                     className="flex text-center items-center justify-center"
                   >
                     <LogOut className="h-4 w-4 mr-2" />

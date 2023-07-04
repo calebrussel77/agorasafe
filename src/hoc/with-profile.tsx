@@ -41,12 +41,12 @@ const withProfile = (WrappedComponent: React.ComponentType<ComponentProps>) => {
     });
 
     // reset profile store on sign out
-    useEffect(() => {
-      if (!session?.user) {
-        profileStore.reset();
-      }
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [session?.user]);
+    // useEffect(() => {
+    //   if (!session?.user) {
+    //     profileStore.reset();
+    //   }
+    //   // eslint-disable-next-line react-hooks/exhaustive-deps
+    // }, [session?.user]);
 
     if (status === 'loading') {
       return <FullSpinner />;
@@ -59,7 +59,7 @@ const withProfile = (WrappedComponent: React.ComponentType<ComponentProps>) => {
     if (session && !profileStore.profile && isMounted()) {
       return (
         <div className="container flex min-h-screen w-full max-w-5xl flex-col items-center justify-center">
-          <h1 className="text-center text-3xl font-semibold sm:text-4xl">
+          <h1 className="text-center text-3xl font-semibold">
             Avec qui souhaitez-vous continuer ?
           </h1>
           <p className="text-muted-foreground max-w-md w-full text-center">
@@ -72,6 +72,7 @@ const withProfile = (WrappedComponent: React.ComponentType<ComponentProps>) => {
                 : data?.profiles?.map(profile => (
                     <button
                       key={profile.id}
+                      title={profile.name}
                       onClick={() => {
                         useProfileStore.setState({
                           profile: profile,
@@ -80,17 +81,14 @@ const withProfile = (WrappedComponent: React.ComponentType<ComponentProps>) => {
                           <Notification
                             variant="success"
                             title={
-                              <p className="font-normal">
+                              <p className="font-normal text-sm">
                                 Vous interagissez maintenant en tant que:{' '}
                                 <span className="font-semibold">
                                   {profile.name}
                                 </span>
                               </p>
                             }
-                          />,
-                          {
-                            autoClose: false,
-                          }
+                          />
                         );
                       }}
                       className="flex flex-col items-center p-3 rounded-md group hover:bg-gray-100"

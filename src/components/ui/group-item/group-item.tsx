@@ -34,7 +34,7 @@ const GroupItem: FC<GroupItemProps> = ({
       <div
         className={cn(
           'flex flex-col justify-start items-start',
-          iconBefore && !iconAfter && 'ml-2 gap-1 flex-1 w-full'
+          iconBefore && !iconAfter && 'ml-2 gap-0.5 flex-1 w-full'
         )}
       >
         {isTitleString ? (

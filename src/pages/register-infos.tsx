@@ -21,11 +21,9 @@ import {
 import { wait } from '@/utils/misc';
 import { requireAuth } from '@/utils/require-auth';
 
-const ALLOWED_TYPES = Object.keys(ProfileType);
+import { htmlParse } from '@/lib/html-react-parser';
 
-const meta = {
-  title: `Renseignez mes informations de profile`,
-};
+const ALLOWED_TYPES = Object.keys(ProfileType);
 
 const RegisterInfosPage = () => {
   const router = useRouter();
@@ -33,10 +31,16 @@ const RegisterInfosPage = () => {
 
   const { mutate, error, isLoading } = useUserRegister({
     onSuccess(data) {
-      toast(<Notification variant="success" title={data.message} />);
+      toast(
+        <Notification
+          variant="success"
+          className="text-sm"
+          title={htmlParse(data.message) as never}
+        />
+      );
       wait(3_00)
         .then(() => {
-          void router.replace(data.redirect_uri);
+          window.location.href = data.redirect_uri;
         })
         .catch(e => console.log(e));
     },

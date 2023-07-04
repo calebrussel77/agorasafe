@@ -19,6 +19,7 @@ import { handleRouteBack } from '@/utils/handle-route-back';
 
 import { getServerAuthSession } from '@/server/auth';
 import { prisma } from '@/server/db';
+import { htmlParse } from '@/lib/html-react-parser';
 
 const LoginPage = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -30,8 +31,13 @@ const LoginPage = () => {
       void signIn('google');
     } catch (error) {
       const errorMessage =
-        error instanceof Error ? error.message : 'Something went wrong';
-      toast(<Notification variant="danger" title={errorMessage} />);
+        error instanceof Error ? error.message : "Une erreur s'est produite";
+      toast(
+        <Notification
+          variant="danger"
+          title={htmlParse(errorMessage) as never}
+        />
+      );
     } finally {
       setTimeout(() => setIsLoading(false), 2500);
     }

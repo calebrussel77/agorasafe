@@ -25,9 +25,9 @@ const Navbar: FC<NavbarProps> = ({ className, children, navigations }) => {
   const { profile } = useProfileStore();
   const [isOpenDropDown, setIsOpenDropDown] = useState(false);
 
-  const { data, isFetching, error } = useGetUserProfileConfig(
+  const { data, isLoading, error } = useGetUserProfileConfig(
     { profileId: profile?.id as string },
-    { enabled: isOpenDropDown && !!profile, staleTime: 1000 * 60 * 10 }
+    { enabled: isOpenDropDown }
   );
 
   const onToggle = useCallback(() => {
@@ -72,7 +72,7 @@ const Navbar: FC<NavbarProps> = ({ className, children, navigations }) => {
             currentProfile={profile}
             userProfileConfig={data as never}
             error={error as never}
-            isLoading={isFetching}
+            isLoading={isLoading}
           >
             <Avatar
               onClick={onToggle}

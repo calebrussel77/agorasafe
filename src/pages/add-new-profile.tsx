@@ -22,6 +22,8 @@ import { wait } from '@/utils/misc';
 import { getProfileType } from '@/utils/profile';
 import { requireAuth } from '@/utils/require-auth';
 
+import { htmlParse } from '@/lib/html-react-parser';
+
 const ALLOWED_TYPES = Object.keys(ProfileType);
 
 const AddNewProfilePage = () => {
@@ -31,9 +33,12 @@ const AddNewProfilePage = () => {
 
   const { mutate, error, isLoading } = useCreateProfile({
     onSuccess(data) {
-      toast(<Notification variant="success" title={data.message} />, {
-        autoClose: false,
-      });
+      toast(
+        <Notification
+          variant="success"
+          title={htmlParse(data.message) as never}
+        />
+      );
       reset();
 
       wait(3_00)

@@ -41,7 +41,7 @@ export const userRegisterController = async (
     return {
       profile,
       redirect_uri,
-      message: `Ravie de vous avoir parmi nous ${full_name} !`,
+      message: `Ravie de vous avoir parmi nous <span className="font-semibold">${full_name}</sapn> !`,
       success: true,
     };
   } catch (error) {

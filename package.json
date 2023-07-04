@@ -54,6 +54,7 @@
     "cmdk": "^0.2.0",
     "cookies-next": "^2.1.2",
     "date-fns": "^2.30.0",
+    "html-react-parser": "^4.0.0",
     "keen-slider": "^6.8.5",
     "lucide-react": "^0.242.0",
     "msw": "^1.2.2",

@@ -28,7 +28,7 @@ export const profileLinks = [
   {
     id: 2,
     Icon: 'Package2',
-    disabled: true,
+    disabled: false,
     type: ProfileType.CUSTOMER,
     title: 'Mes demandes',
     description: 'Consulter mes demandes de service',
@@ -37,7 +37,7 @@ export const profileLinks = [
   {
     id: 3,
     Icon: 'MessagesSquare',
-    disabled: true,
+    disabled: false,
     type: 'COMMON',
     title: 'Conversations',
     description: 'Consulter mes messages inbox',
@@ -46,7 +46,7 @@ export const profileLinks = [
   {
     id: 4,
     Icon: 'Dumbbell',
-    disabled: true,
+    disabled: false,
     title: 'Services postulés',
     type: ProfileType.PROVIDER,
     description: "Accéder aux services auxquels j'ai postulé",
@@ -55,7 +55,7 @@ export const profileLinks = [
   {
     id: 6,
     Icon: 'Settings2',
-    disabled: true,
+    disabled: false,
     type: 'COMMON',
     title: 'Paramètres',
     description: 'Gérer mes paramètres utilisateur',
@@ -64,7 +64,7 @@ export const profileLinks = [
   {
     id: 5,
     Icon: 'User2',
-    disabled: true,
+    disabled: false,
     type: 'COMMON',
     title: 'Mon profil',
     description: 'Accéder à mon profil publique',

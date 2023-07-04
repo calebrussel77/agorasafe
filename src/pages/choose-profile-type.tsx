@@ -14,7 +14,7 @@ import { requireAuth } from '@/utils/require-auth';
 const ChooseAccountTypePage = () => {
   const { data: session } = useSession();
   return (
-    <div className="container flex min-h-screen w-full max-w-[579px] flex-col items-center justify-center">
+    <div className="container flex min-h-screen w-full max-w-[590px] flex-col items-center justify-center">
       <Card>
         <Card.Header>
           <Card.Title className="text-xl">
@@ -22,11 +22,18 @@ const ChooseAccountTypePage = () => {
           </Card.Title>
           <div className="mx-auto">
             <GroupItem
-              className="bg-gray-100 rounded-full py-1"
+              className="bg-gray-100 text-sm rounded-full py-1"
               titleClassName="text-sm"
-              iconBefore={<Avatar src={session?.user?.avatar} />}
+              iconBefore={
+                <Avatar
+                  title={session?.user?.name}
+                  src={session?.user?.avatar}
+                />
+              }
               title={session?.user?.name as never}
-            />
+            >
+              {session?.user?.email}
+            </GroupItem>
           </div>
         </Card.Header>
         <Card.Content>
