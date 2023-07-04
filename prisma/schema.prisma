@@ -142,6 +142,7 @@ model Account {
     userId String @map("user_id")
 
     @@unique([provider, providerAccountId])
+    @@map("accounts")
 }
 
 model Session {
@@ -151,6 +152,8 @@ model Session {
 
     user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
     userId String @map("user_id")
+
+    @@map("sessions")
 }
 
 model Location {
@@ -184,6 +187,8 @@ model User {
 
     created_at DateTime @default(now())
     updated_at DateTime @updatedAt
+
+    @@map("users")
 }
 
 model VerificationToken {
