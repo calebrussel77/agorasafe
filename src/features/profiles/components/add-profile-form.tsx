@@ -90,7 +90,7 @@ const AddProfileForm = ({
                     className="rounded-md border p-4 shadow"
                   >
                     <Field
-                      className="flex flex-row"
+                      className="flex flex-row-reverse"
                       label={
                         <div>
                           <h3 className="font-semibold">{siteProfile.title}</h3>

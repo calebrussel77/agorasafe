@@ -14,7 +14,7 @@ import { requireAuth } from '@/utils/require-auth';
 const ChooseAccountTypePage = () => {
   const { data: session } = useSession();
   return (
-    <div className="container flex min-h-screen w-full max-w-xl flex-col items-center justify-center">
+    <div className="container flex min-h-screen w-full max-w-[579px] flex-col items-center justify-center">
       <Card>
         <Card.Header>
           <Card.Title className="text-xl">

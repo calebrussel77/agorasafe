@@ -52,10 +52,7 @@ const withProfile = (WrappedComponent: React.ComponentType<ComponentProps>) => {
       return <FullSpinner />;
     }
 
-    if (
-      isMounted() &&
-      (data?.profiles?.length === 0 || !profileStore.profile)
-    ) {
+    if (isMounted() && session && data?.profiles?.length === 0) {
       return <Redirect to="/choose-profile-type" />;
     }
 
