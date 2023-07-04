@@ -33,9 +33,7 @@ const RegisterInfosPage = () => {
 
   const { mutate, error, isLoading } = useUserRegister({
     onSuccess(data) {
-      toast(<Notification variant="danger" title={data.message} />, {
-        autoClose: false,
-      });
+      toast(<Notification variant="success" title={data.message} />);
       wait(3_00)
         .then(() => {
           void router.replace(data.redirect_uri);

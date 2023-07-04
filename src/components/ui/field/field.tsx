@@ -111,7 +111,7 @@ export const Field = forwardRef<HTMLDivElement, FieldProps>(
                 htmlFor={htmlFor}
                 required={required}
                 withDisabledIcon={!isCheckable}
-                className={clsx(
+                className={cn(
                   'font-semibold',
                   layout === 'flex-row' ? 'flex flex-row items-center' : '',
                   labelClassName

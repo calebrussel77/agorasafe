@@ -4,6 +4,7 @@ import React, { useEffect } from 'react';
 import { toast } from 'react-toastify';
 import { useMountedState } from 'react-use';
 
+import { Redirect } from '@/components/redirect';
 import { Animate } from '@/components/ui/animate';
 import { Avatar } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
@@ -49,6 +50,13 @@ const withProfile = (WrappedComponent: React.ComponentType<ComponentProps>) => {
 
     if (status === 'loading') {
       return <FullSpinner />;
+    }
+
+    if (
+      isMounted() &&
+      (data?.profiles?.length === 0 || !profileStore.profile)
+    ) {
+      return <Redirect to="/choose-profile-type" />;
     }
 
     if (session && !profileStore.profile && isMounted()) {

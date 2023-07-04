@@ -22,7 +22,8 @@ const ChooseAccountTypePage = () => {
           </Card.Title>
           <div className="mx-auto">
             <GroupItem
-              className="bg-gray-100 rounded-full"
+              className="bg-gray-100 rounded-full py-1"
+              titleClassName="text-sm"
               iconBefore={<Avatar src={session?.user?.avatar} />}
               title={session?.user?.name as never}
             />
