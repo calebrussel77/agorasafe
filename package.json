@@ -1,13 +1,21 @@
 {
-  "name": "agorasafe-new",
+  "name": "agorasafe",
   "version": "0.1.0",
+  "author": "calebrussel77@gmail.com",
   "private": true,
   "scripts": {
     "build": "next build",
     "dev": "next dev",
+    "seed:import": "ts-node prisma/seed.ts",
+    "seed:destroy": "ts-node prisma/seed.ts -d",
     "postinstall": "prisma generate",
-    "lint": "next lint",
     "postbuild": "next-sitemap",
+    "type-check": "tsc",
+    "lint": "next lint --ignore-path .gitignore .",
+    "test": "jest --watch",
+    "pre-commit": "lint-staged",
+    "prettier": "prettier --ignore-path .gitignore --write --ignore-unknown \"**/*.{ts,tsx,css,scss}\"",
+    "test:ci": "jest --coverage --silent --ci",
     "start": "next start"
   },
   "dependencies": {

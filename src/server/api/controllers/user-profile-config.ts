@@ -17,9 +17,11 @@ export const getUserProfileConfigController = async (inputs: {
     }
 
     const currentProfile = user.profiles.find(
-      (profile) => profile.id === profileId
+      profile => profile.id === profileId
     );
-    const otherProfile = user.profiles.find((profile) => profile.id !== profileId);
+    const otherProfile = user.profiles.find(
+      profile => profile.id !== profileId
+    );
     const profileCount = user._count.profiles;
     const hasProfile = profileCount > 0;
     const hasMoreThanOneProfile = profileCount > 1;
