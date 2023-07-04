@@ -91,11 +91,11 @@ export const getServerSideProps: GetServerSideProps<
       where: {
         id: session.user.id,
       },
-      include: { profile: true },
+      include: { profiles: true },
     });
 
     // redirect to account type selection page if user doesn't have at least one profile
-    if (userFounded?.profile.length === 0) {
+    if (userFounded?.profiles.length === 0) {
       return {
         redirect: {
           destination: '/choose-profile-type',

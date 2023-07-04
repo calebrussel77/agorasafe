@@ -2,13 +2,13 @@ import { createTRPCRouter, protectedProcedure } from '@/server/api/trpc';
 
 import {
   createProfileController,
-  getUserProfilesController,
+  getProfilesByUserIdController,
 } from '../controllers';
 import { createProfileSchema } from '../validations/profiles';
 
 export const profilesRouter = createTRPCRouter({
   getUserProfiles: protectedProcedure.query(({ ctx: { session } }) =>
-    getUserProfilesController({
+    getProfilesByUserIdController({
       userId: session.user.id,
       name: session.user.name,
     })

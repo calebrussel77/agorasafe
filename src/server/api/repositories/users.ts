@@ -20,3 +20,13 @@ export async function updateUserById({
     },
   });
 }
+
+export async function getUserById(userId: string) {
+  return prisma.user.findUnique({
+    where: { id: userId },
+    include: {
+      profiles: { select: { id: true, name: true, type: true } },
+      _count: { select: { profiles: true } },
+    },
+  });
+}

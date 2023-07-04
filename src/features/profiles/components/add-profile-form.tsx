@@ -56,7 +56,7 @@ const AddProfileForm = ({
         <div className="mx-auto flex justify-center items-center">
           <Avatar size="xl" />
         </div>
-        <Field label="Nom du profile" required>
+        <Field label="Nom" required>
           <Controller
             control={control}
             name="name"
@@ -72,7 +72,7 @@ const AddProfileForm = ({
             )}
           />
         </Field>
-        <Field label="Type du profile" required>
+        <Field label="Type" required>
           <Controller
             name="profile_type"
             control={control}

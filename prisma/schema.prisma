@@ -176,7 +176,7 @@ model User {
 
     accounts Account[]
     sessions Session[]
-    profile  Profile[]
+    profiles Profile[]
 
     location    Location? @relation(fields: [location_id], references: [id])
     location_id String?

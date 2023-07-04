@@ -30,13 +30,26 @@ export async function getProfiles() {
   return await prisma.profile.findMany();
 }
 
-export async function getUserProfiles(userId: string) {
+export async function getProfileById(profileId: string) {
+  return await prisma.profile.findUnique({
+    where: { id: profileId },
+    include: {
+      user: { select: { location: { select: { id: true, name: true } } } },
+    },
+  });
+}
+
+export async function getProfilesByUserId(userId: string) {
   return await prisma.profile.findMany({
     where: {
       user_id: userId,
     },
     include: {
-      user: { select: { location: { select: { id: true, name: true} } } },
+      user: { select: { location: { select: { id: true, name: true } } } },
     },
   });
+}
+
+export async function getProfilesCount() {
+  return await prisma.profile.count();
 }

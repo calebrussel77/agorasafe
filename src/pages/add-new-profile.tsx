@@ -27,18 +27,18 @@ const ALLOWED_TYPES = Object.keys(ProfileType);
 const AddNewProfilePage = () => {
   const router = useRouter();
   const { profile_type } = router.query;
-
-  const profileStore = useProfileStore();
+  const { reset } = useProfileStore();
 
   const { mutate, error, isLoading } = useCreateProfile({
     onSuccess(data) {
       toast(<Notification variant="success" title={data.message} />, {
         autoClose: false,
       });
-      useProfileStore.persist.clearStorage();
+      reset();
+
       wait(3_00)
         .then(() => {
-          void router.replace('/');
+          void router.push('/');
         })
         .catch(e => console.log(e));
     },

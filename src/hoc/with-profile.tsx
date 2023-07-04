@@ -1,5 +1,4 @@
 import { useProfileStore } from '@/stores/profiles';
-import { type Profile } from '@prisma/client';
 import { useSession } from 'next-auth/react';
 import React, { useEffect } from 'react';
 import { toast } from 'react-toastify';
@@ -14,18 +13,16 @@ import { Notification } from '@/components/ui/notification';
 import { Skeleton } from '@/components/ui/skeleton';
 import { FullSpinner } from '@/components/ui/spinner';
 
-import {
-  type GetUserProfilesOutput,
-  ProfileItemSkeleton,
-  useUserProfiles,
-} from '@/features/profiles';
+import { ProfileItemSkeleton, useUserProfiles } from '@/features/profiles';
+
+import { type CurrentProfile } from '@/types/profiles';
 
 import { generateArray } from '@/utils/misc';
 import { getProfileType } from '@/utils/profile';
 
 // Define a type for the component props
 type ComponentProps = {
-  profile: GetUserProfilesOutput['profiles'][0] | null;
+  profile: CurrentProfile;
 } & unknown;
 
 // Define a higher-order component for profile check
@@ -45,8 +42,9 @@ const withProfile = (WrappedComponent: React.ComponentType<ComponentProps>) => {
     // reset profile store on sign out
     useEffect(() => {
       if (!session?.user) {
-        useProfileStore.persist.clearStorage();
+        profileStore.reset();
       }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [session?.user]);
 
     if (status === 'loading') {
@@ -98,7 +96,7 @@ const withProfile = (WrappedComponent: React.ComponentType<ComponentProps>) => {
                         bordered
                         className="shadow-md aspect-square h-20 w-20 sm:h-24 sm:w-24"
                       />
-                      <h3 className="mt-3 line-clamp-1 text-lg font-semibold">
+                      <h3 className="mt-3 max-w-[170px] truncate text-lg font-semibold">
                         {profile.name}
                       </h3>
                       <Badge className="line-clamp-1">

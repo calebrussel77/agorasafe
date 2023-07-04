@@ -1,9 +1,14 @@
+import { USER_PROFILES_LIMIT_COUNT } from '@/constants';
 import slugify from 'slugify';
 
-import { createProfileByUserId, getUserProfiles } from '../repositories';
+import {
+  createProfileByUserId,
+  getProfilesByUserId,
+  getUserById,
+} from '../repositories';
 import { type CreateProfile } from '../types/profiles';
 
-export const getUserProfilesController = async (inputs: {
+export const getProfilesByUserIdController = async (inputs: {
   userId: string;
   name: string;
 }) => {
@@ -11,7 +16,7 @@ export const getUserProfilesController = async (inputs: {
 
   try {
     //Get all profiels of the current user
-    const profiles = await getUserProfiles(userId);
+    const profiles = await getProfilesByUserId(userId);
 
     return {
       profiles,
@@ -29,12 +34,24 @@ export const createProfileController = async (
   const { name, profile_type, userId } = inputs;
 
   try {
+    const user = await getUserById(userId);
+
+    if (!user) {
+      throw new Error('Utilisateur non trouvé !');
+    }
+
+    if (user?._count.profiles === USER_PROFILES_LIMIT_COUNT) {
+      throw new Error(
+        'Vous ne pouvez ajouter que maximum 02 Profiles pour votre compte !'
+      );
+    }
+
     //Create a profile for the given user
     const profile = await createProfileByUserId({
       userId,
       name: name,
       type: profile_type,
-      slug: slugify(name), //TODO create the slug function to properly handle this
+      slug: slugify(name, { lower: true }), //TODO create the slug function to properly handle this
     });
 
     return {
