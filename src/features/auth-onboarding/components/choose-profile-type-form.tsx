@@ -49,7 +49,7 @@ const ChooseProfileTypeForm: FC<ChooseProfileTypeFormProps> = ({}) => {
                 className="rounded-md border p-4 shadow"
               >
                 <Field
-                  className="flex flex-row-reverse"
+                  className="flex flex-row gap-1"
                   label={
                     <div>
                       <h3 className="font-semibold">{siteProfile.title}</h3>
