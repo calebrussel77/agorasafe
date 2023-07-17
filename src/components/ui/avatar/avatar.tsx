@@ -33,6 +33,12 @@ const sizeClasses = {
   xxl: 'h-24 w-24',
 };
 
+const shapeClasses = {
+  circle: 'rounded-full',
+  square: 'rounded-none',
+  rounded: 'rounded-md',
+};
+
 const AvatarComponent = React.forwardRef<
   React.ElementRef<typeof AvatarPrimitive.Root>,
   React.ComponentPropsWithoutRef<typeof AvatarPrimitive.Root>
@@ -108,12 +114,7 @@ const Avatar = React.forwardRef<
     ref
   ) => {
     const avatarSizeClassName = size ? sizeClasses[size] : undefined;
-    const shapeClassNames =
-      shape === 'circle'
-        ? 'rounded-full'
-        : shape === 'square'
-        ? 'rounded-none'
-        : 'rounded-md';
+    const shapeClassName = shape ? shapeClasses[shape] : undefined;
 
     return (
       <AvatarComponent
@@ -122,7 +123,7 @@ const Avatar = React.forwardRef<
           'relative flex shrink-0 overflow-hidden',
           bordered && 'ring-2 ring-gray-300 ',
           avatarSizeClassName,
-          shapeClassNames,
+          shapeClassName,
           className
         )}
       >
@@ -131,7 +132,7 @@ const Avatar = React.forwardRef<
           className={cn(
             bordered && 'ring-2 ring-gray-300 ',
             avatarSizeClassName,
-            shapeClassNames,
+            shapeClassName,
             className
           )}
         >

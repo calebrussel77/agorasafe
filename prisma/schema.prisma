@@ -45,6 +45,7 @@ model Profile {
 model Provider {
     id                   String   @id @default(cuid())
     website_url          String?
+    profession           String?
     is_face_to_face      Boolean? @default(true)
     is_remote            Boolean? @default(true)
     showcase_photo_one   String?
@@ -78,17 +79,31 @@ model CategoryService {
     slug        String? @unique
     description String?
 
+    services Service[]
+
+    created_at DateTime @default(now())
+    updated_at DateTime @updatedAt
+}
+
+model Service {
+    id          String  @id @default(cuid())
+    name        String  @unique
+    slug        String? @unique
+    description String?
+
     service_requests ServiceRequest[]
+
+    categories CategoryService[]
 
     created_at DateTime @default(now())
     updated_at DateTime @updatedAt
 }
 
 model ServiceRequest {
-    id                        String                           @id @default(cuid())
+    id                        String  @id @default(cuid())
     title                     String
-    slug                      String                           @unique
-    content                   String
+    slug                      String  @unique
+    description               String
     phone_to_contact          String
     photo_one                 String?
     photo_two                 String?
@@ -99,14 +114,16 @@ model ServiceRequest {
     end_date                  String?
     estimated_price           String
     location                  String
-    status                    ServiceRequestStatus
-    provider_responses        ProviderServiceRequestResponse[]
+
+    status ServiceRequestStatus? @default(value: OPEN)
+
+    provider_responses ProviderServiceRequestResponse[]
 
     author    Customer @relation(fields: [author_id], references: [id], onDelete: Cascade)
     author_id String
 
-    Category_service    CategoryService @relation(fields: [category_service_id], references: [id], onDelete: Cascade)
-    category_service_id String
+    service    Service @relation(fields: [service_id], references: [id], onDelete: Cascade)
+    service_id String
 
     created_at DateTime @default(now())
     updated_at DateTime @updatedAt

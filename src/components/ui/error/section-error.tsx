@@ -15,7 +15,7 @@ export function SectionError({ onRetry, error }: TFullPageError) {
   const router = useRouter();
   const isNetworkError = false;
   const mustRetry = !!onRetry;
-  const errorMessage = `ERROR: ${error ? error.message : ""}`;
+  const errorMessage = `ERROR: ${error ? error.message : ''}`;
 
   const title = isNetworkError ? `Connection Lost` : `Application Error`;
   const message = isNetworkError

@@ -23,30 +23,45 @@ export function generateArray(numElements: number) {
 
 export const formatWord = (str: string) => {
   const sanitize = str?.trim()?.split('_')?.join(' ');
-  return `${(sanitize[0] || "").toUpperCase()} ${sanitize?.slice(1)?.toLowerCase()}`;
+  return `${(sanitize[0] || '').toUpperCase()} ${sanitize
+    ?.slice(1)
+    ?.toLowerCase()}`;
 };
 
-export function stringToHslColor(str = 'random name', s = 30, l = 80) {
+export function stringToHslColor(
+  input = 'Random name',
+  s = 70,
+  l = 60
+): string {
+  // Calculer un hash unique à partir de la chaîne d'entrée
   let hash = 0;
-  for (let i = 0; i < str?.length; i++) {
-    hash = str?.charCodeAt(i) + ((hash << 5) - hash);
+  for (let i = 0; i < input.length; i++) {
+    hash = input.charCodeAt(i) + ((hash << 5) - hash);
   }
+  // Générer les composantes HSL en utilisant le hash
+  const hue = ((hash % 360) + 360) % 360; // Valeur de teinte entre 0 et 359
+  // const saturation = 70; // Valeur de saturation constante pour des couleurs vives
+  // const lightness = 60; // Valeur de luminosité constante pour des couleurs joyeuses
 
-  const h = hash % 360;
-  return `hsl(${h}, ${s}%, ${l} %)`;
+  // Construire la chaîne de couleur HSL
+  const color = `hsl(${hue}, ${s}%, ${l}%)`;
+
+  return color;
 }
 
+/**
+ * Searches for a value in an array and returns the value if found, otherwise returns a default value.
+ *
+ * @param data - The array to search in.
+ * @param find - The value to find.
+ * @param defaultValue - The default value to return if the value is not found.
+ *
+ * @returns The found value if found, otherwise the default value.
+ */
+export function findMatch<T>(data: T[], find: T, defaultValue: T): T {
+  const founded = data.findIndex(el => el === find);
 
-export function getNameInitials(fullName: string): string {
-  const names = fullName.split(' ');
-
-  // Filter out empty names
-  const filteredNames = names.filter(name => name !== '');
-
-  // Get the first letter of each name
-  const initials = filteredNames.map(name => name.charAt(0).toUpperCase());
-
-  return initials.join('');
+  return founded >= 0 ? find : defaultValue;
 }
 
 export function formatPhoneNumber(phoneNumber: string) {
@@ -58,3 +73,14 @@ export function formatPhoneNumber(phoneNumber: string) {
 
   return `${countryCode} ${firstGroup} ${secondGroup} ${thirdGroup} ${fourthGroup}`;
 }
+
+//invariant for type checks
+export const invariant: (
+  condition: unknown,
+  message?: string | (() => string)
+) => asserts condition = (condition, message = 'Assertion Failed') => {
+  if (!condition) {
+    if (typeof message === 'string') throw new Error(message);
+    throw new Error(message());
+  }
+};

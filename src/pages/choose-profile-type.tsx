@@ -18,11 +18,11 @@ const ChooseAccountTypePage = () => {
       <Card>
         <Card.Header>
           <Card.Title className="text-xl">
-            Avec quel type de profile souhaitez-vous interagir ?
+            Avec quel type de profil souhaitez-vous interagir ?
           </Card.Title>
           <div className="mx-auto">
             <GroupItem
-              className="bg-gray-100 text-sm rounded-full py-1"
+              className="rounded-full bg-gray-100 py-1 text-sm"
               titleClassName="text-sm"
               iconBefore={
                 <Avatar

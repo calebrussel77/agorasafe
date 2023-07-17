@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Dialog } from '@/components/ui/dialog';
 import { Image } from '@/components/ui/image';
 import { SectionMessage } from '@/components/ui/section-message';
+import { Typography } from '@/components/ui/typography';
 
 import { FormSubscription } from '@/features/onboarding-souscription';
 import { FormSubscriptionModal } from '@/features/onboarding-souscription/components/form-subscription-modal';
@@ -90,7 +91,7 @@ const HeroSection: FC<HeroSectionProps> = ({}) => {
             </div>
           ))}
         </div>
-        <div className="absolute inset-0 -z-10 bg-opacity-70 bg-gray-900 h-full w-full object-cover" />
+        <div className="absolute inset-0 -z-10 h-full w-full bg-gray-900 bg-opacity-70 object-cover" />
         <div
           className="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80"
           aria-hidden="true"
@@ -104,7 +105,7 @@ const HeroSection: FC<HeroSectionProps> = ({}) => {
           />
         </div>
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="mx-auto max-w-2xl pt-32 pb-16 lg:pb-24">
+          <div className="mx-auto max-w-2xl pb-16 pt-32 lg:pb-24">
             <div className="hidden sm:mb-8 sm:flex sm:justify-center">
               <div className="relative rounded-full px-3 py-1 text-sm leading-6 text-gray-200 ring-1 ring-white/30 hover:ring-white/40">
                 Enregistrez-vous dès aujourd'hui pour être parmi les premiers à
@@ -119,16 +120,20 @@ const HeroSection: FC<HeroSectionProps> = ({}) => {
               </div>
             </div>
             <div className="text-center">
-              <h1 className="text-4xl font-bold tracking-tight text-white md:text-6xl">
+              <Typography
+                as="h1"
+                variant="h1"
+                className="text-white"
+              >
                 Découvrez des services exceptionnels à des prix abordables
-              </h1>
-              <p className="mt-6 text-base md:text-lg leading-8 text-gray-200">
+              </Typography>
+              <Typography className="mt-6 text-gray-200 md:text-lg">
                 Que vous ayez besoin d'un photographe, d'un mécanicien, d'un
                 designer graphique, d'un frigoriste, et bien plus encore,
                 Agorasafe vous offre un accès facile à une communauté de talents
                 qualifiés, transparente et fiable à travers le cameroun.
-              </p>
-              <div className="mt-8 flex flex-col md:flex-row items-center justify-center gap-y-3 md:gap-y-0 md:gap-x-6">
+              </Typography>
+              <div className="mt-8 flex flex-col items-center justify-center gap-y-3 md:flex-row md:gap-x-6 md:gap-y-0">
                 <FormSubscriptionModal>
                   <Button>Commencez maintenant</Button>
                 </FormSubscriptionModal>

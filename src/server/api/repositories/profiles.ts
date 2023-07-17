@@ -31,12 +31,14 @@ export async function getProfiles() {
 }
 
 export async function getProfileById(profileId: string) {
-  return await prisma.profile.findUnique({
+  const response = await prisma.profile.findUnique({
     where: { id: profileId },
     include: {
       user: { select: { location: { select: { id: true, name: true } } } },
     },
   });
+
+  return response;
 }
 
 export async function getProfilesByUserId(userId: string) {

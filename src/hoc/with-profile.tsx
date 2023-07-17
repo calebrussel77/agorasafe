@@ -9,7 +9,7 @@ import { Animate } from '@/components/ui/animate';
 import { Avatar } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { ErrorWrapper } from '@/components/ui/error';
+import { ErrorWrapper, SectionError } from '@/components/ui/error';
 import { Notification } from '@/components/ui/notification';
 import { Skeleton } from '@/components/ui/skeleton';
 import { FullSpinner } from '@/components/ui/spinner';
@@ -36,7 +36,7 @@ const withProfile = (WrappedComponent: React.ComponentType<ComponentProps>) => {
     const profileStore = useProfileStore();
 
     // profiles query
-    const { data, isFetching } = useUserProfiles({
+    const { data, isFetching, error, refetch } = useUserProfiles({
       enabled: !!session?.user,
     });
 
@@ -54,6 +54,14 @@ const withProfile = (WrappedComponent: React.ComponentType<ComponentProps>) => {
 
     if (isMounted() && session && data?.profiles?.length === 0) {
       return <Redirect to="/choose-profile-type" />;
+    }
+
+    if (error) {
+      return (
+        <div className="container flex min-h-screen w-full max-w-5xl flex-col items-center justify-center">
+          <SectionError error={error} onRetry={() => void refetch()} />{' '}
+        </div>
+      );
     }
 
     if (session && !profileStore.profile && isMounted()) {
@@ -82,7 +90,7 @@ const withProfile = (WrappedComponent: React.ComponentType<ComponentProps>) => {
                             variant="success"
                             title={
                               <p className="font-normal text-sm">
-                                Vous interagissez maintenant en tant que:{' '}
+                                Vous interagissez maintenant en tant que{' '}
                                 <span className="font-semibold">
                                   {profile.name}
                                 </span>

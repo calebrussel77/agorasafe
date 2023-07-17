@@ -26,21 +26,21 @@ const GroupItem: FC<GroupItemProps> = ({
   return (
     <div
       className={cn(
-        'flex items-center -mx-3 px-3 py-2 hover:bg-gray-100 rounded-md',
+        '-mx-3 flex items-center rounded-md px-3 py-2 hover:bg-gray-100',
         className
       )}
     >
       {iconBefore}
       <div
         className={cn(
-          'flex flex-col justify-start items-start',
-          iconBefore && !iconAfter && 'ml-2 gap-0.5 flex-1 w-full'
+          'flex flex-col items-start justify-start',
+          iconBefore && !iconAfter && 'ml-2 w-full flex-1 gap-0.5'
         )}
       >
         {isTitleString ? (
           <h3
             className={cn(
-              'font-semibold leading-none tracking-tight',
+              'font-bold leading-none tracking-tight',
               titleClassName
             )}
           >

@@ -63,7 +63,7 @@ const DialogContent = React.forwardRef<
         //   className
         // )}
         className={cn(
-          'fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 rounded-b-lg scrollbar__custom overflow-y-auto border bg-background',
+          'scrollbar__custom fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 overflow-y-auto rounded-b-lg border bg-background',
           'shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95',
           'data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2',
           'data-[state=open]:slide-in-from-top-[48%] sm:rounded-lg md:w-full',
@@ -94,13 +94,13 @@ const DialogHeader = ({
 }: React.HTMLAttributes<HTMLDivElement>) => (
   <div
     className={cn(
-      'sticky top-0 inset-x-0 w-full py-4 px-6 bg-background flex flex-row justify-between items-start',
+      'sticky inset-x-0 top-0 z-10 flex w-full flex-row items-start justify-between bg-background bg-white px-6 py-4',
       'border-b',
       className
     )}
     {...props}
   >
-    <div className="flex flex-col space-y-1.5 text-center sm:text-left">
+    <div className="flex w-full flex-col space-y-1.5 text-center sm:text-left">
       {children}
     </div>
     <DialogPrimitive.Close className="relative rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
@@ -119,7 +119,7 @@ const DialogFooter = ({
   return (
     <div
       className={cn(
-        'sticky bottom-0 inset-x-0 px-6 bg-background py-3 flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2',
+        'inset-x- sticky bottom-0 z-10 flex flex-col-reverse bg-background bg-white px-6 py-3 sm:flex-row sm:justify-end sm:space-x-2',
         'border-t',
         className
       )}
@@ -136,7 +136,7 @@ const DialogTitle = React.forwardRef<
   <DialogPrimitive.Title
     ref={ref}
     className={cn(
-      'text-lg font-semibold leading-none tracking-tight',
+      'text-xl font-semibold leading-none tracking-tight',
       className
     )}
     {...props}

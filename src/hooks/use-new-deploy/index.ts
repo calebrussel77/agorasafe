@@ -7,7 +7,9 @@ type TUseNewDeployProps = {
 };
 
 const useNewDeploy = ({ notificationToast }: TUseNewDeployProps) => {
-  const { hasNewDeploy } = useHasNewDeploy();
+  const { hasNewDeploy } = useHasNewDeploy({
+    interval: 5000,
+  });
 
   useEffect(() => {
     if (hasNewDeploy) {

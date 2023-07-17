@@ -3,7 +3,7 @@ import { ProfileType } from '@prisma/client';
 import Link from 'next/link';
 import React, { type FC, type ReactNode, useCallback, useState } from 'react';
 
-import { FormSubscriptionModal } from '@/features/onboarding-souscription/components/form-subscription-modal';
+import { AskServiceModal } from '@/features/ask-services';
 import {
   UserProfileDropdown,
   useGetUserProfileConfig,
@@ -30,6 +30,8 @@ const Navbar: FC<NavbarProps> = ({ className, children, navigations }) => {
     { enabled: isOpenDropDown }
   );
 
+  const isCustomerProfile = !profile || profile?.type === ProfileType.CUSTOMER;
+
   const onToggle = useCallback(() => {
     setIsOpenDropDown(!isOpenDropDown);
   }, [isOpenDropDown]);
@@ -37,18 +39,18 @@ const Navbar: FC<NavbarProps> = ({ className, children, navigations }) => {
   return (
     <nav
       className={cn(
-        'flex items-center justify-between py-3 px-4 lg:px-8',
+        'flex items-center justify-between px-4 py-3 lg:px-8',
         className
       )}
       aria-label="Global"
     >
-      <div className="flex xl:flex-1 items-center gap-3">
+      <div className="flex items-center gap-3 xl:flex-1">
         <Link href="/" className="-m-1.5 p-1.5">
           <span className="sr-only">Your Company</span>
-          <LogoSymbolIcon className="h-7 md:h-8 w-auto" />
+          <LogoSymbolIcon className="h-7 w-auto md:h-8" />
         </Link>
       </div>
-      <div className="hidden lg:flex lg:gap-x-12 ml-4 lg:items-center">
+      <div className="ml-4 hidden lg:flex lg:items-center lg:gap-x-12">
         {navigations.map(item => (
           <a
             key={item.name}
@@ -60,10 +62,10 @@ const Navbar: FC<NavbarProps> = ({ className, children, navigations }) => {
         ))}
       </div>
       <div className="flex items-center lg:flex-1 lg:justify-end">
-        {(!profile || profile?.type === ProfileType.CUSTOMER) && (
-          <FormSubscriptionModal>
+        {isCustomerProfile && (
+          <AskServiceModal>
             <Button size="sm">Demander un service</Button>
-          </FormSubscriptionModal>
+          </AskServiceModal>
         )}
         {profile ? (
           <UserProfileDropdown
@@ -85,7 +87,7 @@ const Navbar: FC<NavbarProps> = ({ className, children, navigations }) => {
         ) : (
           <Link
             href="/auth/login"
-            className="ml-4 hidden lg:flex text-sm font-semibold leading-6 text-white"
+            className="ml-4 hidden text-sm font-semibold leading-6 text-white lg:flex"
           >
             Se connecter <span aria-hidden="true">&rarr;</span>
           </Link>

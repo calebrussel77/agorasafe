@@ -1,11 +1,9 @@
-import { MainLayout } from '@/layouts';
 import { ProfileType } from '@prisma/client';
 import { MoveLeft } from 'lucide-react';
 import { type GetServerSideProps } from 'next';
 import { type Session } from 'next-auth';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { type ReactElement } from 'react';
 import { toast } from 'react-toastify';
 
 import { Redirect } from '@/components/redirect';
@@ -75,7 +73,7 @@ const RegisterInfosPage = () => {
         </Link>
         <Card>
           <Card.Header>
-            <Card.Title className="text-xl">Informations du profile</Card.Title>
+            <Card.Title>Informations du profil</Card.Title>
             <Card.Description>
               Renseignez les informations ci-dessous pour facilement gérer vos
               projets, consulter vos candidatures, rechercher des prestataires

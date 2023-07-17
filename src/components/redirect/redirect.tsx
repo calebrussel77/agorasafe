@@ -6,11 +6,12 @@ import { FullSpinner } from '../ui/spinner';
 interface RedirectProps {
   to: string;
 }
+
 const Redirect: FC<RedirectProps> = ({ to }) => {
   const router = useRouter();
 
   useEffect(() => {
-    if (to) {
+    if (to && router.isReady) {
       void router.replace(to);
     }
   }, [router, to]);

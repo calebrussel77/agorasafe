@@ -13,6 +13,7 @@ import { DropdownMenu } from '@/components/ui/dropdown-menu';
 import { GroupItem } from '@/components/ui/group-item';
 import { SectionMessage } from '@/components/ui/section-message';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Typography } from '@/components/ui/typography';
 
 import { type CurrentProfile } from '@/types/profiles';
 
@@ -48,7 +49,7 @@ const UserProfileDropdown: FC<UserProfileDropdownProps> = ({
 
   return (
     <DropdownMenu open={isOpen} onOpenChange={onToggle}>
-      <DropdownMenu.Trigger className="ml-4 hidden lg:flex rounded-full">
+      <DropdownMenu.Trigger className="ml-4 hidden rounded-full lg:flex">
         {children}
       </DropdownMenu.Trigger>
       <DropdownMenu.Content align="end" className="w-[380px]">
@@ -56,6 +57,7 @@ const UserProfileDropdown: FC<UserProfileDropdownProps> = ({
           {error ? (
             <SectionMessage
               title={error.message}
+              hasCloseButton={false}
               appareance="danger"
               className="mb-24"
             />
@@ -64,10 +66,10 @@ const UserProfileDropdown: FC<UserProfileDropdownProps> = ({
               <DropdownMenu.Label>
                 {isLoading ? (
                   <div className="flex items-center gap-2 px-2">
-                    <Skeleton className="w-8 h-8 rounded-full" />
-                    <div className="flex-1 w-full space-y-1.5">
-                      <Skeleton className="w-1/2 h-4" />
-                      <Skeleton className="w-full h-4" />
+                    <Skeleton className="h-8 w-8 rounded-full" />
+                    <div className="w-full flex-1 space-y-1.5">
+                      <Skeleton className="h-4 w-1/2" />
+                      <Skeleton className="h-4 w-full" />
                     </div>
                   </div>
                 ) : (
@@ -82,31 +84,33 @@ const UserProfileDropdown: FC<UserProfileDropdownProps> = ({
                     }
                     title={
                       <div className="flex items-center">
-                        <h3 className="line-clamp-1 font-semibold">
+                        <Typography
+                          as="h3"
+                          variant="h4"
+                          className="line-clamp-1 font-semibold"
+                        >
                           {currentProfile.name}
-                        </h3>
-                        <Badge className="flex-shrink-0 ml-2 text-xs">
+                        </Typography>
+                        <Badge className="ml-2 flex-shrink-0 text-xs">
                           {getProfileType(currentProfile.type)}
                         </Badge>
                       </div>
                     }
                   >
-                    <div className="text-sm text-muted-foreground">
-                      <p className="flex items-center gap-1 line-clamp-1">
-                        <MapPin className="h-4 w-4" />
-                        {currentProfile.user.location?.name}
-                      </p>
-                    </div>
+                    <Typography truncate variant="small" className="flex items-center gap-1 text-muted-foreground">
+                      <MapPin className="h-4 w-4" />
+                      {currentProfile.user.location?.name}
+                    </Typography>
                   </GroupItem>
                 )}
               </DropdownMenu.Label>
               <DropdownMenu.Separator />
               {isLoading ? (
-                <div className="grid gap-3 my-6">
+                <div className="my-6 grid gap-3">
                   {generateArray(8).map(el => (
                     <div key={el} className="space-y-1.5 px-2">
-                      <Skeleton className="w-1/2 h-4" />
-                      <Skeleton className="w-full h-4" />
+                      <Skeleton className="h-4 w-1/2" />
+                      <Skeleton className="h-4 w-full" />
                     </div>
                   ))}
                 </div>
@@ -127,7 +131,7 @@ const UserProfileDropdown: FC<UserProfileDropdownProps> = ({
                             'w-full'
                           )}
                         >
-                          <UserPlus2 className="h-5 w-5 mr-2" />
+                          <UserPlus2 className="mr-2 h-5 w-5" />
                           <span className="line-clamp-1">
                             {userProfileConfig.addProfileInfos.message}
                           </span>
@@ -149,7 +153,7 @@ const UserProfileDropdown: FC<UserProfileDropdownProps> = ({
                           'w-full'
                         )}
                       >
-                        <RefreshCcw className="h-5 w-5 mr-2" />
+                        <RefreshCcw className="mr-2 h-5 w-5" />
                         <span className="line-clamp-1">
                           {
                             userProfileConfig.switchProfileInfos
@@ -164,12 +168,17 @@ const UserProfileDropdown: FC<UserProfileDropdownProps> = ({
                     <DropdownMenu.Item
                       key={link.id}
                       disabled={link.disabled}
-                      className="flex flex-col justify-start text-left items-start"
+                      className="flex flex-col items-start justify-start text-left"
                     >
-                      <h3>{link.title}</h3>
-                      <p className="text-muted-foreground mt-1">
+                      <Typography as="h3" variant="h5">
+                        {link.title}
+                      </Typography>
+                      <Typography
+                        variant="small"
+                        className="text-muted-foreground"
+                      >
                         {link.description}
-                      </p>
+                      </Typography>
                     </DropdownMenu.Item>
                   ))}
                   <DropdownMenu.Separator />
@@ -179,9 +188,9 @@ const UserProfileDropdown: FC<UserProfileDropdownProps> = ({
                         .then(() => reset())
                         .catch(e => console.log(e));
                     }}
-                    className="flex text-center items-center justify-center"
+                    className="flex items-center justify-center text-center"
                   >
-                    <LogOut className="h-4 w-4 mr-2" />
+                    <LogOut className="mr-2 h-4 w-4" />
                     Se déconnecter
                   </DropdownMenu.Item>
                 </>

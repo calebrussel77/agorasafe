@@ -20,7 +20,7 @@ import { useNotificationNetwork } from '@/hooks/use-notification-network';
 import { AppContext } from '@/contexts/app-context';
 
 const progress = new ProgressBar({
-  size: 3,
+  size: 4,
   className: 'bar-of-progress shadow-md',
   delay: 100,
   color: '#30389d',

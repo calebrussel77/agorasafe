@@ -2,12 +2,9 @@ import { Boxes, CalendarDays } from 'lucide-react';
 import Image from 'next/image';
 import React, { type FC } from 'react';
 
-import { Animate } from '@/components/ui/animate';
 import { Button } from '@/components/ui/button';
-import { Dialog } from '@/components/ui/dialog';
-import { SectionMessage } from '@/components/ui/section-message';
+import { Typography } from '@/components/ui/typography';
 
-import { FormSubscription } from '@/features/onboarding-souscription';
 import { FormSubscriptionModal } from '@/features/onboarding-souscription/components/form-subscription-modal';
 import { useOnboardingSubscriber } from '@/features/onboarding-souscription/services';
 
@@ -57,26 +54,29 @@ const FeaturesSection: FC<FeaturesSectionProps> = ({}) => {
     <div className="mt-24">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="mx-auto max-w-2xl sm:text-center">
-          <h2 className="text-base font-semibold leading-7 text-brand-600">
+          <Typography
+            as="h2"
+            className="text-base font-semibold leading-7 text-brand-600"
+          >
             Tout ce dont vous avez besoin
-          </h2>
-          <p className="mt-2 text-3xl font-bold tracking-tight text-gray-900">
+          </Typography>
+          <Typography variant="h2" className="mt-2 text-3xl">
             Manque d'accès aux clients ou à des services abordables ? Pas de
             problème.
-          </p>
-          <p className="mt-6 leading-7 text-gray-600">
+          </Typography>
+          <Typography variant="subtle" className="mt-6">
             Sur Agorasafe, les prestataires de services amateurs peuvent mettre
             en valeur leurs compétences et talents, tandis que les clients
             peuvent trouver des services abordables pour répondre à leurs
             besoins.
-          </p>
+          </Typography>
         </div>
       </div>
       <div className="relative overflow-hidden pt-16">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <Image
             src="/images/femme-charpentière.jpg"
-            alt="maman-africaine-phone"
+            alt="jeune fille charpentière"
             className="mb-[-12%] rounded-xl shadow-2xl ring-1 ring-gray-900/10"
             fill={false}
             width={2432}
@@ -103,7 +103,7 @@ const FeaturesSection: FC<FeaturesSectionProps> = ({}) => {
           ))}
         </dl>
         <FormSubscriptionModal>
-          <Button className="mx-auto flex justify-center mt-10">
+          <Button className="mx-auto mt-10 flex justify-center">
             Inscrivez-vous dès maintenant
           </Button>
         </FormSubscriptionModal>
