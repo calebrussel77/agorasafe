@@ -20,7 +20,7 @@ export const getProfilesByUserIdController = async (inputs: {
 
     return {
       profiles,
-      message: `Ravie de vous avoir ${name}, Avec quel profile souhaitez-vous interagir ?`,
+      message: `Ravie de vous avoir ${name}, Avec quel profil souhaitez-vous interagir ?`,
       success: true,
     };
   } catch (error) {
@@ -42,7 +42,7 @@ export const createProfileController = async (
 
     if (user?._count.profiles === USER_PROFILES_LIMIT_COUNT) {
       throw new Error(
-        'Vous ne pouvez ajouter que maximum 02 Profiles pour votre compte !'
+        'Vous ne pouvez ajouter que maximum 02 Profils pour votre compte !'
       );
     }
 

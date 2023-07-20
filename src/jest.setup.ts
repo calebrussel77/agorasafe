@@ -2,11 +2,17 @@ import '@testing-library/jest-dom';
 // Polyfill "window.fetch" used in the React component.
 import 'whatwg-fetch';
 
-// src/setupTests.ts
-import { server } from './mocks/server';
+import { server } from './jest/__mocks__/server';
 
 // Establish API mocking before all tests.
-beforeAll(() => server.listen());
+beforeAll(() => {
+  global.ResizeObserver = jest.fn().mockImplementation(() => ({
+    observe: jest.fn(),
+    unobserve: jest.fn(),
+    disconnect: jest.fn(),
+  }));
+  server.listen();
+});
 
 // Reset any request handlers that we may add during the tests,
 // so they don't affect other tests.

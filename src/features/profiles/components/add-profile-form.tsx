@@ -51,9 +51,13 @@ const AddProfileForm = ({
 
   return (
     <>
-      <Form form={form} onSubmit={onHandleSubmit}>
+      <Form
+        form={form}
+        onSubmit={onHandleSubmit}
+        aria-label="add_profile_form_test_id"
+      >
         {error && <SectionMessage title={error.message} />}
-        <div className="mx-auto flex justify-center items-center">
+        <div className="mx-auto flex items-center justify-center">
           <Avatar size="xl" />
         </div>
         <Field label="Nom" required>
@@ -94,7 +98,7 @@ const AddProfileForm = ({
                       label={
                         <div>
                           <h3 className="font-semibold">{siteProfile.title}</h3>
-                          <p className="font-normal text-sm">
+                          <p className="text-sm font-normal">
                             {siteProfile.description}
                           </p>
                         </div>
@@ -111,7 +115,7 @@ const AddProfileForm = ({
         <Button
           disabled={isDisabled}
           isLoading={isLoading}
-          className="mt-6 w-full flex font-semibold items-center justify-center"
+          className="mt-6 flex w-full items-center justify-center font-semibold"
         >
           Créer le profile
         </Button>

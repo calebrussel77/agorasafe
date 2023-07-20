@@ -1,5 +1,7 @@
-//?Link https://kulshekhar.github.io/ts-jest/docs/getting-started/paths-mapping/
-//?Link https://nextjs.org/docs/testing
+/**
+ * Link https://kulshekhar.github.io/ts-jest/docs/getting-started/paths-mapping/
+ * Link https://nextjs.org/docs/testing
+ **/
 
 const nextJest = require('next/jest');
 
@@ -25,9 +27,13 @@ const customJestConfig = {
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
     '^@public/(.*)$': '<rootDir>/public/$1',
+    '^@formkit/auto-animate':
+      '<rootDir>/src/jest/__mocks__/@formkit/auto-animate.ts',
   },
 
   moduleDirectories: ['node_modules', 'src'],
+
+  modulePathIgnorePatterns: ['.history'],
 
   coverageThreshold: {
     global: {

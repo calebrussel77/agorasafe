@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { type VariantProps, cva } from 'class-variance-authority';
 import * as React from 'react';
 
@@ -39,16 +38,21 @@ type TypographyProps<
   ComponentWithProps<T>;
 
 const Typography = React.forwardRef<HTMLElement, TypographyProps<any>>(
-  ({ className, variant, truncate = false, as = 'p', ...props }, ref) => {
-    const Comp = as as keyof JSX.IntrinsicElements | React.ComponentType<any>;
-    const hasAlreadyVariant = VARIANTS.includes(as);
+  ({ className, variant, truncate = false, as: As = 'p', ...props }, ref) => {
+    const Component = As as
+      | keyof JSX.IntrinsicElements
+      | React.ComponentType<any>;
 
-    const newVariant = hasAlreadyVariant ? (as as typeof variant) : 'paragraph';
+    const hasAssociatedVariant = VARIANTS.includes(As as (typeof VARIANTS)[0]);
+
+    const newVariant = hasAssociatedVariant
+      ? (As as typeof variant)
+      : 'paragraph';
 
     return (
-      <Comp
+      <Component
         className={cn(
-          truncate && 'line-clamp-1',
+          truncate && 'max-w-md truncate whitespace-nowrap break-words',
           typographyVariants({ variant: variant || newVariant, className })
         )}
         ref={ref}
