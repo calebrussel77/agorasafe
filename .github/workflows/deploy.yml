@@ -15,8 +15,22 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [16.20.1, 18.16.1]
+        node-version: [16.20.x]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
+      NEXTAUTH_JWT_SECRET: ${{ secrets.NEXTAUTH_JWT_SECRET }}
+      NEXTAUTH_URL: ${{ secrets.NEXTAUTH_URL }}
+      GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+      GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+      CLOUDINARY_NAME: ${{ secrets.CLOUDINARY_NAME }}
+      CLOUDINARY_API_KEY: ${{ secrets.CLOUDINARY_API_KEY }}
+      CLOUDINARY_SECRET: ${{ secrets.CLOUDINARY_SECRET }}
+      NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN:
+        ${{ secrets.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN }}
+      SITE_URL: ${{ secrets.SITE_URL }}
 
     steps:
       - name: Checkout repository
@@ -28,14 +42,17 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
 
-      - name: Starting continuous integration process...
-        run: npm ci
+      - name: Installing dependencies
+        run: npm install
 
-      - name: Running eslint linters...
+      - name: Running prisma migrate deploy
+        run: npx prisma migrate deploy
+
+      - name: Running eslint linters
         run: npm run lint
 
-      - name: Running prettier...
+      - name: Running prettier
         run: npm run prettier
 
-      - name: Running tests...
+      - name: Running tests
         run: npm run test:ci
