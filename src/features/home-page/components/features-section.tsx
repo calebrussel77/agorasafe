@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/button';
 import { Typography } from '@/components/ui/typography';
 
 import { FormSubscriptionModal } from '@/features/onboarding-souscription/components/form-subscription-modal';
-import { useOnboardingSubscriber } from '@/features/onboarding-souscription/services';
 
 const features = [
   {
@@ -48,8 +47,6 @@ interface FeaturesSectionProps {
 }
 
 const FeaturesSection: FC<FeaturesSectionProps> = ({}) => {
-  const { onSubscribe, isLoading, isSuccess } = useOnboardingSubscriber();
-
   return (
     <div className="mt-24">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">

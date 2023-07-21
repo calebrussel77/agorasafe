@@ -1,6 +1,5 @@
 import { type TRPCClientErrorLike } from '@trpc/client';
 
-import { Avatar } from '@/components/ui/avatar';
 import { Field } from '@/components/ui/field';
 import { Form, useZodForm } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';

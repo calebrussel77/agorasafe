@@ -1,7 +1,5 @@
 import { useProfileStore } from '@/stores/profiles';
-import { ProfileType } from '@prisma/client';
 import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/router';
 import React, { type FC, type ReactNode, useEffect } from 'react';
 import { useMountedState } from 'react-use';
 
@@ -65,13 +63,13 @@ const ProfilesScreenWrapper: FC<ProfilesScreenWrapperProps> = ({
                         profile: profile,
                       });
                     }}
-                    className="flex flex-col items-center p-3 rounded-md group hover:bg-gray-100"
+                    className="group flex flex-col items-center rounded-md p-3 hover:bg-gray-100"
                   >
                     <Avatar
                       src={profile.avatar as string}
                       alt={profile.name}
                       bordered
-                      className="shadow-md aspect-square h-20 w-20 sm:h-24 sm:w-24"
+                      className="aspect-square h-20 w-20 shadow-md sm:h-24 sm:w-24"
                     />
                     <h3 className="mt-3 line-clamp-1 text-lg font-semibold">
                       {profile.name}
@@ -83,7 +81,7 @@ const ProfilesScreenWrapper: FC<ProfilesScreenWrapperProps> = ({
                 ))}
           </Animate>
           {isFetching ? (
-            <Skeleton className="h-10 aspect-square w-40 " />
+            <Skeleton className="aspect-square h-10 w-40 " />
           ) : (
             <Button
               aria-label="Naviguer vers la page de gestion des comptes"

@@ -15,7 +15,7 @@ const FullPageError: FC<{ error: { message: string } }> = ({ error }) => {
               <div className="flex-shrink-0 pt-10 sm:pt-16">
                 <Link href="/" className="inline-flex">
                   <span className="sr-only">Agorasafe</span>
-                  <img
+                  <Image
                     className="h-10 w-auto"
                     src="/images/finexs-logo.png"
                     alt="Finexs tombola logo symbol"

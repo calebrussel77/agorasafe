@@ -1,3 +1,5 @@
+/* eslint-disable testing-library/render-result-naming-convention */
+
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 
 /* eslint-disable no-unused-vars */
@@ -228,9 +230,8 @@ const AvatarGroup = ({
           buttonProps={showMoreButtonProps}
           count={total - max}
           size={size}
-          // style={{zIndex: max - 5}}
           className={cn(
-            'relative rounded-full ring-2 ring-slate-100 focus:ring-brand-primary-100 focus:scale-95 transition duration-200 transform',
+            'focus:ring-brand-primary-100 relative transform rounded-full ring-2 ring-slate-100 transition duration-200 focus:scale-95',
             props.isOpen && 'ring-brand-primary-100'
           )}
           {...props}
@@ -291,7 +292,7 @@ const AvatarGroup = ({
         appearance === 'stack' &&
           'isolate flex items-start -space-x-3 overflow-hidden p-0.5',
         appearance === 'grid' &&
-          'isolate grid grid-cols-4 gap-3 place-items-start'
+          'isolate grid grid-cols-4 place-items-start gap-3'
       )}
     >
       {data?.slice(0, maxAvatar)?.map((avatarData, idx) => {

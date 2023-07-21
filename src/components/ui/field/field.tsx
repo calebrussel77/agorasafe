@@ -5,7 +5,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 
 /* eslint-disable no-undef */
-import clsx from 'clsx';
 import { Fragment, forwardRef, useId } from 'react';
 import React from 'react';
 import { useFormContext } from 'react-hook-form';

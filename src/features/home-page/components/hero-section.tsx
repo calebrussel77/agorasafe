@@ -1,17 +1,11 @@
-import { useMutation } from '@tanstack/react-query';
 import { useKeenSlider } from 'keen-slider/react';
 import React, { type FC } from 'react';
 
-import { Animate } from '@/components/ui/animate';
 import { Button } from '@/components/ui/button';
-import { Dialog } from '@/components/ui/dialog';
 import { Image } from '@/components/ui/image';
-import { SectionMessage } from '@/components/ui/section-message';
 import { Typography } from '@/components/ui/typography';
 
-import { FormSubscription } from '@/features/onboarding-souscription';
 import { FormSubscriptionModal } from '@/features/onboarding-souscription/components/form-subscription-modal';
-import { useOnboardingSubscriber } from '@/features/onboarding-souscription/services';
 
 interface HeroSectionProps {
   className?: string;
@@ -120,11 +114,7 @@ const HeroSection: FC<HeroSectionProps> = ({}) => {
               </div>
             </div>
             <div className="text-center">
-              <Typography
-                as="h1"
-                variant="h1"
-                className="text-white"
-              >
+              <Typography as="h1" variant="h1" className="text-white">
                 Découvrez des services exceptionnels à des prix abordables
               </Typography>
               <Typography className="mt-6 text-gray-200 md:text-lg">

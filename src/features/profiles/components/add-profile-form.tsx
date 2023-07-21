@@ -1,8 +1,6 @@
 import { siteProfiles } from '@/constants';
-import { useLocationSearch } from '@/services';
-import { ProfileType } from '@prisma/client';
+import { type ProfileType } from '@prisma/client';
 import { type TRPCClientErrorLike } from '@trpc/client';
-import { MapPin } from 'lucide-react';
 import { Controller } from 'react-hook-form';
 
 import { Avatar } from '@/components/ui/avatar';

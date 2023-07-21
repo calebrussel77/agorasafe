@@ -2,7 +2,6 @@ import Link from 'next/link';
 import React, { type FC, type MouseEventHandler } from 'react';
 
 import { Avatar, type AvatarProps } from '.';
-import { DropdownMenu } from '../dropdown-menu/dropdown-menu';
 
 export interface AvatarGroupItemProps {
   avatar: AvatarProps & { name?: string; href?: string };
@@ -28,7 +27,7 @@ const AvatarGroupItem: FC<AvatarGroupItemProps> = ({
         href={href}
         onClick={callback as MouseEventHandler<HTMLAnchorElement> | undefined}
         passHref
-        className="flex items-center text-sm font-medium gap-3 hover:bg-gray-100 rounded-md py-1.5 px-2"
+        className="flex items-center gap-3 rounded-md px-2 py-1.5 text-sm font-medium hover:bg-gray-100"
         {...props}
       >
         {AvatarIcon}
@@ -39,7 +38,7 @@ const AvatarGroupItem: FC<AvatarGroupItemProps> = ({
 
   return (
     <div
-      className="flex items-center text-sm font-medium gap-3 hover:bg-gray-100 rounded-md py-1.5 px-2"
+      className="flex items-center gap-3 rounded-md px-2 py-1.5 text-sm font-medium hover:bg-gray-100"
       {...props}
     >
       {AvatarIcon}

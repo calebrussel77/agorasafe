@@ -1,5 +1,5 @@
+/* eslint-disable jest/no-mocks-import */
 import '@testing-library/jest-dom';
-// Polyfill "window.fetch" used in the React component.
 import 'whatwg-fetch';
 
 import { server } from './jest/__mocks__/server';

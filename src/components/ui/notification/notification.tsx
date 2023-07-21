@@ -66,7 +66,7 @@ const NotifBody: FC<
         ) : (
           description
         )}
-        <Inline className="gap-3 mt-1.5">{actions}</Inline>
+        <Inline className="mt-1.5 gap-3">{actions}</Inline>
       </div>
     </div>
   );

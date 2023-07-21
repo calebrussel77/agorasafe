@@ -1,5 +1,7 @@
 import { type RefObject, useEffect, useState } from 'react';
 
+import { invariant } from '@/utils/misc';
+
 type UseAppearOnTargetProps = {
   targetedRef?: RefObject<HTMLElement>;
   elementRef: RefObject<HTMLElement>;
@@ -34,7 +36,9 @@ const useAppearOnTarget = ({
       });
     }, options);
 
-    sectionObserver?.observe(targetedElement! || targetedRef?.current);
+    invariant(targetedElement, 'unknown value targetedElement');
+
+    sectionObserver?.observe(targetedElement || targetedRef?.current);
   });
 
   return { isAppear, setIsAppear, elementRef };

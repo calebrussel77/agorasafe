@@ -1,9 +1,9 @@
 import { useProfileStore } from '@/stores/profiles';
-import { Icon, LogOut, MapPin, UserPlus2 } from 'lucide-react';
+import { LogOut, MapPin, UserPlus2 } from 'lucide-react';
 import { RefreshCcw } from 'lucide-react';
 import { signOut } from 'next-auth/react';
 import Link from 'next/link';
-import React, { type FC, ReactElement, type ReactNode } from 'react';
+import React, { type FC, type ReactNode } from 'react';
 
 import { Animate } from '@/components/ui/animate';
 import { Avatar } from '@/components/ui/avatar';
@@ -97,7 +97,11 @@ const UserProfileDropdown: FC<UserProfileDropdownProps> = ({
                       </div>
                     }
                   >
-                    <Typography truncate variant="small" className="flex items-center gap-1 text-muted-foreground">
+                    <Typography
+                      truncate
+                      variant="small"
+                      className="flex items-center gap-1 text-muted-foreground"
+                    >
                       <MapPin className="h-4 w-4" />
                       {currentProfile.user.location?.name}
                     </Typography>
