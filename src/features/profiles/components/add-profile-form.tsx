@@ -13,7 +13,7 @@ import { SectionMessage } from '@/components/ui/section-message';
 
 import { type AppRouter } from '@/server/api/root';
 
-type AuthRegisterInfosFormProps = {
+export type AddProfileFormProps = {
   onSubmit: (data: AddProfileFormData) => void;
   error: TRPCClientErrorLike<AppRouter> | null;
   isLoading: boolean;
@@ -30,7 +30,7 @@ const AddProfileForm = ({
   error,
   isLoading,
   selectedProfile,
-}: AuthRegisterInfosFormProps) => {
+}: AddProfileFormProps) => {
   const form = useZodForm({
     mode: 'onChange',
   });
@@ -68,8 +68,8 @@ const AddProfileForm = ({
                 variant={fieldState.error ? 'danger' : undefined}
                 autoFocus={true}
                 onChange={onChange}
-                value={value as never}
-                placeholder="Entrez le nom de votre profile"
+                value={(value as never) || ''}
+                placeholder="Entrez le nom de votre profil"
               />
             )}
           />
@@ -102,7 +102,10 @@ const AddProfileForm = ({
                         </div>
                       }
                     >
-                      <RadioGroup.Item value={siteProfile.type} />
+                      <RadioGroup.Item
+                        aria-label={`${siteProfile.type}--radio_profile_item`}
+                        value={siteProfile.type}
+                      />
                     </Field>
                   </div>
                 ))}
@@ -111,11 +114,12 @@ const AddProfileForm = ({
           />
         </Field>
         <Button
+          aria-label="Créer un nouveau profil"
           disabled={isDisabled}
           isLoading={isLoading}
           className="mt-6 flex w-full items-center justify-center font-semibold"
         >
-          Créer le profile
+          Créer le profil
         </Button>
       </Form>
     </>

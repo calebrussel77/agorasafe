@@ -3,7 +3,7 @@ import { useSession } from 'next-auth/react';
 import React, { type FC, type ReactNode, useEffect } from 'react';
 import { useMountedState } from 'react-use';
 
-import { Animate } from '@/components/ui/animate';
+import { AutoAnimate } from '@/components/ui/auto-animate';
 import { Avatar } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { ErrorWrapper } from '@/components/ui/error';
@@ -17,7 +17,7 @@ import { useUserProfiles } from '../services';
 import { ProfileItemSkeleton } from './profile-item-skeleton';
 
 interface ProfilesScreenWrapperProps {
-  children: ReactNode;
+  children: JSX.Element;
 }
 
 const ProfilesScreenWrapper: FC<ProfilesScreenWrapperProps> = ({
@@ -35,11 +35,11 @@ const ProfilesScreenWrapper: FC<ProfilesScreenWrapperProps> = ({
   });
 
   // reset profile store on sign out
-  useEffect(() => {
-    if (!session?.user) {
-      useProfileStore.persist.clearStorage();
-    }
-  }, [session?.user]);
+  // useEffect(() => {
+  //   if (!session?.user) {
+  //     useProfileStore.persist.clearStorage();
+  //   }
+  // }, [session?.user]);
 
   if (status === 'loading') {
     return <FullSpinner />;
@@ -52,7 +52,7 @@ const ProfilesScreenWrapper: FC<ProfilesScreenWrapperProps> = ({
           Avec qui souhaitez-vous continuer ?
         </h1>
         <ErrorWrapper>
-          <Animate className="mt-3 flex flex-wrap items-start justify-center gap-2 pb-8 sm:gap-4 md:gap-8">
+          <AutoAnimate className="mt-3 flex flex-wrap items-start justify-center gap-2 pb-8 sm:gap-4 md:gap-8">
             {isFetching
               ? generateArray(4).map(el => <ProfileItemSkeleton key={el} />)
               : data?.profiles?.map(profile => (
@@ -79,17 +79,16 @@ const ProfilesScreenWrapper: FC<ProfilesScreenWrapperProps> = ({
                     </p>
                   </button>
                 ))}
-          </Animate>
-          {isFetching ? (
-            <Skeleton className="aspect-square h-10 w-40 " />
-          ) : (
+          </AutoAnimate>
+
+          <Skeleton visible={isFetching} className="aspect-square h-10 w-40 ">
             <Button
               aria-label="Naviguer vers la page de gestion des comptes"
               variant="outline"
             >
               Gérer vos comptes
             </Button>
-          )}
+          </Skeleton>
         </ErrorWrapper>
       </div>
     );

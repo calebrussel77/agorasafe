@@ -1,19 +1,20 @@
 import { useProfileStore } from '@/stores/profiles';
 import { ProfileType } from '@prisma/client';
 import Link from 'next/link';
-import React, { type FC, type ReactNode, useCallback, useState } from 'react';
+import React, { type FC, type ReactNode } from 'react';
 
 import { AskServiceModal } from '@/features/ask-services';
 import {
   UserProfileDropdown,
-  useGetUserProfileConfig,
-} from '@/features/user-profile-config';
+  useGetProfileConfig,
+} from '@/features/profile-config';
 
 import { cn } from '@/lib/utils';
 
 import { LogoSymbolIcon } from '../icons/logo-icon';
 import { Avatar } from '../ui/avatar';
 import { Button } from '../ui/button';
+import { useDropdownMenu } from '../ui/dropdown-menu';
 
 interface NavbarProps {
   className?: string;
@@ -23,18 +24,15 @@ interface NavbarProps {
 
 const Navbar: FC<NavbarProps> = ({ className, children, navigations }) => {
   const { profile } = useProfileStore();
-  const [isOpenDropDown, setIsOpenDropDown] = useState(false);
+  const { isDropdownMenuOpen, onToggleDropdownMenu } = useDropdownMenu();
 
-  const { data, isLoading, error } = useGetUserProfileConfig(
-    { profileId: profile?.id as string },
-    { enabled: isOpenDropDown }
+  const { data, isLoading, error } = useGetProfileConfig(
+    { profile_id: profile?.id as string },
+    { enabled: isDropdownMenuOpen }
   );
 
-  const isCustomerProfile = !profile || profile?.type === ProfileType.CUSTOMER;
-
-  const onToggle = useCallback(() => {
-    setIsOpenDropDown(!isOpenDropDown);
-  }, [isOpenDropDown]);
+  const shouldDisplayCustomerButton =
+    !profile || profile?.type === ProfileType.CUSTOMER;
 
   return (
     <nav
@@ -62,22 +60,22 @@ const Navbar: FC<NavbarProps> = ({ className, children, navigations }) => {
         ))}
       </div>
       <div className="flex items-center lg:flex-1 lg:justify-end">
-        {isCustomerProfile && (
+        {shouldDisplayCustomerButton && (
           <AskServiceModal>
             <Button size="sm">Demander un service</Button>
           </AskServiceModal>
         )}
         {profile ? (
           <UserProfileDropdown
-            isOpen={isOpenDropDown}
-            onToggle={onToggle}
+            isOpen={isDropdownMenuOpen}
+            onToggle={onToggleDropdownMenu}
             currentProfile={profile}
             userProfileConfig={data as never}
             error={error as never}
             isLoading={isLoading}
           >
             <Avatar
-              onClick={onToggle}
+              onClick={onToggleDropdownMenu}
               src={profile.avatar as string}
               alt={profile.name}
               bordered

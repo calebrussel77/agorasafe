@@ -24,7 +24,7 @@ export type AvatarComponentOptions = {
   fallBack?: React.ReactNode | JSX.Element;
 };
 
-const sizeClasses = {
+export const avatarSizeClasses = {
   xs: 'h-6 w-6',
   sm: 'h-8 w-8',
   md: 'h-10 w-10',
@@ -33,7 +33,7 @@ const sizeClasses = {
   xxl: 'h-24 w-24',
 };
 
-const shapeClasses = {
+export const avatarShapeClasses = {
   circle: 'rounded-full',
   square: 'rounded-none',
   rounded: 'rounded-md',
@@ -60,7 +60,7 @@ const AvatarImage = React.forwardRef<
 >(({ className, src, alt, ...props }, ref) => (
   <AvatarPrimitive.Image
     ref={ref}
-    className={cn('object-cover object-center h-full w-full', className)}
+    className={cn('h-full w-full object-cover object-center', className)}
     asChild
     alt={alt}
     src={src}
@@ -84,7 +84,7 @@ const AvatarFallback = React.forwardRef<
   <AvatarPrimitive.Fallback
     ref={ref}
     className={cn(
-      'flex h-full w-full uppercase font-semibold items-center justify-center bg-muted',
+      'flex h-full w-full items-center justify-center bg-muted font-semibold uppercase',
       className
     )}
     {...props}
@@ -113,8 +113,8 @@ const Avatar = React.forwardRef<
     },
     ref
   ) => {
-    const avatarSizeClassName = size ? sizeClasses[size] : undefined;
-    const shapeClassName = shape ? shapeClasses[shape] : undefined;
+    const avatarSizeClassName = size ? avatarSizeClasses[size] : undefined;
+    const shapeClassName = shape ? avatarShapeClasses[shape] : undefined;
 
     return (
       <AvatarComponent

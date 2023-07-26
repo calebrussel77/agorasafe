@@ -23,7 +23,7 @@ const StepTwoForm = ({ error, isLoading }: StepTwoFormProps) => {
 
   const { control, watch } = form;
 
-  const onHandleSubmit = (formData: string) => {
+  const onHandleSubmit = (formData: unknown) => {
     console.log(formData);
   };
 

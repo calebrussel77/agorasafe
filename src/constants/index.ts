@@ -10,7 +10,7 @@ export const siteProfiles = [
   },
   {
     title: 'Client',
-    description: `Je souhaite créer des démandes de services et payer des personnes capables de satisfaire mon besoin.`,
+    description: `Je souhaite créer des démandes de services et payer des personnes capables de satisfaire mes besoins.`,
     type: ProfileType.CUSTOMER,
   },
 ];

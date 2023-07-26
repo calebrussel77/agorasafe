@@ -3,6 +3,7 @@ import React, { type FC } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Image } from '@/components/ui/image';
+import { Truncate } from '@/components/ui/truncate';
 import { Typography } from '@/components/ui/typography';
 
 import { FormSubscriptionModal } from '@/features/onboarding-souscription/components/form-subscription-modal';

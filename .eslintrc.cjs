@@ -40,7 +40,8 @@ const config = {
     'no-console': 'off',
     'no-unsafe-optional-chaining': 0,
     '@typescript-eslint/no-unsafe-call': 'off',
-    "@typescript-eslint/no-explicit-any": "off"
+    '@typescript-eslint/no-explicit-any': 'off',
+    'testing-library/render-result-naming-convention': 'off',
     // 'testing-library/no-render-in-setup': [
     //   'warn',
     //   { allowTestingFrameworkSetupHook: 'beforeEach' },

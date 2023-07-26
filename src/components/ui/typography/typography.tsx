@@ -1,7 +1,11 @@
+import { type ComponentWithProps } from '@/types';
 import { type VariantProps, cva } from 'class-variance-authority';
 import * as React from 'react';
 
 import { cn } from '@/lib/utils';
+
+import { Tooltip } from '../tooltip';
+import { Truncate, type TruncateProps } from '../truncate';
 
 const VARIANTS = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'] as const;
 
@@ -23,22 +27,36 @@ const typographyVariants = cva('', {
   },
 });
 
-type ComponentWithProps<T> = T extends React.ComponentType<infer P>
-  ? P
-  : object;
+type TruncatedTypography = {
+  truncate?: true;
+  isTooltipDisabled?: boolean;
+} & TruncateProps;
+
+type ExpandedTypography = {
+  truncate?: false;
+};
+
+type SizeVariant = TruncatedTypography | ExpandedTypography;
 
 type TypographyProps<
   T extends keyof JSX.IntrinsicElements | React.ComponentType<any>
 > = {
   as?: T;
   className?: string;
-  truncate?: boolean;
   children?: React.ReactNode;
 } & VariantProps<typeof typographyVariants> &
   ComponentWithProps<T>;
 
-const Typography = React.forwardRef<HTMLElement, TypographyProps<any>>(
-  ({ className, variant, truncate = false, as: As = 'p', ...props }, ref) => {
+const Typography = React.forwardRef<
+  HTMLElement,
+  TypographyProps<any> & SizeVariant
+>(
+  (
+    { className, variant, truncate = false, children, as: As = 'p', ...rest },
+    ref
+  ) => {
+    const [tooltip, setTooltip] = React.useState(false);
+
     const Component = As as
       | keyof JSX.IntrinsicElements
       | React.ComponentType<any>;
@@ -49,16 +67,84 @@ const Typography = React.forwardRef<HTMLElement, TypographyProps<any>>(
       ? (As as typeof variant)
       : 'paragraph';
 
-    return (
-      <Component
-        className={cn(
-          truncate && 'max-w-md truncate whitespace-nowrap break-words',
-          typographyVariants({ variant: variant || newVariant, className })
-        )}
-        ref={ref}
-        {...props}
-      />
-    );
+    const renderChildren = () => {
+      if (truncate) {
+        const truncateProps = rest as TruncatedTypography;
+        const {
+          hasEllipsisText,
+          renderEllipsis,
+          shouldDefaultTruncate,
+          lines,
+          onTruncate,
+          tokenize,
+          isTooltipDisabled = false,
+          ...otherProps
+        } = truncateProps;
+
+        const onTruncateHandler = (wasTruncated: boolean) => {
+          setTooltip(wasTruncated);
+          onTruncate && onTruncate(wasTruncated);
+        };
+
+        const truncatedContent = (
+          <Truncate
+            {...{
+              className: cn(
+                typographyVariants({
+                  variant: variant || newVariant,
+                  className,
+                })
+              ),
+              hasEllipsisText,
+              renderEllipsis,
+              shouldDefaultTruncate,
+              lines,
+              onTruncate: onTruncateHandler,
+              tokenize,
+            }}
+          >
+            {children}
+          </Truncate>
+        );
+
+        return !isTooltipDisabled && tooltip ? (
+          <Tooltip>
+            <Tooltip.Trigger asChild>
+              <Component ref={ref} className="cursor-default" {...otherProps}>
+                {truncatedContent}
+              </Component>
+            </Tooltip.Trigger>
+            <Tooltip.Content
+              side="bottom"
+              hasArrow
+              className="text-xs leading-6"
+            >
+              {children}
+            </Tooltip.Content>
+          </Tooltip>
+        ) : (
+          <Component ref={ref} {...otherProps}>
+            {truncatedContent}
+          </Component>
+        );
+      }
+      return (
+        <Component
+          ref={ref}
+          className={cn(
+            typographyVariants({
+              variant: variant || newVariant,
+              className,
+            })
+          )}
+          {...rest}
+        >
+          {children}
+        </Component>
+      );
+    };
+
+    return renderChildren();
   }
 );
 

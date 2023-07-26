@@ -3,7 +3,7 @@ import { AlertTriangle, HelpCircle, Info, MailQuestion, X } from 'lucide-react';
 import { CheckCircle2 } from 'lucide-react';
 import React, { type ReactElement, forwardRef, useState } from 'react';
 
-import { Animate } from '../animate';
+import { AutoAnimate } from '../auto-animate';
 import { Inline } from '../inline';
 import { MessageAction } from './section-message-action';
 
@@ -106,19 +106,20 @@ const SectionMessage = forwardRef<HTMLDivElement, SectionMessageProps>(
     const toggleVisible = () => setVisible(false);
 
     return (
-      <Animate>
+      <AutoAnimate>
         {visible && (
           <div
             ref={ref}
+            role="alert"
             className={sectionMessage({ appareance, size, class: className })}
             {...props}
           >
-            <div className="flex items-start gap-3 flex-1 w-full">
+            <div className="flex w-full flex-1 items-start gap-3">
               {<Icon className={`h-6 w-6 flex-shrink-0 ${ColorIcon}`} />}
               <div className="space-y-2">
-                {title && <h3 className="font-semibold text-base">{title}</h3>}
+                {title && <h3 className="text-base font-semibold">{title}</h3>}
                 {children && <div className="text-sm">{children}</div>}
-                <div className="flex items-center flex-wrap gap-1">
+                <div className="flex flex-wrap items-center gap-1">
                   {isActionsArray
                     ? actions?.length > 0 && (
                         <Inline
@@ -138,14 +139,14 @@ const SectionMessage = forwardRef<HTMLDivElement, SectionMessageProps>(
               <button
                 type="button"
                 onClick={onClose || toggleVisible}
-                className="p-1 transform hover:scale-105 transition duration-150"
+                className="transform p-1 transition duration-150 hover:scale-105"
               >
                 <X className="h-5 w-5 flex-shrink-0" />
               </button>
             )}
           </div>
         )}
-      </Animate>
+      </AutoAnimate>
     );
   }
 );

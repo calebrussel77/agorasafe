@@ -7,7 +7,6 @@ import React, {
   useState,
 } from 'react';
 
-import { Animate } from '@/components/ui/animate';
 import {
   Dialog,
   DialogContent,
@@ -16,6 +15,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
+import { FadeAnimation } from '@/components/ui/fade-animation';
 import { Input } from '@/components/ui/input';
 
 import { cn } from '@/lib/utils';
@@ -163,31 +163,38 @@ const AskServiceModal: FC<AskServiceModalProps> = ({ children }) => {
             type="search"
           />
         </DialogHeader>
-        <div className="mb-6 px-6">
-          <Animate
-            className={cn(
-              'grid grid-cols-2 gap-x-6 gap-y-3',
-              selectedCategory && 'grid-cols-1 gap-x-0'
-            )}
+        <div
+          className={cn('relative mx-6 mb-6 h-full flex-1 overflow-x-hidden')}
+        >
+          <FadeAnimation
+            className={cn(' grid grid-cols-2 gap-x-6 gap-y-3')}
+            from={{ x: -620, opacity: 0 }}
+            visible={!selectedCategory}
           >
-            {selectedCategory
-              ? services?.map(service => (
-                  <Link
-                    key={service.id}
-                    href={`/publish-new-service?service_item=${service.id}`}
-                    className="block w-full"
-                  >
-                    <AskServiceItem name={service.name} />
-                  </Link>
-                ))
-              : categories?.map(category => (
-                  <AskServiceItem
-                    onClick={() => onSelectCategory(category)}
-                    key={category.id}
-                    name={category.name}
-                  />
-                ))}
-          </Animate>
+            {categories?.map(category => (
+              <AskServiceItem
+                onClick={() => onSelectCategory(category)}
+                key={category.id}
+                name={category.name}
+              />
+            ))}
+          </FadeAnimation>
+          <FadeAnimation
+            className={cn('grid grid-cols-1 gap-y-3')}
+            from={{ x: 620, opacity: 0 }}
+            visible={!!selectedCategory}
+            animateEnter
+          >
+            {services?.map(service => (
+              <Link
+                key={service.id}
+                href={`/publish-new-service?service_item=${service.id}`}
+                className="block w-full"
+              >
+                <AskServiceItem name={service.name} />
+              </Link>
+            ))}
+          </FadeAnimation>
         </div>
       </DialogContent>
     </Dialog>

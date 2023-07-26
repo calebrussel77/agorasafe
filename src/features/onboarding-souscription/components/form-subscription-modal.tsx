@@ -1,6 +1,6 @@
 import React, { type FC, type ReactElement } from 'react';
 
-import { Animate } from '@/components/ui/animate';
+import { AutoAnimate } from '@/components/ui/auto-animate';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -32,7 +32,7 @@ const FormSubscriptionModal: FC<FormSubscriptionModalProps> = ({
     <Dialog>
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="sm:max-w-[525px]">
-        <Animate>
+        <AutoAnimate>
           <DialogHeader>
             <DialogTitle>S'inscrire pour le lancement d'Agorasafe</DialogTitle>
             <DialogDescription>
@@ -71,7 +71,7 @@ const FormSubscriptionModal: FC<FormSubscriptionModalProps> = ({
               </Button>
             </DialogFooter>
           )}
-        </Animate>
+        </AutoAnimate>
       </DialogContent>
     </Dialog>
   );

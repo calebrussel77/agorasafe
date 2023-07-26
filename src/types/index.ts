@@ -27,3 +27,7 @@ export function Exclude<T, Key extends keyof T>(
 }
 
 export type ObjectValues<T> = T[keyof T];
+
+export type ComponentWithProps<T> = T extends React.ComponentType<infer P>
+  ? P
+  : object;

@@ -179,4 +179,4 @@ const load = async () => {
   }
 };
 
-await load();
+void load();

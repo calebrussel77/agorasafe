@@ -13,10 +13,12 @@ const CanView: FC<CanViewProps> = ({ profiles, children }) => {
   useProfileStore();
 
   if (!profiles.some(el => ALLOWED_STATES.includes(String(el)))) {
-    return;
+    return <></>;
   }
 
-  return children;
+  return typeof children !== 'undefined'
+    ? (children as React.ReactElement)
+    : null;
 };
 
 export { CanView };

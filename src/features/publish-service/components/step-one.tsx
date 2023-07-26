@@ -23,7 +23,7 @@ const StepOneForm = ({ error, isLoading }: StepOneFormProps) => {
 
   const { control, watch } = form;
 
-  const onHandleSubmit = (formData: string) => {
+  const onHandleSubmit = (formData: unknown) => {
     console.log(formData);
   };
 
