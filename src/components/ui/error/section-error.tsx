@@ -14,7 +14,7 @@ type TFullPageError = {
 export function SectionError({ onRetry, error }: TFullPageError) {
   const router = useRouter();
   const isNetworkError = false;
-  const mustRetry = !!onRetry;
+  const shouldRetry = !!onRetry;
   const errorMessage = `ERROR: ${error ? error.message : ''}`;
 
   const title = isNetworkError ? `Connection Lost` : `Application Error`;
@@ -24,11 +24,11 @@ export function SectionError({ onRetry, error }: TFullPageError) {
     : `Nous sommes désolé, il est impossible de traiter votre requête actuellement. Réessayez plus tard ou contactez notre support pour assistance.`;
 
   return (
-    <div role="alert" className="text-center m-auto flex flex-col items-center">
+    <div role="alert" className="m-auto flex flex-col items-center text-center">
       <BugFixIcon className="h-48 w-auto" />
       {/* <BugFixIcon className="h-48 w-auto" /> */}
       <h3 className="mt-2 text-xl font-semibold text-gray-900">{title}</h3>
-      <p className="mt-1 text-gray-500 max-w-md">{message}</p>
+      <p className="mt-1 max-w-md text-gray-500">{message}</p>
       <Accordion type="single" collapsible className="w-full max-w-md">
         <Accordion.Item value="item-1">
           <Accordion.Trigger className="mt-3 rounded-md bg-gray-100 p-2">
@@ -42,10 +42,10 @@ export function SectionError({ onRetry, error }: TFullPageError) {
 
       <div className="mt-6 flex items-center gap-3">
         <Button
-          onClick={() => (mustRetry ? onRetry() : window.location.reload())}
+          onClick={() => (shouldRetry ? onRetry() : window.location.reload())}
           type="button"
         >
-          {mustRetry ? 'Réessayer' : 'Recharger la page'}
+          {shouldRetry ? 'Réessayer' : 'Recharger la page'}
         </Button>
 
         {router.pathname !== '/' && (

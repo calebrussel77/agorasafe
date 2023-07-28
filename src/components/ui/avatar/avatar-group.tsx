@@ -206,9 +206,9 @@ const AvatarGroup = ({
   size = 'md',
   name = 'avatar group',
 }: AvatarGroupProps) => {
-  const [open, setOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
-  const onTogglePopover = () => setOpen(!open);
+  const onTogglePopover = () => setIsOpen(!isOpen);
 
   function renderMoreDropdown(max: number, total: number) {
     if (total <= max) {
@@ -248,11 +248,11 @@ const AvatarGroup = ({
 
     return (
       <>
-        <Popover open={open} onOpenChange={onTogglePopover}>
+        <Popover open={isOpen} onOpenChange={onTogglePopover}>
           <Popover.Trigger>
             {renderMoreButton({
               onClick: onTogglePopover,
-              isOpen: open,
+              isOpen,
             })}
           </Popover.Trigger>
           <Popover.Content className="flex flex-col gap-0.5">

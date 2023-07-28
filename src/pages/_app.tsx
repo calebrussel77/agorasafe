@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import '@/styles/globals.css';
 import ProgressBar from '@badrap/bar-of-progress';
 import { Wifi } from 'lucide-react';

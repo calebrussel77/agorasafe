@@ -1,5 +1,5 @@
 import React, {
-  CSSProperties,
+  type CSSProperties,
   forwardRef,
   useEffect,
   useRef,
@@ -26,7 +26,7 @@ const LEAVING = 4;
  * </FadeAnimation>
  */
 
-type fadeProps = {
+type FadeProps = {
   visible: boolean;
   children: React.ReactNode;
   duration?: number;
@@ -37,7 +37,7 @@ type fadeProps = {
   from?: { opacity?: number; x?: number; y?: number; z?: number };
 } & React.HTMLProps<HTMLDivElement>;
 
-const FadeAnimation = forwardRef<HTMLDivElement, fadeProps>(
+const FadeAnimation = forwardRef<HTMLDivElement, FadeProps>(
   (
     {
       visible,

@@ -3,42 +3,15 @@ import React, { type FC } from 'react';
 import { LogoIcon } from '../icons/logo-icon';
 import { Inline } from '../ui/inline';
 
-const footerNavigation = {
-  solutions: [
-    { name: 'Marketing', href: '#' },
-    { name: 'Analytics', href: '#' },
-    { name: 'Commerce', href: '#' },
-    { name: 'Insights', href: '#' },
-  ],
-  support: [
-    { name: 'Pricing', href: '#' },
-    { name: 'Documentation', href: '#' },
-    { name: 'Guides', href: '#' },
-    { name: 'API Status', href: '#' },
-  ],
-  company: [
-    { name: 'About', href: '#' },
-    { name: 'Blog', href: '#' },
-    { name: 'Jobs', href: '#' },
-    { name: 'Press', href: '#' },
-    { name: 'Partners', href: '#' },
-  ],
-  legal: [
-    { name: 'Claim', href: '#' },
-    { name: 'Privacy', href: '#' },
-    { name: 'Terms', href: '#' },
-  ],
-};
-
 interface FooterProps {
   className?: string;
 }
 
 const Footer: FC<FooterProps> = () => {
   return (
-    <footer className="w-full mt-6">
-      <div className="max-w-7xl mx-auto border-t border-gray-200 py-10">
-        <LogoIcon className="mx-auto h-5 md:h-6 w-auto" />
+    <footer className="mt-6 w-full">
+      <div className="mx-auto max-w-7xl border-t border-gray-200 py-10">
+        <LogoIcon className="mx-auto h-5 w-auto md:h-6" />
         <p className="mt-5 text-center text-sm leading-6 text-slate-500">
           &copy; {new Date().getFullYear()} Agorasafe. Tous droits réservés.
         </p>
@@ -49,7 +22,7 @@ const Footer: FC<FooterProps> = () => {
               href="https://twitter.com/CalebElat"
               target="_blank"
               rel="noreferrer"
-              className="font-semibold hover:underline hover:text-primary-500"
+              className="hover:text-primary-500 font-semibold hover:underline"
             >
               Caleb Russel
             </a>

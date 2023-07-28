@@ -42,10 +42,49 @@ const config = {
     '@typescript-eslint/no-unsafe-call': 'off',
     '@typescript-eslint/no-explicit-any': 'off',
     'testing-library/render-result-naming-convention': 'off',
-    // 'testing-library/no-render-in-setup': [
-    //   'warn',
-    //   { allowTestingFrameworkSetupHook: 'beforeEach' },
-    // ],
+    camelcase: 'off',
+    '@typescript-eslint/naming-convention': [
+      'error',
+      {
+        selector: 'variable',
+        format: ['PascalCase', 'camelCase', 'UPPER_CASE'],
+        leadingUnderscore: 'allow',
+      },
+      {
+        selector: 'variable',
+        types: ['boolean'],
+        format: ['PascalCase', 'UPPER_CASE'],
+        prefix: ['is', 'should', 'has', 'can', 'did', 'will'],
+      },
+      {
+        selector: 'parameter',
+        format: ['camelCase', 'PascalCase'],
+        leadingUnderscore: 'allow',
+      },
+      {
+        selector: 'memberLike',
+        modifiers: ['private'],
+        format: ['camelCase'],
+        leadingUnderscore: 'require',
+      },
+      {
+        selector: 'typeParameter',
+        format: ['PascalCase'],
+        // prefix: ['T'],
+      },
+      {
+        selector: 'interface',
+        format: ['PascalCase'],
+        custom: {
+          regex: '^I[A-Z]',
+          match: false,
+        },
+      },
+      {
+        selector: ['typeLike', 'interface'],
+        format: ['PascalCase'],
+      },
+    ],
   },
 };
 

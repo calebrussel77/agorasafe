@@ -39,7 +39,7 @@ const sectionMessage = cva('w-full flex justify-center items-start gap-2', {
   },
 });
 
-type otherProps = {
+type SectionMessageOptions = {
   className?: string;
   title?: string | ReactElement;
   onClose?: React.MouseEventHandler<HTMLButtonElement>;
@@ -72,7 +72,7 @@ const IconAppareances = {
 };
 
 export type SectionMessageProps = VariantProps<typeof sectionMessage> &
-  otherProps &
+  SectionMessageOptions &
   React.HTMLAttributes<HTMLDivElement>;
 
 const SectionMessage = forwardRef<HTMLDivElement, SectionMessageProps>(
@@ -90,7 +90,7 @@ const SectionMessage = forwardRef<HTMLDivElement, SectionMessageProps>(
     },
     ref
   ) => {
-    const [visible, setVisible] = useState(true);
+    const [isVisible, setIsVisible] = useState(true);
     const isActionsArray = Array.isArray(actions);
 
     const Icon =
@@ -103,11 +103,11 @@ const SectionMessage = forwardRef<HTMLDivElement, SectionMessageProps>(
         ? IconAppareances[appareance]['color']
         : '';
 
-    const toggleVisible = () => setVisible(false);
+    const toggleVisible = () => setIsVisible(false);
 
     return (
       <AutoAnimate>
-        {visible && (
+        {isVisible && (
           <div
             ref={ref}
             role="alert"

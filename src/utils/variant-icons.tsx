@@ -1,8 +1,9 @@
+import { AlertTriangle, CheckCircle2, Info, XCircle } from 'lucide-react';
 import React, { forwardRef, useMemo } from 'react';
-import { CheckCircle2 , Info, XCircle, AlertTriangle} from 'lucide-react';
 
-import {  VARIANTS_COLORS,type Variant as  VariantFromUtils } from './variants';
 import { cn } from '@/lib/utils';
+
+import { VARIANTS_COLORS, type Variant as VariantFromUtils } from './variants';
 
 type Size = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxl';
 
@@ -27,8 +28,8 @@ export type VariantIconProps = React.HTMLAttributes<HTMLElement> &
   VariantIconOptions;
 
 export const VariantIcon = forwardRef<HTMLElement, VariantIconProps>(
-  ({ icon, size = 'md', variant, className, ...rest }, ref) => {
-    const Icon = useMemo(() => {
+  ({ icon, size = 'md', variant = 'info', className, ...rest }, ref) => {
+    const newIcon = useMemo(() => {
       if (icon === null) return null;
       if (icon) return icon;
 
@@ -39,12 +40,12 @@ export const VariantIcon = forwardRef<HTMLElement, VariantIconProps>(
       if (variant === 'danger') return <XCircle />;
     }, [icon, variant]);
 
-    return Icon
-      ? React.cloneElement(Icon, {
-        ref,
+    return newIcon
+      ? React.cloneElement(newIcon, {
+          ref,
           ...rest,
           // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-          className: cn(styles[size], VARIANTS_COLORS[variant!], className),
+          className: cn(styles[size], VARIANTS_COLORS[variant], className),
         })
       : null;
   }

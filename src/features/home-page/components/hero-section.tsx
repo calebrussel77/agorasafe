@@ -30,33 +30,31 @@ const HeroSection: FC<HeroSectionProps> = ({}) => {
       slides: images.length,
       loop: true,
       detailsChanged(s) {
-        const new_opacities = s.track.details.slides.map(
-          slide => slide.portion
-        );
-        setOpacities(new_opacities);
+        const newOpacities = s.track.details.slides.map(slide => slide.portion);
+        setOpacities(newOpacities);
       },
     },
     [
       slider => {
         let timeout: ReturnType<typeof setTimeout>;
-        let mouseOver = false;
+        let isMouseOver = false;
         function clearNextTimeout() {
           clearTimeout(timeout);
         }
         function nextTimeout() {
           clearTimeout(timeout);
-          if (mouseOver) return;
+          if (isMouseOver) return;
           timeout = setTimeout(() => {
             slider.next();
           }, DURATION_MS);
         }
         slider.on('created', () => {
           slider.container.addEventListener('mouseover', () => {
-            mouseOver = true;
+            isMouseOver = true;
             clearNextTimeout();
           });
           slider.container.addEventListener('mouseout', () => {
-            mouseOver = false;
+            isMouseOver = false;
             nextTimeout();
           });
           nextTimeout();

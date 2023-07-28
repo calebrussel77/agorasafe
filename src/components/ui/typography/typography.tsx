@@ -55,7 +55,7 @@ const Typography = React.forwardRef<
     { className, variant, truncate = false, children, as: As = 'p', ...rest },
     ref
   ) => {
-    const [tooltip, setTooltip] = React.useState(false);
+    const [hasTooltip, setHasTooltip] = React.useState(false);
 
     const Component = As as
       | keyof JSX.IntrinsicElements
@@ -82,7 +82,7 @@ const Typography = React.forwardRef<
         } = truncateProps;
 
         const onTruncateHandler = (wasTruncated: boolean) => {
-          setTooltip(wasTruncated);
+          setHasTooltip(wasTruncated);
           onTruncate && onTruncate(wasTruncated);
         };
 
@@ -107,7 +107,7 @@ const Typography = React.forwardRef<
           </Truncate>
         );
 
-        return !isTooltipDisabled && tooltip ? (
+        return !isTooltipDisabled && hasTooltip ? (
           <Tooltip>
             <Tooltip.Trigger asChild>
               <Component ref={ref} className="cursor-default" {...otherProps}>

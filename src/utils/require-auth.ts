@@ -1,4 +1,7 @@
-import { type GetServerSidePropsContext, GetServerSidePropsResult } from 'next';
+import {
+  type GetServerSidePropsContext,
+  type GetServerSidePropsResult,
+} from 'next';
 import { type Session } from 'next-auth';
 
 import { getServerAuthSession } from '@/server/auth';
@@ -16,8 +19,8 @@ export const requireAuth = async ({
   cb,
 }: RequireAuthProps) => {
   const session = await getServerAuthSession(ctx);
-  const redirect_url = ctx.resolvedUrl;
-  const destination = `${redirectUrl}?source=${redirect_url}`;
+  const _redirectUrl = ctx.resolvedUrl;
+  const destination = `${redirectUrl}?source=${_redirectUrl}`;
 
   if (!session) {
     return {

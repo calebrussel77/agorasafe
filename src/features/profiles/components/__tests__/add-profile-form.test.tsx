@@ -81,7 +81,7 @@ describe('Add new profile form', () => {
       />
     );
     const { name } = buildForm();
-    const profileType = ProfileType.CUSTOMER;
+    const profile_type = ProfileType.CUSTOMER;
 
     await user.type(screen.getByRole('textbox'), name);
     await user.click(
@@ -89,37 +89,7 @@ describe('Add new profile form', () => {
         name: /Créer un nouveau profil/i,
       })
     );
-    expect(mockSubmit).toHaveBeenCalledWith({ name, profileType });
+    expect(mockSubmit).toHaveBeenCalledWith({ name, profile_type });
     expect(mockSubmit).toHaveBeenCalledTimes(1);
   });
-
-  // it('should display error banner when error occur', async () => {
-  //   const error = () => {
-  //     throw new TRPCError({
-  //       code: 'BAD_REQUEST',
-  //       message: 'An error occur on the api',
-  //     });
-  //   };
-
-  //   const { user, debug } = setup(
-  //     <AddProfileForm
-  //       onSubmit={mockSubmit}
-  //       isLoading={false}
-  //       error={error()}
-  //       selectedProfile={ProfileType.CUSTOMER}
-  //     />
-  //   );
-
-  //   // debug();
-  //   const name = 'Sally Joe';
-  //   const profileType = ProfileType.CUSTOMER;
-
-  //   await user.type(screen.getByRole('textbox'), name);
-  //   await user.click(
-  //     screen.getByRole('button', {
-  //       name: /Créer un nouveau profil/i,
-  //     })
-  //   );
-  //   expect(mockSubmit).toHaveBeenCalledWith({ name, profileType });
-  // });
 });

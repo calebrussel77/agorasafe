@@ -13,8 +13,6 @@ import { cn } from '@/lib/utils';
 
 import { useDebounce } from '@/hooks/use-debounce';
 
-import { Spinner } from '../spinner';
-
 //@TODO need to find a way to properly type this
 export type OptionItem = {
   label: string;
@@ -83,7 +81,7 @@ const ComboBox: React.FC<ComboBoxProps> = ({
   iconAfter,
   defaultOpen = false,
 }) => {
-  const [open, setOpen] = React.useState(defaultOpen);
+  const [isOpen, setIsOpen] = React.useState(defaultOpen);
   const [debounceValue, setDebounceValue] = React.useState(search || '');
 
   const [ref, { width }] = useMeasure();
@@ -104,12 +102,12 @@ const ComboBox: React.FC<ComboBoxProps> = ({
   }, [search]);
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover open={isOpen} onOpenChange={setIsOpen}>
       <Popover.Trigger ref={ref as never} asChild>
         <Button
           variant="outline"
           role="comboBox"
-          aria-expanded={open}
+          aria-expanded={isOpen}
           className="w-full justify-between"
         >
           {selectedValue}
@@ -145,7 +143,7 @@ const ComboBox: React.FC<ComboBoxProps> = ({
                   value={option?.value}
                   onSelect={() => {
                     onChange(option as never);
-                    setOpen(false);
+                    setIsOpen(false);
                   }}
                 >
                   {renderItem ? renderItem(option) : option?.label}
@@ -153,7 +151,7 @@ const ComboBox: React.FC<ComboBoxProps> = ({
                     className={cn(
                       'ml-auto h-4 w-4',
                       value?.value === option?.value
-                        ? 'opacity-100 text-primary'
+                        ? 'text-primary opacity-100'
                         : 'opacity-0'
                     )}
                   />

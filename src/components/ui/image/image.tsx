@@ -10,24 +10,23 @@ const Image = forwardRef<
   HTMLImageElement | null,
   ComponentProps<typeof NextImage>
 >(({ ...props }, ref) => {
-  const [error, setError] = useState(false);
-  const isEmpty = !!error;
+  const [hasError, setHasError] = useState(false);
 
   return (
     <>
-      {!isEmpty && (
+      {!hasError && (
         <NextImage
           ref={ref}
           blurDataURL={blurDataURL()}
           fill
           placeholder="blur"
-          onError={() => setError(true)}
+          onError={() => setHasError(true)}
           {...props}
         />
       )}
 
-      {isEmpty && (
-        <div className="m-auto flex justify-center items-center">
+      {hasError && (
+        <div className="m-auto flex items-center justify-center">
           <Camera className="h-10 w-10 flex-shrink-0 text-gray-400" />
         </div>
       )}
