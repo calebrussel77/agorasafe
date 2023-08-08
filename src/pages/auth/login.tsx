@@ -1,12 +1,10 @@
 /* eslint-disable @next/next/no-img-element */
-import { MainLayout } from '@/layouts';
 import { MoveLeft } from 'lucide-react';
 import { type GetServerSideProps } from 'next';
 import { type Session } from 'next-auth';
 import { signIn } from 'next-auth/react';
-import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { type ReactElement, useState } from 'react';
+import { useState } from 'react';
 import { toast } from 'react-toastify';
 
 import { GoogleSolidIcon } from '@/components/icons/google-solid-icon';
@@ -17,9 +15,11 @@ import { Separator } from '@/components/ui/separator';
 
 import { handleRouteBack } from '@/utils/handle-route-back';
 
+import { htmlParse } from '@/lib/html-react-parser';
+
+import { getUserById } from '@/server/api/modules/users';
 import { getServerAuthSession } from '@/server/auth';
 import { prisma } from '@/server/db';
-import { htmlParse } from '@/lib/html-react-parser';
 
 const LoginPage = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -39,7 +39,7 @@ const LoginPage = () => {
         />
       );
     } finally {
-      setTimeout(() => setIsLoading(false), 2500);
+      setTimeout(() => setIsLoading(false), 3500);
     }
   };
 
@@ -53,13 +53,10 @@ const LoginPage = () => {
           <MoveLeft className="h-5 w-5" />
           <span>Retour</span>
         </button>
-        <Card className="max-w-xl w-full m-auto">
+        <Card className="m-auto w-full max-w-xl">
           <Card.Header>
             <Card.Title className="text-xl">Se connecter</Card.Title>
             <Card.Description>
-              {/* Connectez-vous dès maintenant pour gérer vos projets, consulter vos
-          candidatures, rechercher des prestataires ou des demandes de service,
-          et découvrir de nouvelles opportunités professionnelles. */}
               Rejoignez notre communauté florissante de talents et de clients au
               Cameroun et découvrez un monde de possibilités et de réussite.
               Inscrivez-vous ou Connectez-vous dès aujourd'hui et faites partie
@@ -71,7 +68,7 @@ const LoginPage = () => {
             <Button
               isLoading={isLoading}
               onClick={onRegisterWithGoogle}
-              className="mt-6 w-full flex font-semibold items-center justify-center"
+              className="mt-6 flex w-full items-center justify-center font-semibold"
             >
               <GoogleSolidIcon className="h-5 w-5" />
               <span>Accéder à mon compte avec Google</span>
@@ -93,15 +90,10 @@ export const getServerSideProps: GetServerSideProps<
 
   if (session) {
     // find user in db by id
-    const userFounded = await prisma.user.findUnique({
-      where: {
-        id: session.user.id,
-      },
-      include: { profiles: true },
-    });
+    const userFounded = await getUserById(session.user.id);
 
     // redirect to account type selection page if user doesn't have at least one profile
-    if (userFounded?.profiles.length === 0) {
+    if (userFounded?._count?.profiles === 0) {
       return {
         redirect: {
           destination: '/choose-profile-type',

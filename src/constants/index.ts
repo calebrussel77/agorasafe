@@ -2,6 +2,8 @@ import { ProfileType } from '@prisma/client';
 
 export const USER_PROFILES_LIMIT_COUNT = 2;
 
+export const COMMON_TYPE = 'COMMON';
+
 export const siteProfiles = [
   {
     title: 'Prestataire',
@@ -20,7 +22,7 @@ export const profileLinks = [
     id: 1,
     Icon: 'Home',
     disabled: false,
-    type: 'COMMON',
+    type: COMMON_TYPE,
     title: 'Tableau de bord',
     description: 'Accéder à mon tableau de bord personnel',
     href: '/dashboard',
@@ -38,7 +40,7 @@ export const profileLinks = [
     id: 3,
     Icon: 'MessagesSquare',
     disabled: false,
-    type: 'COMMON',
+    type: COMMON_TYPE,
     title: 'Conversations',
     description: 'Consulter mes messages inbox',
     href: '/dashboard/inbox',
@@ -56,7 +58,7 @@ export const profileLinks = [
     id: 6,
     Icon: 'Settings2',
     disabled: false,
-    type: 'COMMON',
+    type: COMMON_TYPE,
     title: 'Paramètres',
     description: 'Gérer mes paramètres utilisateur',
     href: '/dashboard/settings',
@@ -65,7 +67,7 @@ export const profileLinks = [
     id: 5,
     Icon: 'User2',
     disabled: false,
-    type: 'COMMON',
+    type: COMMON_TYPE,
     title: 'Mon profil',
     description: 'Accéder à mon profil publique',
     href: '#',

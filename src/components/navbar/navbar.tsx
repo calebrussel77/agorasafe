@@ -15,6 +15,8 @@ import { LogoSymbolIcon } from '../icons/logo-icon';
 import { Avatar } from '../ui/avatar';
 import { Button } from '../ui/button';
 import { useDropdownMenu } from '../ui/dropdown-menu';
+import { Typography } from '../ui/typography';
+import { UserAvatar } from '../user-avatar';
 
 interface NavbarProps {
   className?: string;
@@ -27,7 +29,7 @@ const Navbar: FC<NavbarProps> = ({ className, children, navigations }) => {
   const { isDropdownMenuOpen, onToggleDropdownMenu } = useDropdownMenu();
 
   const { data, isLoading, error } = useGetProfileConfig(
-    { profile_id: profile?.id as string },
+    { profileId: profile?.id as string },
     { enabled: isDropdownMenuOpen }
   );
 
@@ -74,13 +76,18 @@ const Navbar: FC<NavbarProps> = ({ className, children, navigations }) => {
             error={error as never}
             isLoading={isLoading}
           >
-            <Avatar
-              onClick={onToggleDropdownMenu}
-              src={profile.avatar as string}
-              alt={profile.name}
-              bordered
-              className="h-10 w-10"
-            />
+            <button className="flex items-center gap-3">
+              <UserAvatar
+                onClick={onToggleDropdownMenu}
+                src={profile.avatar as string}
+                alt={profile.name}
+                type={profile.type}
+                className="h-8 w-8"
+              />
+              <Typography className="text-white" truncate lines={1}>
+                {profile.name}
+              </Typography>
+            </button>
           </UserProfileDropdown>
         ) : (
           <Link

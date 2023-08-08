@@ -1,4 +1,5 @@
 import { useProfileStore } from '@/stores/profiles';
+import { ProfileType } from '@prisma/client';
 import { useSession } from 'next-auth/react';
 import React from 'react';
 import { toast } from 'react-toastify';
@@ -13,13 +14,14 @@ import { Notification } from '@/components/ui/notification';
 import { Skeleton } from '@/components/ui/skeleton';
 import { FullSpinner } from '@/components/ui/spinner';
 import { Typography } from '@/components/ui/typography';
+import { UserAvatar } from '@/components/user-avatar';
+import { UserBadge } from '@/components/user-badge';
 
 import { ProfileItemSkeleton, useUserProfiles } from '@/features/profiles';
 
 import { type CurrentProfile } from '@/types/profiles';
 
 import { generateArray } from '@/utils/misc';
-import { getProfileType } from '@/utils/profile';
 
 // Define a type for the component props
 type ComponentProps = {
@@ -75,7 +77,7 @@ const withProfile = (WrappedComponent: React.ComponentType<ComponentProps>) => {
 
     if (session && !profileStore.profile && isMounted()) {
       return (
-        <div className="container flex min-h-screen w-full max-w-5xl flex-col items-center justify-center">
+        <div className="container flex min-h-screen w-full max-w-6xl flex-col items-center justify-center">
           <h1 className="text-center text-3xl font-semibold">
             Avec qui souhaitez-vous continuer ?
           </h1>
@@ -83,36 +85,40 @@ const withProfile = (WrappedComponent: React.ComponentType<ComponentProps>) => {
             {data?.message}
           </p>
           <ErrorWrapper>
-            <div className="mt-6 flex flex-wrap items-start justify-center gap-2 pb-8 sm:gap-4 md:gap-8">
+            <div className="mt-6 flex w-full flex-wrap items-start justify-center gap-1 pb-8 sm:gap-4">
               {isFetching
                 ? generateArray(4).map(el => <ProfileItemSkeleton key={el} />)
                 : data?.profiles?.map(profile => (
                     <button
                       key={profile.id}
                       onClick={() => onProfileClick(profile)}
-                      className="group flex w-[200px] flex-col items-center rounded-md p-3 hover:bg-gray-100"
+                      className="group flex w-full max-w-[250px] flex-col items-center justify-center rounded-md p-3 hover:bg-gray-100"
                     >
-                      <Avatar
+                      <UserAvatar
                         src={profile.avatar as string}
                         alt={profile.name}
-                        bordered
+                        type={profile.type}
                         className="aspect-square h-20 w-20 shadow-md sm:h-24 sm:w-24"
                       />
                       <Typography truncate as="h3" className="mt-3">
                         {profile.name}
                       </Typography>
-                      <Badge className="mt-1 line-clamp-1">
-                        {getProfileType(profile.type)}
-                      </Badge>
+                      <UserBadge
+                        className="mt-1 line-clamp-1"
+                        type={profile.type}
+                      />
                     </button>
                   ))}
             </div>
-            <Skeleton visible={isFetching} className="aspect-square h-10 w-40">
+            <Skeleton
+              isVisible={isFetching}
+              className="aspect-square h-10 w-40"
+            >
               <Button
                 aria-label="Naviguer vers la page de gestion des comptes"
                 variant="outline"
               >
-                Gérer vos profiles
+                Gérer vos profils
               </Button>
             </Skeleton>
           </ErrorWrapper>

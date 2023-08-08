@@ -4,7 +4,7 @@ import { z } from 'zod';
 
 export const authValidationSchema = z.object({
   phone: phoneSchema,
-  profile_type: z.nativeEnum(ProfileType),
+  profileType: z.nativeEnum(ProfileType),
   location: z.object({
     name: z.string(),
     lat: z.string(),
@@ -14,5 +14,5 @@ export const authValidationSchema = z.object({
 });
 
 export type AuthValidation = z.infer<typeof authValidationSchema> & {
-  user_id: string;
+  userId: string;
 };

@@ -10,18 +10,18 @@ import { type GetProfileConfigValidation } from './profile-config.validations';
 export const getProfileConfigService = async (
   data: GetProfileConfigValidation
 ) => {
-  const { profile_id, user_id } = data;
+  const { profileId, userId } = data;
 
-  const user = await getUserById(user_id);
+  const user = await getUserById(userId);
 
   if (!user) {
     throw new Error('Utilisateur non trouvé, veuillez vous reconnecter !');
   }
 
   const currentProfile = user.profiles.find(
-    profile => profile.id === profile_id
+    profile => profile.id === profileId
   );
-  const otherProfile = user.profiles.find(profile => profile.id !== profile_id);
+  const otherProfile = user.profiles.find(profile => profile.id !== profileId);
   const profileCount = user._count.profiles;
   const hasProfile = profileCount > 0;
   const hasMoreThanOneProfile = profileCount > 1;

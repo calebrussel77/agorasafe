@@ -15,10 +15,10 @@ import {
 export const getProfilesByUserIdService = async (
   inputs: GetProfilesByUserIdValidation
 ) => {
-  const { user_id, name } = inputs;
+  const { userId, name } = inputs;
 
   //Get all profiles of the current user
-  const profiles = await getProfilesByUserId(user_id);
+  const profiles = await getProfilesByUserId(userId);
 
   return {
     profiles,
@@ -28,9 +28,9 @@ export const getProfilesByUserIdService = async (
 };
 
 export const createProfileService = async (inputs: CreateProfileValidation) => {
-  const { name, profile_type, user_id } = inputs;
+  const { name, profileType, userId } = inputs;
 
-  const user = await getUserById(user_id);
+  const user = await getUserById(userId);
 
   if (!user) {
     throw new Error('Utilisateur non trouvé !');
@@ -44,9 +44,9 @@ export const createProfileService = async (inputs: CreateProfileValidation) => {
 
   //Create a profile for the given user
   const profile = await createProfileByUserId({
-    user_id,
+    userId,
     name: name,
-    type: profile_type,
+    type: profileType,
     slug: slugify(name, { lower: true }), //TODO create the slug function to properly handle this
   });
 

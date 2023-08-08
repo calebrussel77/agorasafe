@@ -15,12 +15,12 @@ datasource db {
 }
 
 model Skill {
-    id         String     @id @default(cuid())
-    name       String     @unique
-    slug       String
-    created_at DateTime   @default(now())
-    updated_at DateTime   @updatedAt
-    providers  Provider[]
+    id        String     @id @default(cuid())
+    name      String     @unique
+    slug      String
+    createdAt DateTime   @default(now())
+    updatedAt DateTime   @updatedAt
+    providers Provider[]
 }
 
 model Profile {
@@ -31,46 +31,46 @@ model Profile {
     bio    String?
     type   ProfileType
 
-    user    User   @relation(fields: [user_id], references: [id], onDelete: Cascade)
-    user_id String
+    user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+    userId String
 
     provider Provider?
 
     customer Customer?
 
-    created_at DateTime @default(now())
-    updated_at DateTime @updatedAt
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 }
 
 model Provider {
-    id                   String   @id @default(cuid())
-    website_url          String?
-    profession           String?
-    is_face_to_face      Boolean? @default(true)
-    is_remote            Boolean? @default(true)
-    showcase_photo_one   String?
-    showcase_photo_two   String?
-    showcase_photo_three String?
+    id                 String   @id @default(cuid())
+    websiteUrl         String?
+    profession         String?
+    isFaceToFace       Boolean? @default(true)
+    isRemote           Boolean? @default(true)
+    showcasePhotoOne   String?
+    showcasePhotoTwo   String?
+    showcasePhotoThree String?
 
-    skills                     Skill[]
-    service_requests_responses ProviderServiceRequestResponse[]
+    skills                  Skill[]
+    serviceRequestResponses ProviderServiceRequestResponse[]
 
-    profile    Profile @relation(fields: [profile_id], references: [id], onDelete: Cascade)
-    profile_id String  @unique
+    profile   Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+    profileId String  @unique
 
-    created_at DateTime @default(now())
-    updated_at DateTime @updatedAt
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 }
 
 model Customer {
-    id               String           @id @default(cuid())
-    service_requests ServiceRequest[]
+    id              String           @id @default(cuid())
+    serviceRequests ServiceRequest[]
 
-    profile    Profile @relation(fields: [profile_id], references: [id], onDelete: Cascade)
-    profile_id String  @unique
+    profile   Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+    profileId String  @unique
 
-    created_at DateTime @default(now())
-    updated_at DateTime @updatedAt
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 }
 
 model CategoryService {
@@ -81,8 +81,8 @@ model CategoryService {
 
     services Service[]
 
-    created_at DateTime @default(now())
-    updated_at DateTime @updatedAt
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 }
 
 model Service {
@@ -91,54 +91,54 @@ model Service {
     slug        String? @unique
     description String?
 
-    service_requests ServiceRequest[]
+    serviceRequests ServiceRequest[]
 
     categories CategoryService[]
 
-    created_at DateTime @default(now())
-    updated_at DateTime @updatedAt
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 }
 
 model ServiceRequest {
-    id                        String  @id @default(cuid())
-    title                     String
-    slug                      String  @unique
-    description               String
-    phone_to_contact          String
-    photo_one                 String?
-    photo_two                 String?
-    photo_three               String?
-    number_of_provider_needed Int
-    duration                  String?
-    start_date                String
-    end_date                  String?
-    estimated_price           String
-    location                  String
+    id                     String  @id @default(cuid())
+    title                  String
+    slug                   String  @unique
+    description            String
+    phoneToContact         String
+    photoOne               String?
+    photoTwo               String?
+    photoThree             String?
+    numberOfProviderNeeded Int
+    duration               String?
+    start_date             String
+    end_date               String?
+    estimated_price        String
+    location               String
 
     status ServiceRequestStatus? @default(value: OPEN)
 
     provider_responses ProviderServiceRequestResponse[]
 
-    author    Customer @relation(fields: [author_id], references: [id], onDelete: Cascade)
-    author_id String
+    author   Customer @relation(fields: [authorId], references: [id], onDelete: Cascade)
+    authorId String
 
-    service    Service @relation(fields: [service_id], references: [id], onDelete: Cascade)
-    service_id String
+    service   Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+    serviceId String
 
-    created_at DateTime @default(now())
-    updated_at DateTime @updatedAt
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 }
 
 model ProviderServiceRequestResponse {
-    id             String  @id @default(cuid())
-    text           String
-    proposed_price String?
+    id            String  @id @default(cuid())
+    text          String
+    proposedPrice String?
 
-    author    Provider @relation(fields: [author_id], references: [id])
-    author_id String
+    author   Provider @relation(fields: [authorId], references: [id])
+    authorId String
 
-    ServiceRequest     ServiceRequest @relation(fields: [service_request_id], references: [id], onDelete: Cascade)
-    service_request_id String
+    ServiceRequest   ServiceRequest @relation(fields: [serviceRequestId], references: [id], onDelete: Cascade)
+    serviceRequestId String
 }
 
 // Necessary for Next auth
@@ -146,31 +146,28 @@ model Account {
     id                String  @id @default(cuid())
     type              String
     provider          String
-    providerAccountId String  @map("provider_account_id")
-    refresh_token     String? @db.Text
-    access_token      String? @db.Text
-    expires_at        Int?
-    token_type        String?
+    providerAccountId String
+    refresh_token     String? @map("refreshToken") @db.Text
+    access_token      String? @map("accessToken") @db.Text
+    expires_at        Int?    @map("expiresAt")
+    token_type        String? @map("tokenType")
     scope             String?
-    id_token          String? @db.Text
-    session_state     String?
+    id_token          String? @map("idToken") @db.Text
+    session_state     String? @map("sessionSate")
 
     user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-    userId String @map("user_id")
+    userId String
 
     @@unique([provider, providerAccountId])
-    @@map("accounts")
 }
 
 model Session {
     id           String   @id @default(cuid())
-    sessionToken String   @unique @map("session_token")
+    sessionToken String   @unique
     expires      DateTime
 
     user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-    userId String @map("user_id")
-
-    @@map("sessions")
+    userId String
 }
 
 model Location {
@@ -185,13 +182,13 @@ model Location {
 
 model User {
     id            String    @id @default(cuid())
-    first_name    String
-    last_name     String
-    full_name     String
+    firstName     String
+    lastName      String
+    fullName      String
     picture       String?
     birthdate     String?
     email         String    @unique
-    emailVerified DateTime? @map("email_verified")
+    emailVerified DateTime?
     phone         String?
     sex           Sex?      @default(value: MALE)
 
@@ -199,13 +196,11 @@ model User {
     sessions Session[]
     profiles Profile[]
 
-    location    Location? @relation(fields: [location_id], references: [id], onDelete: Cascade)
-    location_id String?
+    location   Location? @relation(fields: [locationId], references: [id], onDelete: Cascade)
+    locationId String?
 
-    created_at DateTime @default(now())
-    updated_at DateTime @updatedAt
-
-    @@map("users")
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 }
 
 model VerificationToken {

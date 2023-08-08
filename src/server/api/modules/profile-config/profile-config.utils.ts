@@ -1,4 +1,4 @@
-import { profileLinks } from '@/constants';
+import { COMMON_TYPE, profileLinks } from '@/constants';
 import { ProfileType } from '@prisma/client';
 
 export const getAddProfileInfos = (profileType: ProfileType) => {
@@ -15,8 +15,6 @@ export const getAddProfileInfos = (profileType: ProfileType) => {
 };
 
 export function getFilteredLinksByType(profileType: ProfileType) {
-  const COMMON_TYPE = 'COMMON';
-
   return profileLinks.filter(link => {
     return link.type === COMMON_TYPE || link.type === profileType;
   });

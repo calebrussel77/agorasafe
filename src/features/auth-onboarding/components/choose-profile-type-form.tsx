@@ -8,7 +8,10 @@ import { Button } from '@/components/ui/button';
 import { Field } from '@/components/ui/field';
 import { Form, useZodForm } from '@/components/ui/form';
 import { RadioGroup } from '@/components/ui/radio-group';
+import { Typography } from '@/components/ui/typography';
 import { VariantMessage } from '@/components/ui/variant-message';
+
+import { cn } from '@/lib/utils';
 
 interface ChooseProfileTypeFormProps {
   className?: string;
@@ -22,11 +25,11 @@ const ChooseProfileTypeForm: FC<ChooseProfileTypeFormProps> = ({}) => {
     formState: { errors },
   } = form;
 
-  const onSubmit = (data: { profile_type: ProfileType }) => {
+  const onSubmit = (data: { profileType: ProfileType }) => {
     void router.push({
       pathname: 'register-infos',
       query: {
-        profile_type: data.profile_type,
+        profile_type: data.profileType,
       },
     });
   };
@@ -34,7 +37,7 @@ const ChooseProfileTypeForm: FC<ChooseProfileTypeFormProps> = ({}) => {
   return (
     <Form onSubmit={onSubmit} form={form}>
       <Controller
-        name="profile_type"
+        name="profileType"
         control={control}
         defaultValue={ProfileType.PROVIDER}
         render={({ field }) => (
@@ -44,24 +47,24 @@ const ChooseProfileTypeForm: FC<ChooseProfileTypeFormProps> = ({}) => {
             defaultValue={field.value as never}
           >
             {siteProfiles.map(siteProfile => (
-              <div
+              <Field
                 key={siteProfile.type}
-                className="rounded-md border p-4 shadow"
+                className={cn(
+                  'flex flex-row gap-2 rounded-md border p-4 shadow transition duration-300 hover:bg-zinc-100',
+                  field.value === siteProfile.type &&
+                    'shadow-brand-500 ring-2 ring-brand-500'
+                )}
+                label={
+                  <div>
+                    <Typography as="h4">{siteProfile.title}</Typography>
+                    <Typography variant="small" className="font-normal">
+                      {siteProfile.description}
+                    </Typography>
+                  </div>
+                }
               >
-                <Field
-                  className="flex flex-row gap-1"
-                  label={
-                    <div>
-                      <h3 className="font-semibold">{siteProfile.title}</h3>
-                      <p className="font-normal text-sm">
-                        {siteProfile.description}
-                      </p>
-                    </div>
-                  }
-                >
-                  <RadioGroup.Item value={siteProfile.type} />
-                </Field>
-              </div>
+                <RadioGroup.Item value={siteProfile.type} />
+              </Field>
             ))}
           </RadioGroup>
         )}
@@ -74,7 +77,7 @@ const ChooseProfileTypeForm: FC<ChooseProfileTypeFormProps> = ({}) => {
           }
         </VariantMessage>
       )}
-      <Button className="w-full flex font-semibold items-center justify-center">
+      <Button className="flex w-full items-center justify-center font-semibold">
         <span>Continuer</span>
       </Button>
     </Form>

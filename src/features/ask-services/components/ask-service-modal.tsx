@@ -169,7 +169,7 @@ const AskServiceModal: FC<AskServiceModalProps> = ({ children }) => {
           <FadeAnimation
             className={cn(' grid grid-cols-2 gap-x-6 gap-y-3')}
             from={{ x: -620, opacity: 0 }}
-            visible={!selectedCategory}
+            isVisible={!selectedCategory}
           >
             {categories?.map(category => (
               <AskServiceItem
@@ -182,7 +182,7 @@ const AskServiceModal: FC<AskServiceModalProps> = ({ children }) => {
           <FadeAnimation
             className={cn('grid grid-cols-1 gap-y-3')}
             from={{ x: 620, opacity: 0 }}
-            visible={!!selectedCategory}
+            isVisible={!!selectedCategory}
             animateEnter
           >
             {services?.map(service => (

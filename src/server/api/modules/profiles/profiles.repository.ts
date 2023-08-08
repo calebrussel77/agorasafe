@@ -6,7 +6,7 @@ export async function createProfileByUserId({
   name,
   slug,
   type,
-  user_id,
+  userId,
   ...rest
 }: Omit<Prisma.ProfileCreateArgs['data'], 'User'>) {
   const profileCreated = await prisma.profile.create({
@@ -15,7 +15,7 @@ export async function createProfileByUserId({
       slug,
       type,
       user: {
-        connect: { id: user_id },
+        connect: { id: userId as string },
       },
       ...rest,
     },
@@ -28,9 +28,9 @@ export async function getProfiles() {
   return await prisma.profile.findMany();
 }
 
-export async function getProfileById(profile_id: string) {
+export async function getProfileById(profileId: string) {
   const response = await prisma.profile.findUnique({
-    where: { id: profile_id },
+    where: { id: profileId },
     include: {
       user: { select: { location: { select: { id: true, name: true } } } },
     },
@@ -39,10 +39,10 @@ export async function getProfileById(profile_id: string) {
   return response;
 }
 
-export async function getProfilesByUserId(user_id: string) {
+export async function getProfilesByUserId(userId: string) {
   return await prisma.profile.findMany({
     where: {
-      user_id,
+      userId,
     },
     include: {
       user: { select: { location: { select: { id: true, name: true } } } },

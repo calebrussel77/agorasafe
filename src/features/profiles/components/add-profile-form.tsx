@@ -10,6 +10,9 @@ import { Form, useZodForm } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { RadioGroup } from '@/components/ui/radio-group';
 import { SectionMessage } from '@/components/ui/section-message';
+import { Typography } from '@/components/ui/typography';
+
+import { cn } from '@/lib/utils';
 
 import { type AppRouter } from '@/server/api/root';
 
@@ -21,7 +24,7 @@ export type AddProfileFormProps = {
 };
 
 export type AddProfileFormData = {
-  profile_type: ProfileType;
+  profileType: ProfileType;
   name: string;
 };
 
@@ -76,7 +79,7 @@ const AddProfileForm = ({
         </Field>
         <Field label="Type" required>
           <Controller
-            name="profile_type"
+            name="profileType"
             control={control}
             defaultValue={selectedProfile}
             render={({ field }) => (
@@ -87,27 +90,27 @@ const AddProfileForm = ({
                 defaultValue={field.value as never}
               >
                 {siteProfiles.map(siteProfile => (
-                  <div
+                  <Field
                     key={siteProfile.type}
-                    className="rounded-md border p-4 shadow"
+                    className={cn(
+                      'flex flex-row gap-2 rounded-md border p-4 opacity-60 shadow',
+                      field.value === siteProfile.type &&
+                        'shadow-brand-500 ring-2 ring-brand-500'
+                    )}
+                    label={
+                      <div>
+                        <Typography as="h4">{siteProfile.title}</Typography>
+                        <Typography variant="small" className="font-normal">
+                          {siteProfile.description}
+                        </Typography>
+                      </div>
+                    }
                   >
-                    <Field
-                      className="flex flex-row gap-1"
-                      label={
-                        <div>
-                          <h3 className="font-semibold">{siteProfile.title}</h3>
-                          <p className="text-sm font-normal">
-                            {siteProfile.description}
-                          </p>
-                        </div>
-                      }
-                    >
-                      <RadioGroup.Item
-                        aria-label={`${siteProfile.type}--radio_profile_item`}
-                        value={siteProfile.type}
-                      />
-                    </Field>
-                  </div>
+                    <RadioGroup.Item
+                      aria-label={`${siteProfile.type}--radio_profile_item`}
+                      value={siteProfile.type}
+                    />
+                  </Field>
                 ))}
               </RadioGroup>
             )}

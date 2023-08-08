@@ -102,7 +102,7 @@ const Truncate: FC<TruncateProps> = ({
         <FadeAnimation
           className={className}
           from={{ y: 10, opacity: 0 }}
-          visible={!shouldTruncate}
+          isVisible={!shouldTruncate}
           animateEnter
         >
           {children}

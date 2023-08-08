@@ -2,7 +2,6 @@ import * as LabelPrimitive from '@radix-ui/react-label';
 import { type VariantProps, cva } from 'class-variance-authority';
 import { Lock } from 'lucide-react';
 import * as React from 'react';
-import { useCss } from 'react-use';
 
 import { VariantIcon } from '@/utils/variant-icons';
 import { type Variant, getVariantColor } from '@/utils/variants';
@@ -54,18 +53,18 @@ const Label = React.forwardRef<
         ref={ref}
         className={cn(
           required &&
-            "after:content-['*'] after:text-red-500 after:font-bold after:ml-1",
+            "after:ml-1 after:font-bold after:text-red-500 after:content-['*']",
           variant && getVariantColor(variant),
           className
         )}
         {...props}
       >
         <>
-          {!checkableField && (
+          {/* {!checkableField && (
             <VariantIcon icon={icon} size="sm" variant={variant} />
-          )}
+          )} */}
           {disabled && withDisabledIcon && (
-            <div className="inline-flex mr-1">
+            <div className="mr-1 inline-flex">
               {disabledIcon || <Lock className="h-4 w-4" />}
             </div>
           )}

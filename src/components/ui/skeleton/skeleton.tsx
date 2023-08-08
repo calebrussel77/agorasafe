@@ -7,7 +7,7 @@ import {
 } from '../avatar';
 
 interface SkeletonProps extends React.ComponentPropsWithoutRef<'div'> {
-  visible?: boolean;
+  isVisible?: boolean;
   circleSize?: AvatarSize;
   children?: JSX.Element | React.ReactNode;
   shape?: 'rounded' | 'circle' | 'square';
@@ -17,7 +17,7 @@ function Skeleton(props: SkeletonProps) {
   const {
     className,
     shape = 'rounded',
-    visible = true,
+    isVisible = true,
     children,
     circleSize,
     ...rest
@@ -31,7 +31,7 @@ function Skeleton(props: SkeletonProps) {
     ? skeletonShapeClasses[shape]
     : undefined;
 
-  if (visible || !('visible' in props))
+  if (isVisible || !('isVisible' in props))
     return (
       <div
         className={cn(

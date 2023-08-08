@@ -81,7 +81,7 @@ describe('Add new profile form', () => {
       />
     );
     const { name } = buildForm();
-    const profile_type = ProfileType.CUSTOMER;
+    const profileType = ProfileType.CUSTOMER;
 
     await user.type(screen.getByRole('textbox'), name);
     await user.click(
@@ -89,7 +89,7 @@ describe('Add new profile form', () => {
         name: /Créer un nouveau profil/i,
       })
     );
-    expect(mockSubmit).toHaveBeenCalledWith({ name, profile_type });
+    expect(mockSubmit).toHaveBeenCalledWith({ name, profileType });
     expect(mockSubmit).toHaveBeenCalledTimes(1);
   });
 });

@@ -3,18 +3,40 @@ import * as React from 'react';
 
 import { cn } from '@/lib/utils';
 
+/**
+ * Usage of the component 
+ *  <Badge content="99+" variant="danger" size="xs" placement="top-right">
+          <Avatar
+            size="lg"
+            src="https://i.pravatar.cc/300?u=a042581f4e29026704f"
+          />
+        </Badge>
+ */
 const badgeVariants = cva(
-  'inline-flex items-center border rounded-full px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2',
+  'inline-flex items-center text-xs border rounded-full transition duration-300 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2',
   {
     variants: {
+      size: {
+        xs: 'px-1',
+        sm: 'px-1.5 font-semibold',
+        md: 'px-2 font-semibold',
+        lg: 'px-2.5 font-semibold',
+      },
       variant: {
         default:
+          'bg-secondary hover:bg-secondary/80 border-transparent text-gray-600',
+        primary:
           'bg-primary hover:bg-primary/80 border-transparent text-primary-foreground',
-        secondary:
-          'bg-secondary hover:bg-secondary/80 border-transparent text-secondary-foreground',
-        destructive:
-          'bg-destructive hover:bg-destructive/80 border-transparent text-destructive-foreground',
+        danger: 'bg-red-600 hover:bg-red-600/80 border-transparent text-white',
         outline: 'text-foreground',
+      },
+      placement: {
+        'top-left': 'top-0 -left-0 transform -translate-x-1/4 -translate-y-1/4',
+        'top-right':
+          'top-0 -right-0 transform translate-x-1/4 -translate-y-1/4',
+        'bottom-left':
+          'bottom-0 left-0 transform -translate-x-1/4 -translate-y-1/4',
+        'bottom-right': '-bottom-1 -right-1 translate-x-1/4 translate-y-1/4',
       },
     },
     defaultVariants: {
@@ -24,12 +46,45 @@ const badgeVariants = cva(
 );
 
 export interface BadgeProps
-  extends React.HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof badgeVariants> {}
+  extends Omit<React.HTMLAttributes<HTMLDivElement>, 'content'>,
+    VariantProps<typeof badgeVariants> {
+  content: React.ReactNode;
+  shouldDisableOutline?: boolean;
+}
 
-function Badge({ className, variant, ...props }: BadgeProps) {
+function Badge({
+  className,
+  children,
+  content,
+  variant,
+  shouldDisableOutline,
+  size = 'md',
+  placement = 'bottom-right',
+  ...props
+}: BadgeProps) {
   return (
-    <div className={cn(badgeVariants({ variant }), className)} {...props} />
+    <div className="relative w-fit">
+      {children}
+      <div
+        className={cn(
+          badgeVariants({
+            variant,
+            placement: children ? placement : null,
+            size,
+            class:
+              placement &&
+              children &&
+              'absolute z-30 flex items-center justify-center',
+          }),
+          !shouldDisableOutline && 'border-2 border-white',
+          content === '' && 'h-3 w-3 p-0',
+          className
+        )}
+        {...props}
+      >
+        {content}
+      </div>
+    </div>
   );
 }
 

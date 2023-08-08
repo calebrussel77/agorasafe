@@ -98,7 +98,6 @@ export const Notification = forwardRef<HTMLDivElement, NotificationGlobalProps>(
       description,
       actions,
       size,
-      toastProps,
       icon,
       ...props
     },

@@ -1,6 +1,11 @@
 /* eslint-disable @next/next/no-img-element */
 import { withProfile } from '@/hoc/with-profile';
 import { MainLayout } from '@/layouts';
+import { Bell } from 'lucide-react';
+
+import { Avatar } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 
 import {
   FeaturesSection,
@@ -13,8 +18,10 @@ const HomePage = () => {
     <MainLayout>
       {/* Hero section */}
       <HeroSection />
+
       {/* Features section */}
       <FeaturesSection />
+
       {/* Testimonial section */}
       <TestimonialSection />
 

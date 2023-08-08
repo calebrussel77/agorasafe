@@ -8,7 +8,6 @@ import * as React from 'react';
 import { cn } from '@/lib/utils';
 
 import { useMergeRefs } from '@/hooks/use-merge-refs';
-import { useScrolling } from '@/hooks/use-scrolling';
 
 const Dialog = DialogPrimitive.Root;
 
@@ -48,7 +47,6 @@ const DialogContent = React.forwardRef<
 >(({ className, children, ...props }, ref) => {
   const scrollRef = React.useRef<HTMLElement>(null);
   const refs = useMergeRefs(scrollRef, ref);
-  const { hasScrolled } = useScrolling(scrollRef);
 
   return (
     <DialogPortal>

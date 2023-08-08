@@ -9,28 +9,51 @@ import { cn } from '@/lib/utils';
 
 import defaultAvatarIcon from '@public/images/avatar.svg';
 
-export type AvatarSize = 'sm' | 'md' | 'lg' | 'xl' | 'xxl';
+export type AvatarSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxl';
+
+export type AvatarColor =
+  | 'default'
+  | 'primary'
+  | 'secondary'
+  | 'success'
+  | 'warning'
+  | 'danger';
 
 export type AvatarComponentOptions = {
   //The size of the avatar already predefine
   size?: AvatarSize;
 
+  //Enable disbling of the avatar
+  isDisabled?: boolean;
+
+  //The color of the avatar already predefine
+  color?: AvatarColor;
+
   //The shape
   shape?: 'rounded' | 'circle' | 'square';
 
   //if he avatar has border
-  bordered?: boolean;
+  isBordered?: boolean;
 
   fallBack?: React.ReactNode | JSX.Element;
 };
 
-export const avatarSizeClasses = {
+export const avatarSizeClasses: Record<AvatarSize, string> = {
   xs: 'h-6 w-6',
   sm: 'h-8 w-8',
   md: 'h-10 w-10',
   lg: 'h-12 w-12',
   xl: 'h-16 w-16',
   xxl: 'h-24 w-24',
+};
+
+export const avatarColorClasses: Record<AvatarColor, string> = {
+  default: 'ring-zinc-400',
+  primary: 'ring-brand-500',
+  secondary: 'ring-pink-500',
+  success: 'ring-green-500',
+  danger: 'ring-red-500',
+  warning: 'ring-yellow-500',
 };
 
 export const avatarShapeClasses = {
@@ -104,10 +127,12 @@ const Avatar = React.forwardRef<
   (
     {
       className,
-      bordered,
+      isBordered,
       children,
       size = 'sm',
       shape = 'circle',
+      isDisabled,
+      color,
       alt,
       ...props
     },
@@ -115,27 +140,23 @@ const Avatar = React.forwardRef<
   ) => {
     const avatarSizeClassName = size ? avatarSizeClasses[size] : undefined;
     const shapeClassName = shape ? avatarShapeClasses[shape] : undefined;
+    const colorClassName =
+      color && isBordered ? avatarColorClasses[color] : undefined;
+
+    const avatarClassName = cn(
+      'relative flex shrink-0 overflow-hidden',
+      isBordered && `ring ring-offset-[3px] ${avatarColorClasses['default']}`,
+      avatarSizeClassName,
+      shapeClassName,
+      colorClassName,
+      className,
+      isDisabled && 'pointer-events-none opacity-50'
+    );
 
     return (
-      <AvatarComponent
-        ref={ref}
-        className={cn(
-          'relative flex shrink-0 overflow-hidden',
-          bordered && 'ring-2 ring-gray-300 ',
-          avatarSizeClassName,
-          shapeClassName,
-          className
-        )}
-      >
+      <AvatarComponent ref={ref} className={avatarClassName}>
         <AvatarImage alt={alt} {...props} />
-        <AvatarFallback
-          className={cn(
-            bordered && 'ring-2 ring-gray-300 ',
-            avatarSizeClassName,
-            shapeClassName,
-            className
-          )}
-        >
+        <AvatarFallback className={avatarClassName}>
           {children ? (
             children
           ) : (

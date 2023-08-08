@@ -8,9 +8,7 @@ export type IScrollProps = {
   scrollPercent: number;
 };
 
-export const useScrolling = (
-  scrollRef: React.RefObject<HTMLElement | null>
-) => {
+export const useScrolling = () => {
   const [hasScrolled, setHasScrolled] = useState(false);
 
   const handleScroll = React.useCallback(() => {

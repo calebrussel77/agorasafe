@@ -9,6 +9,6 @@ export const authRouter = createTRPCRouter({
   userRegister: protectedProcedure
     .input(authValidationSchema)
     .mutation(({ input, ctx: { session } }) =>
-      authController({ ...input, user_id: session.user.id })
+      authController({ ...input, userId: session.user.id })
     ),
 });

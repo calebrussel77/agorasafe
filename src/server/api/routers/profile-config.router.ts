@@ -10,8 +10,8 @@ export const profileConfigRouter = createTRPCRouter({
     .input(getProfileConfigValidationSchema)
     .query(({ ctx: { session }, input }) =>
       getProfileConfigController({
-        user_id: session.user.id,
-        profile_id: input.profile_id,
+        userId: session.user.id,
+        profileId: input.profileId,
       })
     ),
 });

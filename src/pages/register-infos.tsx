@@ -25,7 +25,7 @@ const ALLOWED_TYPES = Object.keys(ProfileType);
 
 const RegisterInfosPage = () => {
   const router = useRouter();
-  const { profile_type } = router.query;
+  const profileType = router.query.profile_type as ProfileType;
 
   const { mutate, error, isLoading } = useUserRegister({
     onSuccess(data) {
@@ -38,7 +38,7 @@ const RegisterInfosPage = () => {
       );
       wait(3_00)
         .then(() => {
-          window.location.href = data.redirect_uri;
+          window.location.href = data.redirectUri;
         })
         .catch(e => console.log(e));
     },
@@ -53,12 +53,12 @@ const RegisterInfosPage = () => {
         long: String(data.location.long),
       },
       phone: data.phone,
-      profile_type: profile_type as ProfileType,
+      profileType: profileType,
     });
   };
 
-  if (router.isReady && !ALLOWED_TYPES.includes(profile_type as ProfileType)) {
-    return <Redirect to="/choose-account-type" />;
+  if (router.isReady && !ALLOWED_TYPES.includes(profileType)) {
+    return <Redirect to="/choose-profile-type" />;
   }
 
   return (

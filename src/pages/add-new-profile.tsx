@@ -1,4 +1,3 @@
-import { MainLayout } from '@/layouts';
 import { useProfileStore } from '@/stores/profiles';
 import { ProfileType } from '@prisma/client';
 import { MoveLeft } from 'lucide-react';
@@ -19,7 +18,7 @@ import {
 } from '@/features/profiles';
 
 import { wait } from '@/utils/misc';
-import { getProfileType } from '@/utils/profile';
+import { getProfileTypeName } from '@/utils/profile';
 import { requireAuth } from '@/utils/require-auth';
 
 import { htmlParse } from '@/lib/html-react-parser';
@@ -28,7 +27,7 @@ const ALLOWED_TYPES = Object.keys(ProfileType);
 
 const AddNewProfilePage = () => {
   const router = useRouter();
-  const { profile_type } = router.query;
+  const profileType = router.query.profile_type as ProfileType;
   const { reset } = useProfileStore();
 
   const { mutate, error, isLoading } = useCreateProfile({
@@ -55,7 +54,7 @@ const AddNewProfilePage = () => {
     });
   };
 
-  if (router.isReady && !ALLOWED_TYPES.includes(profile_type as ProfileType)) {
+  if (router.isReady && !ALLOWED_TYPES.includes(profileType)) {
     return <Redirect to="/" />;
   }
 
@@ -69,8 +68,7 @@ const AddNewProfilePage = () => {
         <Card>
           <Card.Header>
             <Card.Title className="text-xl">
-              Ajouter un profile{' '}
-              {getProfileType(profile_type as ProfileType).toLowerCase()}
+              Ajouter un profil {getProfileTypeName(profileType).toLowerCase()}
             </Card.Title>
             <Card.Description>
               Renseignez les informations ci-dessous pour facilement gérer vos
@@ -83,7 +81,7 @@ const AddNewProfilePage = () => {
               onSubmit={onRegister}
               error={error}
               isLoading={isLoading}
-              selectedProfile={profile_type as ProfileType}
+              selectedProfile={profileType}
             />
           </Card.Content>
         </Card>

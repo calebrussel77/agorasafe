@@ -12,7 +12,7 @@ const ENTERING = 3;
 const LEAVING = 4;
 
 /**
- * @param {boolean} visible
+ * @param {boolean} isVisible
  * @param {React.ReactNode} children
  * @param {number} duration en ms
  * @param {boolean} animateEnter Anime l'arrivée de l'élément
@@ -21,13 +21,13 @@ const LEAVING = 4;
 
 /**
  * Usage :
- * <FadeAnimation visible={true} from={{ opacity: 0, x: 10 }} duration={1000}>
+ * <FadeAnimation isVisible={true} from={{ opacity: 0, x: 10 }} duration={1000}>
  *  <div>Hello</div>
  * </FadeAnimation>
  */
 
 type FadeProps = {
-  visible: boolean;
+  isVisible: boolean;
   children: React.ReactNode;
   duration?: number;
   animateEnter?: boolean;
@@ -40,7 +40,7 @@ type FadeProps = {
 const FadeAnimation = forwardRef<HTMLDivElement, FadeProps>(
   (
     {
-      visible,
+      isVisible,
       children,
       duration = 300,
       animateEnter = false,
@@ -55,24 +55,24 @@ const FadeAnimation = forwardRef<HTMLDivElement, FadeProps>(
     const childRef = useRef(children);
 
     const [state, setState] = useState(
-      visible ? (animateEnter ? ENTERING : VISIBLE) : HIDDEN
+      isVisible ? (animateEnter ? ENTERING : VISIBLE) : HIDDEN
     );
 
-    if (visible) {
+    if (isVisible) {
       childRef.current = children;
     }
 
     useEffect(() => {
-      if (!visible) {
+      if (!isVisible) {
         setState(LEAVING);
       } else {
         setState(s => (s === HIDDEN ? ENTERING : VISIBLE));
       }
-    }, [visible]);
+    }, [isVisible]);
 
     useEffect(() => {
       return onLeave && onLeave();
-    }, []);
+    }, [onLeave]);
 
     useEffect(() => {
       if (state === LEAVING) {
@@ -117,7 +117,7 @@ const FadeAnimation = forwardRef<HTMLDivElement, FadeProps>(
         className={className}
         {...restProps}
       >
-        {visible ? childRef.current : null}
+        {isVisible ? childRef.current : null}
       </div>
     );
   }

@@ -30,7 +30,7 @@ declare module 'next-auth' {
 
   interface User {
     // ...other properties
-    full_name: string;
+    fullName: string;
     picture: string;
   }
 }
@@ -55,7 +55,7 @@ export const authOptions: NextAuthOptions = {
       if (user) {
         token.id = user.id;
         token.email = user?.email;
-        token.name = user?.full_name;
+        token.name = user?.fullName;
         token.avatar = user.picture;
       }
       return Promise.resolve(token);
@@ -79,16 +79,19 @@ export const authOptions: NextAuthOptions = {
       }) {
         return {
           id: makeRandomId(),
-          first_name: profile.given_name,
-          last_name: profile.family_name,
+          firstName: profile.given_name,
+          lastName: profile.family_name,
           email: profile?.email,
           picture: profile?.picture,
-          full_name: `${profile.given_name} ${profile.family_name}`,
+          fullName: `${profile.given_name} ${profile.family_name}`,
         };
       },
     }),
   ],
   session: {
+    // Set the duration time of a session to 24 hours
+    // maxAge: 60 * 60 * 24,
+    maxAge: 3_600,
     strategy: 'jwt',
   },
   pages: {
@@ -97,6 +100,9 @@ export const authOptions: NextAuthOptions = {
   },
   debug: env.NODE_ENV === 'development',
   jwt: {
+    // Set the duration time of a JWT to 24 hours
+    // maxAge: 60 * 60 * 24,
+    maxAge: 3_600,
     secret: env.NEXTAUTH_JWT_SECRET,
   },
 };

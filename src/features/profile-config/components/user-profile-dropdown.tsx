@@ -14,11 +14,13 @@ import { GroupItem } from '@/components/ui/group-item';
 import { SectionMessage } from '@/components/ui/section-message';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Typography } from '@/components/ui/typography';
+import { UserAvatar } from '@/components/user-avatar';
+import { UserBadge } from '@/components/user-badge';
 
 import { type CurrentProfile } from '@/types/profiles';
 
 import { generateArray } from '@/utils/misc';
-import { getProfileType } from '@/utils/profile';
+import { getIsCustomer, getProfileTypeName } from '@/utils/profile';
 
 import { cn } from '@/lib/utils';
 
@@ -49,10 +51,13 @@ const UserProfileDropdown: FC<UserProfileDropdownProps> = ({
 
   return (
     <DropdownMenu open={isOpen} onOpenChange={onToggle}>
-      <DropdownMenu.Trigger className="ml-4 hidden rounded-full lg:flex">
+      <DropdownMenu.Trigger
+        asChild
+        className="ml-4 hidden rounded-full lg:flex"
+      >
         {children}
       </DropdownMenu.Trigger>
-      <DropdownMenu.Content align="end" className="w-[380px]">
+      <DropdownMenu.Content sideOffset={6} align="end" className="w-[380px]">
         <AutoAnimate>
           {error ? (
             <SectionMessage
@@ -76,10 +81,10 @@ const UserProfileDropdown: FC<UserProfileDropdownProps> = ({
                   <GroupItem
                     className="flex items-center hover:bg-transparent"
                     iconBefore={
-                      <Avatar
-                        bordered
+                      <UserAvatar
                         src={currentProfile.avatar as string}
                         alt={currentProfile.name}
+                        type={currentProfile.type}
                       />
                     }
                     title={
@@ -92,9 +97,10 @@ const UserProfileDropdown: FC<UserProfileDropdownProps> = ({
                         >
                           {currentProfile.name}
                         </Typography>
-                        <Badge className="ml-2 flex-shrink-0 text-xs">
-                          {getProfileType(currentProfile.type)}
-                        </Badge>
+                        <UserBadge
+                          className="ml-2 flex-shrink-0 text-xs"
+                          type={currentProfile.type}
+                        />
                       </div>
                     }
                   >
@@ -104,7 +110,7 @@ const UserProfileDropdown: FC<UserProfileDropdownProps> = ({
                       className="flex w-full items-center gap-1 text-muted-foreground"
                     >
                       <MapPin className="h-4 w-4" />
-                      {currentProfile.user.location?.name}
+                      {currentProfile?.user?.location?.name}
                     </Typography>
                   </GroupItem>
                 )}
