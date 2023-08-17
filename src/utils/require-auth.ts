@@ -36,15 +36,6 @@ export const requireAuth = async ({
     };
   }
 
-  // if (!allowedRoles?.includes(session?.user?.role)) {
-  //   return {
-  //     redirect: {
-  //       destination: `/`,
-  //       permanent: false,
-  //     },
-  //   };
-  // }
-
   return (
     cb ? cb({ session: session as unknown as Session }) : undefined
   ) as GetServerSidePropsResult<{ session: Session }>;
