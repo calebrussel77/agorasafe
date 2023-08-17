@@ -1,5 +1,4 @@
-import { TRPCError } from '@trpc/server';
-
+import { throwDbError } from '../../utils/error-handling';
 import { getProfileConfigService } from './profile-config.service';
 import { type GetProfileConfigValidation } from './profile-config.validations';
 
@@ -13,7 +12,7 @@ export const getProfileConfigController = async (
       ...serviceResponse,
       success: true,
     };
-  } catch (error) {
-    throw new TRPCError({ code: 'BAD_REQUEST', message: error as string });
+  } catch (e) {
+    throwDbError(e);
   }
 };

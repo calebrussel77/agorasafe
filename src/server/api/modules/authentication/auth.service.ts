@@ -9,7 +9,7 @@ import { type AuthValidation } from './auth.validations';
 export const authService = async (data: AuthValidation) => {
   const { location, phone, profileType, userId } = data;
 
-  const redirectUri = profileType === 'PROVIDER' ? '/' : '/';
+  const redirectUrl = profileType === 'PROVIDER' ? '/' : '/';
 
   //Create the location specified by the user
   const { id: locationId } = await createLocation({
@@ -37,7 +37,7 @@ export const authService = async (data: AuthValidation) => {
 
   return {
     profile,
-    redirectUri,
+    redirectUrl,
     message: getUserMessage(fullName),
   };
 };

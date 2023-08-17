@@ -1,5 +1,4 @@
-import { TRPCError } from '@trpc/server';
-
+import { throwDbError } from '../../utils/error-handling';
 import { authService } from './auth.service';
 import { type AuthValidation } from './auth.validations';
 
@@ -12,6 +11,6 @@ export const authController = async (inputs: AuthValidation) => {
       success: true,
     };
   } catch (error) {
-    throw new TRPCError({ code: 'BAD_REQUEST', message: error as string });
+    throwDbError(error);
   }
 };

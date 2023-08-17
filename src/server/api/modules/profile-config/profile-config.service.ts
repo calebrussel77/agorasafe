@@ -1,5 +1,6 @@
 import { USER_PROFILES_LIMIT_COUNT } from '@/constants';
 
+import { throwNotFoundError } from '../../utils/error-handling';
 import { getUserById } from '../users';
 import {
   getAddProfileInfos,
@@ -15,34 +16,29 @@ export const getProfileConfigService = async (
   const user = await getUserById(userId);
 
   if (!user) {
-    throw new Error('Utilisateur non trouvé, veuillez vous reconnecter !');
+    throwNotFoundError('Utilisateur non trouvé.');
   }
 
   const currentProfile = user.profiles.find(
     profile => profile.id === profileId
   );
+
+  if (!currentProfile) {
+    throwNotFoundError('Profil non trouvé !');
+  }
+
   const otherProfile = user.profiles.find(profile => profile.id !== profileId);
   const profileCount = user._count.profiles;
   const hasProfile = profileCount > 0;
   const hasMoreThanOneProfile = profileCount > 1;
-
-  if (!currentProfile) {
-    throw new Error('Profile non trouvé !');
-  }
+  const switchProfileMessage = otherProfile ? `Changer de Profil` : null;
 
   return {
-    profileLinks: getFilteredLinksByType(currentProfile.type),
-    switchProfileInfos: {
-      canSwitchToOtherProfile: hasMoreThanOneProfile,
-      switchProfileText: otherProfile
-        ? `Switcher vers le profil ${otherProfile.name}`
-        : null,
-    },
-    addProfileInfos: {
-      canAddNewProfile: profileCount < USER_PROFILES_LIMIT_COUNT,
-      ...getAddProfileInfos(currentProfile.type),
-    },
-    hasMoreThanOneProfile,
+    appProfileLinks: getFilteredLinksByType(currentProfile.type),
+    canSwitchToOtherProfile: hasMoreThanOneProfile,
+    switchProfileMessage,
+    canAddNewProfile: profileCount < USER_PROFILES_LIMIT_COUNT,
+    ...getAddProfileInfos(currentProfile.type),
     hasProfile,
   };
 };

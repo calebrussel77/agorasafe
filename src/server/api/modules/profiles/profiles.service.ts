@@ -1,6 +1,10 @@
 import { USER_PROFILES_LIMIT_COUNT } from '@/constants';
 import slugify from 'slugify';
 
+import {
+  throwBadRequestError,
+  throwNotFoundError,
+} from '../../utils/error-handling';
 import { getUserById } from '../users';
 import {
   createProfileByUserId,
@@ -21,7 +25,7 @@ export const getProfilesByUserIdService = async (
   const profiles = await getProfilesByUserId(userId);
 
   return {
-    profiles,
+    profiles: profiles,
     message: `Ravie de vous avoir ${name}, Avec quel profil souhaitez-vous interagir ?`,
     success: true,
   };
@@ -30,15 +34,17 @@ export const getProfilesByUserIdService = async (
 export const createProfileService = async (inputs: CreateProfileValidation) => {
   const { name, profileType, userId } = inputs;
 
+  const redirectUrl = profileType === 'PROVIDER' ? '/' : '/';
+
   const user = await getUserById(userId);
 
   if (!user) {
-    throw new Error('Utilisateur non trouvé !');
+    throwNotFoundError('Utilisateur non trouvé !');
   }
 
   if (user?._count.profiles === USER_PROFILES_LIMIT_COUNT) {
-    throw new Error(
-      'Vous ne pouvez ajouter que maximum 02 Profils pour votre compte !'
+    throwBadRequestError(
+      `Vous ne pouvez utliser que maximum ${USER_PROFILES_LIMIT_COUNT} Profils pour votre compte !`
     );
   }
 
@@ -52,6 +58,7 @@ export const createProfileService = async (inputs: CreateProfileValidation) => {
 
   return {
     profile,
+    redirectUrl,
     message: getProfileCreationrMessage(name),
   };
 };

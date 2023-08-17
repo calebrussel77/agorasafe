@@ -1,5 +1,4 @@
-import { TRPCError } from '@trpc/server';
-
+import { throwDbError } from '../../utils/error-handling';
 import {
   createProfileService,
   getProfilesByUserIdService,
@@ -13,13 +12,9 @@ export const createProfileController = async (
   inputs: CreateProfileValidation
 ) => {
   try {
-    const serviceResponse = await createProfileService(inputs);
-    return {
-      ...serviceResponse,
-      success: true,
-    };
+    return await createProfileService(inputs);
   } catch (error) {
-    throw new TRPCError({ code: 'BAD_REQUEST', message: error as string });
+    throwDbError(error);
   }
 };
 
@@ -27,12 +22,8 @@ export const getProfilesByUserIdController = async (
   inputs: GetProfilesByUserIdValidation
 ) => {
   try {
-    const serviceResponse = await getProfilesByUserIdService(inputs);
-    return {
-      ...serviceResponse,
-      success: true,
-    };
+    return await getProfilesByUserIdService(inputs);
   } catch (error) {
-    throw new TRPCError({ code: 'BAD_REQUEST', message: error as string });
+    throwDbError(error);
   }
 };

@@ -1,21 +1,21 @@
-import { COMMON_TYPE, profileLinks } from '@/constants';
+import { APP_PROFILE_LINKS, COMMON_PROFILE_TYPE } from '@/constants';
 import { ProfileType } from '@prisma/client';
 
 export const getAddProfileInfos = (profileType: ProfileType) => {
   if (profileType === ProfileType.CUSTOMER) {
     return {
-      message: `Ajouter un profile Prestataire`,
-      href: `/add-new-profile?profile_type=${ProfileType.PROVIDER}`,
+      addNewProfileMessage: `Ajouter un profil Prestataire`,
+      addNewProfileHref: `/add-new-profile?profile_type=${ProfileType.PROVIDER}`,
     };
   }
   return {
-    message: `Ajouter un profile Client`,
-    href: `/add-new-profile?profile_type=${ProfileType.CUSTOMER}`,
+    addNewProfileMessage: `Ajouter un profil Client`,
+    addNewProfileHref: `/add-new-profile?profile_type=${ProfileType.CUSTOMER}`,
   };
 };
 
 export function getFilteredLinksByType(profileType: ProfileType) {
-  return profileLinks.filter(link => {
-    return link.type === COMMON_TYPE || link.type === profileType;
+  return APP_PROFILE_LINKS.filter(link => {
+    return link.type === COMMON_PROFILE_TYPE || link.type === profileType;
   });
 }
