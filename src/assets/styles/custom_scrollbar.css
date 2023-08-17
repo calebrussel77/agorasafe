@@ -1,0 +1,12 @@
+/**
+ * Custom scrollbar appearance
+ */
+.scrollbar__custom::-webkit-scrollbar {
+  @apply w-1 !important;
+}
+.scrollbar__custom::-webkit-scrollbar-track {
+  @apply rounded-lg bg-gray-100 !important;
+}
+.scrollbar__custom::-webkit-scrollbar-thumb {
+  @apply rounded-lg bg-gray-900 bg-opacity-30 !important;
+}

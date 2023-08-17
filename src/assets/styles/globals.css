@@ -1,0 +1,74 @@
+/*
+ * CSS Import statements 
+ */
+@import '../../components/ui/spinner/spinner.style.css';
+@import '../../components/ui/label/label.style.css';
+@import '../../components/ui/phone-input/phone-input.style.css';
+@import 'react_toastify.css';
+@import 'custom_scrollbar.css';
+@import 'font.css';
+
+/* Librairies */
+@import 'keen-slider/keen-slider.min.css';
+@import 'react-toastify/dist/ReactToastify.css';
+@import 'react-phone-input-2/lib/style.css';
+
+/*
+ * End CSS Import statements 
+ */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 231 62% 51%;
+
+    --muted: 222 73% 93%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 231 62% 51%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 231 62% 51%;
+
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+
+    --primary: 231 62% 51%;
+    --primary-foreground: 210 40% 98%;
+
+    --secondary: 220 14% 96%;
+    --secondary-foreground: 231 62% 51%;
+
+    --accent: 220 14% 96%;
+    --accent-foreground: 231 62% 51%;
+
+    --destructive: 0 100% 50%;
+    --destructive-foreground: 210 40% 98%;
+
+    --ring: 231 62% 51%;
+
+    --radius: 0.5rem;
+
+    /* #354cd0 => blue */
+    --color-brand-50: 241 244 253;
+    --color-brand-100: 223 231 250;
+    --color-brand-200: 199 212 246;
+    --color-brand-300: 160 185 240;
+    --color-brand-400: 115 148 231;
+    --color-brand-500: 83 113 222;
+    --color-brand-600: 53 76 208;
+    --color-brand-700: 53 66 192;
+    --color-brand-800: 48 56 157;
+    --color-brand-900: 44 52 124;
+  }
+
+  /* To blur the background of an element */
+  .bg__blurred {
+    @apply bg-opacity-80 backdrop-blur-sm backdrop-filter;
+  }
+}

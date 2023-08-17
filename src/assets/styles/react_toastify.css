@@ -1,0 +1,14 @@
+.Toastify__toast-body {
+  @apply m-0 block w-full p-0 !important;
+}
+.Toastify__toast-body > div:last-child {
+  word-break: normal !important;
+  @apply m-0 w-full p-0 !important;
+}
+
+.Toastify__toast-theme--light {
+  @apply m-0 mb-3 w-full bg-transparent p-0 text-gray-800;
+}
+.Toastify__toast {
+  @apply pointer-events-auto block min-h-fit w-full overflow-hidden rounded-lg bg-white shadow-lg ring-1 ring-black ring-opacity-5 !important;
+}
