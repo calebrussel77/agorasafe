@@ -17,7 +17,7 @@ export const env = createEnv({
       // This makes Vercel deployments not fail if you don't set NEXTAUTH_URL
       // Since NextAuth.js automatically uses the VERCEL_URL if present.
       str => process.env.VERCEL_URL ?? str,
-      // VERCEL_URL doesn't include `https` so it cant be validated as a URL
+      // VERCEL_URL doesn't include `https` so it can't be validated as a URL
       process.env.VERCEL ? z.string().min(1) : z.string().url()
     ),
     GOOGLE_CLIENT_ID: z.string(),
@@ -26,7 +26,6 @@ export const env = createEnv({
     CLOUDINARY_NAME: z.string(),
     CLOUDINARY_API_KEY: z.string(),
     CLOUDINARY_SECRET: z.string(),
-    SITE_URL: z.string(),
   },
 
   /**
@@ -36,7 +35,13 @@ export const env = createEnv({
    */
   client: {
     // NEXT_PUBLIC_CLIENTVAR: z.string().min(1),
+    NEXT_PUBLIC_APP_URL: z.string(),
     NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN: z.string(),
+    NEXT_PUBLIC_APP_NAME: z.string(),
+    NEXT_PUBLIC_SUPPORT_MAIL_ADDRESS: z.string(),
+    NEXT_PUBLIC_COMPANY_NAME: z.string(),
+    NEXT_PUBLIC_DEBUG: z.string(),
+    NEXT_PUBLIC_GA_MEASUREMENT_ID: z.string(),
   },
 
   /**
@@ -56,7 +61,13 @@ export const env = createEnv({
     CLOUDINARY_SECRET: process.env.CLOUDINARY_SECRET,
     NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN:
       process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN,
-    SITE_URL: process.env.SITE_URL,
+    NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
+    NEXT_PUBLIC_APP_NAME: process.env.NEXT_PUBLIC_APP_NAME,
+    NEXT_PUBLIC_SUPPORT_MAIL_ADDRESS:
+      process.env.NEXT_PUBLIC_SUPPORT_MAIL_ADDRESS,
+    NEXT_PUBLIC_COMPANY_NAME: process.env.NEXT_PUBLIC_COMPANY_NAME,
+    NEXT_PUBLIC_DEBUG: process.env.NEXT_PUBLIC_DEBUG,
+    NEXT_PUBLIC_GA_MEASUREMENT_ID: process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation.
