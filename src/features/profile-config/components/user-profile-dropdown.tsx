@@ -1,33 +1,30 @@
-import { useProfileStore } from '@/stores/profiles';
 import { LogOut, MapPin, UserPlus2 } from 'lucide-react';
 import { RefreshCcw } from 'lucide-react';
-import { signOut } from 'next-auth/react';
+import Image from 'next/image';
 import Link from 'next/link';
-import React, { type FC, type ReactNode } from 'react';
+import { useRouter } from 'next/router';
+import React, { type FC } from 'react';
 
 import { AutoAnimate } from '@/components/ui/auto-animate';
-import { Avatar } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
-import { buttonVariants } from '@/components/ui/button';
+import { Button, buttonVariants } from '@/components/ui/button';
 import { DropdownMenu } from '@/components/ui/dropdown-menu';
+import { ErrorWrapper, SectionError } from '@/components/ui/error';
 import { GroupItem } from '@/components/ui/group-item';
-import { SectionMessage } from '@/components/ui/section-message';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Typography } from '@/components/ui/typography';
 import { UserAvatar } from '@/components/user-avatar';
 import { UserBadge } from '@/components/user-badge';
 
-import { type CurrentProfile } from '@/types/profiles';
+import { useAuth } from '@/features/auth';
+import { type CurrentProfile } from '@/features/profiles';
 
-import { generateArray } from '@/utils/misc';
-import { getIsCustomer, getProfileTypeName } from '@/utils/profile';
+import { generateArray, isPathMatchRoute } from '@/utils/misc';
 
 import { cn } from '@/lib/utils';
 
 import { type GetProfileConfigOutput } from '../types';
 
 interface UserProfileDropdownProps {
-  children: ReactNode;
   isLoading?: boolean;
   error?: { message: string };
   isOpen?: boolean;
@@ -37,7 +34,6 @@ interface UserProfileDropdownProps {
 }
 
 const UserProfileDropdown: FC<UserProfileDropdownProps> = ({
-  children,
   userProfileConfig,
   currentProfile,
   isLoading,
@@ -45,7 +41,8 @@ const UserProfileDropdown: FC<UserProfileDropdownProps> = ({
   error,
   onToggle,
 }) => {
-  const { reset } = useProfileStore();
+  const { onSignOut, reset } = useAuth();
+  const router = useRouter();
 
   if (!currentProfile) return null;
 
@@ -55,55 +52,66 @@ const UserProfileDropdown: FC<UserProfileDropdownProps> = ({
         asChild
         className="ml-4 hidden rounded-full lg:flex"
       >
-        {children}
+        <button className="flex items-center gap-3">
+          <UserAvatar
+            onClick={onToggle}
+            src={(currentProfile.avatar as string) || '/sed'}
+            alt={currentProfile.name}
+            type={currentProfile.type}
+            className="h-8 w-8"
+          />
+          <Typography className="text-white" truncate lines={1}>
+            {currentProfile.name}
+          </Typography>
+        </button>
       </DropdownMenu.Trigger>
       <DropdownMenu.Content sideOffset={6} align="end" className="w-[380px]">
         <AutoAnimate>
-          {error ? (
-            <SectionMessage
-              title={error.message}
-              hasCloseButton={false}
-              appareance="danger"
-              className="mb-24"
-            />
-          ) : (
-            <>
-              <DropdownMenu.Label>
-                {isLoading ? (
-                  <div className="flex items-center gap-2 px-2">
-                    <Skeleton className="h-8 w-8 rounded-full" />
-                    <div className="w-full flex-1 space-y-1.5">
-                      <Skeleton className="h-4 w-1/2" />
-                      <Skeleton className="h-4 w-full" />
-                    </div>
+          <ErrorWrapper
+            error={error}
+            errorComponent={
+              <SectionError
+                hasActions={false}
+                classNames={{ icon: 'h-32 w-auto' }}
+                error={error}
+              />
+            }
+          >
+            <DropdownMenu.Label>
+              {isLoading ? (
+                <div className="flex items-center gap-2 px-2">
+                  <Skeleton className="h-8 w-8 rounded-full" />
+                  <div className="w-full flex-1 space-y-1.5">
+                    <Skeleton className="h-4 w-1/2" />
+                    <Skeleton className="h-4 w-full" />
                   </div>
-                ) : (
-                  <GroupItem
-                    className="flex items-center hover:bg-transparent"
-                    iconBefore={
-                      <UserAvatar
-                        src={currentProfile.avatar as string}
-                        alt={currentProfile.name}
+                </div>
+              ) : (
+                <GroupItem
+                  iconBefore={
+                    <UserAvatar
+                      src={currentProfile.avatar as string}
+                      alt={currentProfile.name}
+                      type={currentProfile.type}
+                    />
+                  }
+                  name={
+                    <div className="flex items-center">
+                      <Typography
+                        as="h3"
+                        variant="h4"
+                        className="font-semibold"
+                        truncate
+                      >
+                        {currentProfile.name}
+                      </Typography>
+                      <UserBadge
+                        className="ml-2 flex-shrink-0 text-xs"
                         type={currentProfile.type}
                       />
-                    }
-                    title={
-                      <div className="flex items-center">
-                        <Typography
-                          as="h3"
-                          variant="h4"
-                          className="font-semibold"
-                          truncate
-                        >
-                          {currentProfile.name}
-                        </Typography>
-                        <UserBadge
-                          className="ml-2 flex-shrink-0 text-xs"
-                          type={currentProfile.type}
-                        />
-                      </div>
-                    }
-                  >
+                    </div>
+                  }
+                  description={
                     <Typography
                       truncate
                       variant="small"
@@ -112,50 +120,32 @@ const UserProfileDropdown: FC<UserProfileDropdownProps> = ({
                       <MapPin className="h-4 w-4" />
                       {currentProfile?.user?.location?.name}
                     </Typography>
-                  </GroupItem>
-                )}
-              </DropdownMenu.Label>
-              <DropdownMenu.Separator />
-              {isLoading ? (
-                <div className="my-6 grid gap-3">
-                  {generateArray(8).map(el => (
-                    <div key={el} className="space-y-1.5 px-2">
-                      <Skeleton className="h-4 w-1/2" />
-                      <Skeleton className="h-4 w-full" />
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <>
-                  {userProfileConfig?.addProfileInfos?.canAddNewProfile && (
-                    <>
-                      <Link
-                        href={userProfileConfig.addProfileInfos.href}
-                        className="w-full"
-                      >
-                        <DropdownMenu.Item
-                          className={cn(
-                            buttonVariants({
-                              size: 'sm',
-                              variant: 'ghost',
-                            }),
-                            'w-full'
-                          )}
-                        >
-                          <UserPlus2 className="mr-2 h-5 w-5" />
-                          <span className="line-clamp-1">
-                            {userProfileConfig.addProfileInfos.message}
-                          </span>
-                        </DropdownMenu.Item>
-                      </Link>
-                      <DropdownMenu.Separator />
-                    </>
-                  )}
-                  {userProfileConfig?.switchProfileInfos
-                    ?.canSwitchToOtherProfile && (
-                    <>
+                  }
+                  classNames={{
+                    root: 'flex items-center hover:bg-transparent',
+                  }}
+                />
+              )}
+            </DropdownMenu.Label>
+            <DropdownMenu.Separator />
+            {isLoading ? (
+              <div className="my-6 grid gap-3">
+                {generateArray(8).map(el => (
+                  <div key={el} className="space-y-1.5 px-2">
+                    <Skeleton className="h-4 w-1/2" />
+                    <Skeleton className="h-4 w-full" />
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <>
+                {userProfileConfig?.canAddNewProfile && (
+                  <>
+                    <Link
+                      href={userProfileConfig?.addNewProfileHref}
+                      className="w-full"
+                    >
                       <DropdownMenu.Item
-                        onClick={reset}
                         className={cn(
                           buttonVariants({
                             size: 'sm',
@@ -164,50 +154,85 @@ const UserProfileDropdown: FC<UserProfileDropdownProps> = ({
                           'w-full'
                         )}
                       >
+                        <UserPlus2 className="mr-2 h-5 w-5" />
+                        <span className="line-clamp-1">
+                          {userProfileConfig?.addNewProfileMessage}
+                        </span>
+                      </DropdownMenu.Item>
+                    </Link>
+                    <DropdownMenu.Separator />
+                  </>
+                )}
+
+                {userProfileConfig?.canSwitchToOtherProfile && (
+                  <>
+                    <DropdownMenu.Item asChild>
+                      <Button
+                        onClick={reset}
+                        size="sm"
+                        variant="ghost"
+                        className="flex w-full"
+                      >
                         <RefreshCcw className="mr-2 h-5 w-5" />
                         <Typography className="text-sm" truncate>
-                          {
-                            userProfileConfig.switchProfileInfos
-                              .switchProfileText
-                          }
+                          {userProfileConfig.switchProfileMessage}
                         </Typography>
-                      </DropdownMenu.Item>
-                      <DropdownMenu.Separator />
-                    </>
-                  )}
-                  {userProfileConfig?.profileLinks?.map(link => (
+                      </Button>
+                    </DropdownMenu.Item>
+                    <DropdownMenu.Separator />
+                  </>
+                )}
+
+                {userProfileConfig?.appProfileLinks?.map(link => {
+                  const isProfileLink = link.id === 5;
+                  const url = isProfileLink
+                    ? `/u/${currentProfile.slug}`
+                    : link.href;
+                  const isMatch = isPathMatchRoute(url);
+
+                  return (
                     <DropdownMenu.Item
                       key={link.id}
                       disabled={link.disabled}
-                      className="flex flex-col items-start justify-start text-left"
+                      className={isMatch ? 'bg-zinc-100 text-primary' : ''}
                     >
-                      <Typography as="h3" variant="paragraph">
-                        {link.title}
-                      </Typography>
-                      <Typography
-                        variant="small"
-                        className="text-muted-foreground"
+                      <Link
+                        href={url}
+                        className="mt-1 flex w-full items-center justify-start gap-x-1 text-left"
                       >
-                        {link.description}
-                      </Typography>
+                        <Image
+                          src={link.iconUrl}
+                          alt={link.title}
+                          width={20}
+                          height={20}
+                          className="mr-2 flex-shrink-0"
+                        />
+                        <div className="flex flex-col items-start justify-start">
+                          <Typography as="h3" variant="paragraph">
+                            {link.title}
+                          </Typography>
+                          <Typography
+                            variant="small"
+                            className="text-muted-foreground"
+                          >
+                            {link.description}
+                          </Typography>
+                        </div>
+                      </Link>
                     </DropdownMenu.Item>
-                  ))}
-                  <DropdownMenu.Separator />
-                  <DropdownMenu.Item
-                    onClick={() => {
-                      signOut()
-                        .then(() => reset())
-                        .catch(e => console.log(e));
-                    }}
-                    className="flex items-center justify-center text-center"
-                  >
-                    <LogOut className="mr-2 h-4 w-4" />
-                    Se déconnecter
-                  </DropdownMenu.Item>
-                </>
-              )}
-            </>
-          )}
+                  );
+                })}
+                <DropdownMenu.Separator />
+                <DropdownMenu.Item
+                  onClick={() => void onSignOut()}
+                  className="flex items-center justify-center text-center"
+                >
+                  <LogOut className="mr-2 h-4 w-4" />
+                  Se déconnecter
+                </DropdownMenu.Item>
+              </>
+            )}
+          </ErrorWrapper>
         </AutoAnimate>
       </DropdownMenu.Content>
     </DropdownMenu>

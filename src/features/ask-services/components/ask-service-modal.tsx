@@ -135,7 +135,7 @@ const AskServiceModal: FC<AskServiceModalProps> = ({ children }) => {
   return (
     <Dialog>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="sm:max-w-[625px]">
+      <DialogContent className="px-4 sm:max-w-[625px]">
         <DialogHeader>
           <DialogTitle>
             {selectedCategory ? (
@@ -164,10 +164,12 @@ const AskServiceModal: FC<AskServiceModalProps> = ({ children }) => {
           />
         </DialogHeader>
         <div
-          className={cn('relative mx-6 mb-6 h-full flex-1 overflow-x-hidden')}
+          className={cn(
+            'relative mx-2 mb-6 h-full flex-1 overflow-x-hidden px-2'
+          )}
         >
           <FadeAnimation
-            className={cn(' grid grid-cols-2 gap-x-6 gap-y-3')}
+            className={cn('grid grid-cols-1 gap-x-6 gap-y-3 sm:grid-cols-2')}
             from={{ x: -620, opacity: 0 }}
             isVisible={!selectedCategory}
           >

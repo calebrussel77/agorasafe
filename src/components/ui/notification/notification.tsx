@@ -5,6 +5,7 @@ import React, {
   type ComponentPropsWithRef,
   type FC,
   type ReactElement,
+  type ReactNode,
   forwardRef,
 } from 'react';
 
@@ -33,10 +34,10 @@ const notificationToken = cva(['w-full'], {
 export type NotificationGlobalProps = VariantProps<typeof notificationToken> &
   Omit<ComponentPropsWithRef<'div'>, 'title'> & {
     variant?: Variant;
-    title?: string | ReactElement;
-    description?: string | ReactElement;
+    title?: string | ReactNode;
+    description?: string | ReactNode;
     icon?: ReactElement;
-    closeToast?: () => void;
+    onClose?: () => void;
     actions?: Array<ReactElement<unknown>> | ReactElement<unknown>;
     hasCloseButton?: boolean;
     toastProps?: unknown;
@@ -72,14 +73,14 @@ const NotifBody: FC<
   );
 };
 
-const CloseButton: FC<Pick<NotificationGlobalProps, 'closeToast'>> = ({
-  closeToast,
+const CloseButton: FC<Pick<NotificationGlobalProps, 'onClose'>> = ({
+  onClose,
 }) => {
   return (
     <button
       type="button"
       className="inline-flex rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
-      onClick={closeToast}
+      onClick={onClose}
     >
       <span className="sr-only">Close</span>
       <XIcon className="h-5 w-5" aria-hidden="true" />
@@ -93,7 +94,7 @@ export const Notification = forwardRef<HTMLDivElement, NotificationGlobalProps>(
       hasCloseButton = true,
       className,
       variant = 'info',
-      closeToast,
+      onClose,
       title,
       description,
       actions,
@@ -133,7 +134,7 @@ export const Notification = forwardRef<HTMLDivElement, NotificationGlobalProps>(
 
             {hasCloseButton && (
               <div className="ml-4 flex flex-shrink-0">
-                <CloseButton closeToast={closeToast} />
+                <CloseButton onClose={onClose} />
               </div>
             )}
           </div>

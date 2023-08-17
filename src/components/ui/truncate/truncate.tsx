@@ -96,7 +96,7 @@ const Truncate: FC<TruncateProps> = ({
             ) : undefined
           }
         >
-          <div className={className}>{children}</div>
+          <span className={cn('block', className)}>{children}</span>
         </TruncateMarkup>
       ) : (
         <FadeAnimation

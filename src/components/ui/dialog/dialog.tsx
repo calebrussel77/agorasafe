@@ -33,7 +33,7 @@ const DialogOverlay = React.forwardRef<
   <DialogPrimitive.Overlay
     ref={ref}
     className={cn(
-      'fixed inset-0 z-50 bg-background/80 backdrop-blur-sm transition-all duration-100 data-[state=closed]:animate-out data-[state=closed]:fade-out data-[state=open]:fade-in',
+      'fixed inset-0 z-50 bg-white/60 backdrop-blur-sm transition-all duration-200 data-[state=closed]:animate-out data-[state=closed]:fade-out data-[state=open]:fade-in',
       className
     )}
     {...props}
@@ -56,13 +56,9 @@ const DialogContent = React.forwardRef<
         style={{
           maxHeight: `calc(100vh - 4rem * 2)`,
         }}
-        // className={cn(
-        //   'fixed z-50 grid w-full gap-4 rounded-b-lg scrollbar__custom overflow-y-auto border bg-background shadow-lg animate-in data-[state=open]:fade-in-90 data-[state=open]:slide-in-from-bottom-10 sm:max-w-lg sm:rounded-lg sm:zoom-in-90 data-[state=open]:sm:slide-in-from-bottom-0',
-        //   className
-        // )}
         className={cn(
           'scrollbar__custom fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 overflow-y-auto rounded-b-lg border bg-background',
-          'shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95',
+          'shadow-lg duration-300 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95',
           'data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2',
           'data-[state=open]:slide-in-from-top-[48%] sm:rounded-lg md:w-full',
           className
@@ -70,14 +66,6 @@ const DialogContent = React.forwardRef<
         {...props}
       >
         {children}
-        {/* {React.Children.map(children, child => {
-          if (!React.isValidElement(child)) return null;
-
-          return React.cloneElement(child as React.ReactElement, {
-            isScrolling: hasScrolled || undefined,
-            ...child.props,
-          });
-        })} */}
       </DialogPrimitive.Content>
     </DialogPortal>
   );
@@ -88,11 +76,14 @@ DialogContent.displayName = DialogPrimitive.Content.displayName;
 const DialogHeader = ({
   className,
   children,
+  shouldHideCloseButton,
   ...props
-}: React.HTMLAttributes<HTMLDivElement>) => (
+}: React.HTMLAttributes<HTMLDivElement> & {
+  shouldHideCloseButton?: boolean;
+}) => (
   <div
     className={cn(
-      'sticky inset-x-0 top-0 z-10 flex w-full flex-row items-start justify-between bg-background bg-white px-6 py-4',
+      'sticky inset-x-0 -top-1 z-10 flex w-full flex-row items-start justify-between bg-background bg-white px-6 py-4',
       'border-b',
       className
     )}
@@ -101,10 +92,12 @@ const DialogHeader = ({
     <div className="flex w-full flex-col space-y-1.5 text-center sm:text-left">
       {children}
     </div>
-    <DialogPrimitive.Close className="relative rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
-      <X className="h-4 w-4" />
-      <span className="sr-only">Close</span>
-    </DialogPrimitive.Close>
+    {!shouldHideCloseButton && (
+      <DialogPrimitive.Close className="absolute right-3 top-3 rounded-full bg-zinc-100 p-1 opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-0 focus:ring-transparent focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
+        <X className="h-4 w-4" />
+        <span className="sr-only">Close</span>
+      </DialogPrimitive.Close>
+    )}
   </div>
 );
 
@@ -134,7 +127,7 @@ const DialogTitle = React.forwardRef<
   <DialogPrimitive.Title
     ref={ref}
     className={cn(
-      'text-xl font-semibold leading-none tracking-tight',
+      'text-xl font-semibold leading-none tracking-tight xl:text-2xl',
       className
     )}
     {...props}
@@ -162,4 +155,5 @@ export {
   DialogFooter,
   DialogTitle,
   DialogDescription,
+  DialogOverlay,
 };

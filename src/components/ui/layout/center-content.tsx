@@ -1,5 +1,6 @@
-import { cn } from '@/lib/utils';
 import { type FC } from 'react';
+
+import { cn } from '@/lib/utils';
 
 type CenterContentProps = React.HTMLAttributes<HTMLDivElement>;
 
@@ -11,7 +12,7 @@ const CenterContent: FC<CenterContentProps> = ({
   return (
     <div
       className={cn(
-        'flex h-full w-full flex-1 flex-col items-center justify-center p-6',
+        'flex h-full w-full flex-1 flex-col items-center justify-center p-2 md:p-6',
         className
       )}
       {...props}

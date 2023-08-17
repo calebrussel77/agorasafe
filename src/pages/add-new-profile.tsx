@@ -5,11 +5,12 @@ import { type GetServerSideProps } from 'next';
 import { type Session } from 'next-auth';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { toast } from 'react-toastify';
 
+import { PageWrapper } from '@/components/page-wrapper';
 import { Redirect } from '@/components/redirect';
 import { Card } from '@/components/ui/card';
-import { Notification } from '@/components/ui/notification';
+import { CenterContent } from '@/components/ui/layout';
+import { Seo } from '@/components/ui/seo';
 
 import {
   AddProfileForm,
@@ -23,28 +24,33 @@ import { requireAuth } from '@/utils/require-auth';
 
 import { htmlParse } from '@/lib/html-react-parser';
 
+import { useToastMessage } from '@/hooks/use-toast-message';
+
 const ALLOWED_TYPES = Object.keys(ProfileType);
+
+const meta = {
+  title: (profileType: ProfileType) =>
+    `Ajouter un profil ${getProfileTypeName(profileType).toLowerCase()}`,
+  description: `Renseignez les informations ci-dessous pour facilement gérer vos
+  projets, consulter vos candidatures, rechercher des prestataires
+  ou des demandes de service, etc.`,
+};
 
 const AddNewProfilePage = () => {
   const router = useRouter();
   const profileType = router.query.profile_type as ProfileType;
   const { reset } = useProfileStore();
+  const { toast } = useToastMessage();
 
   const { mutate, error, isLoading } = useCreateProfile({
-    onSuccess(data) {
-      toast(
-        <Notification
-          variant="success"
-          title={htmlParse(data.message) as never}
-        />
-      );
+    async onSuccess(data) {
+      toast({
+        variant: 'success',
+        title: htmlParse(data.message) as never,
+      });
       reset();
-
-      wait(3_00)
-        .then(() => {
-          void router.push('/');
-        })
-        .catch(e => console.log(e));
+      await wait(3_00);
+      void router.push('/');
     },
   });
 
@@ -59,34 +65,33 @@ const AddNewProfilePage = () => {
   }
 
   return (
-    <div className="container flex min-h-screen w-full max-w-xl flex-col items-center justify-center">
-      <div>
-        <Link href="/" className="mb-6 flex items-center gap-2">
-          <MoveLeft className="h-5 w-5" />
-          <span>Retour</span>
-        </Link>
-        <Card>
-          <Card.Header>
-            <Card.Title className="text-xl">
-              Ajouter un profil {getProfileTypeName(profileType).toLowerCase()}
-            </Card.Title>
-            <Card.Description>
-              Renseignez les informations ci-dessous pour facilement gérer vos
-              projets, consulter vos candidatures, rechercher des prestataires
-              ou des demandes de service, etc.
-            </Card.Description>
-          </Card.Header>
-          <Card.Content>
-            <AddProfileForm
-              onSubmit={onRegister}
-              error={error}
-              isLoading={isLoading}
-              selectedProfile={profileType}
-            />
-          </Card.Content>
-        </Card>
-      </div>
-    </div>
+    <>
+      <Seo title={meta.title(profileType)} description={meta.description} />
+      <CenterContent className="container min-h-screen w-full max-w-2xl">
+        <div>
+          <Link href="/" className="mb-6 flex items-center gap-2">
+            <MoveLeft className="h-5 w-5" />
+            <span>Retour</span>
+          </Link>
+          <Card>
+            <Card.Header>
+              <Card.Title className="text-xl">
+                {meta.title(profileType)}
+              </Card.Title>
+              <Card.Description>{meta.description}</Card.Description>
+            </Card.Header>
+            <Card.Content>
+              <AddProfileForm
+                onSubmit={onRegister}
+                error={error}
+                isLoading={isLoading}
+                selectedProfile={profileType}
+              />
+            </Card.Content>
+          </Card>
+        </div>
+      </CenterContent>
+    </>
   );
 };
 

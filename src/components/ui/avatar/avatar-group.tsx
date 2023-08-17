@@ -12,14 +12,14 @@ import {
 
 import { cn } from '@/lib/utils';
 
-import { Avatar, type AvatarProps, type AvatarSize } from '../avatar';
-import {
-  AvatarGroupItem,
-  type AvatarGroupItemProps,
-} from '../avatar/avatar-group-item';
 import { MoreIndicator } from '../avatar/more-indicator';
 import { Popover } from '../popover';
 import { Tooltip } from '../tooltip/tooltip';
+import { Avatar, type AvatarProps, type AvatarSize } from './avatar';
+import {
+  AvatarGroupItem,
+  type AvatarGroupItemProps,
+} from './avatar-group-item';
 
 const MAX_COUNT = {
   grid: 11,

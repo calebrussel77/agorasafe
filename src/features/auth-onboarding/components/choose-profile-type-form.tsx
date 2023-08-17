@@ -1,4 +1,4 @@
-import { siteProfiles } from '@/constants';
+import { APP_PROFILES_INFO } from '@/constants';
 import { ProfileType } from '@prisma/client';
 import { useRouter } from 'next/router';
 import React, { type FC } from 'react';
@@ -27,7 +27,7 @@ const ChooseProfileTypeForm: FC<ChooseProfileTypeFormProps> = ({}) => {
 
   const onSubmit = (data: { profileType: ProfileType }) => {
     void router.push({
-      pathname: 'register-infos',
+      pathname: '/onboarding/register-profile-infos',
       query: {
         profile_type: data.profileType,
       },
@@ -46,7 +46,7 @@ const ChooseProfileTypeForm: FC<ChooseProfileTypeFormProps> = ({}) => {
             onValueChange={field.onChange}
             defaultValue={field.value as never}
           >
-            {siteProfiles.map(siteProfile => (
+            {APP_PROFILES_INFO.map(siteProfile => (
               <Field
                 key={siteProfile.type}
                 className={cn(

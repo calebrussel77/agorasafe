@@ -1,10 +1,10 @@
 import React, { forwardRef, useCallback } from 'react';
 
-import { Avatar, type AvatarProps } from '.';
+import { Avatar, type AvatarProps } from './avatar';
 
 export type MoreIndicatorProps = AvatarProps & {
   count: number;
-  buttonProps?: Partial<React.HTMLAttributes<HTMLElement>>;
+  buttonProps?: Omit<Partial<React.HTMLAttributes<HTMLElement>>, 'color'>;
 };
 const MAX_DISPLAY_COUNT = 99;
 

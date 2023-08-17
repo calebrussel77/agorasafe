@@ -4,17 +4,47 @@
  *
  * We also create a few inference helpers for input and output types.
  */
-import { httpBatchLink, loggerLink } from '@trpc/client';
+import { REDIRECT_QUERY_KEY } from '@/constants';
+import { useProfileStore } from '@/stores/profiles';
+import { TRPCClientError, httpBatchLink, loggerLink } from '@trpc/client';
 import { createTRPCNext } from '@trpc/next';
-import { type inferRouterInputs, type inferRouterOutputs } from '@trpc/server';
-import superjson from 'superjson';
-import { type AppRouter } from '@/server/api/root';
 import { type inferReactQueryProcedureOptions } from '@trpc/react-query';
+import { type inferRouterInputs, type inferRouterOutputs } from '@trpc/server';
+import { signOut } from 'next-auth/react';
+import { unstable_batchedUpdates } from 'react-dom';
+import superjson from 'superjson';
+
+import { type AppRouter } from '@/server/api/root';
+
+import { generateUrlWithSearchParams } from './misc';
 
 const getBaseUrl = () => {
   if (typeof window !== 'undefined') return ''; // browser should use relative url
   if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`; // SSR should use vercel url
   return `http://localhost:${process.env.PORT ?? 3000}`; // dev SSR should use localhost
+};
+
+const handleUnauthorizedErrorsOnClient = (error: unknown) => {
+  if (typeof window === 'undefined') return false;
+
+  if (!(error instanceof TRPCClientError)) return false;
+
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+  if (error.data?.code !== 'UNAUTHORIZED') return false;
+
+  // Signout the user and redirect it to previous page
+  void signOut({
+    callbackUrl: generateUrlWithSearchParams('/auth/login', {
+      [REDIRECT_QUERY_KEY]: window.location.pathname ?? '/',
+    }),
+    redirect: false,
+  });
+  unstable_batchedUpdates(() => {
+    useProfileStore.getState().setIsSessionExpired(true);
+    useProfileStore.getState().setProfile(null);
+  });
+
+  return true;
 };
 
 /** A set of type-safe react-query hooks for your tRPC API. */
@@ -23,9 +53,21 @@ export const api = createTRPCNext<AppRouter>({
     return {
       queryClientConfig: {
         defaultOptions: {
+          mutations: {
+            useErrorBoundary: false,
+            refetchOnWindowFocus: false,
+            retry: (_, error) => {
+              handleUnauthorizedErrorsOnClient(error);
+              return false;
+            },
+          },
           queries: {
             useErrorBoundary: false,
             refetchOnWindowFocus: false,
+            retry: (failureCount, error) => {
+              if (handleUnauthorizedErrorsOnClient(error)) return false;
+              return failureCount < 3;
+            },
           },
         },
       },

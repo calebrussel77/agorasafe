@@ -46,7 +46,7 @@ const Header = () => {
       <header
         ref={headerRef}
         className={cn(
-          'sticky -mt-24 top-0 inset-x-0 z-50 transition-all duration-300 ease-in-out',
+          'sticky inset-x-0 top-0 z-50 -mt-24 transition-all duration-300 ease-in-out',
           !isHomePage && classNameList,
           !isHomePage && 'mt-0'
         )}
@@ -61,7 +61,7 @@ const Header = () => {
                 <Menu className="h-6 w-6" aria-hidden="true" />
               </button>
             </Sheet.Trigger>
-            <Sheet.Content className="bg-white w-[70%] sm:w-1/2">
+            <Sheet.Content className="w-[75%] bg-white p-0 sm:w-1/2">
               <MobileNavbar navigations={navigations} />
             </Sheet.Content>
           </Sheet>

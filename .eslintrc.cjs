@@ -31,6 +31,13 @@ const config = {
         fixStyle: 'inline-type-imports',
       },
     ],
+    'no-restricted-imports': [
+      'error',
+      {
+        patterns: ['@/features/*/*'],
+      },
+    ],
+    'import/no-cycle': 'error',
     '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
     'react/no-unescaped-entities': 0,
     '@typescript-eslint/no-unsafe-return': 0,
@@ -42,6 +49,7 @@ const config = {
     '@typescript-eslint/no-unsafe-call': 'off',
     '@typescript-eslint/no-explicit-any': 'off',
     'testing-library/render-result-naming-convention': 'off',
+    '@typescript-eslint/no-empty-function': 'off',
     camelcase: 'off',
     '@typescript-eslint/naming-convention': [
       'error',

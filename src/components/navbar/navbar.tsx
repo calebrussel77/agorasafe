@@ -12,11 +12,8 @@ import {
 import { cn } from '@/lib/utils';
 
 import { LogoSymbolIcon } from '../icons/logo-icon';
-import { Avatar } from '../ui/avatar';
 import { Button } from '../ui/button';
 import { useDropdownMenu } from '../ui/dropdown-menu';
-import { Typography } from '../ui/typography';
-import { UserAvatar } from '../user-avatar';
 
 interface NavbarProps {
   className?: string;
@@ -67,7 +64,7 @@ const Navbar: FC<NavbarProps> = ({ className, children, navigations }) => {
             <Button size="sm">Demander un service</Button>
           </AskServiceModal>
         )}
-        {profile ? (
+        {profile?.id ? (
           <UserProfileDropdown
             isOpen={isDropdownMenuOpen}
             onToggle={onToggleDropdownMenu}
@@ -75,20 +72,7 @@ const Navbar: FC<NavbarProps> = ({ className, children, navigations }) => {
             userProfileConfig={data as never}
             error={error as never}
             isLoading={isLoading}
-          >
-            <button className="flex items-center gap-3">
-              <UserAvatar
-                onClick={onToggleDropdownMenu}
-                src={profile.avatar as string}
-                alt={profile.name}
-                type={profile.type}
-                className="h-8 w-8"
-              />
-              <Typography className="text-white" truncate lines={1}>
-                {profile.name}
-              </Typography>
-            </button>
-          </UserProfileDropdown>
+          />
         ) : (
           <Link
             href="/auth/login"

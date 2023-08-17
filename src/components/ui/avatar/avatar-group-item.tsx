@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import React, { type FC, type MouseEventHandler } from 'react';
 
-import { Avatar, type AvatarProps } from '.';
+import { Avatar, type AvatarProps } from './avatar';
 
 export interface AvatarGroupItemProps {
   avatar: AvatarProps & { name?: string; href?: string };

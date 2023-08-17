@@ -1,63 +1,81 @@
-import { type TRPCClientErrorLike } from '@trpc/client';
+import { type TRPCError } from '@trpc/server';
 import { useRouter } from 'next/router';
 
-import { type AppRouter } from '@/server/api/root';
+import { cn } from '@/lib/utils';
 
 import { Accordion } from '../accordion';
 import { Button } from '../button/button';
 
-type TFullPageError = {
-  error: TRPCClientErrorLike<AppRouter> | null;
-  onRetry?: () => void;
+type ClassNames = {
+  root: string;
+  icon: string;
+  name: string;
+  description: string;
 };
 
-export function SectionError({ onRetry, error }: TFullPageError) {
-  const router = useRouter();
-  const isNetworkError = false;
-  const shouldRetry = !!onRetry;
-  const errorMessage = `ERROR: ${error ? error.message : ''}`;
+type TFullPageError = {
+  error: TRPCError | Error | { message: string } | undefined | null;
+  onRetry?: () => void;
+  classNames?: Partial<ClassNames>;
+  hasActions?: boolean;
+  icon?: JSX.Element;
+};
 
-  const title = isNetworkError ? `Connection Lost` : `Application Error`;
-  const message = isNetworkError
-    ? `Looks like you have not an active internet connection or the page you are trying to visit doesn't exist. Please
-    check the url and try again.`
-    : `Nous sommes désolé, il est impossible de traiter votre requête actuellement. Réessayez plus tard ou contactez notre support pour assistance.`;
+export function SectionError({
+  onRetry,
+  error,
+  icon,
+  classNames,
+  hasActions = true,
+}: TFullPageError) {
+  const router = useRouter();
+  const shouldRetry = !!onRetry;
+  const errorMessage = `${error ? error.message : ''}`;
 
   return (
-    <div role="alert" className="m-auto flex flex-col items-center text-center">
-      <BugFixIcon className="h-48 w-auto" />
-      {/* <BugFixIcon className="h-48 w-auto" /> */}
-      <h3 className="mt-2 text-xl font-semibold text-gray-900">{title}</h3>
-      <p className="mt-1 max-w-md text-gray-500">{message}</p>
-      <Accordion type="single" collapsible className="w-full max-w-md">
-        <Accordion.Item value="item-1">
-          <Accordion.Trigger className="mt-3 rounded-md bg-gray-100 p-2">
-            Developer stack
-          </Accordion.Trigger>
-          <Accordion.Content className="mt-1 max-h-80 w-full max-w-xl overflow-y-auto rounded-md bg-gray-100 p-3 text-gray-500">
-            {errorMessage}
-          </Accordion.Content>
-        </Accordion.Item>
-      </Accordion>
+    <div
+      role="alert"
+      className={cn(
+        'm-auto flex flex-col items-center p-6 text-center',
+        classNames?.root
+      )}
+    >
+      {icon ? (
+        icon
+      ) : (
+        <BugFixIcon className={cn('h-48 w-auto', classNames?.icon)} />
+      )}
+      <h3
+        className={cn(
+          'mt-2 text-xl font-semibold text-gray-900',
+          classNames?.name
+        )}
+      >
+        Une erreur est survenue
+      </h3>
+      <p className="mt-1 max-w-md text-gray-500">{errorMessage}</p>
 
-      <div className="mt-6 flex items-center gap-3">
-        <Button
-          onClick={() => (shouldRetry ? onRetry() : window.location.reload())}
-          type="button"
-        >
-          {shouldRetry ? 'Réessayer' : 'Recharger la page'}
-        </Button>
-
-        {router.pathname !== '/' && (
+      {hasActions && (
+        <div className="mt-6 flex items-center gap-3">
           <Button
-            onClick={() => window.location.replace('/')}
-            variant="link"
+            size="sm"
+            onClick={() => (shouldRetry ? onRetry() : window.location.reload())}
             type="button"
           >
-            Retour à laccueil
+            {shouldRetry ? 'Réessayer' : 'Recharger la page'}
           </Button>
-        )}
-      </div>
+          {router.pathname !== '/' && (
+            <Button
+              onClick={() => window.location.replace('/')}
+              variant="link"
+              type="button"
+              size="sm"
+            >
+              Retour à laccueil
+            </Button>
+          )}
+        </div>
+      )}
     </div>
   );
 }

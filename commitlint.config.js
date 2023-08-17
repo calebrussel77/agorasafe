@@ -1,17 +1,30 @@
 /**
  * ------------- LIST OF COMMIT TYPES ---------------------
  */
-//?[NEVER FORGOT] : To enable commitLint with husky => [npx husky add .husky/commit-msg 'npx commitlint --edit $1']
+
+// feat: a new feature
+//
+// It is generally a good idea to add a implementation scope to a feature commit
+// feat(c): so we can later generate implementation specific changelogs
+//
+// If a commit affects multiple implementations, please break it into two commits.
+
+// fix: a bug fix
+//
+// It is generally a good idea to add a implementation scope to a bug fix commit
+// fix(c): so we can later generate implementation specific changelogs
+//
+// If a commit affects multiple implementations, please break it into two commits.
 
 // build: Changes that affect the build system or external dependencies (example scopes: gulp, broccoli, npm)
 // ci: Changes to our CI configuration files and scripts (example scopes: Travis, Circle, BrowserStack, SauceLabs)
 // docs: Documentation only changes
-// feat: A new feature
 // fix: A bug fix
 // perf: A code change that improves performance
 // refactor: A code change that neither fixes a bug nor adds a feature
 // style: Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc)
 // test: Adding missing tests or correcting existing tests
+// chore: some minor change that doesn't fall in any of the other types
 
 module.exports = {
   extends: ['@commitlint/config-conventional'],

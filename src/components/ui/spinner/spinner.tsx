@@ -4,8 +4,8 @@ import { cn } from '@/lib/utils';
 
 const SpinnerClasses = {
   default: 'border-l-white',
-  primary: 'border-l-primary-500',
-  secondary: 'border-l-secondary-500',
+  primary: 'border-l-brand-500',
+  secondary: 'border-l-purple-500',
 };
 
 const Spinner = forwardRef<
@@ -27,7 +27,7 @@ Spinner.displayName = 'Spinner';
 
 const FullSpinner = () => {
   return (
-    <div className="fixed inset-0 z-40 flex h-full w-full items-center justify-center bg-gray-900 bg-opacity-50 backdrop-blur-sm backdrop-filter transition-all duration-200 ease-in-out">
+    <div className="fixed inset-0 z-40 flex h-full w-full items-center justify-center bg-white bg-opacity-70 backdrop-blur-sm backdrop-filter transition-all duration-200 ease-in-out">
       <Spinner className="relative z-20 h-12 w-12" />
     </div>
   );

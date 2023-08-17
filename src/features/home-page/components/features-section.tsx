@@ -5,7 +5,7 @@ import React, { type FC } from 'react';
 import { Button } from '@/components/ui/button';
 import { Typography } from '@/components/ui/typography';
 
-import { FormSubscriptionModal } from '@/features/onboarding-souscription/components/form-subscription-modal';
+import { FormSubscriptionModal } from '@/features/onboarding-souscription';
 
 const features = [
   {

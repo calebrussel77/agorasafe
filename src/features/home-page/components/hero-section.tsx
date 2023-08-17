@@ -1,11 +1,15 @@
-import { useKeenSlider } from 'keen-slider/react';
+import Link from 'next/link';
 import React, { type FC } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Image } from '@/components/ui/image';
 import { Typography } from '@/components/ui/typography';
 
-import { FormSubscriptionModal } from '@/features/onboarding-souscription/components/form-subscription-modal';
+import { FormSubscriptionModal } from '@/features/onboarding-souscription';
+
+import { generateUrlWithSearchParams } from '@/utils/misc';
+
+import { useFadeSliderImages } from '@/hooks/use-fade-slider-images';
 
 interface HeroSectionProps {
   className?: string;
@@ -18,52 +22,8 @@ const images = [
   '/images/cordonnier-africain-02.jpg',
 ];
 
-const DURATION_MS = 8_000;
-
 const HeroSection: FC<HeroSectionProps> = ({}) => {
-  const [opacities, setOpacities] = React.useState<number[]>([]);
-
-  // TODO : Refactor this, by using custom hook
-  const [sliderRef] = useKeenSlider<HTMLDivElement>(
-    {
-      slides: images.length,
-      loop: true,
-      detailsChanged(s) {
-        const newOpacities = s.track.details.slides.map(slide => slide.portion);
-        setOpacities(newOpacities);
-      },
-    },
-    [
-      slider => {
-        let timeout: ReturnType<typeof setTimeout>;
-        let isMouseOver = false;
-        function clearNextTimeout() {
-          clearTimeout(timeout);
-        }
-        function nextTimeout() {
-          clearTimeout(timeout);
-          if (isMouseOver) return;
-          timeout = setTimeout(() => {
-            slider.next();
-          }, DURATION_MS);
-        }
-        slider.on('created', () => {
-          slider.container.addEventListener('mouseover', () => {
-            isMouseOver = true;
-            clearNextTimeout();
-          });
-          slider.container.addEventListener('mouseout', () => {
-            isMouseOver = false;
-            nextTimeout();
-          });
-          nextTimeout();
-        });
-        slider.on('dragStarted', clearNextTimeout);
-        slider.on('animationEnded', nextTimeout);
-        slider.on('updated', nextTimeout);
-      },
-    ]
-  );
+  const { opacities, sliderRef } = useFadeSliderImages({ images });
 
   return (
     <>

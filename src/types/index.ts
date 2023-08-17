@@ -1,3 +1,6 @@
+import { type NextPage } from 'next';
+import { type ReactElement, type ReactNode } from 'react';
+
 /**
 *Usefull to prettify more intersection types
 * eg: type Intersected = {
@@ -31,3 +34,10 @@ export type ObjectValues<T> = T[keyof T];
 export type ComponentWithProps<T> = T extends React.ComponentType<infer P>
   ? P
   : object;
+
+export type NextPageWithLayout<P = Record<string, never>, IP = P> = NextPage<
+  P,
+  IP
+> & {
+  getLayout?: (page: ReactElement) => ReactNode;
+};

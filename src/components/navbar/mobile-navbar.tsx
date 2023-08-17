@@ -1,18 +1,18 @@
 import { useProfileStore } from '@/stores/profiles';
-import { ProfileType } from '@prisma/client';
 import { LogOut, RefreshCcw } from 'lucide-react';
 import { UserPlus2 } from 'lucide-react';
-import { signOut } from 'next-auth/react';
+import Image from 'next/image';
 import Link from 'next/link';
 import React, { type FC } from 'react';
 
-import { AskServiceModal } from '@/features/ask-services';
+import { useAuth } from '@/features/auth';
 import { useGetProfileConfig } from '@/features/profile-config';
 
-import { cn } from '@/lib/utils';
-
+import { ActiveLink } from '../active-link';
 import { LogoIcon } from '../icons/logo-icon';
+import { AsyncWrapper } from '../ui/async-wrapper';
 import { Button } from '../ui/button';
+import { ErrorWrapper } from '../ui/error';
 import { Separator } from '../ui/separator';
 import { Typography } from '../ui/typography';
 import { UserAvatar } from '../user-avatar';
@@ -24,142 +24,188 @@ interface MobileNavbarProps {
 }
 
 const MobileNavbar: FC<MobileNavbarProps> = ({ navigations }) => {
-  const { profile, reset } = useProfileStore();
+  const { onSignOut, profile, reset } = useAuth();
+
+  const isEnabled = !!profile?.id;
 
   const {
     data: userProfileConfig,
     isLoading,
     error,
-  } = useGetProfileConfig({
-    profileId: profile?.id as string,
-  });
-
-  const shouldDisplayCustomerButton =
-    !profile || profile?.type === ProfileType.CUSTOMER;
+    refetch,
+  } = useGetProfileConfig(
+    {
+      profileId: profile?.id as string,
+    },
+    { enabled: isEnabled }
+  );
 
   return (
     <>
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between p-6">
         <a href="#" className="-m-1.5 p-1.5">
           <span className="sr-only">Agorasafe</span>
-          <LogoIcon className="h-4 w-auto md:h-5" />
+          <LogoIcon className="h-5 w-auto" />
         </a>
       </div>
-      <div className="mt-6 flow-root">
+      <div className="mt-2 flow-root">
         <div className="-my-6 divide-y divide-gray-500/10">
-          <div className="py-6">
-            {profile ? (
-              <>
-                {' '}
-                <button className="-mx-3 flex w-full items-center gap-2 rounded-sm px-3 py-2 hover:bg-gray-100">
-                  <UserAvatar
-                    src={profile.avatar as string}
-                    alt={profile.name}
-                    type={profile.type}
-                    className="h-10 w-10"
-                  />
-                  <div className="text-left">
-                    <h3 className="line-clamp-1 text-lg font-semibold">
-                      {profile.name}
-                    </h3>
-                    <UserBadge type={profile.type} />
-                  </div>
-                </button>
-                <Separator />
-                {userProfileConfig?.addProfileInfos?.canAddNewProfile && (
-                  <>
-                    <Link
-                      href={userProfileConfig.addProfileInfos.href}
-                      className="w-full"
-                    >
-                      <Button className="w-full">
-                        <UserPlus2 className="mr-2 h-5 w-5" />
-                        <span className="line-clamp-1">
-                          {userProfileConfig.addProfileInfos.message}
-                        </span>
+          <AsyncWrapper
+            isLoading={isLoading}
+            error={error}
+            onRetryError={() => void refetch()}
+          >
+            <div className="py-6">
+              {profile ? (
+                <>
+                  <button className="-mx-3 flex w-full items-center gap-4 rounded-sm px-6 py-2 hover:bg-gray-100">
+                    <UserAvatar
+                      src={profile.avatar as string}
+                      alt={profile.name}
+                      type={profile.type}
+                      className="h-10 w-10"
+                    />
+                    <div className="text-left">
+                      <Typography
+                        as="h3"
+                        variant="h4"
+                        className="font-semibold"
+                        truncate
+                      >
+                        {profile.name}
+                      </Typography>
+                      <UserBadge
+                        className="flex-shrink-0 text-xs"
+                        type={profile.type}
+                      />
+                    </div>
+                  </button>
+                  <Separator />
+                  {userProfileConfig?.canAddNewProfile && (
+                    <>
+                      <Link
+                        href={userProfileConfig?.addNewProfileHref}
+                        className="w-full px-2"
+                      >
+                        <Button className="w-full">
+                          <UserPlus2 className="mr-2 h-5 w-5" />
+                          <span className="line-clamp-1">
+                            {userProfileConfig?.addNewProfileMessage}
+                          </span>
+                        </Button>
+                      </Link>
+                      <Separator />
+                    </>
+                  )}
+                  {userProfileConfig?.canSwitchToOtherProfile && (
+                    <>
+                      <Button
+                        onClick={reset}
+                        size="sm"
+                        variant="ghost"
+                        className="my-1 w-full px-6"
+                      >
+                        <RefreshCcw className="mr-2 h-5 w-5" />
+                        <Typography className="text-sm" truncate>
+                          {userProfileConfig?.switchProfileMessage}
+                        </Typography>
                       </Button>
-                    </Link>
-                    <Separator />
-                  </>
-                )}
-                {userProfileConfig?.switchProfileInfos
-                  ?.canSwitchToOtherProfile && (
-                  <>
+                      <Separator />
+                    </>
+                  )}
+                  <section
+                    id="user-connected-links"
+                    className="my-3 space-y-1 px-6"
+                  >
+                    {userProfileConfig?.appProfileLinks?.map(link => {
+                      const isProfileLink = link.id === 5;
+                      const url = isProfileLink
+                        ? `/u/${profile?.slug}`
+                        : link.href;
+
+                      return (
+                        <ActiveLink
+                          key={link.id}
+                          href={url}
+                          activeClassName="bg-zinc-100 text-primary"
+                          className="-mx-3 flex items-center px-3 py-2"
+                        >
+                          <Image
+                            src={link.iconUrl}
+                            alt={link.title}
+                            width={20}
+                            height={20}
+                            className="mr-2 flex-shrink-0"
+                          />
+                          <div className="flex w-full flex-col items-start justify-start text-left">
+                            <Typography as="h3" variant="paragraph">
+                              {link.title}
+                            </Typography>
+                            <Typography
+                              variant="small"
+                              className="text-muted-foreground"
+                            >
+                              {link.description}
+                            </Typography>
+                          </div>
+                        </ActiveLink>
+                      );
+                    })}
+                  </section>
+                  <Separator />
+                  <section
+                    id="application-navigation-links"
+                    className="my-3 space-y-1 px-6"
+                  >
+                    {navigations.map(item => (
+                      <a
+                        key={item.name}
+                        href={item.href}
+                        className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
+                      >
+                        {item.name}
+                      </a>
+                    ))}
+                  </section>
+                  <Separator />
+                  <section id="signout" className="my-3 px-6">
                     <Button
-                      onClick={reset}
                       size="sm"
                       variant="ghost"
-                      className="my-1 w-full"
+                      onClick={() => void onSignOut()}
+                      className="ml-auto flex items-center justify-center text-center"
                     >
-                      <RefreshCcw className="mr-2 h-5 w-5" />
-                      <Typography className="text-sm" truncate>
-                        {userProfileConfig.switchProfileInfos.switchProfileText}
-                      </Typography>
+                      <LogOut className="mr-1 h-4 w-4" />
+                      Se déconnecter
                     </Button>
-                    <Separator />
-                  </>
-                )}
-                <section id="user-connected-links" className="my-3 space-y-1">
-                  {userProfileConfig?.profileLinks?.map(link => (
-                    <button
-                      key={link.id}
-                      disabled={link.disabled}
-                      className="-mx-3 flex w-full flex-col items-start justify-start px-3 py-2 text-left"
-                    >
-                      <Typography as="h3" variant="paragraph">
-                        {link.title}
-                      </Typography>
-                      <Typography
-                        variant="small"
-                        className="text-muted-foreground"
-                      >
-                        {link.description}
-                      </Typography>
-                    </button>
-                  ))}
-                </section>
-                <Separator />
-                <section
-                  id="application-navigation-links"
-                  className="my-3 space-y-1"
-                >
-                  {navigations.map(item => (
-                    <a
-                      key={item.name}
-                      href={item.href}
-                      className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
-                    >
-                      {item.name}
-                    </a>
-                  ))}
-                </section>
-                <Separator />
-                <section id="signout" className="my-3">
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => {
-                      signOut()
-                        .then(() => reset())
-                        .catch(e => console.log(e));
-                    }}
-                    className="ml-auto flex items-center justify-center text-center"
+                  </section>
+                </>
+              ) : null}
+              {!profile && (
+                <>
+                  <Separator />
+                  <section
+                    id="application-navigation-links"
+                    className="my-3 space-y-1 px-6"
                   >
-                    <LogOut className="mr-1 h-4 w-4" />
-                    Se déconnecter
-                  </Button>
-                </section>
-              </>
-            ) : null}
-            {!profile && (
-              <Link
-                href="/auth/login"
-                className="-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
-              >
-                Se connecter
-              </Link>
-            )}
-          </div>
+                    {navigations.map(item => (
+                      <a
+                        key={item.name}
+                        href={item.href}
+                        className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
+                      >
+                        {item.name}
+                      </a>
+                    ))}
+                  </section>
+                  <Separator />
+                  <Link href="/auth/login" className="mt-6 inline-block px-6">
+                    <Button>Se connecter / Créer mon compte</Button>
+                  </Link>
+                </>
+              )}
+            </div>
+          </AsyncWrapper>
         </div>
       </div>
     </>

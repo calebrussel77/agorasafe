@@ -2,67 +2,74 @@ import React, { type FC, type ReactElement, type ReactNode } from 'react';
 
 import { cn } from '@/lib/utils';
 
-interface GroupItemProps {
-  title: ReactElement;
-  children?: ReactNode;
-  className?: string;
-  titleClassName?: string;
-  descriptionClassName?: string;
+type ClassNames = {
+  root: string;
+  wrapper: string;
+  name: string;
+  description: string;
+};
+
+type GroupItemProps = {
+  name: ReactElement;
+  description?: ReactNode;
+  classNames?: Partial<ClassNames>;
   iconBefore?: ReactElement;
   iconAfter?: ReactElement;
-}
+  onClick?: () => void;
+};
 
 const GroupItem: FC<GroupItemProps> = ({
-  className,
-  children,
-  title,
+  description,
+  name,
+  classNames,
   iconAfter,
   iconBefore,
-  descriptionClassName,
-  titleClassName,
+  onClick,
 }) => {
-  const isTitleString = typeof title === 'string';
-  const isChildrenString = typeof children === 'string';
+  const isStringName = typeof name === 'string';
+  const isStringDescription = typeof description === 'string';
+
   return (
     <div
+      onClick={onClick}
       className={cn(
-        '-mx-3 flex items-center rounded-md px-3 py-2 hover:bg-gray-100',
-        className
+        '-mx-3 flex items-center gap-x-3 rounded-md px-3 py-2 hover:bg-gray-100',
+        classNames?.root
       )}
     >
-      {iconBefore}
+      {iconBefore && <div className="flex-shrink-0">{iconBefore}</div>}
       <div
         className={cn(
-          'flex flex-col items-start justify-start',
-          iconBefore && !iconAfter && 'ml-2 w-full flex-1 gap-0.5'
+          'flex flex-grow flex-col items-start justify-start gap-y-0.5',
+          classNames?.wrapper
         )}
       >
-        {isTitleString ? (
+        {isStringName ? (
           <h3
             className={cn(
               'font-bold leading-none tracking-tight',
-              titleClassName
+              classNames?.name
             )}
           >
-            {title}
+            {name}
           </h3>
         ) : (
-          title
+          name
         )}
-        {isChildrenString ? (
+        {isStringDescription ? (
           <p
             className={cn(
               'text-sm text-muted-foreground',
-              descriptionClassName
+              classNames?.description
             )}
           >
-            {children}
+            {description}
           </p>
         ) : (
-          children
+          description
         )}
       </div>
-      {iconAfter}
+      {iconAfter && <div className="flex-shrink-0">{iconAfter}</div>}
     </div>
   );
 };

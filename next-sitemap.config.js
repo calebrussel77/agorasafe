@@ -2,9 +2,22 @@
 
 /** @type {import('next-sitemap').IConfig} */
 const NextSitemapConfig = {
-  siteUrl: process.env.SITE_URL || 'https://agorasafe.vercel.app',
-  generateRobotsTxt: true,
-  changefreq: 'daily',
+  siteUrl:
+    process.env.NEXT_PUBLIC_APP_URL || process.env.NEXT_PUBLIC_VERCEL_URL
+      ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`
+      : 'https://agorasafe.vercel.app',
+  exclude: ['/404'],
+  generateRobotsTxt: process.env.NEXT_PUBLIC_VERCEL_ENV === 'production',
+  robotsTxtOptions: {
+    policies: [
+      {
+        userAgent: '*',
+        disallow: ['/404'],
+      },
+      { userAgent: '*', allow: '/' },
+    ],
+  },
+  generateIndexSitemap: false,
 };
 
 module.exports = NextSitemapConfig;

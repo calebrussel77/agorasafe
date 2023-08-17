@@ -1,4 +1,4 @@
-import { siteProfiles } from '@/constants';
+import { APP_PROFILES_INFO } from '@/constants';
 import { type ProfileType } from '@prisma/client';
 import { type TRPCClientErrorLike } from '@trpc/client';
 import { Controller } from 'react-hook-form';
@@ -89,7 +89,7 @@ const AddProfileForm = ({
                 onValueChange={field.onChange}
                 defaultValue={field.value as never}
               >
-                {siteProfiles.map(siteProfile => (
+                {APP_PROFILES_INFO.map(siteProfile => (
                   <Field
                     key={siteProfile.type}
                     className={cn(

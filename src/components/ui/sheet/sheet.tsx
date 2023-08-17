@@ -151,14 +151,18 @@ const SheetContent = React.forwardRef<
   DialogContentProps
 >(({ position, size, className, children, ...props }, ref) => (
   <SheetPortal position={position}>
-    <SheetOverlay />
+    <SheetOverlay
+      className={cn(
+        'fixed inset-0 z-50 bg-white/50 backdrop-blur-sm transition-all duration-200 ease-in-out data-[state=closed]:animate-out data-[state=closed]:fade-out data-[state=open]:fade-in'
+      )}
+    />
     <SheetPrimitive.Content
       ref={ref}
       className={cn(sheetVariants({ position, size }), className)}
       {...props}
     >
       {children}
-      <SheetPrimitive.Close className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-secondary">
+      <SheetPrimitive.Close className="absolute right-4 top-4 rounded-full bg-zinc-100 p-1 opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-secondary">
         <X className="h-4 w-4" />
         <span className="sr-only">Close</span>
       </SheetPrimitive.Close>

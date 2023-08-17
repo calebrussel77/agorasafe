@@ -1,3 +1,4 @@
+import { REDIRECT_QUERY_KEY } from '@/constants';
 import {
   type GetServerSidePropsContext,
   type GetServerSidePropsResult,
@@ -5,6 +6,8 @@ import {
 import { type Session } from 'next-auth';
 
 import { getServerAuthSession } from '@/server/auth';
+
+import { generateUrlWithSearchParams } from './misc';
 
 type RequireAuthProps = {
   ctx: GetServerSidePropsContext;
@@ -20,7 +23,9 @@ export const requireAuth = async ({
 }: RequireAuthProps) => {
   const session = await getServerAuthSession(ctx);
   const _redirectUrl = ctx.resolvedUrl;
-  const destination = `${redirectUrl}?source=${_redirectUrl}`;
+  const destination = generateUrlWithSearchParams(redirectUrl, {
+    [REDIRECT_QUERY_KEY]: _redirectUrl,
+  });
 
   if (!session) {
     return {

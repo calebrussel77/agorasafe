@@ -1,17 +1,15 @@
-/* eslint-disable @next/next/no-img-element */
 import { MoveLeft } from 'lucide-react';
 import { type GetServerSideProps } from 'next';
 import { type Session } from 'next-auth';
-import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
-import { toast } from 'react-toastify';
 
 import { GoogleSolidIcon } from '@/components/icons/google-solid-icon';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Notification } from '@/components/ui/notification';
 import { Separator } from '@/components/ui/separator';
+
+import { useAuth } from '@/features/auth';
 
 import { handleRouteBack } from '@/utils/handle-route-back';
 
@@ -19,28 +17,33 @@ import { htmlParse } from '@/lib/html-react-parser';
 
 import { getUserById } from '@/server/api/modules/users';
 import { getServerAuthSession } from '@/server/auth';
-import { prisma } from '@/server/db';
+
+import { useRedirectUrl } from '@/hooks/use-redirect-url';
+import { useToastMessage } from '@/hooks/use-toast-message';
 
 const LoginPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const { toast } = useToastMessage();
+  const { redirectUrl } = useRedirectUrl(router);
+  const { onGooleSignIn } = useAuth();
 
-  const onRegisterWithGoogle = () => {
+  const onRegisterWithGoogle = async () => {
     setIsLoading(true);
-    try {
-      void signIn('google');
-    } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : "Une erreur s'est produite";
-      toast(
-        <Notification
-          variant="danger"
-          title={htmlParse(errorMessage) as never}
-        />
-      );
-    } finally {
-      setTimeout(() => setIsLoading(false), 3500);
-    }
+    await onGooleSignIn({
+      redirectUrl,
+      onError(error) {
+        const errorMessage =
+          error instanceof Error ? error.message : "Une erreur s'est produite";
+        toast({
+          variant: 'danger',
+          title: htmlParse(errorMessage),
+        });
+      },
+      onSeatled() {
+        setTimeout(() => setIsLoading(false), 4000);
+      },
+    });
   };
 
   return (
@@ -67,7 +70,7 @@ const LoginPage = () => {
             <Separator />
             <Button
               isLoading={isLoading}
-              onClick={onRegisterWithGoogle}
+              onClick={() => void onRegisterWithGoogle()}
               className="mt-6 flex w-full items-center justify-center font-semibold"
             >
               <GoogleSolidIcon className="h-5 w-5" />
