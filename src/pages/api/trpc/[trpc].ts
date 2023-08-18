@@ -1,3 +1,4 @@
+import { isDev } from '@/constants';
 import { env } from '@/env.mjs';
 import { createNextApiHandler } from '@trpc/server/adapters/next';
 
@@ -23,8 +24,7 @@ export default createNextApiHandler({
   router: appRouter,
   createContext: createTRPCContext,
   onError: ({ path, error, ctx }) => {
-    const isDevMode = env.NODE_ENV === 'development';
-    if (isDevMode) {
+    if (isDev) {
       console.error(
         `❌ tRPC failed on ${path ?? '<no-path>'}: ${error.message}`
       );

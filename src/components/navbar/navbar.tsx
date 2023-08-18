@@ -1,15 +1,17 @@
-import { useProfileStore } from '@/stores/profiles';
 import { ProfileType } from '@prisma/client';
 import Link from 'next/link';
 import React, { type FC, type ReactNode } from 'react';
 
-import { AskServiceModal } from '@/features/ask-services';
+import { LoginRedirect } from '@/features/auth';
 import {
   UserProfileDropdown,
   useGetProfileConfig,
 } from '@/features/profile-config';
+import { AskServiceModal } from '@/features/publish-service';
 
 import { cn } from '@/lib/utils';
+
+import { useCurrentUser } from '@/hooks/use-current-user';
 
 import { LogoSymbolIcon } from '../icons/logo-icon';
 import { Button } from '../ui/button';
@@ -22,7 +24,7 @@ interface NavbarProps {
 }
 
 const Navbar: FC<NavbarProps> = ({ className, children, navigations }) => {
-  const { profile } = useProfileStore();
+  const { profile } = useCurrentUser();
   const { isDropdownMenuOpen, onToggleDropdownMenu } = useDropdownMenu();
 
   const { data, isLoading, error } = useGetProfileConfig(
@@ -61,7 +63,9 @@ const Navbar: FC<NavbarProps> = ({ className, children, navigations }) => {
       <div className="flex items-center lg:flex-1 lg:justify-end">
         {shouldDisplayCustomerButton && (
           <AskServiceModal>
-            <Button size="sm">Demander un service</Button>
+            <LoginRedirect reason="publish-new-service">
+              <Button size="sm">Demander un service</Button>
+            </LoginRedirect>
           </AskServiceModal>
         )}
         {profile?.id ? (

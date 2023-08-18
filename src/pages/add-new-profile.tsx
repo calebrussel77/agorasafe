@@ -1,4 +1,3 @@
-import { useProfileStore } from '@/stores/profiles';
 import { ProfileType } from '@prisma/client';
 import { MoveLeft } from 'lucide-react';
 import { type GetServerSideProps } from 'next';
@@ -6,7 +5,6 @@ import { type Session } from 'next-auth';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 
-import { PageWrapper } from '@/components/page-wrapper';
 import { Redirect } from '@/components/redirect';
 import { Card } from '@/components/ui/card';
 import { CenterContent } from '@/components/ui/layout';
@@ -24,6 +22,7 @@ import { requireAuth } from '@/utils/require-auth';
 
 import { htmlParse } from '@/lib/html-react-parser';
 
+import { useCurrentUser } from '@/hooks/use-current-user';
 import { useToastMessage } from '@/hooks/use-toast-message';
 
 const ALLOWED_TYPES = Object.keys(ProfileType);
@@ -39,7 +38,7 @@ const meta = {
 const AddNewProfilePage = () => {
   const router = useRouter();
   const profileType = router.query.profile_type as ProfileType;
-  const { reset } = useProfileStore();
+  const { resetProfile } = useCurrentUser();
   const { toast } = useToastMessage();
 
   const { mutate, error, isLoading } = useCreateProfile({
@@ -48,7 +47,7 @@ const AddNewProfilePage = () => {
         variant: 'success',
         title: htmlParse(data.message) as never,
       });
-      reset();
+      resetProfile();
       await wait(3_00);
       void router.push('/');
     },

@@ -1,7 +1,15 @@
 import { type VariantProps, cva } from 'class-variance-authority';
-import { AlertTriangle, HelpCircle, Info, MailQuestion, X } from 'lucide-react';
+import {
+  AlertTriangle,
+  HelpCircle,
+  InfoIcon,
+  MailQuestion,
+  X,
+} from 'lucide-react';
 import { CheckCircle2 } from 'lucide-react';
 import React, { type ReactElement, forwardRef, useState } from 'react';
+
+import { cn } from '@/lib/utils';
 
 import { AutoAnimate } from '../auto-animate';
 import { Inline } from '../inline';
@@ -11,19 +19,21 @@ const sectionMessage = cva('w-full flex justify-center items-start gap-2', {
   variants: {
     appareance: {
       danger: [
-        'bg-red-50 text-red-800',
+        'bg-red-50 text-red-800 border-b border-t border-red-500',
         // 'border-transparent',
       ],
       discovery: [
-        'bg-secondary-600 text-white',
+        'bg-pink-600 text-white border-b border-t border-pink-500',
         // 'border-transparent',
       ],
       success: [
-        'bg-green-50 text-green-800',
+        'bg-green-50 text-green-800 border-b border-t border-green-500',
         // 'border-transparent',
       ],
-      warning: ['bg-yellow-50 text-yellow-800'],
-      info: ['bg-blue-50 text-blue-800'],
+      warning: [
+        'bg-yellow-50 text-yellow-800 border-b border-t border-yellow-500',
+      ],
+      info: ['bg-blue-50 text-brand-800 border-b border-t border-brand-500'],
       system: ['bg-primary-50 text-primary-800'],
     },
     size: {
@@ -41,6 +51,7 @@ const sectionMessage = cva('w-full flex justify-center items-start gap-2', {
 
 type SectionMessageOptions = {
   className?: string;
+  isSticky?: boolean;
   title?: string | ReactElement;
   onClose?: React.MouseEventHandler<HTMLButtonElement>;
   actions?: Array<ReactElement<unknown>> | ReactElement<unknown>;
@@ -49,7 +60,7 @@ type SectionMessageOptions = {
 
 const IconAppareances = {
   danger: {
-    icon: Info,
+    icon: InfoIcon,
     color: ' text-red-500',
   },
   success: {
@@ -68,12 +79,11 @@ const IconAppareances = {
     icon: AlertTriangle,
     color: 'text-yellow-500',
   },
-  info: { icon: Info, color: 'text-primary-500' },
+  info: { icon: InfoIcon, color: 'text-primary-500' },
 };
 
 export type SectionMessageProps = VariantProps<typeof sectionMessage> &
-  SectionMessageOptions &
-  React.HTMLAttributes<HTMLDivElement>;
+  SectionMessageOptions & { description?: string | JSX.Element };
 
 const SectionMessage = forwardRef<HTMLDivElement, SectionMessageProps>(
   (
@@ -84,8 +94,9 @@ const SectionMessage = forwardRef<HTMLDivElement, SectionMessageProps>(
       hasCloseButton = true,
       size,
       title,
+      isSticky = false,
       actions,
-      children,
+      description,
       ...props
     },
     ref
@@ -111,14 +122,18 @@ const SectionMessage = forwardRef<HTMLDivElement, SectionMessageProps>(
           <div
             ref={ref}
             role="alert"
-            className={sectionMessage({ appareance, size, class: className })}
+            className={cn(
+              'mb-3',
+              sectionMessage({ appareance, size, class: className }),
+              isSticky && 'sticky top-0 z-20 w-full'
+            )}
             {...props}
           >
             <div className="flex w-full flex-1 items-start gap-3">
               {<Icon className={`h-6 w-6 flex-shrink-0 ${ColorIcon}`} />}
               <div className="space-y-2">
                 {title && <h3 className="text-base font-semibold">{title}</h3>}
-                {children && <div className="text-sm">{children}</div>}
+                {description && <div className="text-sm">{description}</div>}
                 <div className="flex flex-wrap items-center gap-1">
                   {isActionsArray
                     ? actions?.length > 0 && (

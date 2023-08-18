@@ -8,9 +8,10 @@ import {
   HeroSection,
   TestimonialSection,
 } from '@/features/home-page';
+
 import { type AppPageProps } from '@/contexts/app-context';
 
-const HomePage:AppPageProps['Component'] = () => {
+const HomePage: AppPageProps['Component'] = () => {
   return (
     <>
       {/* Hero section */}

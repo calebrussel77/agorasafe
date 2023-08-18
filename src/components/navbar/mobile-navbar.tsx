@@ -1,4 +1,3 @@
-import { useProfileStore } from '@/stores/profiles';
 import { LogOut, RefreshCcw } from 'lucide-react';
 import { UserPlus2 } from 'lucide-react';
 import Image from 'next/image';
@@ -8,11 +7,12 @@ import React, { type FC } from 'react';
 import { useAuth } from '@/features/auth';
 import { useGetProfileConfig } from '@/features/profile-config';
 
+import { useCurrentUser } from '@/hooks/use-current-user';
+
 import { ActiveLink } from '../active-link';
 import { LogoIcon } from '../icons/logo-icon';
 import { AsyncWrapper } from '../ui/async-wrapper';
 import { Button } from '../ui/button';
-import { ErrorWrapper } from '../ui/error';
 import { Separator } from '../ui/separator';
 import { Typography } from '../ui/typography';
 import { UserAvatar } from '../user-avatar';
@@ -24,20 +24,18 @@ interface MobileNavbarProps {
 }
 
 const MobileNavbar: FC<MobileNavbarProps> = ({ navigations }) => {
-  const { onSignOut, profile, reset } = useAuth();
-
-  const isEnabled = !!profile?.id;
-
+  const { onSignOut } = useAuth();
+  const { profile, resetProfile } = useCurrentUser();
   const {
     data: userProfileConfig,
-    isLoading,
+    isFetching,
     error,
     refetch,
   } = useGetProfileConfig(
     {
       profileId: profile?.id as string,
     },
-    { enabled: isEnabled }
+    { enabled: !!profile?.id }
   );
 
   return (
@@ -50,12 +48,12 @@ const MobileNavbar: FC<MobileNavbarProps> = ({ navigations }) => {
       </div>
       <div className="mt-2 flow-root">
         <div className="-my-6 divide-y divide-gray-500/10">
-          <AsyncWrapper
-            isLoading={isLoading}
-            error={error}
-            onRetryError={() => void refetch()}
-          >
-            <div className="py-6">
+          <div className="py-6">
+            <AsyncWrapper
+              isLoading={isFetching}
+              error={error}
+              onRetryError={() => void refetch()}
+            >
               {profile ? (
                 <>
                   <button className="-mx-3 flex w-full items-center gap-4 rounded-sm px-6 py-2 hover:bg-gray-100">
@@ -100,7 +98,7 @@ const MobileNavbar: FC<MobileNavbarProps> = ({ navigations }) => {
                   {userProfileConfig?.canSwitchToOtherProfile && (
                     <>
                       <Button
-                        onClick={reset}
+                        onClick={resetProfile}
                         size="sm"
                         variant="ghost"
                         className="my-1 w-full px-6"
@@ -172,7 +170,7 @@ const MobileNavbar: FC<MobileNavbarProps> = ({ navigations }) => {
                     <Button
                       size="sm"
                       variant="ghost"
-                      onClick={() => void onSignOut()}
+                      onClick={() => void onSignOut(resetProfile)}
                       className="ml-auto flex items-center justify-center text-center"
                     >
                       <LogOut className="mr-1 h-4 w-4" />
@@ -181,31 +179,32 @@ const MobileNavbar: FC<MobileNavbarProps> = ({ navigations }) => {
                   </section>
                 </>
               ) : null}
-              {!profile && (
-                <>
-                  <Separator />
-                  <section
-                    id="application-navigation-links"
-                    className="my-3 space-y-1 px-6"
-                  >
-                    {navigations.map(item => (
-                      <a
-                        key={item.name}
-                        href={item.href}
-                        className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
-                      >
-                        {item.name}
-                      </a>
-                    ))}
-                  </section>
-                  <Separator />
-                  <Link href="/auth/login" className="mt-6 inline-block px-6">
-                    <Button>Se connecter / Créer mon compte</Button>
-                  </Link>
-                </>
-              )}
-            </div>
-          </AsyncWrapper>
+            </AsyncWrapper>
+
+            {!profile && (
+              <>
+                <Separator />
+                <section
+                  id="application-navigation-links"
+                  className="my-3 space-y-1 px-6"
+                >
+                  {navigations.map(item => (
+                    <a
+                      key={item.name}
+                      href={item.href}
+                      className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
+                    >
+                      {item.name}
+                    </a>
+                  ))}
+                </section>
+                <Separator />
+                <Link href="/auth/login" className="mt-6 inline-block px-6">
+                  <Button>Se connecter / Créer mon compte</Button>
+                </Link>
+              </>
+            )}
+          </div>
         </div>
       </div>
     </>

@@ -22,6 +22,8 @@ import { generateArray, isPathMatchRoute } from '@/utils/misc';
 
 import { cn } from '@/lib/utils';
 
+import { useCurrentUser } from '@/hooks/use-current-user';
+
 import { type GetProfileConfigOutput } from '../types';
 
 interface UserProfileDropdownProps {
@@ -41,8 +43,8 @@ const UserProfileDropdown: FC<UserProfileDropdownProps> = ({
   error,
   onToggle,
 }) => {
-  const { onSignOut, reset } = useAuth();
-  const router = useRouter();
+  const { onSignOut } = useAuth();
+  const { resetProfile } = useCurrentUser();
 
   if (!currentProfile) return null;
 
@@ -168,7 +170,7 @@ const UserProfileDropdown: FC<UserProfileDropdownProps> = ({
                   <>
                     <DropdownMenu.Item asChild>
                       <Button
-                        onClick={reset}
+                        onClick={resetProfile}
                         size="sm"
                         variant="ghost"
                         className="flex w-full"
@@ -224,7 +226,7 @@ const UserProfileDropdown: FC<UserProfileDropdownProps> = ({
                 })}
                 <DropdownMenu.Separator />
                 <DropdownMenu.Item
-                  onClick={() => void onSignOut()}
+                  onClick={() => void onSignOut(resetProfile)}
                   className="flex items-center justify-center text-center"
                 >
                   <LogOut className="mr-2 h-4 w-4" />

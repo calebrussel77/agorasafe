@@ -110,14 +110,14 @@ model ServiceRequest {
     photoThree             String?
     numberOfProviderNeeded Int
     duration               String?
-    start_date             String
-    end_date               String?
-    estimated_price        String
+    startDate              String
+    endDate                String?
+    estimatedPrice         String
     location               String
 
     status ServiceRequestStatus? @default(value: OPEN)
 
-    provider_responses ProviderServiceRequestResponse[]
+    providerResponses ProviderServiceRequestResponse[]
 
     author   Customer @relation(fields: [authorId], references: [id], onDelete: Cascade)
     authorId String
@@ -181,16 +181,17 @@ model Location {
 }
 
 model User {
-    id            String    @id @default(cuid())
-    firstName     String
-    lastName      String
-    fullName      String
-    picture       String?
-    birthdate     String?
-    email         String    @unique
-    emailVerified DateTime?
-    phone         String?
-    sex           Sex?      @default(value: MALE)
+    id               String    @id @default(cuid())
+    firstName        String
+    lastName         String
+    fullName         String
+    hasBeenOnboarded Boolean?  @default(false)
+    picture          String?
+    birthdate        String?
+    email            String    @unique
+    emailVerified    DateTime?
+    phone            String?
+    sex              Sex?      @default(value: MALE)
 
     accounts Account[]
     sessions Session[]

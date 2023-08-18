@@ -134,7 +134,9 @@ const AskServiceModal: FC<AskServiceModalProps> = ({ children }) => {
 
   return (
     <Dialog>
-      <DialogTrigger asChild>{children}</DialogTrigger>
+      <DialogTrigger asChild>
+        <span>{children}</span>
+      </DialogTrigger>
       <DialogContent className="px-4 sm:max-w-[625px]">
         <DialogHeader>
           <DialogTitle>
@@ -190,7 +192,7 @@ const AskServiceModal: FC<AskServiceModalProps> = ({ children }) => {
             {services?.map(service => (
               <Link
                 key={service.id}
-                href={`/publish-new-service?service_item=${service.id}`}
+                href={`/publish-service/${service.id}`}
                 className="block w-full"
               >
                 <AskServiceItem name={service.name} />

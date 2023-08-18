@@ -3,6 +3,8 @@ import { type ProfileStore } from '@/stores/profiles';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 
+import { LoginRedirect } from '@/features/auth';
+
 import { generateUrlWithSearchParams } from '@/utils/misc';
 
 import { Button } from '../ui/button';
@@ -15,12 +17,10 @@ import {
 } from '../ui/dialog';
 
 function SessionExpirationDialog({
-  setIsSessionExpired,
+  updateIsSessionExpired,
 }: {
-  setIsSessionExpired: ProfileStore['setIsSessionExpired'];
+  updateIsSessionExpired: ProfileStore['setIsSessionExpired'];
 }) {
-  const router = useRouter();
-
   return (
     <Dialog open={true}>
       <DialogContent className="sm:max-w-[625px]">
@@ -37,14 +37,12 @@ function SessionExpirationDialog({
           </DialogDescription>
         </DialogHeader>
         <div className="flex w-full justify-end px-4 py-3">
-          <Link
-            onClick={() => setIsSessionExpired(false)}
-            href={generateUrlWithSearchParams('/auth/login', {
-              [REDIRECT_QUERY_KEY]: router.asPath,
-            })}
+          <LoginRedirect
+            reason="session-expired"
+            onRedirect={() => updateIsSessionExpired(false)}
           >
             <Button>Me reconnecter</Button>
-          </Link>
+          </LoginRedirect>
         </div>
       </DialogContent>
     </Dialog>

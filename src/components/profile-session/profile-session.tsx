@@ -1,8 +1,8 @@
-import { useProfileStore } from '@/stores/profiles';
-import { useSession } from 'next-auth/react';
 import React, { type ComponentType, type ReactNode } from 'react';
 
 import { ChooseProfileModale } from '@/features/profiles';
+
+import { useCurrentUser } from '@/hooks/use-current-user';
 
 import { SessionExpirationDialog } from '../session-expiration-modal';
 
@@ -11,21 +11,28 @@ type ComponentProps = {
 };
 
 const ProfileSession = ({ children }: ComponentProps) => {
-  const { data: session, status } = useSession();
-  const { isSessionExpired, setProfile, setIsSessionExpired, profile } =
-    useProfileStore();
-  const shouldOpenChooseProfileDialog =
-    status === 'authenticated' && !profile && !isSessionExpired;
+  const {
+    session,
+    isAuth,
+    isSessionExpired,
+    updateProfile,
+    updateIsSessionExpired,
+    profile,
+  } = useCurrentUser();
+
+  const shouldOpenChooseProfileDialog = isAuth && !profile && !isSessionExpired;
 
   return (
     <>
       {isSessionExpired && (
-        <SessionExpirationDialog setIsSessionExpired={setIsSessionExpired} />
+        <SessionExpirationDialog
+          updateIsSessionExpired={updateIsSessionExpired}
+        />
       )}
       {shouldOpenChooseProfileDialog && (
         <ChooseProfileModale
           session={session}
-          {...{ setProfile, setIsSessionExpired }}
+          {...{ updateProfile, updateIsSessionExpired }}
         />
       )}
       {children}

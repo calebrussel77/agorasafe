@@ -1,4 +1,3 @@
-import { useProfileStore } from '@/stores/profiles';
 import { type ProfileType } from '@prisma/client';
 import { type FC } from 'react';
 

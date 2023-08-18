@@ -1,17 +1,14 @@
-import { useProfileStore } from '@/stores/profiles';
 import * as Sentry from '@sentry/nextjs';
 import { signIn, signOut } from 'next-auth/react';
 
 import { wait } from '@/utils/misc';
 
 export const useAuth = () => {
-  const { profile, setProfile, reset } = useProfileStore();
-
-  const onSignOut = async () => {
+  const onSignOut = async (fn?: () => void) => {
     await signOut();
     //Due to next-auth sign out duration
     await wait(100);
-    reset();
+    fn && fn();
   };
 
   const onGooleSignIn = async (opts?: {
@@ -36,9 +33,6 @@ export const useAuth = () => {
   };
 
   return {
-    profile,
-    setProfile,
-    reset,
     onSignOut,
     onGooleSignIn,
   };

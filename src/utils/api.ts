@@ -39,6 +39,8 @@ const handleUnauthorizedErrorsOnClient = (error: unknown) => {
     }),
     redirect: false,
   });
+
+  //Use insatble batch to use non react function of the profile store
   unstable_batchedUpdates(() => {
     useProfileStore.getState().setIsSessionExpired(true);
     useProfileStore.getState().setProfile(null);

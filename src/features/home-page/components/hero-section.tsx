@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import React, { type FC } from 'react';
 
 import { Button } from '@/components/ui/button';
@@ -6,8 +5,6 @@ import { Image } from '@/components/ui/image';
 import { Typography } from '@/components/ui/typography';
 
 import { FormSubscriptionModal } from '@/features/onboarding-souscription';
-
-import { generateUrlWithSearchParams } from '@/utils/misc';
 
 import { useFadeSliderImages } from '@/hooks/use-fade-slider-images';
 
@@ -37,6 +34,7 @@ const HeroSection: FC<HeroSectionProps> = ({}) => {
             >
               <Image
                 src={src}
+                loading="eager"
                 alt="Images banner"
                 className="absolute inset-0 -z-20 h-full w-full object-cover"
               />

@@ -1,12 +1,13 @@
 import { env } from '@/env.mjs';
 import { ProfileType } from '@prisma/client';
 
-const VERCEL_URL = process.env.NEXT_PUBLIC_VERCEL_URL
-  ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`
-  : '';
+export const isDev = process.env.NODE_ENV === 'development';
 
-export const WEBSITE_URL =
-  env.NEXT_PUBLIC_APP_URL || VERCEL_URL || 'http://localhost:3000';
+export const isProd = process.env.NODE_ENV === 'production';
+
+export const WEBSITE_URL = isDev
+  ? 'http://localhost:3000'
+  : env.NEXT_PUBLIC_APP_URL || 'https://agorasafe.vercel.app';
 
 export const APP_NAME = env.NEXT_PUBLIC_APP_NAME || 'Agorasafe.com';
 

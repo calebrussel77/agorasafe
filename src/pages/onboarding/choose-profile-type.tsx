@@ -1,7 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 import { type GetServerSideProps } from 'next';
 import { type Session } from 'next-auth';
-import { useSession } from 'next-auth/react';
 
 import { Avatar } from '@/components/ui/avatar';
 import { Card } from '@/components/ui/card';
@@ -12,10 +11,13 @@ import { ChooseProfileTypeForm } from '@/features/auth-onboarding';
 
 import { requireAuth } from '@/utils/require-auth';
 
+import { useCurrentUser } from '@/hooks/use-current-user';
+
 const ChooseAccountTypePage = () => {
-  const { data: session } = useSession();
+  const { session } = useCurrentUser();
+
   return (
-    <CenterContent className="container min-h-screen max-w-2xl w-full">
+    <CenterContent className="container min-h-screen w-full max-w-2xl">
       <Card>
         <Card.Header>
           <Card.Title className="text-xl">

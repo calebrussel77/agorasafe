@@ -5,12 +5,12 @@ import { useRouter } from 'next/router';
 import { Redirect } from '@/components/redirect';
 import { Seo } from '@/components/ui/seo';
 
-import { StepOneForm } from '@/features/publish-service';
+import { StepOneForm, publishServiceSteps } from '@/features/publish-service';
 
 import { type AppPageProps } from '@/contexts/app-context';
 
 const meta = {
-  title: 'Publier un nouveau service',
+  title: 'Publier un nouveau service - Informations principales',
   description: `Remplissez simplement notre formulaire de création de service afin de vous faire aider par un professionel.`,
 };
 
@@ -30,7 +30,7 @@ const PublishNewServicePage: AppPageProps['Component'] = () => {
 
 PublishNewServicePage.hasProfileSession = true;
 PublishNewServicePage.getLayout = page => (
-  <WizardLayout currentStep={1} steps={5}>
+  <WizardLayout currentStep={1} steps={publishServiceSteps}>
     {page}
   </WizardLayout>
 );

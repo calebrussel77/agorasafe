@@ -1,4 +1,3 @@
-import { useProfileStore } from '@/stores/profiles';
 import { ProfileType } from '@prisma/client';
 import { type FC, type ReactNode } from 'react';
 
@@ -10,8 +9,6 @@ interface CanViewProps {
 }
 
 const CanView: FC<CanViewProps> = ({ profiles, children }) => {
-  useProfileStore();
-
   if (!profiles.some(el => ALLOWED_STATES.includes(String(el)))) {
     return <></>;
   }

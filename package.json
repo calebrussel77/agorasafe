@@ -6,6 +6,8 @@
   "scripts": {
     "build": "next build",
     "dev": "next dev",
+    "studio": "npx prisma studio",
+    "migrate:dev": "npx prisma migrate dev",
     "seed:import": "ts-node prisma/seed.ts",
     "seed:destroy": "ts-node prisma/seed.ts -d",
     "postinstall": "prisma generate",

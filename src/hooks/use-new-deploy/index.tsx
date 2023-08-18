@@ -8,7 +8,7 @@ import { useToastMessage } from '../use-toast-message';
 
 const useNewDeploy = () => {
   const { hasNewDeploy } = useHasNewDeploy({
-    interval: 5000,
+    interval: 15_000,
   });
   const { toast } = useToastMessage();
   const { reload } = useRouter();

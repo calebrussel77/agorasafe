@@ -21,15 +21,19 @@ const AsyncWrapper: FC<AsyncWrapperProps> = ({
 }) => {
   return (
     <>
-      {isLoading ? (
-        loader ? (
-          loader
-        ) : (
-          <CenterContent>
-            <Spinner className="h-12 w-12" variant="primary" />
-          </CenterContent>
-        )
-      ) : error ? (
+      {isLoading && (
+        <>
+          {loader ? (
+            loader
+          ) : (
+            <CenterContent>
+              <Spinner className="h-12 w-12" variant="primary" />
+            </CenterContent>
+          )}
+        </>
+      )}
+
+      {error ? (
         <ErrorWrapper error={error} onRetryError={onRetryError}>
           {children}
         </ErrorWrapper>

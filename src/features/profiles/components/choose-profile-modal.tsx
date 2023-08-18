@@ -1,4 +1,4 @@
-import { type ProfileStore, useProfileStore } from '@/stores/profiles';
+import { type ProfileStore } from '@/stores/profiles';
 import { type Session } from 'next-auth';
 
 import { Redirect } from '@/components/redirect';
@@ -20,15 +20,15 @@ import { type CurrentProfile } from '../types';
 import { ProfileItemSkeleton } from './profile-item-skeleton';
 
 type ChooseProfileModaleProps = {
-  setProfile: ProfileStore['setProfile'];
-  setIsSessionExpired: ProfileStore['setIsSessionExpired'];
+  updateProfile: ProfileStore['setProfile'];
+  updateIsSessionExpired: ProfileStore['setIsSessionExpired'];
   session: Session | null;
 };
 
 const ChooseProfileModale = ({
   session,
-  setIsSessionExpired,
-  setProfile,
+  updateIsSessionExpired,
+  updateProfile,
 }: ChooseProfileModaleProps) => {
   const { toast } = useToastMessage();
 
@@ -38,8 +38,8 @@ const ChooseProfileModale = ({
   });
 
   const onProfileClick = async (profile: CurrentProfile) => {
-    setProfile(profile);
-    setIsSessionExpired(false);
+    updateProfile(profile);
+    updateIsSessionExpired(false);
     await wait(350);
     toast({
       variant: 'success',

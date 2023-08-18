@@ -1,5 +1,7 @@
 import { type TRPCClientErrorLike } from '@trpc/client';
+import { useRouter } from 'next/router';
 
+import { Button } from '@/components/ui/button';
 import { Field } from '@/components/ui/field';
 import { Form, useZodForm } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
@@ -8,20 +10,22 @@ import { Textarea } from '@/components/ui/textarea';
 
 import { type AppRouter } from '@/server/api/root';
 
+import { FixedFooterForm } from './fixed-footer-form';
+
 type StepTwoFormProps = {
   error: TRPCClientErrorLike<AppRouter> | null;
   isLoading: boolean;
 };
 
-export const PUBLISH_SERVICE_STEP_TWO_FORM_ID =
-  'PUBLISH_SERVICE_STEP_TWO_FORM_ID';
-
 const StepTwoForm = ({ error, isLoading }: StepTwoFormProps) => {
+  const router = useRouter();
+  const { serviceSlug } = router.query as { serviceSlug: string };
+
   const form = useZodForm({
     mode: 'onChange',
   });
 
-  const { control, watch } = form;
+  const { register, watch } = form;
 
   const onHandleSubmit = (formData: unknown) => {
     console.log(formData);
@@ -29,22 +33,28 @@ const StepTwoForm = ({ error, isLoading }: StepTwoFormProps) => {
 
   return (
     <>
-      <Form
-        form={form}
-        onSubmit={onHandleSubmit}
-        id={PUBLISH_SERVICE_STEP_TWO_FORM_ID}
-      >
-        {error && <SectionMessage title={error.message} />}
+      {error && <SectionMessage title={error.message} appareance="danger" />}
+      <Form form={form} onSubmit={onHandleSubmit}>
         <Field label="Titre de la demande" required>
-          <Input placeholder="Entrez le titre de votre demande" />
+          <Input
+            {...register('title')}
+            placeholder="Entrez le titre de votre demande"
+          />
         </Field>
         <Field label="Description de la demande" required>
           <Textarea
+            {...register('description')}
             rows={8}
             cols={8}
             placeholder="Entrez la description de votre demande"
           />
         </Field>
+        <FixedFooterForm>
+          <Button onClick={() => void router.back()} variant="ghost" size="lg">
+            Retour
+          </Button>
+          <Button size="lg">Suivant</Button>
+        </FixedFooterForm>
       </Form>
     </>
   );
