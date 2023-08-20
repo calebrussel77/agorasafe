@@ -1,5 +1,4 @@
 import { isDev } from '@/constants';
-import { env } from '@/env.mjs';
 import { createNextApiHandler } from '@trpc/server/adapters/next';
 
 import {
@@ -9,7 +8,7 @@ import {
 
 import { appRouter } from '@/server/api/root';
 import { createTRPCContext } from '@/server/api/trpc';
-import { handleTRPCError } from '@/server/api/utils/error-handling';
+import { handleTRPCError } from '@/server/utils/error-handling';
 
 export const config = {
   api: {

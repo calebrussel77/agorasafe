@@ -4,8 +4,6 @@ import { ChooseProfileModale } from '@/features/profiles';
 
 import { useCurrentUser } from '@/hooks/use-current-user';
 
-import { SessionExpirationDialog } from '../session-expiration-modal';
-
 type ComponentProps = {
   children: ReactNode;
 };
@@ -24,11 +22,6 @@ const ProfileSession = ({ children }: ComponentProps) => {
 
   return (
     <>
-      {isSessionExpired && (
-        <SessionExpirationDialog
-          updateIsSessionExpired={updateIsSessionExpired}
-        />
-      )}
       {shouldOpenChooseProfileDialog && (
         <ChooseProfileModale
           session={session}

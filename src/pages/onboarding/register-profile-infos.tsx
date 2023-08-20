@@ -16,7 +16,6 @@ import {
   useUserRegister,
 } from '@/features/auth-onboarding';
 
-import { requireAuth } from '@/utils/require-auth';
 
 import { htmlParse } from '@/lib/html-react-parser';
 
@@ -95,16 +94,3 @@ const RegisterProfileInfosPage = () => {
 };
 
 export default RegisterProfileInfosPage;
-
-export const getServerSideProps: GetServerSideProps<{
-  session: Session;
-}> = async ctx => {
-  return requireAuth({
-    ctx,
-    cb({ session }) {
-      return {
-        props: { session },
-      };
-    },
-  });
-};

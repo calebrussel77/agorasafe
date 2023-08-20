@@ -4,8 +4,7 @@
  *
  * We also create a few inference helpers for input and output types.
  */
-import { REDIRECT_QUERY_KEY } from '@/constants';
-import { useProfileStore } from '@/stores/profiles';
+import { initializeProfileStore } from '@/stores/profiles';
 import { TRPCClientError, httpBatchLink, loggerLink } from '@trpc/client';
 import { createTRPCNext } from '@trpc/next';
 import { type inferReactQueryProcedureOptions } from '@trpc/react-query';
@@ -14,9 +13,9 @@ import { signOut } from 'next-auth/react';
 import { unstable_batchedUpdates } from 'react-dom';
 import superjson from 'superjson';
 
-import { type AppRouter } from '@/server/api/root';
+import { getLoginLink } from '@/features/auth';
 
-import { generateUrlWithSearchParams } from './misc';
+import { type AppRouter } from '@/server/api/root';
 
 const getBaseUrl = () => {
   if (typeof window !== 'undefined') return ''; // browser should use relative url
@@ -34,16 +33,15 @@ const handleUnauthorizedErrorsOnClient = (error: unknown) => {
 
   // Signout the user and redirect it to previous page
   void signOut({
-    callbackUrl: generateUrlWithSearchParams('/auth/login', {
-      [REDIRECT_QUERY_KEY]: window.location.pathname ?? '/',
+    callbackUrl: getLoginLink({
+      reason: 'session-expired',
     }),
-    redirect: false,
+    redirect: true,
   });
 
   //Use insatble batch to use non react function of the profile store
   unstable_batchedUpdates(() => {
-    useProfileStore.getState().setIsSessionExpired(true);
-    useProfileStore.getState().setProfile(null);
+    initializeProfileStore().getState().reset();
   });
 
   return true;

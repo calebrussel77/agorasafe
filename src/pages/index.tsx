@@ -1,8 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 import { getMainLayout } from '@/layouts';
 
-import { PageWrapper } from '@/components/page-wrapper';
-
 import {
   FeaturesSection,
   HeroSection,

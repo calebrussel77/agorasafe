@@ -3,7 +3,8 @@ import { REDIRECT_QUERY_KEY } from '@/constants';
 import { generateUrlWithSearchParams } from '@/utils/misc';
 
 export const loginRedirectReasons = {
-  'session-expired': 'Votre session a expirée. Veuillez vous reconnecter',
+  'session-expired':
+    'Votre session a expiré par mesure de sécurité. Veuillez vous reconnecter pour continuer à accéder à votre compte.',
   'publish-new-service':
     'Vous devez être connecté pour publier une demande de service',
   'report-content': 'You need to be logged in to report this content',
@@ -38,7 +39,10 @@ export function getLoginLink({
   reason?: LoginRedirectReason;
 }) {
   return `${generateUrlWithSearchParams('/auth/login', {
-    [REDIRECT_QUERY_KEY]: redirectUrl,
+    [REDIRECT_QUERY_KEY]:
+      typeof window !== 'undefined'
+        ? window.location.pathname
+        : redirectUrl || '/',
     reason,
   })}`;
 }

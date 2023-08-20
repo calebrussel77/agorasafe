@@ -1,4 +1,4 @@
-import { throwDbError } from '../../utils/error-handling';
+import { throwDbError } from '../../../utils/error-handling';
 import {
   createProfileService,
   getProfilesByUserIdService,

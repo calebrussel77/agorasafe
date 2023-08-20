@@ -10,6 +10,8 @@ import GoogleProvider from 'next-auth/providers/google';
 
 import { makeRandomId } from '@/utils/misc';
 
+import { agorasafeTokenCookieName, shouldUseSecureCookies } from '@/lib/auth';
+
 import { prisma } from '@/server/db';
 
 /**
@@ -34,6 +36,8 @@ declare module 'next-auth' {
     picture: string;
   }
 }
+
+const { hostname } = new URL(env.NEXTAUTH_URL);
 
 /**
  * Options for NextAuth.js used to configure adapters, providers, callbacks, etc.
@@ -94,11 +98,23 @@ export const authOptions: NextAuthOptions = {
     maxAge: 3_600,
     strategy: 'jwt',
   },
+  cookies: {
+    sessionToken: {
+      name: agorasafeTokenCookieName,
+      options: {
+        httpOnly: true,
+        sameSite: 'lax',
+        path: '/',
+        secure: shouldUseSecureCookies,
+        domain: hostname == 'localhost' ? hostname : '.' + hostname, // add a . in front so that subdomains are included
+      },
+    },
+  },
   pages: {
     signIn: '/auth/login',
     error: '/auth/login',
   },
-  debug: env.NODE_ENV === 'development',
+  debug: false,
   jwt: {
     // Set the duration time of a JWT to 24 hours
     // maxAge: 60 * 60 * 24,

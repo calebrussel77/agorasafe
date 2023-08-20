@@ -43,15 +43,16 @@ const FormSubscriptionModal: FC<FormSubscriptionModalProps> = ({
           {isSuccess ? (
             <SectionMessage
               title="Inscription réussie"
+              description={
+                <p className="text-sm md:text-base">
+                  Un email de confirmation a été envoyé à votre adresse email
+                  (Consultez vos <b>spams</b> si vous ne le voyez pas) suite à
+                  votre souscription. Nous vous remercions !
+                </p>
+              }
               hasCloseButton={false}
               appareance="success"
-            >
-              <p className="text-sm md:text-base">
-                Un email de confirmation a été envoyé à votre adresse email
-                (Consultez vos <b>spams</b> si vous ne le voyez pas) suite à
-                votre souscription. Nous vous remercions !
-              </p>
-            </SectionMessage>
+            />
           ) : (
             <div className="p-6">
               <FormSubscription

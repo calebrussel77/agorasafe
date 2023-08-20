@@ -4,7 +4,7 @@ import slugify from 'slugify';
 import {
   throwBadRequestError,
   throwNotFoundError,
-} from '../../utils/error-handling';
+} from '../../../utils/error-handling';
 import { getUserById } from '../users';
 import {
   createProfileByUserId,

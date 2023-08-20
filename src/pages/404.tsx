@@ -1,8 +1,10 @@
-import Error from 'next/error';
+import { getMainLayout } from '@/layouts';
+import { NotFound } from '@/layouts/not-found';
 
-export default function NotFound() {
+export default function NotFoundPage() {
   // Opinionated: do not record an exception in Sentry for 404
-  return <Error statusCode={404} />;
+  return <NotFound />;
 }
 
-NotFound.shouldDisableAnalytics = true;
+NotFoundPage.shouldDisableAnalytics = true;
+NotFoundPage.getLayout = getMainLayout;

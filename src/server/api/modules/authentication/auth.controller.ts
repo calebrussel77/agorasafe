@@ -1,4 +1,4 @@
-import { throwDbError } from '../../utils/error-handling';
+import { throwDbError } from '../../../utils/error-handling';
 import { authService } from './auth.service';
 import { type AuthValidation } from './auth.validations';
 

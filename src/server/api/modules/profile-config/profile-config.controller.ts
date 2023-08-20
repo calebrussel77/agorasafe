@@ -1,4 +1,4 @@
-import { throwDbError } from '../../utils/error-handling';
+import { throwDbError } from '../../../utils/error-handling';
 import { getProfileConfigService } from './profile-config.service';
 import { type GetProfileConfigValidation } from './profile-config.validations';
 

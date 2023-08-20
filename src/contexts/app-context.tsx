@@ -1,3 +1,5 @@
+import ProfileStoreProvider from '@/stores/profile-store-provider';
+import { type ProfileStore } from '@/stores/profiles';
 import { type Prettify } from '@/types';
 import { type Session } from 'next-auth';
 import { SessionProvider } from 'next-auth/react';
@@ -13,6 +15,7 @@ type UnPrettiFyAppPageProps = Omit<
   NextAppProps<
     {
       session: Session;
+      initialProfileState: ProfileStore;
     } & Record<string, unknown>
   >,
   'Component'
@@ -64,7 +67,11 @@ const AppContext: FC<AppPagePropsWithChildren> = props => {
         refetchOnWindowFocus={false}
         refetchWhenOffline={false}
       >
-        {children}
+        <ProfileStoreProvider
+          {...((pageProps?.initialProfileState as ProfileStore) ?? undefined)}
+        >
+          {children}
+        </ProfileStoreProvider>
       </SessionProvider>
     </ErrorBoundary>
   );

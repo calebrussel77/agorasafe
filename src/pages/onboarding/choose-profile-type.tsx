@@ -1,15 +1,9 @@
-/* eslint-disable @next/next/no-img-element */
-import { type GetServerSideProps } from 'next';
-import { type Session } from 'next-auth';
-
 import { Avatar } from '@/components/ui/avatar';
 import { Card } from '@/components/ui/card';
 import { GroupItem } from '@/components/ui/group-item';
 import { CenterContent } from '@/components/ui/layout';
 
 import { ChooseProfileTypeForm } from '@/features/auth-onboarding';
-
-import { requireAuth } from '@/utils/require-auth';
 
 import { useCurrentUser } from '@/hooks/use-current-user';
 
@@ -46,19 +40,6 @@ const ChooseAccountTypePage = () => {
       </Card>
     </CenterContent>
   );
-};
-
-export const getServerSideProps: GetServerSideProps<{
-  session: Session;
-}> = async ctx => {
-  return requireAuth({
-    ctx,
-    cb({ session }) {
-      return {
-        props: { session },
-      };
-    },
-  });
 };
 
 export default ChooseAccountTypePage;

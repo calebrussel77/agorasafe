@@ -1,6 +1,6 @@
 import { USER_PROFILES_LIMIT_COUNT } from '@/constants';
 
-import { throwNotFoundError } from '../../utils/error-handling';
+import { throwNotFoundError } from '../../../utils/error-handling';
 import { getUserById } from '../users';
 import {
   getAddProfileInfos,

@@ -1,9 +1,7 @@
 import { ProfileType } from '@prisma/client';
 import { MoveLeft } from 'lucide-react';
-import { type InferGetServerSidePropsType } from 'next';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { z } from 'zod';
 
 import { Redirect } from '@/components/redirect';
 import { Card } from '@/components/ui/card';
@@ -21,11 +19,10 @@ import { getProfileTypeName } from '@/utils/profile';
 
 import { htmlParse } from '@/lib/html-react-parser';
 
-import { getUserById } from '@/server/api/modules/users';
-import { createServerSideProps } from '@/server/utils/server-side';
-
 import { useCurrentUser } from '@/hooks/use-current-user';
 import { useToastMessage } from '@/hooks/use-toast-message';
+
+const ALLOWED_TYPES = Object.keys(ProfileType);
 
 const meta = {
   title: (profileType: ProfileType) =>
@@ -35,9 +32,7 @@ const meta = {
   ou des demandes de service, etc.`,
 };
 
-export default function AddNewProfilePage({}: InferGetServerSidePropsType<
-  typeof getServerSideProps
->) {
+const FormsTestPage = () => {
   const router = useRouter();
   const profileType = router.query.profile_type as ProfileType;
   const { resetProfile } = useCurrentUser();
@@ -60,6 +55,10 @@ export default function AddNewProfilePage({}: InferGetServerSidePropsType<
       ...data,
     });
   };
+
+  if (router.isReady && !ALLOWED_TYPES.includes(profileType)) {
+    return <Redirect to="/" />;
+  }
 
   return (
     <>
@@ -90,17 +89,6 @@ export default function AddNewProfilePage({}: InferGetServerSidePropsType<
       </CenterContent>
     </>
   );
-}
+};
 
-const querySchema = z.object({ profile_type: z.nativeEnum(ProfileType) });
-
-export const getServerSideProps = createServerSideProps({
-  resolver: ({ ctx }) => {
-    const result = querySchema.safeParse(ctx.query);
-    if (!result.success) return { notFound: true };
-
-    const profileTypeQuery = result.data.profile_type;
-
-    return { props: { profileTypeQuery } };
-  },
-});
+export default FormsTestPage;

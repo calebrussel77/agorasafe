@@ -11,16 +11,12 @@ import { CenterContent } from '@/components/ui/layout';
 import { SectionMessage } from '@/components/ui/section-message';
 import { Separator } from '@/components/ui/separator';
 
-import {
-  type LoginRedirectReason,
-  loginRedirectReasons,
-  useAuth,
-} from '@/features/auth';
+import { useAuth } from '@/features/auth';
 
 import { handleRouteBack } from '@/utils/handle-route-back';
 
 import { getUserById } from '@/server/api/modules/users';
-import { getServerAuthSession } from '@/server/auth';
+import { createServerSideProps } from '@/server/utils/server-side';
 
 import { useRedirectUrl } from '@/hooks/use-redirect-url';
 import { useToastMessage } from '@/hooks/use-toast-message';
@@ -52,7 +48,7 @@ const LoginPage = () => {
   return (
     <div className="flex h-full min-h-screen flex-col">
       {!!redirectReason && (
-        <SectionMessage title={redirectReason} appareance="info" isSticky />
+        <SectionMessage title={redirectReason} appareance="warning" isSticky />
       )}
       <CenterContent className="container w-full max-w-2xl">
         <div>
@@ -91,37 +87,29 @@ const LoginPage = () => {
   );
 };
 
-export const getServerSideProps: GetServerSideProps<
-  | {
-      session: Session;
-    }
-  | object
-> = async ctx => {
-  const session = await getServerAuthSession(ctx);
+export const getServerSideProps = createServerSideProps({
+  shouldUseSession: true,
+  resolver: async ({ session, ssg, ctx }) => {
+    if (session) {
+      const userFounded = await getUserById(session.user.id);
 
-  if (session) {
-    // find user in db by id
-    const userFounded = await getUserById(session.user.id);
-
-    // redirect to account type selection page if user doesn't have at least one profile
-    if (userFounded?._count?.profiles === 0) {
+      // redirect to choosing profile type selection page if user doesn't have at least one profile
+      if (userFounded?._count?.profiles === 0) {
+        return {
+          redirect: {
+            destination: '/onboarding/choose-profile-type',
+            permanent: false,
+          },
+        };
+      }
       return {
         redirect: {
-          destination: '/choose-profile-type',
+          destination: '/',
           permanent: false,
         },
       };
     }
-    // otherwise redirect to home page
-    return {
-      redirect: {
-        destination: '/',
-        permanent: false,
-      },
-    };
-  }
-
-  return { props: {} };
-};
+  },
+});
 
 export default LoginPage;
