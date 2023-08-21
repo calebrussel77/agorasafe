@@ -3,7 +3,6 @@ import { useRouter } from 'next/router';
 
 import { cn } from '@/lib/utils';
 
-import { Accordion } from '../accordion';
 import { Button } from '../button/button';
 
 type ClassNames = {

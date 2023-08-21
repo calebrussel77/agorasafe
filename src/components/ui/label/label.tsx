@@ -3,11 +3,11 @@ import { type VariantProps, cva } from 'class-variance-authority';
 import { Lock } from 'lucide-react';
 import * as React from 'react';
 
-import { VariantIcon } from '@/utils/variant-icons';
 import { type Variant, getVariantColor } from '@/utils/variants';
 import { wrapChildren } from '@/utils/wrap-children';
 
 import { cn } from '@/lib/utils';
+import { VariantIcon } from '@/utils/variant-icons';
 
 export interface LabelOptions {
   checkableField?: boolean;
@@ -60,9 +60,9 @@ const Label = React.forwardRef<
         {...props}
       >
         <>
-          {/* {!checkableField && (
+          {!checkableField && (
             <VariantIcon icon={icon} size="sm" variant={variant} />
-          )} */}
+          )}
           {disabled && withDisabledIcon && (
             <div className="mr-1 inline-flex">
               {disabledIcon || <Lock className="h-4 w-4" />}

@@ -5,7 +5,6 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { z } from 'zod';
 
-import { Redirect } from '@/components/redirect';
 import { Card } from '@/components/ui/card';
 import { CenterContent } from '@/components/ui/layout';
 import { Seo } from '@/components/ui/seo';

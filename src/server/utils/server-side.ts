@@ -4,7 +4,7 @@ import {
   type GetServerSidePropsResult,
   type Redirect,
 } from 'next';
-import { Awaitable, type Session } from 'next-auth';
+import { type Session } from 'next-auth';
 import superjson from 'superjson';
 
 import { appRouter } from '../api/root';

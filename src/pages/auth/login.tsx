@@ -1,6 +1,4 @@
 import { MoveLeft } from 'lucide-react';
-import { type GetServerSideProps } from 'next';
-import { type Session } from 'next-auth';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
 
@@ -89,7 +87,7 @@ const LoginPage = () => {
 
 export const getServerSideProps = createServerSideProps({
   shouldUseSession: true,
-  resolver: async ({ session, ssg, ctx }) => {
+  resolver: async ({ session }) => {
     if (session) {
       const userFounded = await getUserById(session.user.id);
 

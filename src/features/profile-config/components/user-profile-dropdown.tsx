@@ -2,7 +2,6 @@ import { LogOut, MapPin, UserPlus2 } from 'lucide-react';
 import { RefreshCcw } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
 import React, { type FC } from 'react';
 
 import { AutoAnimate } from '@/components/ui/auto-animate';
