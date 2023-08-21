@@ -37,8 +37,6 @@ declare module 'next-auth' {
   }
 }
 
-const { hostname } = new URL(env.NEXTAUTH_URL);
-
 /**
  * Options for NextAuth.js used to configure adapters, providers, callbacks, etc.
  *
@@ -106,7 +104,6 @@ export const authOptions: NextAuthOptions = {
         sameSite: 'lax',
         path: '/',
         secure: shouldUseSecureCookies,
-        domain: hostname == 'localhost' ? hostname : '.' + hostname, // add a . in front so that subdomains are included
       },
     },
   },

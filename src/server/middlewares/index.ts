@@ -26,7 +26,7 @@ export async function runMiddlewares(request: NextRequest) {
 
   for (const middleware of middlewares) {
     if (middleware.shouldRun && !middleware.shouldRun(request)) continue;
-    if (middleware.useSession && !user && hasToken) {
+  if (middleware.useSession && !user && hasToken) {
       const token = await getToken({
         req: request,
         secret: env.NEXTAUTH_JWT_SECRET,
