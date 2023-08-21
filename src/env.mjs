@@ -35,6 +35,7 @@ export const env = createEnv({
    */
   client: {
     // NEXT_PUBLIC_CLIENTVAR: z.string().min(1),
+    NEXT_PUBLIC_SENTRY_DSN: z.string(),
     NEXT_PUBLIC_APP_URL: z.string(),
     NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN: z.string(),
     NEXT_PUBLIC_APP_NAME: z.string(),
@@ -68,6 +69,7 @@ export const env = createEnv({
     NEXT_PUBLIC_COMPANY_NAME: process.env.NEXT_PUBLIC_COMPANY_NAME,
     NEXT_PUBLIC_DEBUG: process.env.NEXT_PUBLIC_DEBUG,
     NEXT_PUBLIC_GA_MEASUREMENT_ID: process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID,
+    NEXT_PUBLIC_SENTRY_DSN: process.env.NEXT_PUBLIC_SENTRY_DSN,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation.

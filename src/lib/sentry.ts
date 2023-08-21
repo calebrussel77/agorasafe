@@ -8,13 +8,18 @@ export const ALLOWED_SENTRY_EXCEPTION_CODE_REPORTS: TRPC_ERROR_CODE_KEY[] = [
   'TIMEOUT',
 ];
 
-export const sentryCaptureException = (error: unknown) =>
-  Sentry.captureException(error);
+export const sentryCaptureException = (error: unknown) => {
+  if (process.env.NODE_ENV === 'production') {
+    Sentry.captureException(error);
+  }
+};
 
 export const sentryCaptureUnderscoreErrorException = async (
   contextData: NextPageContext
 ) => {
   // In case this is running in a serverless function, await this in order to give Sentry
   // time to send the error before the lambda exits
-  await Sentry.captureUnderscoreErrorException(contextData);
+  if (process.env.NODE_ENV === 'production') {
+    await Sentry.captureUnderscoreErrorException(contextData);
+  }
 };

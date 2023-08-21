@@ -1,11 +1,11 @@
 // This file configures the initialization of Sentry on the server.
 // The config you add here will be used whenever the server handles a request.
 // https://docs.sentry.io/platforms/javascript/guides/nextjs/
-
-import * as Sentry from "@sentry/nextjs";
+import { env } from '@/env.mjs';
+import * as Sentry from '@sentry/nextjs';
 
 Sentry.init({
-  dsn: "https://a796cd02bf06d43e9e2e38eeaa2a9982@o4505694594990080.ingest.sentry.io/4505694643814400",
+  dsn: env.NEXT_PUBLIC_SENTRY_DSN,
 
   // Adjust this value in production, or use tracesSampler for greater control
   tracesSampleRate: 1,
