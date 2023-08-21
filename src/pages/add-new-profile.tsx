@@ -20,7 +20,6 @@ import { getProfileTypeName } from '@/utils/profile';
 
 import { htmlParse } from '@/lib/html-react-parser';
 
-import { getUserById } from '@/server/api/modules/users';
 import { createServerSideProps } from '@/server/utils/server-side';
 
 import { useCurrentUser } from '@/hooks/use-current-user';
