@@ -1,4 +1,5 @@
-import {withSentryConfig} from '@sentry/nextjs';
+import { withSentryConfig } from '@sentry/nextjs';
+
 /**
  * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially useful
  * for Docker builds.
@@ -20,6 +21,17 @@ const config = {
       'tailwindui.com',
     ],
   },
+
+  sentry: {
+    // Use `hidden-source-map` rather than `source-map` as the Webpack `devtool`
+    // for client-side builds. (This will be the default starting in
+    // `@sentry/nextjs` version 8.0.0.) See
+    // https://webpack.js.org/configuration/devtool/ and
+    // https://docs.sentry.io/platforms/javascript/guides/nextjs/manual-setup/#use-hidden-source-map
+    // for more information.
+    hideSourceMaps: true,
+  },
+
   /**
    * If you have `experimental: { appDir: true }` set, then you must comment the below `i18n` config
    * out.
@@ -27,35 +39,40 @@ const config = {
    * @see https://github.com/vercel/next.js/issues/41980
    */
   i18n: {
-    locales: ['en'],
-    defaultLocale: 'en',
+    locales: ['fr'],
+    defaultLocale: 'fr',
   },
 };
-export default withSentryConfig(config, {
-// For all available options, see:
-// https://github.com/getsentry/sentry-webpack-plugin#options
 
-// Suppresses source map uploading logs during build
-silent: true,
+export default withSentryConfig(
+  config,
+  {
+    // For all available options, see:
+    // https://github.com/getsentry/sentry-webpack-plugin#options
 
-org: "caleb-russel-org",
-project: "agorasafe",
-}, {
-// For all available options, see:
-// https://docs.sentry.io/platforms/javascript/guides/nextjs/manual-setup/
+    // Suppresses source map uploading logs during build
+    silent: true,
 
-// Upload a larger set of source maps for prettier stack traces (increases build time)
-widenClientFileUpload: true,
+    org: 'caleb-russel-org',
+    project: 'agorasafe',
+  },
+  {
+    // For all available options, see:
+    // https://docs.sentry.io/platforms/javascript/guides/nextjs/manual-setup/
 
-// Transpiles SDK to be compatible with IE11 (increases bundle size)
-transpileClientSDK: true,
+    // Upload a larger set of source maps for prettier stack traces (increases build time)
+    widenClientFileUpload: true,
 
-// Routes browser requests to Sentry through a Next.js rewrite to circumvent ad-blockers (increases server load)
-tunnelRoute: "/monitoring",
+    // Transpiles SDK to be compatible with IE11 (increases bundle size)
+    transpileClientSDK: true,
 
-// Hides source maps from generated client bundles
-hideSourceMaps: true,
+    // Routes browser requests to Sentry through a Next.js rewrite to circumvent ad-blockers (increases server load)
+    tunnelRoute: '/monitoring',
 
-// Automatically tree-shake Sentry logger statements to reduce bundle size
-disableLogger: true,
-});
+    // Hides source maps from generated client bundles
+    hideSourceMaps: true,
+
+    // Automatically tree-shake Sentry logger statements to reduce bundle size
+    disableLogger: true,
+  }
+);

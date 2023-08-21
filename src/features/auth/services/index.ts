@@ -1,7 +1,8 @@
-import * as Sentry from '@sentry/nextjs';
 import { signIn, signOut } from 'next-auth/react';
 
 import { wait } from '@/utils/misc';
+
+import { sentryCaptureException } from '@/lib/sentry';
 
 export const useAuth = () => {
   const onSignOut = async (fn?: () => void) => {
@@ -25,7 +26,7 @@ export const useAuth = () => {
       });
       opts?.onSuccess && opts?.onSuccess();
     } catch (e) {
-      Sentry.captureException(e);
+      sentryCaptureException(e);
       opts?.onError && opts?.onError(e);
     } finally {
       opts?.onSeatled && opts?.onSeatled();

@@ -10,14 +10,6 @@ import { appRouter } from '@/server/api/root';
 import { createTRPCContext } from '@/server/api/trpc';
 import { handleTRPCError } from '@/server/utils/error-handling';
 
-export const config = {
-  api: {
-    bodyParser: {
-      sizeLimit: '10mb',
-    },
-  },
-};
-
 // export API handler
 export default createNextApiHandler({
   router: appRouter,
