@@ -1,10 +1,8 @@
 import { env } from '@/env.mjs';
-import { getInitialState } from '@/stores/initial-state';
+import { getInitialState } from '@/stores/profile-store/initial-state';
 import { type Session } from 'next-auth';
 import { getToken } from 'next-auth/jwt';
 import { type NextRequest, NextResponse } from 'next/server';
-
-import { agorasafeTokenCookieName } from '@/lib/auth';
 
 import { routeGuardsMiddleware } from './route-guards.middleware';
 import { type Middleware } from './utils';
@@ -26,11 +24,10 @@ export async function runMiddlewares(request: NextRequest) {
 
   for (const middleware of middlewares) {
     if (middleware.shouldRun && !middleware.shouldRun(request)) continue;
-  if (middleware.useSession && !user && hasToken) {
+    if (middleware.useSession && !user && hasToken) {
       const token = await getToken({
         req: request,
         secret: env.NEXTAUTH_JWT_SECRET,
-        cookieName: agorasafeTokenCookieName,
       });
 
       if (!token) hasToken = false;

@@ -58,7 +58,7 @@ export const PhoneInput = forwardRef<HTMLInputElement, InputProps>(
           variant && getVariantBorderColor(variant)
         )}
         inputProps={{
-          refs,
+          ref: refs,
           disabled: disabled || loading,
           'aria-invalid': hasError ? 'true' : 'false',
           autoFocus: autoFocus,

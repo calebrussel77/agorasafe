@@ -1,3 +1,4 @@
+import { getInitialState } from '@/stores/profile-store/initial-state';
 import { createServerSideHelpers } from '@trpc/react-query/server';
 import {
   type GetServerSidePropsContext,
@@ -6,6 +7,8 @@ import {
 } from 'next';
 import { type Session } from 'next-auth';
 import superjson from 'superjson';
+
+import { CurrentProfile } from '@/features/profiles';
 
 import { appRouter } from '../api/root';
 import { createInnerTRPCContext } from '../api/trpc';
@@ -37,6 +40,8 @@ export function createServerSideProps<P>({
   prefetch = 'once',
 }: CreateServerSidePropsProps<P>) {
   return async (context: GetServerSidePropsContext) => {
+    const initialState = getInitialState(context.req.headers);
+
     const isClient = context.req.url?.startsWith('/_next/data') ?? false;
     const session =
       (context.req as never)['session'] ??
@@ -64,6 +69,7 @@ export function createServerSideProps<P>({
     return {
       props: {
         session,
+        profile: initialState?.profile,
         ...returnedProps,
         ...(ssg ? { trpcState: ssg.dehydrate() } : {}),
       },
@@ -94,4 +100,5 @@ type CustomGetServerSidePropsContext = {
   isClient: boolean;
   ssg?: AsyncReturnType<typeof getServerProxySSGHelpers>;
   session?: Session | null;
+  profile?: CurrentProfile | null;
 };

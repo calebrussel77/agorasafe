@@ -12,14 +12,17 @@ export type Middleware = {
     user: Session['user'] | null;
     currentProfile: CurrentProfile;
     redirect: (to: string) => NextResponse;
-  }) => Promise<NextResponse | void>;
+  }) => Promise<NextResponse | void> | NextResponse | void;
 };
 
 export function createMiddleware(middleware: Middleware) {
   if (!middleware.shouldRun) {
     const matcherBases = middleware.matcher.map(m => m.split(':')[0]);
-    middleware.shouldRun = ({ nextUrl }) =>
-      matcherBases.some(m => (m ? nextUrl.pathname.startsWith(m) : null));
+    middleware.shouldRun = ({ nextUrl }) => {
+      return matcherBases.some(m =>
+        m ? nextUrl.pathname.startsWith(m) : null
+      );
+    };
   }
   return middleware;
 }

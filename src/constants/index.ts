@@ -15,7 +15,7 @@ export const USER_PROFILES_LIMIT_COUNT = 2;
 
 export const COMMON_PROFILE_TYPE = 'COMMON';
 
-export const REDIRECT_QUERY_KEY = 'redirect_uri';
+export const REDIRECT_QUERY_KEY = 'redirectUrl';
 
 export const APP_PROFILES_INFO = [
   {

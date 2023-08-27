@@ -5,7 +5,7 @@ import { type AuthValidation } from './auth.validations';
 export const authController = async (inputs: AuthValidation) => {
   try {
     const serviceResponse = await authService(inputs);
-
+    
     return {
       ...serviceResponse,
       success: true,

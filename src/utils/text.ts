@@ -1,3 +1,7 @@
+import { CounterInputProps } from '@/components/ui/counter-input';
+
+import { isDecimal } from './type-guards';
+
 export const truncate = (text: string, maxLength: number, ellipsis = true) => {
   if (text.length <= maxLength) return text;
 
@@ -24,4 +28,27 @@ export const truncateOnWord = (
   if (ellipsis) truncatedText += '...';
 
   return truncatedText;
+};
+
+export const formatNumberToText = (
+  value: string | number | undefined,
+  variant: CounterInputProps['variant']
+) => {
+  const numericValue = Number(value);
+
+  console.log({ value });
+
+  if (!numericValue) return '';
+
+  if (variant === 'hours') {
+    if (!isDecimal(numericValue)) return `${numericValue}h 00`;
+
+    const intPart = String(value).split('.')[0];
+    const decPart = String(value).split('.')[1];
+    return `${intPart ? `${intPart}h` : ''} ${
+      decPart && Number(decPart) === 5 ? `30` : decPart || '00'
+    }`;
+  }
+
+  return value;
 };

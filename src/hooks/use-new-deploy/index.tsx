@@ -3,14 +3,13 @@ import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 
 import { Button } from '@/components/ui/button';
-
-import { useToastMessage } from '../use-toast-message';
+import { useToast } from '@/components/ui/toast';
 
 const useNewDeploy = () => {
   const { hasNewDeploy } = useHasNewDeploy({
     interval: 15_000,
   });
-  const { toast } = useToastMessage();
+  const { toast } = useToast();
   const { reload } = useRouter();
 
   useEffect(() => {
@@ -23,7 +22,6 @@ const useNewDeploy = () => {
             Recharger votre page
           </Button>
         ),
-        toastOptions: { autoClose: false, position: 'top-center' },
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

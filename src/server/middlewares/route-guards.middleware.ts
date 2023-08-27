@@ -10,13 +10,16 @@ import { createMiddleware } from './utils';
 const routeGuards: RouteGuard[] = [];
 
 addRouteGuard({
-  matcher: [
-    '/onboarding/:path*',
-    '/add-new-profile',
-    '/publish-service/:path*',
-  ],
+  matcher: ['/add-new-profile', '/publish-service/:path*'],
   canAccess: ({ user }) => {
     return !!user;
+  },
+});
+
+addRouteGuard({
+  matcher: ['/onboarding/:path*'],
+  canAccess: ({ user }) => {
+    return !!user && user?.hasBeenOnboarded === false;
   },
   redirect: '/',
 });
@@ -27,7 +30,6 @@ addRouteGuard({
 });
 
 //#region Logic
-
 type RouteGuard = {
   matcher: string[];
   isMatch: (pathname: string) => boolean;
@@ -41,7 +43,10 @@ type RouteGuard = {
 
 function addRouteGuard(routeGuard: Omit<RouteGuard, 'isMatch'>) {
   const regexps = routeGuard.matcher.map(m => pathToRegexp(m));
-  const isMatch = (pathname: string) => regexps.some(r => r.test(pathname));
+  const isMatch = (pathname: string) =>
+    regexps.some(r => {
+      return r.test(pathname);
+    });
 
   return routeGuards.push({
     ...routeGuard,
@@ -52,8 +57,7 @@ function addRouteGuard(routeGuard: Omit<RouteGuard, 'isMatch'>) {
 export const routeGuardsMiddleware = createMiddleware({
   matcher: routeGuards.flatMap(routeGuard => routeGuard.matcher),
   useSession: true,
-  // eslint-disable-next-line @typescript-eslint/require-await
-  handler: async ({ currentProfile, user, request, redirect }) => {
+  handler: ({ currentProfile, user, request, redirect }) => {
     const { pathname } = request.nextUrl;
 
     for (const routeGuard of routeGuards) {

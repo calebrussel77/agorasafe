@@ -14,7 +14,7 @@ const typographyVariants = cva('', {
     variant: {
       h1: 'text-4xl md:text-6xl font-bold tracking-tight',
       h2: 'text-2xl font-bold leading-7 tracking-tight',
-      h3: 'text-xl font-semibold leading-none tracking-tight',
+      h3: 'text-xl font-semibold leading-6 tracking-tight',
       h4: 'text-lg font-semibold',
       h5: 'text-lg font-semibold leading-snug',
       paragraph: 'text-base',

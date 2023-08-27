@@ -7,6 +7,7 @@ import { Redirect } from '@/components/redirect';
 import { Card } from '@/components/ui/card';
 import { CenterContent } from '@/components/ui/layout';
 import { Seo } from '@/components/ui/seo';
+import { useToast } from '@/components/ui/toast';
 
 import {
   AddProfileForm,
@@ -20,7 +21,6 @@ import { getProfileTypeName } from '@/utils/profile';
 import { htmlParse } from '@/lib/html-react-parser';
 
 import { useCurrentUser } from '@/hooks/use-current-user';
-import { useToastMessage } from '@/hooks/use-toast-message';
 
 const ALLOWED_TYPES = Object.keys(ProfileType);
 
@@ -36,7 +36,7 @@ const FormsTestPage = () => {
   const router = useRouter();
   const profileType = router.query.profile_type as ProfileType;
   const { resetProfile } = useCurrentUser();
-  const { toast } = useToastMessage();
+  const { toast } = useToast();
 
   const { mutate, error, isLoading } = useCreateProfile({
     async onSuccess(data) {

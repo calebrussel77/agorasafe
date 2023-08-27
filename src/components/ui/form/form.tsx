@@ -12,6 +12,8 @@ import {
 } from 'react-hook-form';
 import { type z } from 'zod';
 
+import { cn } from '@/lib/utils';
+
 interface Props<T extends FieldValues>
   extends Omit<ComponentProps<'form'>, 'onSubmit'>,
     VariantProps<typeof formToken> {
@@ -38,8 +40,8 @@ const Form = <T extends FieldValues>({
   form,
   onSubmit,
   children,
-  gap,
   className,
+  gap,
   ...props
 }: Props<T>) => (
   <FormProvider {...form}>
@@ -48,10 +50,12 @@ const Form = <T extends FieldValues>({
             allowing us to handle disabled style variants with just className */}
       <fieldset
         disabled={form?.formState?.isSubmitting}
-        className={formToken({
-          gap,
-          class: className,
-        })}
+        className={cn(
+          formToken({
+            gap,
+          }),
+          className
+        )}
       >
         {children}
       </fieldset>

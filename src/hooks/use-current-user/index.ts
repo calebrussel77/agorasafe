@@ -1,11 +1,10 @@
-import { useProfileStore } from '@/stores/profiles';
+import { useProfileStore } from '@/stores/profile-store';
 import { useSession } from 'next-auth/react';
 
 export const useCurrentUser = () => {
   const { data, status, update } = useSession();
 
-  const { isSessionExpired, profile, reset, setProfile, setIsSessionExpired } =
-    useProfileStore();
+  const { profile, reset, setProfile } = useProfileStore();
 
   const isAuth = status === 'authenticated';
   const isAuthWithProfile = isAuth && !!profile;
@@ -15,10 +14,8 @@ export const useCurrentUser = () => {
     isAuth,
     isAuthWithProfile,
     hasCurrentProfile: !!profile,
-    isSessionExpired,
     profile,
     updateUser: update,
-    updateIsSessionExpired: setIsSessionExpired,
     updateProfile: setProfile,
     resetProfile: reset,
   };

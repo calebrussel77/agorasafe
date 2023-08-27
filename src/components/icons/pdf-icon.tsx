@@ -28,4 +28,4 @@ function PdfIcon({ className = '' }) {
   );
 }
 
-export default PdfIcon;
+export { PdfIcon };

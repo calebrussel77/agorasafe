@@ -1,4 +1,4 @@
-import { type ProfileStore } from '@/stores/profiles';
+import { type ProfileStore } from '@/stores/profile-store';
 import { type Session } from 'next-auth';
 
 import { Redirect } from '@/components/redirect';
@@ -7,13 +7,12 @@ import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { ErrorWrapper, SectionError } from '@/components/ui/error';
 import { CenterContent } from '@/components/ui/layout';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useToast } from '@/components/ui/toast';
 import { Typography } from '@/components/ui/typography';
 import { UserAvatar } from '@/components/user-avatar';
 import { UserBadge } from '@/components/user-badge';
 
 import { generateArray, wait } from '@/utils/misc';
-
-import { useToastMessage } from '@/hooks/use-toast-message';
 
 import { useUserProfiles } from '../services';
 import { type CurrentProfile } from '../types';
@@ -21,16 +20,14 @@ import { ProfileItemSkeleton } from './profile-item-skeleton';
 
 type ChooseProfileModaleProps = {
   updateProfile: ProfileStore['setProfile'];
-  updateIsSessionExpired: ProfileStore['setIsSessionExpired'];
   session: Session | null;
 };
 
 const ChooseProfileModale = ({
   session,
-  updateIsSessionExpired,
   updateProfile,
 }: ChooseProfileModaleProps) => {
-  const { toast } = useToastMessage();
+  const { toast } = useToast();
 
   // profiles query
   const { data, isFetching, error, refetch } = useUserProfiles({
@@ -39,12 +36,11 @@ const ChooseProfileModale = ({
 
   const onProfileClick = async (profile: CurrentProfile) => {
     updateProfile(profile);
-    updateIsSessionExpired(false);
     await wait(350);
     toast({
       variant: 'success',
-      title: (
-        <p className="text-sm font-normal">
+      description: (
+        <p>
           Vous interagissez maintenant en tant que{' '}
           <span className="font-semibold">{profile?.name}</span>
         </p>

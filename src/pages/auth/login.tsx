@@ -8,6 +8,7 @@ import { Card } from '@/components/ui/card';
 import { CenterContent } from '@/components/ui/layout';
 import { SectionMessage } from '@/components/ui/section-message';
 import { Separator } from '@/components/ui/separator';
+import { SignInError } from '@/components/ui/sign-error';
 
 import { useAuth } from '@/features/auth';
 
@@ -17,12 +18,12 @@ import { getUserById } from '@/server/api/modules/users';
 import { createServerSideProps } from '@/server/utils/server-side';
 
 import { useRedirectUrl } from '@/hooks/use-redirect-url';
-import { useToastMessage } from '@/hooks/use-toast-message';
 
 const LoginPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
-  const { toast } = useToastMessage();
+  const { error } = router.query as { error: string };
+
   const { redirectUrl, redirectReason } = useRedirectUrl(router);
   const { onGooleSignIn } = useAuth();
 
@@ -30,13 +31,6 @@ const LoginPage = () => {
     setIsLoading(true);
     await onGooleSignIn({
       redirectUrl,
-      onError() {
-        toast({
-          variant: 'danger',
-          title:
-            "Une erreur s'est produite lors de votre connexion. Veuillez réessayer !",
-        });
-      },
       onSeatled() {
         setTimeout(() => setIsLoading(false), 4000);
       },
@@ -48,6 +42,7 @@ const LoginPage = () => {
       {!!redirectReason && (
         <SectionMessage title={redirectReason} appareance="warning" isSticky />
       )}
+      {!!error && <SignInError error={error} />}
       <CenterContent className="container w-full max-w-2xl">
         <div>
           <button

@@ -12,7 +12,7 @@ export function useCatchNavigation({ unsavedChanges = false }: Props) {
   // if there are unsaved changes
   useEffect(() => {
     const warningMessage =
-      'All unsaved changes will be lost. Are you sure you want to exit?';
+      'Toutes les modifications non enregistrées seront perdues. Êtes-vous sûr de vouloir quitter ?';
     function handleWindowClose(event: BeforeUnloadEvent) {
       if (!unsavedChanges) return;
       event.preventDefault();

@@ -4,7 +4,7 @@
  *
  * We also create a few inference helpers for input and output types.
  */
-import { initializeProfileStore } from '@/stores/profiles';
+import { initializeProfileStore } from '@/stores/profile-store';
 import { TRPCClientError, httpBatchLink, loggerLink } from '@trpc/client';
 import { createTRPCNext } from '@trpc/next';
 import { type inferReactQueryProcedureOptions } from '@trpc/react-query';

@@ -1,47 +1,20 @@
-import React, { type ComponentType, type ReactNode } from 'react';
+import React from 'react';
 
 import { ChooseProfileModale } from '@/features/profiles';
 
 import { useCurrentUser } from '@/hooks/use-current-user';
 
-type ComponentProps = {
-  children: ReactNode;
-};
-
-const ProfileSession = ({ children }: ComponentProps) => {
-  const {
-    session,
-    isAuth,
-    isSessionExpired,
-    updateProfile,
-    updateIsSessionExpired,
-    profile,
-  } = useCurrentUser();
-
-  const shouldOpenChooseProfileDialog = isAuth && !profile && !isSessionExpired;
+const ProfileSession = () => {
+  const { isAuth, session, updateProfile, hasCurrentProfile } =
+    useCurrentUser();
 
   return (
     <>
-      {shouldOpenChooseProfileDialog && (
-        <ChooseProfileModale
-          session={session}
-          {...{ updateProfile, updateIsSessionExpired }}
-        />
+      {isAuth && session?.user?.hasBeenOnboarded && !hasCurrentProfile && (
+        <ChooseProfileModale {...{ updateProfile, session }} />
       )}
-      {children}
     </>
   );
 };
 
-//For specific components purpose
-const withProfileSession =
-  <T extends JSX.IntrinsicAttributes>(Component: ComponentType<T>) =>
-  // eslint-disable-next-line react/display-name
-  (hocProps: T) =>
-    (
-      <ProfileSession>
-        <Component {...hocProps} />
-      </ProfileSession>
-    );
-
-export { ProfileSession, withProfileSession };
+export { ProfileSession };

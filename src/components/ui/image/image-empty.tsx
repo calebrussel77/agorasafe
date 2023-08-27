@@ -27,7 +27,7 @@ const ImageEmpty: FC<TImageEmptyProps> = ({
       {children ? (
         children
       ) : (
-        <Camera className=" flex-shrink-0 h-10 w-10 m-auto" />
+        <Camera className="flex-shrink-0 h-10 w-10 m-auto" />
       )}
     </button>
   );

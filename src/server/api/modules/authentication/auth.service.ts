@@ -24,6 +24,7 @@ export const authService = async (data: AuthValidation) => {
     id: userId,
     locationId,
     phone,
+    hasBeenOnboarded: true,
   });
 
   //Create a profile for the given user

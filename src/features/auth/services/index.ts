@@ -6,10 +6,11 @@ import { sentryCaptureException } from '@/lib/sentry';
 
 export const useAuth = () => {
   const onSignOut = async (fn?: () => void) => {
-    await signOut();
+    await signOut({ callbackUrl: '/' });
     //Due to next-auth sign out duration
-    await wait(100);
-    fn && fn();
+    wait(250)
+      .then(() => fn && fn())
+      .catch(e => console.log(e));
   };
 
   const onGooleSignIn = async (opts?: {
@@ -20,7 +21,7 @@ export const useAuth = () => {
     onSeatled?: () => void;
   }) => {
     try {
-      await signIn('google', {
+      const data = await signIn('google', {
         callbackUrl: opts?.redirectUrl,
         redirect: opts?.redirect || false,
       });

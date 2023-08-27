@@ -51,13 +51,14 @@ export function throwDbError(error: unknown): never {
   else if (error instanceof Prisma.PrismaClientValidationError)
     throw new TRPCError({
       code: 'INTERNAL_SERVER_ERROR',
-      message: 'Database validation error',
+      message: 'Erreur de validation de la base de donnée.',
       cause: error,
     });
 
   throw new TRPCError({
     code: 'INTERNAL_SERVER_ERROR',
-    message: 'An unexpected error ocurred, please try again later',
+    message:
+      "Une erreur inattendue s'est produite, veuillez réessayer plus tard.",
     cause: error,
   });
 }
@@ -74,20 +75,21 @@ export const handleTRPCError = (error: unknown) => {
     else if (error instanceof Prisma.PrismaClientValidationError)
       throw new TRPCError({
         code: 'INTERNAL_SERVER_ERROR',
-        message: 'Database validation error',
+        message: 'Erreur de validation de la base de donnée.',
         cause: error,
       });
     else
       throw new TRPCError({
         code: 'INTERNAL_SERVER_ERROR',
-        message: 'An unexpected error ocurred, please try again later',
+        message:
+          "Une erreur inattendue s'est produite, veuillez réessayer plus tard.",
         cause: error,
       });
   }
 };
 
 export function throwAuthorizationError(message: string | null = null): never {
-  message ??= 'You are not authorized to perform this action';
+  message ??= "Vous n'êtes pas autorisé à effectuer cette action.";
   throw new TRPCError({
     code: 'UNAUTHORIZED',
     message,
@@ -98,7 +100,7 @@ export function throwBadRequestError(
   message: string | null = null,
   error?: unknown
 ): never {
-  message ??= 'Your request is invalid';
+  message ??= "Votre requête n'est pas valide.";
   throw new TRPCError({
     code: 'BAD_REQUEST',
     message,
@@ -107,7 +109,7 @@ export function throwBadRequestError(
 }
 
 export function throwNotFoundError(message: string | null = null): never {
-  message ??= 'Could not find entity';
+  message ??= "Impossible de trouver l'entité.";
   throw new TRPCError({
     code: 'NOT_FOUND',
     message,
@@ -118,7 +120,8 @@ export function throwRateLimitError(
   message: string | null = null,
   error?: unknown
 ): never {
-  message ??= `Slow down! You've made too many requests. Please take a breather`;
+  message ??=
+    'Ralentissez ! Vous avez fait trop de demandes. Veuillez faire une pause.';
   throw new TRPCError({
     code: 'TOO_MANY_REQUESTS',
     message,

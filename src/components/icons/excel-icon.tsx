@@ -64,4 +64,4 @@ function ExcelIcon({ className = '' }) {
   );
 }
 
-export default ExcelIcon;
+export { ExcelIcon };

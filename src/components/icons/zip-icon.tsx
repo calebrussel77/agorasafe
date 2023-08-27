@@ -125,4 +125,4 @@ function ZipIcon({ className = '' }: { className?: string }) {
   );
 }
 
-export default ZipIcon;
+export { ZipIcon };

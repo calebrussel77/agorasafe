@@ -8,6 +8,7 @@ import { z } from 'zod';
 import { Card } from '@/components/ui/card';
 import { CenterContent } from '@/components/ui/layout';
 import { Seo } from '@/components/ui/seo';
+import { useToast } from '@/components/ui/toast';
 
 import {
   AddProfileForm,
@@ -23,7 +24,6 @@ import { htmlParse } from '@/lib/html-react-parser';
 import { createServerSideProps } from '@/server/utils/server-side';
 
 import { useCurrentUser } from '@/hooks/use-current-user';
-import { useToastMessage } from '@/hooks/use-toast-message';
 
 const meta = {
   title: (profileType: ProfileType) =>
@@ -39,7 +39,7 @@ export default function AddNewProfilePage({}: InferGetServerSidePropsType<
   const router = useRouter();
   const profileType = router.query.profile_type as ProfileType;
   const { resetProfile } = useCurrentUser();
-  const { toast } = useToastMessage();
+  const { toast } = useToast();
 
   const { mutate, error, isLoading } = useCreateProfile({
     async onSuccess(data) {

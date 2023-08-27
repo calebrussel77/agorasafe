@@ -21,4 +21,4 @@ function PowerpointIcon({ className }: { className?: string }) {
   );
 }
 
-export default PowerpointIcon;
+export { PowerpointIcon };

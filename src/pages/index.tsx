@@ -7,9 +7,14 @@ import {
   TestimonialSection,
 } from '@/features/home-page';
 
-import { type AppPageProps } from '@/contexts/app-context';
+import { type AppPageProps } from './_app';
+import { useCurrentUser } from '@/hooks/use-current-user';
 
 const HomePage: AppPageProps['Component'] = () => {
+  const {session} = useCurrentUser()
+
+  console.log({session})
+
   return (
     <>
       {/* Hero section */}
@@ -25,6 +30,5 @@ const HomePage: AppPageProps['Component'] = () => {
 };
 
 HomePage.getLayout = getMainLayout;
-HomePage.hasProfileSession = true;
 
 export default HomePage;

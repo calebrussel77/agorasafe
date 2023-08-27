@@ -6,7 +6,7 @@ export const useUserRegister = ({
   onSuccess,
   onError,
   ...restOptions
-}: UserRegisterOptions = {} ) => {
+}: UserRegisterOptions = {}) => {
   const data = api.auth.userRegister.useMutation({
     onSuccess(data, variables, ctx) {
       onSuccess?.(data, variables, ctx);

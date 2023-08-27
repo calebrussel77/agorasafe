@@ -98,4 +98,4 @@ function WordIcon({ className = '' }) {
   );
 }
 
-export default WordIcon;
+export { WordIcon };

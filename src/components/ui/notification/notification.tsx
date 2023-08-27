@@ -16,20 +16,26 @@ import { cn } from '@/lib/utils';
 
 import { Inline } from '../inline';
 
-const notificationToken = cva(['w-full'], {
-  variants: {
-    size: {
-      sm: ['text-sm'],
-      md: ['text-md'],
-      lg: ['text-lg'],
-      xl: ['text-xl'],
+const notificationToken = cva(
+  [
+    'w-full max-w-sm md:max-w-[420px] border rounded-md shadow-lg px-3 py-2 bg-white',
+    'transition-all data-[swipe=cancel]:translate-x-0 data-[swipe=end]:translate-x-[var(--radix-toast-swipe-end-x)] data-[swipe=move]:translate-x-[var(--radix-toast-swipe-move-x)] data-[swipe=move]:transition-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[swipe=end]:animate-out data-[state=closed]:fade-out-80 data-[state=closed]:slide-out-to-right-full data-[state=open]:slide-in-from-top-full data-[state=open]:sm:slide-in-from-bottom-full',
+  ],
+  {
+    variants: {
+      size: {
+        sm: ['text-sm'],
+        md: ['text-md'],
+        lg: ['text-lg'],
+        xl: ['text-xl'],
+      },
     },
-  },
-  compoundVariants: [{ size: 'md' }],
-  defaultVariants: {
-    size: 'md',
-  },
-});
+    compoundVariants: [{ size: 'md' }],
+    defaultVariants: {
+      size: 'md',
+    },
+  }
+);
 
 export type NotificationGlobalProps = VariantProps<typeof notificationToken> &
   Omit<ComponentPropsWithRef<'div'>, 'title'> & {

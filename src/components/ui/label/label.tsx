@@ -7,7 +7,6 @@ import { type Variant, getVariantColor } from '@/utils/variants';
 import { wrapChildren } from '@/utils/wrap-children';
 
 import { cn } from '@/lib/utils';
-import { VariantIcon } from '@/utils/variant-icons';
 
 export interface LabelOptions {
   checkableField?: boolean;
@@ -32,11 +31,9 @@ const Label = React.forwardRef<
 >(
   (
     {
-      checkableField,
       children,
       disabled,
       disabledIcon,
-      icon,
       variant,
       withDisabledIcon = true,
       className,
@@ -60,9 +57,6 @@ const Label = React.forwardRef<
         {...props}
       >
         <>
-          {!checkableField && (
-            <VariantIcon icon={icon} size="sm" variant={variant} />
-          )}
           {disabled && withDisabledIcon && (
             <div className="mr-1 inline-flex">
               {disabledIcon || <Lock className="h-4 w-4" />}

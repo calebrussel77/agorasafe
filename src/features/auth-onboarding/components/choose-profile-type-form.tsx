@@ -1,5 +1,6 @@
 import { APP_PROFILES_INFO } from '@/constants';
 import { ProfileType } from '@prisma/client';
+import Link from 'next/link';
 import { useRouter } from 'next/router';
 import React, { type FC } from 'react';
 import { Controller } from 'react-hook-form';
@@ -13,29 +14,20 @@ import { VariantMessage } from '@/components/ui/variant-message';
 
 import { cn } from '@/lib/utils';
 
-interface ChooseProfileTypeFormProps {
-  className?: string;
-}
-
-const ChooseProfileTypeForm: FC<ChooseProfileTypeFormProps> = ({}) => {
+const ChooseProfileTypeForm = () => {
   const form = useZodForm({});
   const router = useRouter();
+
   const {
     control,
+    watch,
     formState: { errors },
   } = form;
 
-  const onSubmit = (data: { profileType: ProfileType }) => {
-    void router.push({
-      pathname: '/onboarding/register-profile-infos',
-      query: {
-        profile_type: data.profileType,
-      },
-    });
-  };
+  const watchProfileType = watch('profileType') as ProfileType;
 
   return (
-    <Form onSubmit={onSubmit} form={form}>
+    <Form onSubmit={data => console.log(data)} form={form}>
       <Controller
         name="profileType"
         control={control}
@@ -77,9 +69,19 @@ const ChooseProfileTypeForm: FC<ChooseProfileTypeFormProps> = ({}) => {
           }
         </VariantMessage>
       )}
-      <Button className="flex w-full items-center justify-center font-semibold">
-        <span>Continuer</span>
-      </Button>
+      <Link
+        href={{
+          pathname: '/onboarding/register-profile-infos',
+          query: {
+            ...router.query,
+            profile_type: watchProfileType,
+          },
+        }}
+      >
+        <Button className="flex w-full items-center justify-center font-semibold">
+          <span>Continuer</span>
+        </Button>
+      </Link>
     </Form>
   );
 };

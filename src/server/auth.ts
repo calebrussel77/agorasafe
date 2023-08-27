@@ -4,13 +4,14 @@ import { type GetServerSidePropsContext } from 'next';
 import {
   type DefaultSession,
   type NextAuthOptions,
+  type Session,
   getServerSession,
 } from 'next-auth';
 import GoogleProvider from 'next-auth/providers/google';
 
 import { makeRandomId } from '@/utils/misc';
 
-import { agorasafeTokenCookieName, shouldUseSecureCookies } from '@/lib/auth';
+import { sentryCaptureException } from '@/lib/sentry';
 
 import { prisma } from '@/server/db';
 
@@ -20,6 +21,7 @@ import { prisma } from '@/server/db';
  *
  * @see https://next-auth.js.org/getting-started/typescript#module-augmentation
  */
+
 declare module 'next-auth' {
   interface Session extends DefaultSession {
     user: {
@@ -27,6 +29,7 @@ declare module 'next-auth' {
       name: string;
       email: string;
       avatar: string;
+      hasBeenOnboarded: boolean;
     };
   }
 
@@ -34,6 +37,7 @@ declare module 'next-auth' {
     // ...other properties
     fullName: string;
     picture: string;
+    hasBeenOnboarded: boolean;
   }
 }
 
@@ -45,22 +49,28 @@ declare module 'next-auth' {
 export const authOptions: NextAuthOptions = {
   callbacks: {
     session: ({ session, token }) => {
-      session.user = {
-        id: token.id as string,
-        name: token.name as string,
-        email: token.email as string,
-        avatar: token.avatar as string,
-      };
-      return Promise.resolve(session);
+      session.user = (
+        token.user ? token.user : session.user
+      ) as Session['user'];
+
+      return session;
     },
-    jwt({ token, user }) {
-      if (user) {
-        token.id = user.id;
-        token.email = user?.email;
-        token.name = user?.fullName;
-        token.avatar = user.picture;
+    jwt({ token, user, trigger, session }) {
+      if (trigger === 'update' && session) {
+        const _session = session as Session;
+        token.user = _session.user;
       }
-      return Promise.resolve(token);
+      if ((trigger === 'signIn' || trigger === 'signUp') && user) {
+        token.user = {
+          id: user?.id,
+          email: user?.email,
+          name: user?.fullName,
+          avatar: user?.picture,
+          hasBeenOnboarded: user?.hasBeenOnboarded,
+        };
+      }
+
+      return token;
     },
   },
   adapter: PrismaAdapter(prisma),
@@ -86,36 +96,36 @@ export const authOptions: NextAuthOptions = {
           email: profile?.email,
           picture: profile?.picture,
           fullName: `${profile.given_name} ${profile.family_name}`,
+          hasBeenOnboarded: false,
         };
       },
     }),
   ],
   session: {
     // Set the duration time of a session to 24 hours
-    // maxAge: 60 * 60 * 24,
-    maxAge: 3_600,
+    maxAge: 60 * 60 * 24,
     strategy: 'jwt',
-  },
-  cookies: {
-    sessionToken: {
-      name: agorasafeTokenCookieName,
-      options: {
-        httpOnly: true,
-        sameSite: 'lax',
-        path: '/',
-        secure: shouldUseSecureCookies,
-      },
-    },
   },
   pages: {
     signIn: '/auth/login',
     error: '/auth/login',
   },
-  debug: false,
+  debug: true,
+  logger: {
+    error(code, ...message) {
+      console.error(code, message);
+      sentryCaptureException({ code, message });
+    },
+    warn(code, ...message) {
+      sentryCaptureException({ code, message });
+    },
+    debug(code, ...message) {
+      console.log(code, message);
+    },
+  },
   jwt: {
     // Set the duration time of a JWT to 24 hours
-    // maxAge: 60 * 60 * 24,
-    maxAge: 3_600,
+    maxAge: 60 * 60 * 24,
     secret: env.NEXTAUTH_JWT_SECRET,
   },
 };

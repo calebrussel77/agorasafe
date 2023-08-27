@@ -20,6 +20,8 @@ const Image = forwardRef<
           blurDataURL={blurDataURL()}
           fill
           placeholder="blur"
+          priority
+          quality={100}
           onError={() => setHasError(true)}
           {...props}
         />

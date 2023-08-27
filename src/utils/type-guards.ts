@@ -18,3 +18,11 @@ export function isValidURL(value: unknown): value is string {
     return false;
   }
 }
+
+export function isDecimal(value: number | string) {
+  return Number(value) % 1 != 0;
+}
+
+export function isArray(value: unknown) {
+  return Array.isArray(value);
+}
