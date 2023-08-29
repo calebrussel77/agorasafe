@@ -22,27 +22,25 @@ const WizardLayout: FC<WizardLayoutProps> = ({
   steps,
 }) => {
   return (
-    <>
-      <div className="flex h-full min-h-screen w-full flex-1 flex-col pb-36">
-        <Header />
-        <CenterContent className="container w-full min-w-[38rem] max-w-2xl pb-12">
-          <div className="w-full">
-            <Typography as="h1" variant="h4" className="pb-6 text-brand-600">
-              Étape {currentStep} / {steps?.length}
-            </Typography>
-            <Card>
-              <Card.Header>
-                <Card.Title>{steps[currentStep - 1]?.title}</Card.Title>
-                <Card.Description>
-                  {steps[currentStep - 1]?.description}
-                </Card.Description>
-              </Card.Header>
-              <Card.Content>{children}</Card.Content>
-            </Card>
-          </div>
-        </CenterContent>
-      </div>
-    </>
+    <div className="flex h-full min-h-screen w-full flex-1 flex-col pb-36">
+      <Header />
+      <CenterContent className="container w-full min-w-[38rem] max-w-2xl pb-12">
+        <div className="w-full">
+          <Typography as="h1" variant="h4" className="pb-6 text-brand-600">
+            Étape {currentStep} / {steps?.length}
+          </Typography>
+          <Card>
+            <Card.Header>
+              <Card.Title>{steps[currentStep - 1]?.title}</Card.Title>
+              <Card.Description>
+                {steps[currentStep - 1]?.description}
+              </Card.Description>
+            </Card.Header>
+            <Card.Content>{children}</Card.Content>
+          </Card>
+        </div>
+      </CenterContent>
+    </div>
   );
 };
 

@@ -5,6 +5,8 @@ import * as React from 'react';
 
 import { cn } from '@/lib/utils';
 
+import { ScrollArea } from '../scroll-area';
+
 const SheetComponent = SheetPrimitive.Root;
 
 const SheetTrigger = SheetPrimitive.Trigger;
@@ -55,7 +57,7 @@ const SheetOverlay = React.forwardRef<
 SheetOverlay.displayName = SheetPrimitive.Overlay.displayName;
 
 const sheetVariants = cva(
-  'fixed z-50 scale-100 gap-4 bg-background p-6 opacity-100 shadow-lg border',
+  'fixed z-50 scale-100 gap-4 bg-background overflow-y-auto p-6 opacity-100 shadow-lg border',
   {
     variants: {
       position: {

@@ -1,3 +1,4 @@
+import { PROFILE_VERSION } from '@/constants';
 import Cookies from 'js-cookie';
 import { createContext, useContext } from 'react';
 import { createStore, useStore as useZustandStore } from 'zustand';
@@ -68,6 +69,7 @@ export const initializeProfileStore = (
         partialize: state => ({
           profile: state.profile,
         }),
+        version: PROFILE_VERSION,
       }
     )
   );

@@ -1,13 +1,13 @@
 import { type ProfileStore } from '@/stores/profile-store';
 import ProfileStoreProvider from '@/stores/profile-store/profile-store-provider';
+import { motion } from 'framer-motion';
 import { SessionProvider } from 'next-auth/react';
-import { type FC, PropsWithChildren, type ReactNode } from 'react';
+import { type FC, type PropsWithChildren } from 'react';
 
 import { Toaster } from '@/components/ui/toast';
 
 import { type AppPageProps } from '@/pages/_app';
 
-//For testing purpose i have to make it partial "AppPageProps"
 export type AppPagePropsWithChildren = {
   session?: AppPageProps['pageProps']['session'];
   initialProfileState?: AppPageProps['pageProps']['initialProfileState'];

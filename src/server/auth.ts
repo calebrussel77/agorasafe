@@ -1,3 +1,4 @@
+import { SESSION_VERSION } from '@/constants';
 import { env } from '@/env.mjs';
 import { PrismaAdapter } from '@next-auth/prisma-adapter';
 import { type GetServerSidePropsContext } from 'next';
@@ -31,6 +32,7 @@ declare module 'next-auth' {
       avatar: string;
       hasBeenOnboarded: boolean;
     };
+    version: number;
   }
 
   interface User {
@@ -53,7 +55,7 @@ export const authOptions: NextAuthOptions = {
         token.user ? token.user : session.user
       ) as Session['user'];
 
-      return session;
+      return { ...session, version: SESSION_VERSION };
     },
     jwt({ token, user, trigger, session }) {
       if (trigger === 'update' && session) {

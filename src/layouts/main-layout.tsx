@@ -2,6 +2,7 @@ import React, { type FC, type ReactNode } from 'react';
 
 import { Footer } from '@/components/footer';
 import { Header } from '@/components/header';
+import { PageTransition } from '@/components/page-transition';
 import { Seo, type SeoProps } from '@/components/ui/seo';
 
 import { cn } from '@/lib/utils';

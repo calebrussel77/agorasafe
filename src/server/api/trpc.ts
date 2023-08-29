@@ -6,10 +6,13 @@
  * TL;DR - This is where all the tRPC server stuff is created and plugged in. The pieces you will
  * need to use are documented accordingly near the end.
  */
+import { SESSION_VERSION } from '@/constants';
 import { TRPCError, initTRPC } from '@trpc/server';
 import { type CreateNextContextOptions } from '@trpc/server/adapters/next';
 import { type Session } from 'next-auth';
 import superjson from 'superjson';
+
+import { type CurrentProfile } from '@/features/profiles';
 
 import { getServerAuthSession } from '@/server/auth';
 import { prisma } from '@/server/db';
@@ -103,6 +106,11 @@ const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
   if (!ctx.session || !ctx.session.user) {
     throw new TRPCError({ code: 'UNAUTHORIZED' });
   }
+
+  if (ctx.session && ctx.session.version !== SESSION_VERSION) {
+    throw new TRPCError({ code: 'UNAUTHORIZED' });
+  }
+
   return next({
     ctx: {
       // infers the `session` as non-nullable

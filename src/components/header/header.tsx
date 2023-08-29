@@ -20,8 +20,9 @@ const options = {
   rootMargin: '-300px 0px 0px 0px',
 };
 const classNameList = [
-  'shadow-md',
-  'bg-gray-900',
+  'border-b',
+  'bg-white',
+  'text-gray-900',
   'bg-opacity-70',
   'bg__blurred',
 ];
@@ -34,7 +35,7 @@ const Header = () => {
   const targetedSelector = '#home__changer';
   const isHomePage = router?.pathname === '/';
 
-  useAppearOnTarget({
+  const { isAppear } = useAppearOnTarget({
     elementRef: headerRef,
     targetedSelector,
     classNameList,
@@ -46,9 +47,10 @@ const Header = () => {
       <header
         ref={headerRef}
         className={cn(
-          'sticky inset-x-0 top-0 z-50 -mt-24 transition-all duration-300 ease-in-out',
+          'default__transition sticky inset-x-0 top-0 z-50 -mt-24 text-white',
           !isHomePage && classNameList,
-          !isHomePage && 'mt-0'
+          !isHomePage && 'mt-0',
+          isAppear && 'text-gray-900'
         )}
       >
         <Navbar navigations={navigations}>
@@ -56,7 +58,7 @@ const Header = () => {
             <Sheet.Trigger asChild>
               <button
                 type="button"
-                className="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-white"
+                className="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5"
               >
                 <Menu className="h-6 w-6" aria-hidden="true" />
               </button>

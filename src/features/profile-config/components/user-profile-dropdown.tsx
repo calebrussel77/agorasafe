@@ -59,14 +59,14 @@ const UserProfileDropdown: FC<UserProfileDropdownProps> = ({
             src={(currentProfile.avatar as string) || '/sed'}
             alt={currentProfile.name}
             type={currentProfile.type}
-            className="h-8 w-8"
+            className="h-7 w-7"
           />
-          <Typography className="text-white" truncate lines={1}>
+          <Typography truncate lines={1}>
             {currentProfile.name}
           </Typography>
         </button>
       </DropdownMenu.Trigger>
-      <DropdownMenu.Content sideOffset={6} align="end" className="w-[380px]">
+      <DropdownMenu.Content sideOffset={15} align="end" className="w-[380px]">
         <AutoAnimate>
           <ErrorWrapper
             error={error}

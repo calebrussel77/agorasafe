@@ -5,6 +5,10 @@ export const isDev = process.env.NODE_ENV === 'development';
 
 export const isProd = process.env.NODE_ENV === 'production';
 
+export const SESSION_VERSION = 0.1;
+
+export const PROFILE_VERSION = 0.1;
+
 export const WEBSITE_URL = isDev
   ? 'http://localhost:3000'
   : env.NEXT_PUBLIC_APP_URL || 'https://agorasafe.vercel.app';

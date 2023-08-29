@@ -65,7 +65,7 @@ const NumberHoursForm = ({ error, isLoading }: NumberHoursFormProps) => {
   return (
     <>
       {error && <SectionMessage title={error.message} appareance="danger" />}
-      <Form form={form} onSubmit={onHandleSubmit} className="space-y-16">
+      <Form form={form} onSubmit={onHandleSubmit} className="space-y-12">
         <div className="grid grid-cols-3 gap-2">
           {cardsInfo?.map(card => (
             <button
@@ -73,9 +73,9 @@ const NumberHoursForm = ({ error, isLoading }: NumberHoursFormProps) => {
               onClick={() => setValue('duration', card.value)}
               key={card.title}
               className={cn(
-                'default__transition flex h-56 flex-col items-center justify-center rounded-lg border hover:border hover:border-brand-500 hover:bg-zinc-100',
+                'default__transition flex h-36 flex-col items-center justify-center rounded-lg border hover:border hover:border-brand-500 hover:bg-zinc-100',
                 watchDuration === card.value &&
-                  'border-2 border-brand-500 shadow-lg shadow-brand-500/20'
+                  'border-2 border-brand-500 bg-zinc-100 shadow-lg shadow-brand-500/20'
               )}
             >
               <Typography as="h2" className="text-brand-500">

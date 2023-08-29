@@ -8,13 +8,8 @@ import {
 } from '@/features/home-page';
 
 import { type AppPageProps } from './_app';
-import { useCurrentUser } from '@/hooks/use-current-user';
 
 const HomePage: AppPageProps['Component'] = () => {
-  const {session} = useCurrentUser()
-
-  console.log({session})
-
   return (
     <>
       {/* Hero section */}

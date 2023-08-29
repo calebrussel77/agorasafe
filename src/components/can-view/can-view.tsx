@@ -1,21 +1,28 @@
-import { ProfileType } from '@prisma/client';
-import { type FC, type ReactNode } from 'react';
+import { type ProfileType } from '@prisma/client';
+import { type FC, type PropsWithChildren, type ReactNode } from 'react';
 
-const ALLOWED_STATES = [...Object.keys(ProfileType), 'ANONYMOUS'];
+import { useCurrentUser } from '@/hooks/use-current-user';
 
 interface CanViewProps {
-  profiles: Array<ProfileType & 'ANONYMOUS'>;
+  profile: ProfileType;
+  isPublic?: boolean;
   children: ReactNode;
 }
 
-const CanView: FC<CanViewProps> = ({ profiles, children }) => {
-  if (!profiles.some(el => ALLOWED_STATES.includes(String(el)))) {
-    return <></>;
+const CanView = ({
+  profile,
+  isPublic,
+  children,
+}: PropsWithChildren<CanViewProps>) => {
+  const { profile: currentProfile, session } = useCurrentUser();
+
+  if (isPublic && !profile) return children;
+
+  if (isPublic && profile && currentProfile?.type === profile) {
+    return children;
   }
 
-  return typeof children !== 'undefined'
-    ? (children as React.ReactElement)
-    : null;
+  return null;
 };
 
 export { CanView };

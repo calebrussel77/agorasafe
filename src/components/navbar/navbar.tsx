@@ -38,7 +38,7 @@ const Navbar: FC<NavbarProps> = ({ className, children, navigations }) => {
   return (
     <nav
       className={cn(
-        'flex items-center justify-between px-4 py-3 lg:px-8',
+        'flex items-center justify-between px-4 py-3.5 lg:px-8',
         className
       )}
       aria-label="Global"
@@ -54,7 +54,7 @@ const Navbar: FC<NavbarProps> = ({ className, children, navigations }) => {
           <a
             key={item.name}
             href={item.href}
-            className="text-sm font-semibold leading-6 text-white"
+            className="text-sm font-semibold leading-6"
           >
             {item.name}
           </a>
@@ -80,7 +80,7 @@ const Navbar: FC<NavbarProps> = ({ className, children, navigations }) => {
         ) : (
           <Link
             href="/auth/login"
-            className="ml-4 hidden text-sm font-semibold leading-6 text-white lg:flex"
+            className="ml-4 hidden text-sm font-semibold leading-6 lg:flex"
           >
             Se connecter <span aria-hidden="true">&rarr;</span>
           </Link>

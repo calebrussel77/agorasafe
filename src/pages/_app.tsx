@@ -5,6 +5,7 @@ import '@/assets/styles/globals.css';
 import { WEBSITE_URL } from '@/constants';
 import { AppProvider } from '@/providers/app-provider';
 import { type ProfileStore } from '@/stores/profile-store';
+import { AnimatePresence } from 'framer-motion';
 import { type NextPage } from 'next';
 import { type Session } from 'next-auth';
 import { getSession } from 'next-auth/react';
@@ -15,6 +16,7 @@ import { type ReactElement, type ReactNode, useMemo } from 'react';
 
 import { DefaultSeo } from '@/components/default-seo';
 import { Meta } from '@/components/meta';
+import { PageTransition } from '@/components/page-transition';
 import { ProfileSession } from '@/components/profile-session';
 import { NoSSR } from '@/components/ui/no-ssr';
 
@@ -41,6 +43,12 @@ export type AppPageProps = {
   shouldDisableAnalytics?: boolean;
 }>;
 
+function handleExitComplete() {
+  if (typeof window !== 'undefined') {
+    window.scrollTo({ top: 0 });
+  }
+}
+
 const MyApp = (props: AppPageProps) => {
   useNewDeploy();
   useNotificationNetwork();
@@ -55,6 +63,8 @@ const MyApp = (props: AppPageProps) => {
     },
     router,
   } = props;
+
+  console.log(session);
 
   // Use the layout defined at the page level, if available
   const getLayout = useMemo(
@@ -72,15 +82,24 @@ const MyApp = (props: AppPageProps) => {
           origin: WEBSITE_URL,
         })}
       />
-      <AppProvider
-        {...{
-          session,
-          initialProfileState,
-        }}
-      >
-        <ProfileSession />
-        <NoSSR>{getLayout(<Component {...pageProps} />, router)}</NoSSR>
-      </AppProvider>
+      <AnimatePresence mode="wait" onExitComplete={handleExitComplete}>
+        <AppProvider
+          {...{
+            session,
+            initialProfileState,
+          }}
+        >
+          <NoSSR>
+            <PageTransition>
+              <ProfileSession />
+              {getLayout(
+                <Component {...pageProps} key={router.asPath} />,
+                router
+              )}
+            </PageTransition>
+          </NoSSR>
+        </AppProvider>
+      </AnimatePresence>
     </>
   );
 };
