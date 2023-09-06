@@ -3,7 +3,7 @@ import { Card } from '@/components/ui/card';
 import { GroupItem } from '@/components/ui/group-item';
 import { CenterContent } from '@/components/ui/layout';
 
-import { ChooseProfileTypeForm } from '@/features/auth-onboarding';
+import { ChooseProfileTypeForm } from '@/features/profiles';
 
 import { useCurrentUser } from '@/hooks/use-current-user';
 

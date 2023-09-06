@@ -170,7 +170,7 @@ const MobileNavbar: FC<MobileNavbarProps> = ({ navigations }) => {
                     <Button
                       size="sm"
                       variant="ghost"
-                      onClick={() => void onSignOut(resetProfile)}
+                      onClick={() => void onSignOut()}
                       className="ml-auto flex items-center justify-center text-center"
                     >
                       <LogOut className="mr-1 h-4 w-4" />

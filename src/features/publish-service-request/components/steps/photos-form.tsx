@@ -1,28 +1,17 @@
 import { type TRPCClientErrorLike } from '@trpc/client';
 import { Camera } from 'lucide-react';
 import { useRouter } from 'next/router';
+import { useState } from 'react';
 import { Controller } from 'react-hook-form';
 
 import { Button } from '@/components/ui/button';
-import { Field } from '@/components/ui/field';
-import {
-  FileUpload,
-  FileUploadButton,
-  FileWithPreviewBlob,
-  FileWithPreviewBlobType,
-} from '@/components/ui/file-upload';
 import { Form, useZodForm } from '@/components/ui/form';
-import { Image } from '@/components/ui/image';
 import { SectionMessage } from '@/components/ui/section-message';
+import { DropzoneUpload, useUpload } from '@/components/ui/uploadthing';
 
 import { type AppRouter } from '@/server/api/root';
 
-import { useCatchNavigation } from '@/hooks/use-catch-navigation';
-
-import {
-  type PublishServiceRequest,
-  usePublishServiceRequest,
-} from '../../stores';
+import { usePublishServiceRequest } from '../../stores';
 import { FixedFooterForm } from '../fixed-footer-form';
 
 type PhotosFormProps = {
@@ -30,33 +19,31 @@ type PhotosFormProps = {
   isLoading: boolean;
 };
 
-type Address = Pick<
-  PublishServiceRequest,
-  'photoOne' | 'photoTwo' | 'photoThree'
->;
+type PhotosFormData = {
+  photoOne: File[];
+  photoTwo: File[];
+  photoThree: File[];
+};
 
 const PhotosForm = ({ error, isLoading }: PhotosFormProps) => {
   const router = useRouter();
   const { serviceSlug } = router.query as { serviceSlug: string };
 
-  const { updateServiceRequest, serviceRequest } = usePublishServiceRequest();
-
   const form = useZodForm({
     mode: 'onChange',
-    defaultValues: {
-      photoOne: serviceRequest?.photoOne || '',
-      photoTwo: serviceRequest?.photoTwo || '',
-      photoThree: serviceRequest?.photoThree || '',
+  });
+
+  const { control, setValue } = form;
+
+  const { startUpload: startUploadPhotoOne, isUploading } = useUpload({
+    endpoint: 'imageUploader',
+    onSuccess(res) {
+      setValue('photoOne', res);
     },
   });
 
-  const {
-    control,
-    formState: { isDirty, isSubmitted },
-  } = form;
-
-  const onHandleSubmit = (formData: Address) => {
-    updateServiceRequest(formData);
+  const onHandleSubmit = (formData: Partial<PhotosFormData>) => {
+    console.log(formData);
     // void router.push(`/publish-service-request/${serviceSlug}/duration`);
   };
 
@@ -68,90 +55,46 @@ const PhotosForm = ({ error, isLoading }: PhotosFormProps) => {
           <Controller
             control={control}
             name="photoOne"
-            render={({ field: { ref, onChange, value }, fieldState }) => {
-              const fileValue = value as FileWithPreviewBlob;
+            render={({ field: { onChange, value }, fieldState }) => {
+              const fileValue = value as File[];
               return (
-                <FileUpload
-                  ref={ref}
+                <DropzoneUpload
+                  isLoading={isUploading}
+                  icon={<Camera className="h-7 w-7" />}
+                  label="Ajouter une photo"
+                  value={fileValue}
                   onChange={onChange}
-                  label="Télécharger une image"
-                  icon={<Camera className="h-6 w-6" />}
-                  preview={null}
-                  value={fileValue as never}
-                >
-                  {value
-                    ? ({ openFile, onRemoveFile }) => (
-                        <FileUploadButton
-                          onRemoveFile={onRemoveFile}
-                          openFile={openFile}
-                        >
-                          <Image
-                            src={fileValue?.preview as string}
-                            className="object-cover"
-                            alt="sss"
-                          />
-                        </FileUploadButton>
-                      )
-                    : undefined}
-                </FileUpload>
+                />
               );
             }}
           />
           <Controller
             control={control}
             name="photoTwo"
-            render={({ field: { ref, onChange, value }, fieldState }) => {
-              const fileValue = value as FileWithPreviewBlob;
+            render={({ field: { onChange, value }, fieldState }) => {
+              const fileValue = value as File[];
               return (
-                <FileUpload
-                  ref={ref}
+                <DropzoneUpload
+                  icon={<Camera className="h-7 w-7" />}
+                  label="Ajouter une photo"
+                  value={fileValue}
                   onChange={onChange}
-                  label="Télécharger une image"
-                  icon={<Camera className="h-6 w-6" />}
-                  preview={null}
-                  value={fileValue as never}
-                >
-                  {value
-                    ? ({ openFile }) => (
-                        <FileUploadButton openFile={openFile}>
-                          <Image
-                            src={fileValue?.preview as string}
-                            className="object-cover"
-                            alt="sss"
-                          />
-                        </FileUploadButton>
-                      )
-                    : undefined}
-                </FileUpload>
+                />
               );
             }}
           />
           <Controller
             control={control}
             name="photoThree"
-            render={({ field: { ref, onChange, value }, fieldState }) => {
-              const fileValue = value as FileWithPreviewBlob;
+            render={({ field: { onChange, value }, fieldState }) => {
+              const fileValue = value as File[];
               return (
-                <FileUpload
-                  ref={ref}
+                <DropzoneUpload
+                  icon={<Camera className="h-7 w-7" />}
+                  label="Ajouter une photo"
+                  value={fileValue}
                   onChange={onChange}
-                  label="Télécharger une image"
-                  icon={<Camera className="h-6 w-6" />}
-                  preview={null}
-                  value={fileValue as never}
-                >
-                  {value
-                    ? ({ openFile }) => (
-                        <FileUploadButton openFile={openFile}>
-                          <Image
-                            src={fileValue?.preview as string}
-                            className="object-cover"
-                            alt="sss"
-                          />
-                        </FileUploadButton>
-                      )
-                    : undefined}
-                </FileUpload>
+                />
               );
             }}
           />

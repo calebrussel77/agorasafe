@@ -1,11 +1,8 @@
-import { useLocationSearch } from '@/services';
 import { type TRPCClientErrorLike } from '@trpc/client';
-import { MapPin } from 'lucide-react';
 import { useRouter } from 'next/router';
 import { Controller } from 'react-hook-form';
 
 import { Button } from '@/components/ui/button';
-import { ComboBox } from '@/components/ui/combobox';
 import { Field } from '@/components/ui/field';
 import { Form, useZodForm } from '@/components/ui/form';
 import { PhoneInput } from '@/components/ui/phone-input';
@@ -13,7 +10,6 @@ import { SectionMessage } from '@/components/ui/section-message';
 
 import { type AppRouter } from '@/server/api/root';
 
-import { useCatchNavigation } from '@/hooks/use-catch-navigation';
 import { useCurrentUser } from '@/hooks/use-current-user';
 
 import {
@@ -32,16 +28,14 @@ type Address = Pick<PublishServiceRequest, 'phoneToContact'>;
 const PhoneForm = ({ error, isLoading }: PhoneFormProps) => {
   const router = useRouter();
   const { serviceSlug } = router.query as { serviceSlug: string };
+  const { profile } = useCurrentUser();
 
   const { updateServiceRequest, serviceRequest } = usePublishServiceRequest();
-
-  const { locationSearch, setLocationSearch, data, isFetching } =
-    useLocationSearch();
 
   const form = useZodForm({
     mode: 'onChange',
     defaultValues: {
-      phoneToContact: serviceRequest?.phoneToContact || '',
+      phoneToContact: serviceRequest?.phoneToContact || profile?.phone,
     },
   });
 
@@ -68,6 +62,7 @@ const PhoneForm = ({ error, isLoading }: PhoneFormProps) => {
                 ref={ref}
                 variant={fieldState.error ? 'danger' : undefined}
                 autoFocus={true}
+                required
                 onChange={onChange}
                 value={value as never}
                 placeholder="Entrez le numéro de téléphone à joindre pour la prestation..."

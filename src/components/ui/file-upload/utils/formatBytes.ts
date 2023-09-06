@@ -1,4 +1,4 @@
-export const formatBytes = (bytes: number, decimals = 2) => {
+export const formatBytes = (bytes: number, decimals = 2): string => {
   if (bytes === 0) {
     return '0 Bytes';
   }
@@ -9,7 +9,6 @@ export const formatBytes = (bytes: number, decimals = 2) => {
 
   const i = Math.floor(Math.log(bytes) / Math.log(k));
 
-  return parseFloat(
-    `${(bytes / Math.pow(k, i)).toFixed(dm)} ${sizes[i] || ''}`
-  );
+  // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
 };

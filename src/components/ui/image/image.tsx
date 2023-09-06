@@ -9,7 +9,7 @@ import { ImageEmpty } from './image-empty';
 const Image = forwardRef<
   HTMLImageElement | null,
   ComponentProps<typeof NextImage>
->(({ ...props }, ref) => {
+>(({ fill = true, ...props }, ref) => {
   const [hasError, setHasError] = useState(false);
 
   return (
@@ -18,7 +18,7 @@ const Image = forwardRef<
         <NextImage
           ref={ref}
           blurDataURL={blurDataURL()}
-          fill
+          fill={fill}
           placeholder="blur"
           priority
           quality={100}

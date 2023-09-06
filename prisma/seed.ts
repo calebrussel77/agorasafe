@@ -1,4 +1,7 @@
+import { faker } from '@faker-js/faker';
 import { PrismaClient } from '@prisma/client';
+
+import { formatDateToString } from '../src/lib/date-fns';
 
 const prisma = new PrismaClient();
 
@@ -128,15 +131,75 @@ const prisma = new PrismaClient();
 // 		await prisma.$disconnect()
 // 	})
 
-const importData = () => {
+const createLocation = async () => {
+  return prisma.location.create({
+    data: {
+      lat: faker.location.latitude().toFixed(),
+      long: faker.location.longitude().toFixed(),
+      name: `✈️ ${faker.location.city()}`,
+    },
+  });
+};
+
+const createUserWithAdminRoleAndProfiles = async () => {
+  const { id: locationId } = await createLocation();
+
+  await prisma.user.create({
+    data: {
+      email: 'calebrussel77@gmail.com',
+      firstName: 'Caleb',
+      fullName: 'Caleb Admin',
+      lastName: 'Admin',
+      birthdate: formatDateToString(faker.date.birthdate({ mode: 'year' })),
+      sex: 'MALE',
+      hasBeenOnboarded: true,
+      role: 'ADMIN',
+      picture: faker.image.avatar(),
+      profiles: {
+        createMany: {
+          data: [
+            {
+              name: 'Admin Prestataire',
+              phone: faker.phone.number('+2376########'),
+              bio: faker.lorem.paragraph(2),
+              avatar: faker.image.avatar(),
+              slug: 'admin-provider',
+              type: 'PROVIDER',
+              locationId,
+            },
+            {
+              name: 'Admin Client',
+              bio: faker.lorem.paragraph(2),
+              avatar: faker.image.avatar(),
+              phone: faker.phone.number('+2376########'),
+              slug: 'admin-customer',
+              type: 'CUSTOMER',
+              locationId,
+            },
+          ],
+        },
+      },
+    },
+  });
+};
+
+const destroyData = async () => {
   try {
-    // delete all presents data
-    // await prisma.user.deleteMany();
+    console.log('🌱 Cleaned up the database...');
 
-    // Create fresh data
-    // await createUsers();
+    console.log('🧹 Deleting profiles...');
+    await prisma.profile.deleteMany();
 
-    console.log('Data imported !');
+    console.log('🧹 Deleting locations...');
+    await prisma.location.deleteMany();
+
+    console.log('🧹 Deleting accounts...');
+    await prisma.account.deleteMany();
+
+    console.log('🧹 Deleting users...');
+    await prisma.user.deleteMany();
+
+    console.log(`🌱 Database has been cleaned up`);
     process.exit();
   } catch (error) {
     console.log(error);
@@ -144,18 +207,17 @@ const importData = () => {
   }
 };
 
-const destroyData = async () => {
+const importData = async () => {
   try {
-    await prisma.profile.deleteMany();
-    await prisma.location.deleteMany();
-    await prisma.account.deleteMany();
-    await prisma.user.deleteMany();
+    console.log('🌱 Seeding...');
 
-    // await prisma.pageSetting.deleteMany();
-    // await prisma.subscriber.deleteMany();
-    // await prisma.subscription.deleteMany();
+    console.log(
+      `🧹 Creating user "Caleb Admin" with "ADMIN" role and 02 profiles...`
+    );
+    await createUserWithAdminRoleAndProfiles();
 
-    console.log('Data destroyed !');
+    console.log(`🌱 Database has been seeded`);
+
     process.exit();
   } catch (error) {
     console.log(error);
@@ -170,7 +232,7 @@ const load = async () => {
     if (process.argv[2] === '-d') {
       await destroyData();
     } else {
-      importData();
+      await importData();
     }
   } catch (e) {
     console.log(e);

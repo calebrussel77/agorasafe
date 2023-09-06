@@ -1,6 +1,5 @@
 import { createTRPCRouter } from '@/server/api/trpc';
 
-import { authRouter } from './routers/auth.router.';
 import { profileConfigRouter } from './routers/profile-config.router';
 import { profilesRouter } from './routers/profiles.router';
 
@@ -10,7 +9,6 @@ import { profilesRouter } from './routers/profiles.router';
  * All routers added in /api/routers should be manually added here.
  */
 export const appRouter = createTRPCRouter({
-  auth: authRouter,
   profiles: profilesRouter,
   profileConfig: profileConfigRouter,
 });

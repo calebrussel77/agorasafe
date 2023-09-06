@@ -1,5 +1,7 @@
 import type { PersistStorage, StorageValue } from 'zustand/middleware';
 
+import { deSerialize, serialize } from '@/utils/text';
+
 import type { CookieStorage, PersistedState } from './profiles';
 import { initialStateJSON } from './profiles';
 
@@ -12,16 +14,12 @@ export const createPersistStorage = (getStorage: () => StateStorage) => {
     getItem: name => {
       const value: string = storage.getItem(name) ?? initialStateJSON;
 
-      return JSON.parse(
+      return deSerialize<StorageValue<PersistedState>>(
         value ?? initialStateJSON
-      ) as StorageValue<PersistedState>;
-      // return JSON.parse(
-      //   decompress(value) ?? initialStateJSON
-      // ) as StorageValue<PersistedState>;
+      );
     },
     setItem: (name, newValue) => {
-      return storage.setItem(name, JSON.stringify(newValue));
-      // return storage.setItem(name, compress(JSON.stringify(newValue)));
+      return storage.setItem(name, serialize(newValue));
     },
     removeItem: name => storage.removeItem(name),
   };

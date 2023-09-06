@@ -1,5 +1,4 @@
-import { LogOut, MapPin, UserPlus2 } from 'lucide-react';
-import { RefreshCcw } from 'lucide-react';
+import { ChevronDown, LogOut, RefreshCcw, UserPlus2 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import React, { type FC } from 'react';
@@ -17,7 +16,8 @@ import { UserBadge } from '@/components/user-badge';
 import { useAuth } from '@/features/auth';
 import { type CurrentProfile } from '@/features/profiles';
 
-import { generateArray, isPathMatchRoute } from '@/utils/misc';
+import { generateArray } from '@/utils/misc';
+import { isPathMatchRoute } from '@/utils/routing';
 
 import { cn } from '@/lib/utils';
 
@@ -53,7 +53,7 @@ const UserProfileDropdown: FC<UserProfileDropdownProps> = ({
         asChild
         className="ml-4 hidden rounded-full lg:flex"
       >
-        <button className="flex items-center gap-3">
+        <button className="flex items-center">
           <UserAvatar
             onClick={onToggle}
             src={(currentProfile.avatar as string) || '/sed'}
@@ -61,9 +61,10 @@ const UserProfileDropdown: FC<UserProfileDropdownProps> = ({
             type={currentProfile.type}
             className="h-7 w-7"
           />
-          <Typography truncate lines={1}>
+          <Typography truncate lines={1} className="ml-3 font-semibold">
             {currentProfile.name}
           </Typography>
+          <ChevronDown className="ml-2 h-4 w-4 flex-shrink-0" />
         </button>
       </DropdownMenu.Trigger>
       <DropdownMenu.Content sideOffset={15} align="end" className="w-[380px]">
@@ -97,7 +98,7 @@ const UserProfileDropdown: FC<UserProfileDropdownProps> = ({
                     />
                   }
                   name={
-                    <div className="flex items-center">
+                    <div className="flex items-start">
                       <Typography
                         as="h3"
                         variant="h4"
@@ -107,7 +108,7 @@ const UserProfileDropdown: FC<UserProfileDropdownProps> = ({
                         {currentProfile.name}
                       </Typography>
                       <UserBadge
-                        className="ml-2 flex-shrink-0 text-xs"
+                        className="ml-1.5"
                         type={currentProfile.type}
                       />
                     </div>
@@ -116,10 +117,9 @@ const UserProfileDropdown: FC<UserProfileDropdownProps> = ({
                     <Typography
                       truncate
                       variant="small"
-                      className="flex w-full items-center gap-1 text-muted-foreground"
+                      className="flex w-full items-center text-muted-foreground"
                     >
-                      <MapPin className="h-4 w-4" />
-                      {currentProfile?.user?.location?.name}
+                      {currentProfile?.location?.name}
                     </Typography>
                   }
                   classNames={{
@@ -152,7 +152,7 @@ const UserProfileDropdown: FC<UserProfileDropdownProps> = ({
                             size: 'sm',
                             variant: 'ghost',
                           }),
-                          'w-full'
+                          'h-auto w-full'
                         )}
                       >
                         <UserPlus2 className="mr-2 h-5 w-5" />
@@ -225,7 +225,7 @@ const UserProfileDropdown: FC<UserProfileDropdownProps> = ({
                 })}
                 <DropdownMenu.Separator />
                 <DropdownMenu.Item
-                  onClick={() => void onSignOut(resetProfile)}
+                  onClick={() => void onSignOut()}
                   className="flex items-center justify-center text-center"
                 >
                   <LogOut className="mr-2 h-4 w-4" />

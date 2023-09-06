@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import { type FC, type ReactNode } from 'react';
 import { format } from 'url';
 
-import { isPathMatchRoute } from '@/utils/misc';
+import { isPathMatchRoute } from '@/utils/routing';
 
 import { cn } from '@/lib/utils';
 

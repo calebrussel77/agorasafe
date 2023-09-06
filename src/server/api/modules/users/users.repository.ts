@@ -2,28 +2,34 @@ import { type Prisma } from '@prisma/client';
 
 import { prisma } from '@/server/db';
 
-export async function updateUserById({
-  id,
-  locationId,
-  ...rest
-}: Omit<Prisma.UserUpdateArgs['data'], 'location'>) {
-  return await prisma.user.update({
+export function updateUserById({ id, ...rest }: Prisma.UserUpdateArgs['data']) {
+  return prisma.user.update({
     where: { id: id as string },
     data: {
-      location: {
-        connect: { id: locationId as string },
-      },
       ...rest,
     },
   });
 }
 
-export async function getUserById(userId: string) {
+export function getUserById(userId: string) {
   return prisma.user.findUnique({
     where: { id: userId },
     include: {
       profiles: { select: { id: true, name: true, type: true } },
       _count: { select: { profiles: true } },
+    },
+  });
+}
+
+export function getUserByEmail(userEmail: string) {
+  return prisma.user.findUnique({
+    where: { email: userEmail },
+    select: {
+      id: true,
+      email: true,
+      hasBeenOnboarded: true,
+      picture: true,
+      role: true,
     },
   });
 }

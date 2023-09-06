@@ -1,16 +1,18 @@
 import { USER_PROFILES_LIMIT_COUNT } from '@/constants';
 import slugify from 'slugify';
 
+import { prisma } from '@/server/db';
+
 import {
   throwBadRequestError,
   throwNotFoundError,
 } from '../../../utils/error-handling';
-import { getUserById } from '../users';
+import { getUserById, updateUserById } from '../users';
 import {
   createProfileByUserId,
-  getProfilesByUserId,
+  getProfilesWithLocationByUserId,
 } from './profiles.repository';
-import { getProfileCreationrMessage } from './profiles.utils';
+import { getProfileCreationMessage } from './profiles.utils';
 import {
   type CreateProfileValidation,
   type GetProfilesByUserIdValidation,
@@ -22,7 +24,7 @@ export const getProfilesByUserIdService = async (
   const { userId, name } = inputs;
 
   //Get all profiles of the current user
-  const profiles = await getProfilesByUserId(userId);
+  const profiles = await getProfilesWithLocationByUserId(userId);
 
   return {
     profiles: profiles,
@@ -32,7 +34,7 @@ export const getProfilesByUserIdService = async (
 };
 
 export const createProfileService = async (inputs: CreateProfileValidation) => {
-  const { name, profileType, userId } = inputs;
+  const { name, profileType, userId, location, phone } = inputs;
 
   const redirectUrl = profileType === 'PROVIDER' ? '/' : '/';
 
@@ -48,17 +50,36 @@ export const createProfileService = async (inputs: CreateProfileValidation) => {
     );
   }
 
-  //Create a profile for the given user
-  const profile = await createProfileByUserId({
-    userId,
-    name: name,
-    type: profileType,
-    slug: slugify(name, { lower: true }), //TODO create the slug function to properly handle this
-  });
+  const [_, profile] = await prisma.$transaction([
+    //Update the user infos by phone and location created
+    updateUserById({
+      id: userId,
+      hasBeenOnboarded: true,
+    }),
+    //Create a profile for the given user
+    createProfileByUserId({
+      userId,
+      phone,
+      location: {
+        connectOrCreate: {
+          where: { name: location.name },
+          create: {
+            lat: location.lat,
+            long: location.long,
+            name: location.name,
+            wikidata: location.wikidata,
+          },
+        },
+      },
+      name: name,
+      type: profileType,
+      slug: slugify(name, { lower: true }), //TODO create the slug function to properly handle this
+    }),
+  ]);
 
   return {
     profile,
     redirectUrl,
-    message: getProfileCreationrMessage(name),
+    message: getProfileCreationMessage(name),
   };
 };

@@ -2,7 +2,7 @@ import { APP_PROFILES_INFO } from '@/constants';
 import { ProfileType } from '@prisma/client';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import React, { type FC } from 'react';
+import React from 'react';
 import { Controller } from 'react-hook-form';
 
 import { Button } from '@/components/ui/button';
@@ -11,6 +11,8 @@ import { Form, useZodForm } from '@/components/ui/form';
 import { RadioGroup } from '@/components/ui/radio-group';
 import { Typography } from '@/components/ui/typography';
 import { VariantMessage } from '@/components/ui/variant-message';
+
+import { noop } from '@/utils/misc';
 
 import { cn } from '@/lib/utils';
 
@@ -27,7 +29,7 @@ const ChooseProfileTypeForm = () => {
   const watchProfileType = watch('profileType') as ProfileType;
 
   return (
-    <Form onSubmit={data => console.log(data)} form={form}>
+    <Form onSubmit={noop} form={form}>
       <Controller
         name="profileType"
         control={control}
@@ -71,7 +73,7 @@ const ChooseProfileTypeForm = () => {
       )}
       <Link
         href={{
-          pathname: '/onboarding/register-profile-infos',
+          pathname: '/onboarding/add-new-profile',
           query: {
             ...router.query,
             profile_type: watchProfileType,

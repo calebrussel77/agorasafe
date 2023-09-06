@@ -5,13 +5,20 @@ import { ChooseProfileModale } from '@/features/profiles';
 import { useCurrentUser } from '@/hooks/use-current-user';
 
 const ProfileSession = () => {
-  const { isAuth, session, updateProfile, hasCurrentProfile } =
+  const { isAuth, session, updateProfile, hasCurrentProfile, resetProfile } =
     useCurrentUser();
+
+  // reset profile store on sign out
+  React.useEffect(() => {
+    if (!session?.user) {
+      resetProfile();
+    }
+  }, [session?.user]);
 
   return (
     <>
       {isAuth && session?.user?.hasBeenOnboarded && !hasCurrentProfile && (
-        <ChooseProfileModale {...{ updateProfile, session }} />
+        <ChooseProfileModale {...{ updateProfile, resetProfile, session }} />
       )}
     </>
   );

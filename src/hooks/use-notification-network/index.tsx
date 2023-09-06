@@ -14,14 +14,14 @@ const useNotificationNetwork = () => {
         icon: <Wifi className="h-5 w-5" />,
         variant: 'success',
         title: 'Votre connexion internet a été rétablie.',
-        actions: [
-          <ToastAction key="hs" altText="cancel" variant="outline">
-            Cancel
-          </ToastAction>,
-          <ToastAction key="kks" altText="Valider">
-            Valider
-          </ToastAction>,
-        ],
+        // actions: [
+        //   <ToastAction key="hs" altText="cancel" variant="outline">
+        //     Cancel
+        //   </ToastAction>,
+        //   <ToastAction key="kks" altText="Valider">
+        //     Valider
+        //   </ToastAction>,
+        // ],
       });
     }
     if (state.previous && state?.online === false) {

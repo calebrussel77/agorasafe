@@ -10,8 +10,8 @@ import { Seo } from '@/components/ui/seo';
 import { useToast } from '@/components/ui/toast';
 
 import {
-  AddProfileForm,
-  type AddProfileFormData,
+  CreateProfileForm,
+  type CreateProfileInput,
   useCreateProfile,
 } from '@/features/profiles';
 
@@ -50,7 +50,7 @@ const FormsTestPage = () => {
     },
   });
 
-  const onRegister = (data: AddProfileFormData) => {
+  const onRegister = (data: CreateProfileInput) => {
     mutate({
       ...data,
     });
@@ -77,8 +77,8 @@ const FormsTestPage = () => {
               <Card.Description>{meta.description}</Card.Description>
             </Card.Header>
             <Card.Content>
-              <AddProfileForm
-                onSubmit={onRegister}
+              <CreateProfileForm
+                onSubmit={() => {}}
                 error={error}
                 isLoading={isLoading}
                 selectedProfile={profileType}

@@ -26,6 +26,8 @@ export const env = createEnv({
     CLOUDINARY_NAME: z.string(),
     CLOUDINARY_API_KEY: z.string(),
     CLOUDINARY_SECRET: z.string(),
+    UPLOADTHING_SECRET: z.string(),
+    UPLOADTHING_APP_ID: z.string(),
   },
 
   /**
@@ -70,6 +72,8 @@ export const env = createEnv({
     NEXT_PUBLIC_DEBUG: process.env.NEXT_PUBLIC_DEBUG,
     NEXT_PUBLIC_GA_MEASUREMENT_ID: process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID,
     NEXT_PUBLIC_SENTRY_DSN: process.env.NEXT_PUBLIC_SENTRY_DSN,
+    UPLOADTHING_SECRET: process.env.UPLOADTHING_SECRET,
+    UPLOADTHING_APP_ID: process.env.UPLOADTHING_APP_ID,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation.

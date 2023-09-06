@@ -1,4 +1,3 @@
-import { ProfileType } from '@prisma/client';
 import Link from 'next/link';
 import React, { type FC, type ReactNode } from 'react';
 
@@ -13,6 +12,7 @@ import { cn } from '@/lib/utils';
 
 import { useCurrentUser } from '@/hooks/use-current-user';
 
+import { CanView } from '../can-view';
 import { LogoSymbolIcon } from '../icons/logo-icon';
 import { Button } from '../ui/button';
 import { useDropdownMenu } from '../ui/dropdown-menu';
@@ -24,16 +24,13 @@ interface NavbarProps {
 }
 
 const Navbar: FC<NavbarProps> = ({ className, children, navigations }) => {
-  const { profile } = useCurrentUser();
+  const { profile, isAuthWithProfile } = useCurrentUser();
   const { isDropdownMenuOpen, onToggleDropdownMenu } = useDropdownMenu();
 
   const { data, isLoading, error } = useGetProfileConfig(
     { profileId: profile?.id as string },
     { enabled: isDropdownMenuOpen }
   );
-
-  const shouldDisplayCustomerButton =
-    !profile || profile?.type === ProfileType.CUSTOMER;
 
   return (
     <nav
@@ -61,14 +58,14 @@ const Navbar: FC<NavbarProps> = ({ className, children, navigations }) => {
         ))}
       </div>
       <div className="flex items-center lg:flex-1 lg:justify-end">
-        {shouldDisplayCustomerButton && (
+        <CanView allowedProfiles={['CUSTOMER']} isPublic>
           <AskServiceModal>
             <LoginRedirect reason="publish-new-service">
               <Button size="sm">Demander un service</Button>
             </LoginRedirect>
           </AskServiceModal>
-        )}
-        {profile?.id ? (
+        </CanView>
+        {isAuthWithProfile ? (
           <UserProfileDropdown
             isOpen={isDropdownMenuOpen}
             onToggle={onToggleDropdownMenu}

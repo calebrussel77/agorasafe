@@ -1,28 +1,96 @@
-import { type ProfileType } from '@prisma/client';
-import { type FC, type PropsWithChildren, type ReactNode } from 'react';
+import { type ProfileType, type Role } from '@prisma/client';
+import { type PropsWithChildren, type ReactElement } from 'react';
 
 import { useCurrentUser } from '@/hooks/use-current-user';
 
-interface CanViewProps {
-  profile: ProfileType;
-  isPublic?: boolean;
-  children: ReactNode;
+interface GetCanViewCheck
+  extends Pick<CanViewProps, 'accessCheck' | 'allowedProfiles'> {
+  profileTypes: Array<ProfileType>;
+  userRole: Role | undefined;
 }
 
-const CanView = ({
-  profile,
-  isPublic,
-  children,
-}: PropsWithChildren<CanViewProps>) => {
-  const { profile: currentProfile, session } = useCurrentUser();
+interface CanViewProps {
+  accessCheck?: () => boolean;
+  isPublic?: boolean;
+  allowedProfiles?: Array<ProfileType>;
+  renderNoAccess?: () => JSX.Element | null;
+  children: ReactElement | null;
+}
 
-  if (isPublic && !profile) return children;
-
-  if (isPublic && profile && currentProfile?.type === profile) {
-    return children;
+const checkPermissions = (
+  userPermissions: GetCanViewCheck['profileTypes'],
+  allowedProfiles: CanViewProps['allowedProfiles']
+) => {
+  if (allowedProfiles?.length === 0) {
+    return true;
   }
 
-  return null;
+  return userPermissions.some(permission =>
+    allowedProfiles?.includes(permission)
+  );
 };
 
-export { CanView };
+const getCanViewCheck = ({
+  profileTypes,
+  userRole,
+  accessCheck,
+  allowedProfiles,
+}: GetCanViewCheck) => {
+  const isAdmin = userRole === 'ADMIN';
+
+  // Admin users can do anything
+  if (isAdmin) return true;
+
+  // when an accessCheck function is provided, ensure that passes as well as the permissions
+  if (accessCheck) {
+    return accessCheck() && checkPermissions(profileTypes, allowedProfiles);
+  }
+
+  // otherwise only check permissions
+  return checkPermissions(profileTypes, allowedProfiles);
+};
+
+const CanView = ({
+  accessCheck,
+  isPublic = false,
+  allowedProfiles = [],
+  renderNoAccess = () => null,
+  children,
+}: PropsWithChildren<CanViewProps>) => {
+  const { profile: currentProfile, session, isAuth } = useCurrentUser();
+  const profileTypes = currentProfile?.type ? [currentProfile?.type] : [];
+
+  //For some actions who need to be also public
+  if (isPublic && !isAuth) return children;
+
+  const hasPermission = getCanViewCheck({
+    profileTypes,
+    userRole: session?.user?.role,
+    accessCheck,
+    allowedProfiles,
+  });
+
+  return hasPermission ? children : renderNoAccess();
+};
+
+const useHasPermission = ({
+  accessCheck,
+  isPublic = false,
+  allowedProfiles = [],
+}: Pick<CanViewProps, 'accessCheck' | 'allowedProfiles' | 'isPublic'>) => {
+  const { profile: currentProfile, session, isAuth } = useCurrentUser();
+  const profileTypes = currentProfile?.type ? [currentProfile?.type] : [];
+
+  if (isPublic && !isAuth) return true;
+
+  const hasPermission = getCanViewCheck({
+    profileTypes,
+    userRole: session?.user?.role,
+    accessCheck,
+    allowedProfiles,
+  });
+
+  return { hasPermission };
+};
+
+export { CanView, useHasPermission };

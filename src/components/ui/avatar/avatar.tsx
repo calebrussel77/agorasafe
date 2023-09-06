@@ -48,7 +48,7 @@ export const avatarSizeClasses: Record<AvatarSize, string> = {
 };
 
 export const avatarColorClasses: Record<AvatarColor, string> = {
-  default: 'ring-zinc-400',
+  default: 'ring-zinc-200',
   primary: 'ring-brand-500',
   secondary: 'ring-pink-500',
   success: 'ring-green-500',
@@ -145,7 +145,7 @@ const Avatar = React.forwardRef<
 
     const avatarClassName = cn(
       'relative flex shrink-0 overflow-hidden',
-      isBordered && `ring ring-offset-[3px] ${avatarColorClasses['default']}`,
+      isBordered && `ring ring-offset-[2px] ${avatarColorClasses['default']}`,
       avatarSizeClassName,
       shapeClassName,
       colorClassName,

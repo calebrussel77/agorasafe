@@ -5,6 +5,7 @@ import '@/assets/styles/globals.css';
 import { WEBSITE_URL } from '@/constants';
 import { AppProvider } from '@/providers/app-provider';
 import { type ProfileStore } from '@/stores/profile-store';
+import { getInitialState } from '@/stores/profile-store/initial-state';
 import { AnimatePresence } from 'framer-motion';
 import { type NextPage } from 'next';
 import { type Session } from 'next-auth';
@@ -64,8 +65,6 @@ const MyApp = (props: AppPageProps) => {
     router,
   } = props;
 
-  console.log(session);
-
   // Use the layout defined at the page level, if available
   const getLayout = useMemo(
     () => Component.getLayout ?? ((page: React.ReactElement) => page),
@@ -109,6 +108,9 @@ MyApp.getInitialProps = async (appContext: AppContext) => {
   const pathname = appContext?.ctx?.pathname;
   const url = appContext.ctx?.req?.url;
   const isClient = !url || url?.startsWith('/_next/data');
+  const initialState = appContext.ctx?.req?.headers
+    ? getInitialState(appContext.ctx?.req?.headers)
+    : null;
 
   // getSession works both server-side and client-side but we want to avoid any calls to /api/auth/session
   // on page load, so we only call it server-side.
@@ -116,11 +118,12 @@ MyApp.getInitialProps = async (appContext: AppContext) => {
 
   if (
     session &&
+    !initialState?.profile &&
     !session?.user?.hasBeenOnboarded &&
     !pathname?.startsWith('/onboarding')
   ) {
     appContext.ctx?.res?.writeHead(302, {
-      Location: `/onboarding/choose-profile-type?redirectUrl=${pathname}`,
+      Location: `/onboarding/choose-profile-type`,
     });
     appContext.ctx?.res?.end();
   }

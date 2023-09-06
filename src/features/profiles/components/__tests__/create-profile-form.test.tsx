@@ -4,7 +4,7 @@ import { ProfileType } from '@prisma/client';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-import { AddProfileForm } from '../add-profile-form';
+import { CreateProfileForm } from '../create-profile-form';
 
 const mockSubmit = jest.fn();
 
@@ -24,7 +24,7 @@ const buildForm = (overrides?: object) => ({
 describe('Add new profile form', () => {
   it('should render on the screen', () => {
     setup(
-      <AddProfileForm
+      <CreateProfileForm
         onSubmit={mockSubmit}
         isLoading={false}
         error={null}
@@ -37,7 +37,7 @@ describe('Add new profile form', () => {
 
   it('should disabled the profile type section initially', () => {
     setup(
-      <AddProfileForm
+      <CreateProfileForm
         onSubmit={mockSubmit}
         isLoading={false}
         error={null}
@@ -54,7 +54,7 @@ describe('Add new profile form', () => {
 
   it('should disabled the form submit button when isLoading = true and the form is submitted', async () => {
     setup(
-      <AddProfileForm
+      <CreateProfileForm
         onSubmit={mockSubmit}
         isLoading={true}
         error={null}
@@ -73,7 +73,7 @@ describe('Add new profile form', () => {
 
   it('should submit the form when passing the profile type and the name', async () => {
     const { user } = setup(
-      <AddProfileForm
+      <CreateProfileForm
         onSubmit={mockSubmit}
         isLoading={false}
         error={null}

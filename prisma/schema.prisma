@@ -30,27 +30,31 @@ model Profile {
     avatar String?
     bio    String?
     type   ProfileType
+    phone  String?
 
     user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
     userId String
 
+    location   Location? @relation(fields: [locationId], references: [id], onDelete: Cascade)
+    locationId String
+
     provider Provider?
 
     customer Customer?
+
+    deletedAt DateTime? @updatedAt
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 }
 
 model Provider {
-    id                 String   @id @default(cuid())
-    websiteUrl         String?
-    profession         String?
-    isFaceToFace       Boolean? @default(true)
-    isRemote           Boolean? @default(true)
-    showcasePhotoOne   String?
-    showcasePhotoTwo   String?
-    showcasePhotoThree String?
+    id             String   @id @default(cuid())
+    websiteUrl     String?
+    profession     String?
+    isFaceToFace   Boolean? @default(true)
+    isRemote       Boolean? @default(true)
+    showCasePhotos Photo[] // Should be Max 03 photos
 
     skills                  Skill[]
     serviceRequestResponses ProviderServiceRequestResponse[]
@@ -99,19 +103,32 @@ model Service {
     updatedAt DateTime @updatedAt
 }
 
+model Photo {
+    id  String  @id @default(cuid())
+    key String? @unique
+    url String
+
+    serviceRequest   ServiceRequest? @relation(fields: [serviceRequestId], references: [id])
+    serviceRequestId String?
+
+    provider   Provider? @relation(fields: [providerId], references: [id])
+    providerId String?
+
+    createdAt DateTime @default(now())
+}
+
 model ServiceRequest {
     id                     String  @id @default(cuid())
     title                  String
     slug                   String  @unique
     description            String
     phoneToContact         String
-    photoOne               String?
-    photoTwo               String?
-    photoThree             String?
-    numberOfProviderNeeded Int
+    photos                 Photo[] // Should be Max 03 photos
+    numberOfProviderNeeded Int     @default(1)
     duration               String?
     startDate              String
     endDate                String?
+    startHour              String?
     estimatedPrice         String
     location               String
 
@@ -171,13 +188,12 @@ model Session {
 }
 
 model Location {
-    id       String  @id @default(cuid())
-    name     String
+    id       String    @id @default(cuid())
+    name     String    @unique
     lat      String
     long     String
     wikidata String?
-
-    users User[]
+    Profile  Profile[]
 }
 
 model User {
@@ -190,15 +206,12 @@ model User {
     birthdate        String?
     email            String    @unique
     emailVerified    DateTime?
-    phone            String?
     sex              Sex?      @default(value: MALE)
+    role             Role      @default(value: MEMBER)
 
     accounts Account[]
     sessions Session[]
     profiles Profile[]
-
-    location   Location? @relation(fields: [locationId], references: [id], onDelete: Cascade)
-    locationId String?
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
@@ -215,6 +228,11 @@ model VerificationToken {
 enum Sex {
     MALE
     FEMALE
+}
+
+enum Role {
+    ADMIN
+    MEMBER
 }
 
 enum ServiceRequestStatus {

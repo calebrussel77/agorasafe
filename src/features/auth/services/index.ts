@@ -21,7 +21,7 @@ export const useAuth = () => {
     onSeatled?: () => void;
   }) => {
     try {
-      const data = await signIn('google', {
+      await signIn('google', {
         callbackUrl: opts?.redirectUrl,
         redirect: opts?.redirect || false,
       });

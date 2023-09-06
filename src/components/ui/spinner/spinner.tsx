@@ -11,13 +11,13 @@ const SpinnerClasses = {
 const Spinner = forwardRef<
   HTMLDivElement,
   { className?: string; variant?: 'default' | 'primary' | 'secondary' }
->(({ className = 'w-9 h-9', variant = 'default', ...rest }, ref) => {
+>(({ className, variant = 'default', ...rest }, ref) => {
   const classNameVariants = SpinnerClasses[variant];
 
   return (
     <div
       ref={ref}
-      className={cn('loader', classNameVariants, className)}
+      className={cn('loader h-9 w-9', classNameVariants, className)}
       {...rest}
     />
   );

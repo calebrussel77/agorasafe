@@ -13,7 +13,7 @@ const UserAvatar: FC<UserAvatarProps> = ({ type, ...props }) => {
   return (
     <Avatar
       isBordered
-      color={getIsCustomer(type) ? 'default' : 'primary'}
+      // color={getIsCustomer(type) ? 'default' : 'primary'}
       {...props}
     />
   );

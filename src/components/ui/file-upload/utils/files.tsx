@@ -6,6 +6,8 @@ import { PowerpointIcon } from '@/components/icons/powerpoint-icon';
 import { WordIcon } from '@/components/icons/word-icon';
 import { ZipIcon } from '@/components/icons/zip-icon';
 
+import { getFilePreviewUrl } from '@/utils/files';
+
 import { formatBytes } from './formatBytes';
 import { types } from './types';
 
@@ -25,11 +27,12 @@ export function getFileName(file: FileType): string {
 }
 
 export function getMimeType(file: FileType) {
+  if (!file) return null;
   if (typeof file === 'string') {
     const fileName = getFileName(file).split('.').pop();
     return fileName ? types[fileName] : null;
   } else {
-    return file.type;
+    return file?.type;
   }
 }
 
@@ -90,3 +93,16 @@ export function getFileIcon(file: FileType, forceFileType?: ForceFileType) {
       return Link2;
   }
 }
+
+export const getImageUrl = (file: string | File) => {
+  const mimeType = getMimeType(file);
+  const isImage = mimeType && mimeType.startsWith('image/');
+
+  if (isImage && file instanceof File) {
+    return getFilePreviewUrl(file);
+  }
+  if (isImage && typeof file === 'string') {
+    return file;
+  }
+  return null;
+};

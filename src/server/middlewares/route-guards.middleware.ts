@@ -10,18 +10,14 @@ import { createMiddleware } from './utils';
 const routeGuards: RouteGuard[] = [];
 
 addRouteGuard({
-  matcher: ['/add-new-profile', '/publish-service/:path*'],
+  matcher: [
+    '/onboarding/:path*',
+    '/add-new-profile',
+    '/publish-service/:path*',
+  ],
   canAccess: ({ user }) => {
     return !!user;
   },
-});
-
-addRouteGuard({
-  matcher: ['/onboarding/:path*'],
-  canAccess: ({ user }) => {
-    return !!user && user?.hasBeenOnboarded === false;
-  },
-  redirect: '/',
 });
 
 addRouteGuard({

@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Image } from '@/components/ui/image';
 import { Typography } from '@/components/ui/typography';
 
-import { FormSubscriptionModal } from '@/features/onboarding-souscription';
+import { FormSubscriptionModal } from '@/features/app-subscription';
 
 import { useFadeSliderImages } from '@/hooks/use-fade-slider-images';
 

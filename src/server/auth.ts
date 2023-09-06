@@ -1,6 +1,7 @@
 import { SESSION_VERSION } from '@/constants';
 import { env } from '@/env.mjs';
 import { PrismaAdapter } from '@next-auth/prisma-adapter';
+import { type Role } from '@prisma/client';
 import { type GetServerSidePropsContext } from 'next';
 import {
   type DefaultSession,
@@ -15,6 +16,9 @@ import { makeRandomId } from '@/utils/misc';
 import { sentryCaptureException } from '@/lib/sentry';
 
 import { prisma } from '@/server/db';
+
+import { getUserByEmail } from './api/modules/users';
+import { throwDbError, throwNotFoundError } from './utils/error-handling';
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -31,6 +35,7 @@ declare module 'next-auth' {
       email: string;
       avatar: string;
       hasBeenOnboarded: boolean;
+      role: Role;
     };
     version: number;
   }
@@ -39,7 +44,6 @@ declare module 'next-auth' {
     // ...other properties
     fullName: string;
     picture: string;
-    hasBeenOnboarded: boolean;
   }
 }
 
@@ -57,19 +61,28 @@ export const authOptions: NextAuthOptions = {
 
       return { ...session, version: SESSION_VERSION };
     },
-    jwt({ token, user, trigger, session }) {
+    async jwt({ token, user, trigger, session }) {
       if (trigger === 'update' && session) {
         const _session = session as Session;
         token.user = _session.user;
       }
       if ((trigger === 'signIn' || trigger === 'signUp') && user) {
-        token.user = {
-          id: user?.id,
-          email: user?.email,
-          name: user?.fullName,
-          avatar: user?.picture,
-          hasBeenOnboarded: user?.hasBeenOnboarded,
-        };
+        try {
+          const _user = await getUserByEmail(user?.email || '');
+
+          if (!_user) throwNotFoundError();
+
+          token.user = {
+            id: user?.id,
+            email: user?.email,
+            name: user?.fullName,
+            avatar: user?.picture,
+            hasBeenOnboarded: _user.hasBeenOnboarded,
+            role: _user.role,
+          };
+        } catch (e) {
+          throwDbError(e);
+        }
       }
 
       return token;
@@ -98,7 +111,6 @@ export const authOptions: NextAuthOptions = {
           email: profile?.email,
           picture: profile?.picture,
           fullName: `${profile.given_name} ${profile.family_name}`,
-          hasBeenOnboarded: false,
         };
       },
     }),
@@ -112,7 +124,7 @@ export const authOptions: NextAuthOptions = {
     signIn: '/auth/login',
     error: '/auth/login',
   },
-  debug: true,
+  debug: false,
   logger: {
     error(code, ...message) {
       console.error(code, message);

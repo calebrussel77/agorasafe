@@ -1,8 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-export const publishServiceRequestStorageName =
-  '__agorasafe_publish_service_request__';
+export const publishServiceRequestStorageName = '__publish_service_request__';
 
 export type PublishServiceRequest = {
   title: string;
@@ -21,7 +20,7 @@ export type PublishServiceRequest = {
 };
 
 // define types for state values and actions separately
-type State = {
+export type State = {
   serviceRequest: Partial<PublishServiceRequest> | null;
 };
 
@@ -35,15 +34,22 @@ const initialState: State = {
   serviceRequest: null,
 };
 
+export const initialStateJSON = JSON.stringify(initialState);
+
 export const usePublishServiceRequest = create<State & Actions>()(
   persist(
     set => ({
       ...initialState,
       updateServiceRequest: (serviceRequestData: State['serviceRequest']) =>
-        set(state => ({
-          ...state,
-          serviceRequest: { ...state.serviceRequest, ...serviceRequestData },
-        })),
+        set(state => {
+          return {
+            ...state,
+            serviceRequest: {
+              ...state.serviceRequest,
+              ...serviceRequestData,
+            },
+          };
+        }),
       reset: () => set(initialState),
     }),
     {

@@ -8,13 +8,10 @@ import { Button } from '@/components/ui/button';
 import { ComboBox } from '@/components/ui/combobox';
 import { Field } from '@/components/ui/field';
 import { Form, useZodForm } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
 import { SectionMessage } from '@/components/ui/section-message';
-import { Textarea } from '@/components/ui/textarea';
 
 import { type AppRouter } from '@/server/api/root';
 
-import { useCatchNavigation } from '@/hooks/use-catch-navigation';
 import { useCurrentUser } from '@/hooks/use-current-user';
 
 import {
@@ -44,8 +41,8 @@ const AddressForm = ({ error, isLoading }: AddressFormProps) => {
     mode: 'onChange',
     defaultValues: {
       location: serviceRequest?.location || {
-        value: profile?.user?.location?.name,
-        label: profile?.user?.location?.name,
+        value: profile?.location?.name,
+        label: profile?.location?.name,
       },
     },
   });

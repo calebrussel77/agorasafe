@@ -1,4 +1,4 @@
-import { CounterInputProps } from '@/components/ui/counter-input';
+import { type CounterInputProps } from '@/components/ui/counter-input';
 
 import { isDecimal } from './type-guards';
 
@@ -36,8 +36,6 @@ export const formatNumberToText = (
 ) => {
   const numericValue = Number(value);
 
-  console.log({ value });
-
   if (!numericValue) return '';
 
   if (variant === 'hours') {
@@ -51,4 +49,14 @@ export const formatNumberToText = (
   }
 
   return value;
+};
+
+export const deSerialize = <T>(jsonString: string | null) => {
+  if (!jsonString) return null;
+
+  return JSON.parse(jsonString) as T;
+};
+
+export const serialize = (object: unknown) => {
+  return JSON.stringify(object);
 };

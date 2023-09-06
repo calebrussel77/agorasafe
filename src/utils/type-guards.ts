@@ -23,6 +23,14 @@ export function isDecimal(value: number | string) {
   return Number(value) % 1 != 0;
 }
 
-export function isArray(value: unknown) {
+export function isArray(value: unknown): value is any[] {
   return Array.isArray(value);
+}
+
+export function isArrayOfFile(value: unknown): value is File[] {
+  if (!isArray(value)) {
+    return false; //The value is not an array
+  }
+
+  return value.every(element => element instanceof File);
 }

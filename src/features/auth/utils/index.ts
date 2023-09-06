@@ -1,6 +1,6 @@
 import { REDIRECT_QUERY_KEY } from '@/constants';
 
-import { generateUrlWithSearchParams } from '@/utils/misc';
+import { generateUrlWithSearchParams } from '@/utils/routing';
 
 export const loginRedirectReasons = {
   'session-expired':

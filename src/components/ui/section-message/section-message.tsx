@@ -9,6 +9,8 @@ import {
 import { CheckCircle2 } from 'lucide-react';
 import React, { type ReactElement, forwardRef, useState } from 'react';
 
+import { isArray } from '@/utils/type-guards';
+
 import { cn } from '@/lib/utils';
 
 import { AutoAnimate } from '../auto-animate';
@@ -100,7 +102,7 @@ const SectionMessage = forwardRef<HTMLDivElement, SectionMessageProps>(
     ref
   ) => {
     const [isVisible, setIsVisible] = useState(true);
-    const isActionsArray = Array.isArray(actions);
+    const isActionsArray = isArray(actions);
 
     const Icon =
       appareance && IconAppareances[appareance]
@@ -115,7 +117,7 @@ const SectionMessage = forwardRef<HTMLDivElement, SectionMessageProps>(
     const toggleVisible = () => setIsVisible(false);
 
     return (
-      <AutoAnimate>
+      <>
         {isVisible && (
           <div
             ref={ref}
@@ -123,7 +125,7 @@ const SectionMessage = forwardRef<HTMLDivElement, SectionMessageProps>(
             className={cn(
               'mb-3 rounded-sm',
               sectionMessage({ appareance, size, class: className }),
-              isSticky && 'sticky top-0 z-20 w-full'
+              isSticky && 'sticky top-0 z-40 w-full'
             )}
             {...props}
           >
@@ -161,7 +163,7 @@ const SectionMessage = forwardRef<HTMLDivElement, SectionMessageProps>(
             )}
           </div>
         )}
-      </AutoAnimate>
+      </>
     );
   }
 );

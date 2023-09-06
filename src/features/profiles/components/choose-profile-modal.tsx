@@ -1,13 +1,14 @@
 import { type ProfileStore } from '@/stores/profile-store';
+import { ProfileType } from '@prisma/client';
 import { type Session } from 'next-auth';
+import { useRouter } from 'next/router';
 
-import { Redirect } from '@/components/redirect';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { ErrorWrapper, SectionError } from '@/components/ui/error';
 import { CenterContent } from '@/components/ui/layout';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useToast } from '@/components/ui/toast';
+import { ToastAction, useToast } from '@/components/ui/toast';
 import { Typography } from '@/components/ui/typography';
 import { UserAvatar } from '@/components/user-avatar';
 import { UserBadge } from '@/components/user-badge';
@@ -20,13 +21,16 @@ import { ProfileItemSkeleton } from './profile-item-skeleton';
 
 type ChooseProfileModaleProps = {
   updateProfile: ProfileStore['setProfile'];
+  resetProfile: ProfileStore['reset'];
   session: Session | null;
 };
 
 const ChooseProfileModale = ({
   session,
+  resetProfile,
   updateProfile,
 }: ChooseProfileModaleProps) => {
+  const router = useRouter();
   const { toast } = useToast();
 
   // profiles query
@@ -35,9 +39,19 @@ const ChooseProfileModale = ({
   });
 
   const onProfileClick = async (profile: CurrentProfile) => {
+    if (router.asPath !== '/') {
+      void router.push('/');
+    }
+    await wait(500);
     updateProfile(profile);
-    await wait(350);
     toast({
+      icon: (
+        <UserAvatar
+          className="h-8 w-8"
+          src={profile?.avatar as string}
+          type={profile?.type as ProfileType}
+        />
+      ),
       variant: 'success',
       description: (
         <p>
@@ -45,15 +59,20 @@ const ChooseProfileModale = ({
           <span className="font-semibold">{profile?.name}</span>
         </p>
       ),
+      actions: (
+        <ToastAction
+          onClick={resetProfile}
+          variant="ghost"
+          altText="Undo l'action"
+        >
+          Undo
+        </ToastAction>
+      ),
     });
   };
 
-  if (session && data?.profiles?.length === 0) {
-    return <Redirect to="/onboarding/choose-profile-type" />;
-  }
-
   return (
-    <Dialog open={true}>
+    <Dialog open={!!session?.user}>
       <DialogContent className="max-w-2xl">
         <CenterContent className="w-full">
           <h1 className="text-center text-3xl font-semibold">
@@ -83,13 +102,18 @@ const ChooseProfileModale = ({
                         type={profile.type}
                         className="aspect-square h-20 w-20 shadow-md sm:h-24 sm:w-24"
                       />
-                      <Typography truncate as="h3" className="mt-3">
-                        {profile.name}
+                      <div className="mt-3 flex items-start gap-1.5">
+                        <Typography truncate as="h3">
+                          {profile.name}
+                        </Typography>
+                        <UserBadge
+                          className="line-clamp-1"
+                          type={profile.type}
+                        />
+                      </div>
+                      <Typography truncate variant="small" className="mt-1">
+                        {profile.location?.name}
                       </Typography>
-                      <UserBadge
-                        className="mt-1 line-clamp-1"
-                        type={profile.type}
-                      />
                     </button>
                   ))}
             </div>
