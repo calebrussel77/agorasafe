@@ -4,10 +4,7 @@ import { WizardLayout } from '@/layouts';
 // import { useRouter } from 'next/router';
 import { Seo } from '@/components/ui/seo';
 
-import {
-  BasicInfoForm,
-  publishServiceSteps,
-} from '@/features/publish-service-request';
+import { BasicInfoForm, publishServiceSteps } from '@/features/services';
 
 import { type AppPageProps } from '@/pages/_app';
 
@@ -17,7 +14,6 @@ const meta = {
 };
 
 const PublishNewServicePage: AppPageProps['Component'] = () => {
-  
   return (
     <>
       <Seo title={meta.title} description={meta.description} />

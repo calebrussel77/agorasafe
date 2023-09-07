@@ -3,10 +3,7 @@ import { WizardLayout } from '@/layouts';
 
 import { Seo } from '@/components/ui/seo';
 
-import {
-  DateForm,
-  publishServiceSteps,
-} from '@/features/publish-service-request';
+import { DateForm, publishServiceSteps } from '@/features/services';
 
 import { type AppPageProps } from '@/pages/_app';
 

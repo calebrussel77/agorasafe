@@ -116,9 +116,8 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   session: {
-    // Set the duration time of a session to 24 hours
-    maxAge: 60 * 60 * 24,
     strategy: 'jwt',
+    maxAge: 30 * 24 * 60 * 60, // 30 days
   },
   pages: {
     signIn: '/auth/login',
@@ -138,8 +137,7 @@ export const authOptions: NextAuthOptions = {
     },
   },
   jwt: {
-    // Set the duration time of a JWT to 24 hours
-    maxAge: 60 * 60 * 24,
+    maxAge: 30 * 24 * 60 * 60, // 30 days
     secret: env.NEXTAUTH_JWT_SECRET,
   },
 };

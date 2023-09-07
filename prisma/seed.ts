@@ -1,7 +1,9 @@
 import { faker } from '@faker-js/faker';
 import { PrismaClient } from '@prisma/client';
+import slugify from 'slugify';
 
 import { formatDateToString } from '../src/lib/date-fns';
+import { serviceCategories, services } from './data';
 
 const prisma = new PrismaClient();
 
@@ -136,10 +138,21 @@ const createLocation = async () => {
     data: {
       lat: faker.location.latitude().toFixed(),
       long: faker.location.longitude().toFixed(),
-      name: `✈️ ${faker.location.city()}`,
+      name: `${faker.location.streetAddress()}`,
     },
   });
 };
+
+const groupedServices = serviceCategories.map(category => {
+  const categoryServices = services
+    .filter(service => service.category === category.name)
+    .map(service => service.name);
+  return {
+    id: category.id,
+    categoryName: category.name,
+    services: categoryServices,
+  };
+});
 
 const createUserWithAdminRoleAndProfiles = async () => {
   const { id: locationId } = await createLocation();
@@ -183,6 +196,23 @@ const createUserWithAdminRoleAndProfiles = async () => {
   });
 };
 
+const createCategoriesWithServices = async () => {
+  for (const el of groupedServices) {
+    await prisma.categoryService.create({
+      data: {
+        name: el.categoryName,
+        slug: slugify(el.categoryName),
+        services: {
+          connectOrCreate: el.services.map(name => ({
+            create: { name, slug: slugify(name) },
+            where: { name },
+          })),
+        },
+      },
+    });
+  }
+};
+
 const destroyData = async () => {
   try {
     console.log('🌱 Cleaned up the database...');
@@ -199,6 +229,12 @@ const destroyData = async () => {
     console.log('🧹 Deleting users...');
     await prisma.user.deleteMany();
 
+    console.log('🧹 Deleting services...');
+    await prisma.service.deleteMany();
+
+    console.log('🧹 Deleting service categories...');
+    await prisma.categoryService.deleteMany();
+
     console.log(`🌱 Database has been cleaned up`);
     process.exit();
   } catch (error) {
@@ -210,6 +246,9 @@ const destroyData = async () => {
 const importData = async () => {
   try {
     console.log('🌱 Seeding...');
+
+    console.log(`🧹 Creating categories with services...`);
+    await createCategoriesWithServices();
 
     console.log(
       `🧹 Creating user "Caleb Admin" with "ADMIN" role and 02 profiles...`

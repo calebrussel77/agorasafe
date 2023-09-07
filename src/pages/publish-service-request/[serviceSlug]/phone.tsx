@@ -2,10 +2,7 @@ import { WizardLayout } from '@/layouts';
 
 import { Seo } from '@/components/ui/seo';
 
-import {
-  PhoneForm,
-  publishServiceSteps,
-} from '@/features/publish-service-request';
+import { PhoneForm, publishServiceSteps } from '@/features/services';
 
 import { type AppPageProps } from '@/pages/_app';
 

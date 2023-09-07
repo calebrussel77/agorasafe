@@ -97,7 +97,8 @@ model Service {
 
     serviceRequests ServiceRequest[]
 
-    categories CategoryService[]
+    categoryService   CategoryService? @relation(fields: [categoryServiceId], references: [id], onDelete: Cascade)
+    categoryServiceId String?
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
@@ -108,10 +109,10 @@ model Photo {
     key String? @unique
     url String
 
-    serviceRequest   ServiceRequest? @relation(fields: [serviceRequestId], references: [id])
+    serviceRequest   ServiceRequest? @relation(fields: [serviceRequestId], references: [id], onDelete: Cascade)
     serviceRequestId String?
 
-    provider   Provider? @relation(fields: [providerId], references: [id])
+    provider   Provider? @relation(fields: [providerId], references: [id], onDelete: Cascade)
     providerId String?
 
     createdAt DateTime @default(now())

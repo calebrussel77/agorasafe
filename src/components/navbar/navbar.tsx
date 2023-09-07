@@ -6,7 +6,7 @@ import {
   UserProfileDropdown,
   useGetProfileConfig,
 } from '@/features/profile-config';
-import { AskServiceModal } from '@/features/publish-service-request';
+import { AskServiceModal } from '@/features/services';
 
 import { cn } from '@/lib/utils';
 

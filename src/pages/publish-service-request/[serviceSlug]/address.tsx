@@ -5,7 +5,7 @@ import { Seo } from '@/components/ui/seo';
 import {
   AddressForm,
   publishServiceSteps,
-} from '@/features/publish-service-request';
+} from '@/features/services';
 
 import { type AppPageProps } from '@/pages/_app';
 
