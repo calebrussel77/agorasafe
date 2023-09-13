@@ -1,56 +1,51 @@
-import { type TRPCClientErrorLike } from '@trpc/client';
 import { useRouter } from 'next/router';
 
 import { Button } from '@/components/ui/button';
 import { Field } from '@/components/ui/field';
 import { Form, useZodForm } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { SectionMessage } from '@/components/ui/section-message';
 import { Textarea } from '@/components/ui/textarea';
 
-import { type AppRouter } from '@/server/api/root';
-
-import { useCatchNavigation } from '@/hooks/use-catch-navigation';
-
 import {
-  type PublishServiceRequest,
+  type PublishServiceRequestFormStore,
   usePublishServiceRequest,
 } from '../../stores';
 import { FixedFooterForm } from '../fixed-footer-form';
 
-type BasicInfoFormProps = {
-  error: TRPCClientErrorLike<AppRouter> | null;
-  isLoading: boolean;
-};
+type BasicInfo = Pick<PublishServiceRequestFormStore, 'title' | 'description'>;
 
-type BasicInfo = Pick<PublishServiceRequest, 'title' | 'description'>;
+type BasicInfoFormProps = { nextStep: () => void };
 
-const BasicInfoForm = ({ error, isLoading }: BasicInfoFormProps) => {
+const BasicInfoForm = ({ nextStep }: BasicInfoFormProps) => {
   const router = useRouter();
-  const { serviceSlug } = router.query as { serviceSlug: string };
-  const { updateServiceRequest, serviceRequest } = usePublishServiceRequest();
+  const categorySlugQuery = router?.query?.category as string;
+  const titleQuery = router?.query?.title as string;
+  const modeQuery = router?.query?.mode as 'normal' | 'custom';
+
+  const { updateServiceRequest, serviceRequest: _serviceRequest } =
+    usePublishServiceRequest();
+  const serviceRequest = _serviceRequest?.[categorySlugQuery];
+
+  const isNormal = modeQuery === 'normal';
 
   const form = useZodForm({
     mode: 'onChange',
     defaultValues: {
-      title: serviceRequest?.title,
+      title: titleQuery || serviceRequest?.title,
       description: serviceRequest?.description,
     },
   });
 
-  const {
-    register,
-    formState: { isDirty, isSubmitted },
-  } = form;
+  const { register } = form;
 
   const onHandleSubmit = (formData: BasicInfo) => {
-    updateServiceRequest(formData);
-    void router.push(`/publish-service-request/${serviceSlug}/duration`);
+    updateServiceRequest(formData, categorySlugQuery);
+
+    nextStep();
   };
 
   return (
     <>
-      {error && <SectionMessage title={error.message} appareance="danger" />}
       <Form form={form} onSubmit={onHandleSubmit}>
         <Field label="Titre de la demande" required>
           <Input
@@ -58,7 +53,13 @@ const BasicInfoForm = ({ error, isLoading }: BasicInfoFormProps) => {
             placeholder="Entrez le titre de votre demande"
           />
         </Field>
-        <Field label="Description de la demande" required>
+        <Field
+          hint="TIPS: Une description claire et précise facilitera la compréhension des prestataires à contracter."
+          label={
+            isNormal ? 'Détails supplémentaires' : 'Description de la demande'
+          }
+          required
+        >
           <Textarea
             {...register('description')}
             rows={8}

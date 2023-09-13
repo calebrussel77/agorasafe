@@ -1,72 +1,61 @@
-import { type TRPCClientErrorLike } from '@trpc/client';
 import { useRouter } from 'next/router';
 import { Controller } from 'react-hook-form';
 
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { Form, useZodForm } from '@/components/ui/form';
-import { SectionMessage } from '@/components/ui/section-message';
 
 import { addDurationToDate } from '@/lib/date-fns';
 
-import { type AppRouter } from '@/server/api/root';
-
-import { useCatchNavigation } from '@/hooks/use-catch-navigation';
-
 import {
-  type PublishServiceRequest,
+  type PublishServiceRequestFormStore,
   usePublishServiceRequest,
 } from '../../stores';
 import { FixedFooterForm } from '../fixed-footer-form';
 
-type DateFormProps = {
-  error: TRPCClientErrorLike<AppRouter> | null;
-  isLoading: boolean;
-};
+type DateFormType = Pick<PublishServiceRequestFormStore, 'date'>;
+type DateFormProps = { nextStep: () => void; prevStep: () => void };
 
-type DateFormType = Pick<PublishServiceRequest, 'startDate'>;
-
-const DateForm = ({ error, isLoading }: DateFormProps) => {
+const DateForm = ({ nextStep, prevStep }: DateFormProps) => {
   const router = useRouter();
-  const { serviceSlug } = router.query as { serviceSlug: string };
-  const { updateServiceRequest, serviceRequest } = usePublishServiceRequest();
+  const categorySlugQuery = router?.query?.category as string;
 
-  const defaultStartDate = addDurationToDate(new Date(), { days: 1 });
+  const { updateServiceRequest, serviceRequest: _serviceRequest } =
+    usePublishServiceRequest();
+  const serviceRequest = _serviceRequest?.[categorySlugQuery];
+
+  const defaultDate = addDurationToDate(new Date(), { days: 1 });
+  const defaultEndDate = addDurationToDate(new Date(), { months: 1 });
 
   const form = useZodForm({
     mode: 'onChange',
     defaultValues: {
-      startDate: serviceRequest?.startDate
-        ? new Date(serviceRequest?.startDate)
-        : undefined,
+      date: serviceRequest?.date ? new Date(serviceRequest?.date) : undefined,
     },
   });
 
-  const {
-    control,
-    formState: { isDirty, isSubmitted },
-  } = form;
+  const { control } = form;
 
   const onHandleSubmit = (formData: DateFormType) => {
-    updateServiceRequest(formData);
-    void router.push(`/publish-service-request/${serviceSlug}/start-hour`);
+    updateServiceRequest(formData, categorySlugQuery);
+
+    nextStep();
   };
 
   return (
     <>
-      {error && <SectionMessage title={error.message} appareance="danger" />}
       <Form form={form} onSubmit={onHandleSubmit}>
         <div className="flex justify-center">
           <Controller
             control={control}
-            name="startDate"
+            name="date"
             render={({ field: { onChange, value, ...rest } }) => {
               return (
                 <Calendar
                   mode="single"
                   numberOfMonths={2}
-                  captionLayout="dropdown-buttons"
-                  fromDate={defaultStartDate}
+                  fromDate={defaultDate}
+                  toDate={defaultEndDate}
                   selected={value as Date}
                   onSelect={onChange}
                   className="rounded-md border shadow-md"
@@ -77,12 +66,7 @@ const DateForm = ({ error, isLoading }: DateFormProps) => {
           />
         </div>
         <FixedFooterForm>
-          <Button
-            type="button"
-            onClick={() => void router.back()}
-            variant="ghost"
-            size="lg"
-          >
+          <Button type="button" onClick={prevStep} variant="ghost" size="lg">
             Retour
           </Button>
           <Button size="lg">Suivant</Button>

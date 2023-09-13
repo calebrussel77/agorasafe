@@ -1,32 +1,19 @@
-import { type TRPCClientErrorLike } from '@trpc/client';
 import { useRouter } from 'next/router';
 import { Controller } from 'react-hook-form';
 
 import { Button } from '@/components/ui/button';
 import { CounterInput } from '@/components/ui/counter-input';
-import { Field } from '@/components/ui/field';
 import { Form, useZodForm } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { SectionMessage } from '@/components/ui/section-message';
 import { Separator } from '@/components/ui/separator';
 import { Typography } from '@/components/ui/typography';
 
 import { cn } from '@/lib/utils';
 
-import { type AppRouter } from '@/server/api/root';
-
-import { useCatchNavigation } from '@/hooks/use-catch-navigation';
-
 import {
-  type PublishServiceRequest,
+  type PublishServiceRequestFormStore,
   usePublishServiceRequest,
 } from '../../stores';
 import { FixedFooterForm } from '../fixed-footer-form';
-
-type NumberHoursFormProps = {
-  error: TRPCClientErrorLike<AppRouter> | null;
-  isLoading: boolean;
-};
 
 const cardsInfo = [
   { label: '1h00', title: 'Court', value: 1 },
@@ -34,47 +21,46 @@ const cardsInfo = [
   { label: '3h00', title: 'Long', value: 3 },
 ];
 
-type NumberHours = Pick<PublishServiceRequest, 'duration'>;
+type NumberHours = Pick<PublishServiceRequestFormStore, 'nbOfHours'>;
+type NumberHoursFormProps = { nextStep: () => void; prevStep: () => void };
 
-const NumberHoursForm = ({ error, isLoading }: NumberHoursFormProps) => {
+const NumberHoursForm = ({ nextStep, prevStep }: NumberHoursFormProps) => {
   const router = useRouter();
-  const { updateServiceRequest, serviceRequest } = usePublishServiceRequest();
-  const { serviceSlug } = router.query as { serviceSlug: string };
+  const categorySlugQuery = router?.query?.category as string;
+
+  const { updateServiceRequest, serviceRequest: _serviceRequest } =
+    usePublishServiceRequest();
+  const serviceRequest = _serviceRequest?.[categorySlugQuery];
 
   const form = useZodForm({
     mode: 'onChange',
     defaultValues: {
-      duration: serviceRequest?.duration || 2,
+      nbOfHours: serviceRequest?.nbOfHours || 2,
     },
   });
 
-  const {
-    setValue,
-    control,
-    watch,
-    formState: { isDirty, isSubmitted },
-  } = form;
+  const { setValue, control, watch } = form;
 
   const onHandleSubmit = (formData: NumberHours) => {
-    updateServiceRequest(formData);
-    void router.push(`/publish-service-request/${serviceSlug}/date`);
+    updateServiceRequest(formData, categorySlugQuery);
+
+    nextStep();
   };
 
-  const watchDuration = watch('duration') as number;
+  const watchNbOfHours = watch('nbOfHours') as number;
 
   return (
     <>
-      {error && <SectionMessage title={error.message} appareance="danger" />}
       <Form form={form} onSubmit={onHandleSubmit} className="space-y-12">
         <div className="grid grid-cols-3 gap-2">
           {cardsInfo?.map(card => (
             <button
               type="button"
-              onClick={() => setValue('duration', card.value)}
+              onClick={() => setValue('nbOfHours', card.value)}
               key={card.title}
               className={cn(
                 'default__transition flex h-36 flex-col items-center justify-center rounded-lg border hover:border hover:border-brand-500 hover:bg-zinc-100',
-                watchDuration === card.value &&
+                watchNbOfHours === card.value &&
                   'border-2 border-brand-500 bg-zinc-100 shadow-lg shadow-brand-500/20'
               )}
             >
@@ -97,7 +83,7 @@ const NumberHoursForm = ({ error, isLoading }: NumberHoursFormProps) => {
           <Typography className="mb-2">Ajuster l'heure manuellement</Typography>
           <Controller
             control={control}
-            name="duration"
+            name="nbOfHours"
             render={({ field: { onChange, value, ...rest } }) => {
               return (
                 <CounterInput
@@ -110,12 +96,7 @@ const NumberHoursForm = ({ error, isLoading }: NumberHoursFormProps) => {
           />
         </div>
         <FixedFooterForm>
-          <Button
-            type="button"
-            onClick={() => void router.back()}
-            variant="ghost"
-            size="lg"
-          >
+          <Button type="button" onClick={prevStep} variant="ghost" size="lg">
             Retour
           </Button>
           <Button size="lg">Suivant</Button>

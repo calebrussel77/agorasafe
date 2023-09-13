@@ -1,35 +1,58 @@
 import { Camera } from 'lucide-react';
 import NextImage from 'next/image';
-import React, { type ComponentProps, forwardRef, useState } from 'react';
+import React, { type ComponentProps, forwardRef } from 'react';
 
 import { blurDataURL } from '@/utils/image';
+
+import { cn, dataAttr } from '@/lib/utils';
+
+import { useImageOnLoad } from '@/hooks/use-image-on-load';
+import { useHover } from '@/hooks/use-react-aria-hover';
 
 import { ImageEmpty } from './image-empty';
 
 const Image = forwardRef<
   HTMLImageElement | null,
   ComponentProps<typeof NextImage>
->(({ fill = true, ...props }, ref) => {
-  const [hasError, setHasError] = useState(false);
+>(({ fill = true, className, alt, src, ...props }, ref) => {
+  const { isHovered, hoverProps } = useHover({ isDisabled: false });
+  const { handleImageOnLoad, isLoaded } = useImageOnLoad();
 
   return (
     <>
-      {!hasError && (
-        <NextImage
-          ref={ref}
-          blurDataURL={blurDataURL()}
-          fill={fill}
-          placeholder="blur"
-          priority
-          quality={100}
-          onError={() => setHasError(true)}
-          {...props}
-        />
-      )}
+      <NextImage
+        ref={ref}
+        blurDataURL={blurDataURL()}
+        fill={fill}
+        placeholder="blur"
+        quality={100}
+        {...{
+          'data-hover': dataAttr(isHovered),
+          'data-loaded': dataAttr(isLoaded),
+          onLoad: handleImageOnLoad,
+          ...hoverProps,
+        }}
+        className={cn(
+          [
+            'flex',
+            'object-cover',
+            'w-full',
+            'h-full',
+            'transition-opacity',
+            '!duration-500',
+            'opacity-0',
+            'data-[loaded=true]:opacity-100',
+          ],
+          className
+        )}
+        src={src}
+        alt={alt}
+        {...props}
+      />
 
-      {hasError && (
-        <div className="m-auto flex items-center justify-center">
-          <Camera className="h-10 w-10 flex-shrink-0 text-gray-400" />
+      {!isLoaded && (
+        <div className="m-auto flex h-full w-full items-center justify-center align-middle">
+          <Camera className="h-10 w-10 flex-shrink-0 animate-pulse text-gray-400" />
         </div>
       )}
     </>

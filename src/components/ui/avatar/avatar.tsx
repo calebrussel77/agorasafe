@@ -5,7 +5,10 @@ import * as React from 'react';
 
 import { blurDataURL } from '@/utils/image';
 
-import { cn } from '@/lib/utils';
+import { cn, dataAttr } from '@/lib/utils';
+
+import { useImageOnLoad } from '@/hooks/use-image-on-load';
+import { useHover } from '@/hooks/use-react-aria-hover';
 
 import defaultAvatarIcon from '@public/images/avatar.svg';
 
@@ -83,7 +86,19 @@ const AvatarImage = React.forwardRef<
 >(({ className, src, alt, ...props }, ref) => (
   <AvatarPrimitive.Image
     ref={ref}
-    className={cn('h-full w-full object-cover object-center', className)}
+    className={cn(
+      [
+        'flex',
+        'object-cover',
+        'w-full',
+        'h-full',
+        'transition-opacity',
+        '!duration-500',
+        'opacity-0',
+        'data-[loaded=true]:opacity-100',
+      ],
+      className
+    )}
     asChild
     alt={alt}
     src={src}
@@ -134,6 +149,7 @@ const Avatar = React.forwardRef<
       isDisabled,
       color,
       alt,
+      src,
       ...props
     },
     ref
@@ -143,8 +159,11 @@ const Avatar = React.forwardRef<
     const colorClassName =
       color && isBordered ? avatarColorClasses[color] : undefined;
 
+    const { isHovered, hoverProps } = useHover({ isDisabled });
+    const { handleImageOnLoad, isLoaded } = useImageOnLoad();
+
     const avatarClassName = cn(
-      'relative flex shrink-0 overflow-hidden',
+      'relative box-border align-middle justify-center flex shrink-0 overflow-hidden',
       isBordered && `ring ring-offset-[2px] ${avatarColorClasses['default']}`,
       avatarSizeClassName,
       shapeClassName,
@@ -154,8 +173,17 @@ const Avatar = React.forwardRef<
     );
 
     return (
-      <AvatarComponent ref={ref} className={avatarClassName}>
-        <AvatarImage alt={alt} {...props} />
+      <AvatarComponent
+        ref={ref}
+        {...{ 'data-hover': dataAttr(isHovered), ...hoverProps }}
+        className={avatarClassName}
+      >
+        <AvatarImage
+          alt={alt}
+          src={src}
+          {...props}
+          {...{ 'data-loaded': dataAttr(isLoaded), onLoad: handleImageOnLoad }}
+        />
         <AvatarFallback className={avatarClassName}>
           {children ? (
             children
@@ -164,6 +192,7 @@ const Avatar = React.forwardRef<
               priority
               alt={alt || 'default avatar'}
               src={defaultAvatarIcon}
+              className='data-[loaded=true]:animate-pulse'
             />
           )}
         </AvatarFallback>

@@ -1,9 +1,13 @@
 import { type GetAllQueryInput } from '../../validations/base.validations';
 import {
+  createServiceRequest,
   getAllCategoryServices,
   getAllServicesWithCategory,
 } from './services.repository';
-import { type GetAllServicesWithCategoryInput } from './services.validations';
+import {
+  type CreateServiceRequestInput,
+  type GetAllServicesWithCategoryInput,
+} from './services.validations';
 
 export const getAllServicesService = async (
   inputs: GetAllServicesWithCategoryInput
@@ -20,6 +24,18 @@ export const getAllCategoryServicesService = async (
   inputs: GetAllQueryInput
 ) => {
   const categories = await getAllCategoryServices(inputs);
+
+  return {
+    categories,
+    success: true,
+  };
+};
+
+export const createServiceRequestService = async (
+  inputs: CreateServiceRequestInput,
+  profileId: string
+) => {
+  const categories = await createServiceRequest({ inputs, profileId });
 
   return {
     categories,

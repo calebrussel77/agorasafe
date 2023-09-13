@@ -1,5 +1,7 @@
 import React, { type FC, type ReactElement, type ReactNode } from 'react';
 
+import { isString } from '@/utils/type-guards';
+
 import { cn } from '@/lib/utils';
 
 type ClassNames = {
@@ -10,15 +12,31 @@ type ClassNames = {
 };
 
 type GroupItemProps = {
-  name: ReactElement;
+  name: ReactNode;
+  className?: string;
   description?: ReactNode;
-  classNames?: Partial<ClassNames>;
   iconBefore?: ReactElement;
   iconAfter?: ReactElement;
   onClick?: () => void;
+  /**
+   * Classname or List of classes to change the classNames of the groupItem.
+   * if `className` is passed, it will be added to the base slot.
+   *
+   * @example
+   * ```ts
+   * <GroupItem classNames={{
+   *    root:"base-classes",
+   *    wrapper: "wrapper-classes",
+   *    name: "name-classes",
+   *    description: "description-classes",
+   * }} />
+   * ```
+   */
+  classNames?: Partial<ClassNames>;
 };
 
 const GroupItem: FC<GroupItemProps> = ({
+  className,
   description,
   name,
   classNames,
@@ -26,14 +44,15 @@ const GroupItem: FC<GroupItemProps> = ({
   iconBefore,
   onClick,
 }) => {
-  const isStringName = typeof name === 'string';
-  const isStringDescription = typeof description === 'string';
+  const isStringName = isString(name);
+  const isStringDescription = isString(description);
 
   return (
     <div
       onClick={onClick}
       className={cn(
-        '-mx-3 flex items-center gap-x-3 rounded-md px-3 py-2 hover:bg-gray-100',
+        'default__transition -mx-3 flex items-center gap-x-3 rounded-md px-3 py-2 hover:bg-gray-100',
+        className,
         classNames?.root
       )}
     >

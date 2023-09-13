@@ -1,44 +1,52 @@
-import React, { useEffect, useState } from 'react';
+import * as ProgressPrimitive from '@radix-ui/react-progress';
+import React from 'react';
 
 import { cn } from '@/lib/utils';
+
+type ClassNames = {
+  root?: string;
+  progressIndicator?: string;
+};
 
 interface ProgressBarProps {
   progress: number;
   className?: string;
+  classNames?: Partial<ClassNames>;
 }
 
-const ProgressBar: React.FC<ProgressBarProps> = ({ className, progress }) => {
-  //   const [progress, setProgress] = useState(0);
+const ProgressBar = ({ progress, className, classNames }: ProgressBarProps) => {
+  // useEffect(() => {
+  //   let timerId: null | NodeJS.Timer = null;
 
-  //   useEffect(() => {
-  //     const interval = setInterval(() => {
-  //       setProgress(prevProgress => {
-  //         if (prevProgress < 100) {
-  //           return prevProgress + 1;
-  //         } else {
-  //           clearInterval(interval);
-  //           return 100;
-  //         }
-  //       });
-  //     }, duration / 100);
+  //   timerId = setInterval(() => {
+  //     const p = Math.ceil(getRandomArbitrary(0, 100) / 10) * 10;
+  //     setProgress(p);
+  //   }, 5000);
 
-  //     return () => {
-  //       clearInterval(interval);
-  //     };
-  //   }, [duration]);
+  //   return () => {
+  //     if (timerId) {
+  //       clearInterval(timerId);
+  //     }
+  //   };
+  // }, []);
 
   return (
-    <div
+    <ProgressPrimitive.Root
+      value={progress}
       className={cn(
-        'relative h-2 w-2/3 rounded-full bg-gray-300 shadow-lg',
-        className
+        'h-2 w-full overflow-hidden bg-gray-100',
+        className,
+        classNames?.root
       )}
     >
-      <div
-        className="absolute left-0 top-0 h-full rounded-full bg-brand-600 transition-all ease-linear"
+      <ProgressPrimitive.Indicator
         style={{ width: `${progress}%` }}
+        className={cn(
+          'h-full bg-brand-600 duration-300 ease-in-out',
+          classNames?.progressIndicator
+        )}
       />
-    </div>
+    </ProgressPrimitive.Root>
   );
 };
 

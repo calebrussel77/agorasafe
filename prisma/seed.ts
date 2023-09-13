@@ -1,7 +1,7 @@
 import { faker } from '@faker-js/faker';
 import { PrismaClient } from '@prisma/client';
 
-import { slugit } from '@/utils/strings';
+import { slugit } from '../src/utils/strings';
 
 import { formatDateToString } from '../src/lib/date-fns';
 import { serviceCategories, services } from './data';
@@ -251,10 +251,10 @@ const importData = async () => {
     console.log(`🧹 Creating categories with services...`);
     await createCategoriesWithServices();
 
-    console.log(
-      `🧹 Creating user "Caleb Admin" with "ADMIN" role and 02 profiles...`
-    );
-    await createUserWithAdminRoleAndProfiles();
+    // console.log(
+    //   `🧹 Creating user "Caleb Admin" with "ADMIN" role and 02 profiles...`
+    // );
+    // await createUserWithAdminRoleAndProfiles();
 
     console.log(`🌱 Database has been seeded`);
 

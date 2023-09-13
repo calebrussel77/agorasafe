@@ -1,5 +1,4 @@
 import { useLocationSearch } from '@/services';
-import { type TRPCClientErrorLike } from '@trpc/client';
 import { MapPin } from 'lucide-react';
 import { useRouter } from 'next/router';
 import { Controller } from 'react-hook-form';
@@ -10,29 +9,25 @@ import { Field } from '@/components/ui/field';
 import { Form, useZodForm } from '@/components/ui/form';
 import { SectionMessage } from '@/components/ui/section-message';
 
-import { type AppRouter } from '@/server/api/root';
-
 import { useCurrentUser } from '@/hooks/use-current-user';
 
 import {
-  type PublishServiceRequest,
+  type PublishServiceRequestFormStore,
   usePublishServiceRequest,
 } from '../../stores';
 import { FixedFooterForm } from '../fixed-footer-form';
 
-type AddressFormProps = {
-  error: TRPCClientErrorLike<AppRouter> | null;
-  isLoading: boolean;
-};
+type Address = Pick<PublishServiceRequestFormStore, 'location'>;
+type AddressFormProps = { nextStep: () => void; prevStep: () => void };
 
-type Address = Pick<PublishServiceRequest, 'location'>;
-
-const AddressForm = ({ error, isLoading }: AddressFormProps) => {
+const AddressForm = ({ nextStep, prevStep }: AddressFormProps) => {
   const router = useRouter();
-  const { serviceSlug } = router.query as { serviceSlug: string };
-  const { profile } = useCurrentUser();
+  const categorySlugQuery = router?.query?.category as string;
 
-  const { updateServiceRequest, serviceRequest } = usePublishServiceRequest();
+  const { updateServiceRequest, serviceRequest: _serviceRequest } =
+    usePublishServiceRequest();
+  const serviceRequest = _serviceRequest?.[categorySlugQuery];
+  const { profile } = useCurrentUser();
 
   const { locationSearch, setLocationSearch, data, isFetching } =
     useLocationSearch();
@@ -47,19 +42,15 @@ const AddressForm = ({ error, isLoading }: AddressFormProps) => {
     },
   });
 
-  const {
-    control,
-    formState: { isDirty, isSubmitted },
-  } = form;
+  const { control } = form;
 
   const onHandleSubmit = (formData: Address) => {
-    updateServiceRequest(formData);
-    void router.push(`/publish-service-request/${serviceSlug}/phone`);
+    updateServiceRequest(formData, categorySlugQuery);
+    nextStep();
   };
 
   return (
     <>
-      {error && <SectionMessage title={error.message} appareance="danger" />}
       <Form form={form} onSubmit={onHandleSubmit}>
         <Field label="Localisation" required>
           <Controller
@@ -72,7 +63,7 @@ const AddressForm = ({ error, isLoading }: AddressFormProps) => {
                 isLoading={isFetching}
                 onSearchChange={setLocationSearch}
                 placeholder="Choisir la localisation de la prestation..."
-                placeholderSearch="Recherchez votre position..."
+                placeholderSearch="Recherchez la localisation..."
                 iconAfter={<MapPin className="h-5 w-5 opacity-50" />}
                 search={locationSearch}
                 options={data?.map(element => ({
@@ -92,12 +83,7 @@ const AddressForm = ({ error, isLoading }: AddressFormProps) => {
           title="Ces informations seront transmises uniquement aux prestataires que vous réserverez."
         />
         <FixedFooterForm>
-          <Button
-            type="button"
-            onClick={() => void router.back()}
-            variant="ghost"
-            size="lg"
-          >
+          <Button type="button" onClick={prevStep} variant="ghost" size="lg">
             Retour
           </Button>
           <Button size="lg">Suivant</Button>

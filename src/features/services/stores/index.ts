@@ -1,60 +1,86 @@
+import { type LocationInput, type PhoneInput } from '@/validations';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-export const publishServiceRequestStorageName = '__publish_service_request__';
+export const publishServiceRequestStorageName = 'service_request_form';
 
-export type PublishServiceRequest = {
+export type PublishServiceRequestFormStore = {
   title: string;
   description: string;
-  phoneToContact: string;
-  photoOne?: string;
-  photoTwo?: string;
-  photoThree?: string;
-  numberOfProviderNeeded: number;
-  duration?: string;
-  startDate: string;
+  phoneToContact: PhoneInput;
+  photos?: Array<{ key: string; url: string; name: string }>;
+  numberOfProviderNeeded?: number;
+  willWantProposal?: boolean;
+  nbOfHours?: number;
+  date: string;
   startHour: string;
-  endDate?: string;
   estimatedPrice: string;
-  location: string;
+  location: LocationInput;
+  serviceId: string;
+};
+
+export type PublishServiceRequest = {
+  serviceRequest: Record<
+    string,
+    Partial<PublishServiceRequestFormStore>
+  > | null;
 };
 
 // define types for state values and actions separately
-export type State = {
-  serviceRequest: Partial<PublishServiceRequest> | null;
-};
+export type State = PublishServiceRequest | null;
 
 type Actions = {
-  updateServiceRequest: (serviceRequestData: State['serviceRequest']) => void;
+  updateServiceRequest: (
+    serviceRequestData: Partial<PublishServiceRequestFormStore>,
+    categorySlug: string
+  ) => void;
   reset: () => void;
 };
 
 // define the initial state
-const initialState: State = {
-  serviceRequest: null,
-};
+const initialState: State = { serviceRequest: null };
+
+type PublishServiceRequestStore = State & Actions;
 
 export const initialStateJSON = JSON.stringify(initialState);
 
-export const usePublishServiceRequest = create<State & Actions>()(
-  persist(
-    set => ({
-      ...initialState,
-      updateServiceRequest: (serviceRequestData: State['serviceRequest']) =>
-        set(state => {
-          return {
-            ...state,
-            serviceRequest: {
-              ...state.serviceRequest,
+export const initializePublishServiceRequestStore = (
+  preloadedState: Partial<PublishServiceRequestStore> = {}
+) =>
+  create<PublishServiceRequestStore>()(
+    persist(
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+      set => ({
+        ...initialState,
+        ...preloadedState,
+        updateServiceRequest: (
+          serviceRequestData: Partial<PublishServiceRequestFormStore>,
+          categorySlug: string
+        ) =>
+          set(state => {
+            // Ensure that the original state is not mutated
+            const newState = { ...state };
+
+            // Check if serviceRequest exists, and if not, create an empty object
+            newState.serviceRequest = newState.serviceRequest || {};
+
+            // Create a new nested object by copying the original data and updating the specified key
+            newState.serviceRequest[categorySlug] = {
+              ...newState.serviceRequest[categorySlug],
               ...serviceRequestData,
-            },
-          };
-        }),
-      reset: () => set(initialState),
-    }),
-    {
-      name: publishServiceRequestStorageName,
-      // storage: sess,
-    }
-  )
-);
+            };
+
+            return newState;
+          }),
+        reset: () => set(initialState),
+      }),
+      {
+        name: publishServiceRequestStorageName,
+      }
+    )
+  );
+
+export const usePublishServiceRequest = () => {
+  const state = initializePublishServiceRequestStore().getState();
+  return state;
+};

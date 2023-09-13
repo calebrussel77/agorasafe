@@ -1,35 +1,30 @@
-import { type TRPCClientErrorLike } from '@trpc/client';
 import { useRouter } from 'next/router';
 import { Controller } from 'react-hook-form';
 
 import { Button } from '@/components/ui/button';
 import { Form, useZodForm } from '@/components/ui/form';
-import { SectionMessage } from '@/components/ui/section-message';
 
 import { formatNumberToText } from '@/utils/text';
 
-import { type AppRouter } from '@/server/api/root';
-
-import { useCatchNavigation } from '@/hooks/use-catch-navigation';
-
 import {
-  type PublishServiceRequest,
+  type PublishServiceRequestFormStore,
   usePublishServiceRequest,
 } from '../../stores';
 import { generateHoursBetweenSevenAmAndtwentyOnePm } from '../../utils';
 import { FixedFooterForm } from '../fixed-footer-form';
 
-type StartHourProps = {
-  error: TRPCClientErrorLike<AppRouter> | null;
-  isLoading: boolean;
-};
+type StartHourType = Pick<PublishServiceRequestFormStore, 'startHour'>;
 
-type StartHourType = Pick<PublishServiceRequest, 'startHour'>;
+type StartHourFormProps = { nextStep: () => void; prevStep: () => void };
 
-const StartHourForm = ({ error, isLoading }: StartHourProps) => {
+const StartHourForm = ({ nextStep, prevStep }: StartHourFormProps) => {
   const router = useRouter();
-  const { serviceSlug } = router.query as { serviceSlug: string };
-  const { updateServiceRequest, serviceRequest } = usePublishServiceRequest();
+  const categorySlugQuery = router?.query?.category as string;
+
+  const { updateServiceRequest, serviceRequest: _serviceRequest } =
+    usePublishServiceRequest();
+
+  const serviceRequest = _serviceRequest?.[categorySlugQuery];
 
   const form = useZodForm({
     mode: 'onChange',
@@ -38,19 +33,15 @@ const StartHourForm = ({ error, isLoading }: StartHourProps) => {
     },
   });
 
-  const {
-    control,
-    formState: { isDirty, isSubmitted },
-  } = form;
+  const { control } = form;
 
   const onHandleSubmit = (formData: StartHourType) => {
-    updateServiceRequest(formData);
-    void router.push(`/publish-service-request/${serviceSlug}/address`);
+    updateServiceRequest(formData, categorySlugQuery);
+    nextStep();
   };
 
   return (
     <>
-      {error && <SectionMessage title={error.message} appareance="danger" />}
       <Form form={form} onSubmit={onHandleSubmit}>
         <div className="flex flex-wrap items-center gap-4">
           {generateHoursBetweenSevenAmAndtwentyOnePm().map(el => (
@@ -75,12 +66,7 @@ const StartHourForm = ({ error, isLoading }: StartHourProps) => {
           ))}
         </div>
         <FixedFooterForm>
-          <Button
-            type="button"
-            onClick={() => void router.back()}
-            variant="ghost"
-            size="lg"
-          >
+          <Button type="button" onClick={prevStep} variant="ghost" size="lg">
             Retour
           </Button>
           <Button size="lg">Suivant</Button>

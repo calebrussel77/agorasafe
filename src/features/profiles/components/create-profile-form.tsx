@@ -88,13 +88,13 @@ const CreateProfileForm = ({
       <Form
         form={form}
         onSubmit={onHandleSubmit}
-        // className="space-y-3"
         aria-label="add_profile_form_test_id"
       >
         {error && <SectionMessage title={error.message} />}
         <div className="mx-auto flex items-center justify-center">
           <Avatar size="xl" />
         </div>
+        <div className="grid grid-cols-2 gap-4">
         <Field label="Nom" required>
           <Controller
             control={control}
@@ -113,7 +113,6 @@ const CreateProfileForm = ({
         </Field>
         <Field
           label="Numéro de téléphone"
-          hint="Sauf si vous donnez votre autorisation, votre numéro restera confidentiel aux autres membres."
           required
         >
           <Controller
@@ -131,6 +130,7 @@ const CreateProfileForm = ({
             )}
           />
         </Field>
+        </div>
         <Field
           label="Localisation"
           hint="Nous vous proposerons du contenu pertinent en fonction de cette position"

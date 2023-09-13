@@ -1,6 +1,6 @@
 import { Menu } from 'lucide-react';
 import { useRouter } from 'next/router';
-import { Fragment, useRef } from 'react';
+import {  type ReactNode, useRef } from 'react';
 
 import { cn } from '@/lib/utils';
 
@@ -27,7 +27,7 @@ const classNameList = [
   'bg__blurred',
 ];
 
-const Header = () => {
+const Header = ({ children }: { children?: ReactNode }) => {
   const headerRef = useRef<HTMLElement>(null);
   const router = useRouter();
 
@@ -68,6 +68,7 @@ const Header = () => {
             </Sheet.Content>
           </Sheet>
         </Navbar>
+        {children}
       </header>
     </>
   );

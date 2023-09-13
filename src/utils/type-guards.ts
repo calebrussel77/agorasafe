@@ -27,10 +27,13 @@ export function isArray(value: unknown): value is any[] {
   return Array.isArray(value);
 }
 
+export function isString(value: unknown) {
+  return typeof value === 'string';
+}
+
 export function isArrayOfFile(value: unknown): value is File[] {
   if (!isArray(value)) {
     return false; //The value is not an array
   }
-
   return value.every(element => element instanceof File);
 }

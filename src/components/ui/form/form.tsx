@@ -32,7 +32,7 @@ const formToken = cva(['disabled:opacity-70 disabled:cursor-not-allowed'], {
   },
   compoundVariants: [{ gap: 'md' }],
   defaultVariants: {
-    gap: 'md',
+    gap: 'sm',
   },
 });
 

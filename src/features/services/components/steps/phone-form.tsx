@@ -1,4 +1,3 @@
-import { type TRPCClientErrorLike } from '@trpc/client';
 import { useRouter } from 'next/router';
 import { Controller } from 'react-hook-form';
 
@@ -8,29 +7,27 @@ import { Form, useZodForm } from '@/components/ui/form';
 import { PhoneInput } from '@/components/ui/phone-input';
 import { SectionMessage } from '@/components/ui/section-message';
 
-import { type AppRouter } from '@/server/api/root';
-
 import { useCurrentUser } from '@/hooks/use-current-user';
 
 import {
-  type PublishServiceRequest,
+  type PublishServiceRequestFormStore,
   usePublishServiceRequest,
 } from '../../stores';
 import { FixedFooterForm } from '../fixed-footer-form';
 
-type PhoneFormProps = {
-  error: TRPCClientErrorLike<AppRouter> | null;
-  isLoading: boolean;
-};
+type Address = Pick<PublishServiceRequestFormStore, 'phoneToContact'>;
 
-type Address = Pick<PublishServiceRequest, 'phoneToContact'>;
+type PhoneFormProps = { nextStep: () => void; prevStep: () => void };
 
-const PhoneForm = ({ error, isLoading }: PhoneFormProps) => {
+const PhoneForm = ({ nextStep, prevStep }: PhoneFormProps) => {
   const router = useRouter();
-  const { serviceSlug } = router.query as { serviceSlug: string };
-  const { profile } = useCurrentUser();
+  const categorySlugQuery = router?.query?.category as string;
 
-  const { updateServiceRequest, serviceRequest } = usePublishServiceRequest();
+  const { updateServiceRequest, serviceRequest: _serviceRequest } =
+    usePublishServiceRequest();
+
+  const serviceRequest = _serviceRequest?.[categorySlugQuery];
+  const { profile } = useCurrentUser();
 
   const form = useZodForm({
     mode: 'onChange',
@@ -39,19 +36,15 @@ const PhoneForm = ({ error, isLoading }: PhoneFormProps) => {
     },
   });
 
-  const {
-    control,
-    formState: { isDirty, isSubmitted },
-  } = form;
+  const { control } = form;
 
   const onHandleSubmit = (formData: Address) => {
-    updateServiceRequest(formData);
-    void router.push(`/publish-service-request/${serviceSlug}/photos`);
+    updateServiceRequest(formData, categorySlugQuery);
+    nextStep();
   };
 
   return (
     <>
-      {error && <SectionMessage title={error.message} appareance="danger" />}
       <Form form={form} onSubmit={onHandleSubmit}>
         <Field label="Numéro de téléphone" required>
           <Controller
@@ -76,12 +69,7 @@ const PhoneForm = ({ error, isLoading }: PhoneFormProps) => {
           title="Ces informations seront transmises uniquement aux prestataires que vous réserverez."
         />
         <FixedFooterForm>
-          <Button
-            type="button"
-            onClick={() => void router.back()}
-            variant="ghost"
-            size="lg"
-          >
+          <Button type="button" onClick={prevStep} variant="ghost" size="lg">
             Retour
           </Button>
           <Button size="lg">Suivant</Button>
