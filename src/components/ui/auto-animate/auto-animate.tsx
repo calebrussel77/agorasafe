@@ -1,4 +1,4 @@
-import { useAutoAnimate } from '@formkit/auto-animate/react';
+// import { useAutoAnimate } from '@formkit/auto-animate/react';
 import React, { type ElementType, type HTMLAttributes } from 'react';
 
 interface Props extends HTMLAttributes<HTMLElement> {
@@ -10,9 +10,9 @@ const AutoAnimate: React.FC<Props> = ({
   children,
   ...rest
 }) => {
-  const [ref] = useAutoAnimate<HTMLElement>();
+  // const [ref] = useAutoAnimate<HTMLElement>();
   return (
-    <Tag ref={ref} {...rest}>
+    <Tag {...rest}>
       {children}
     </Tag>
   );
