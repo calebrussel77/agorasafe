@@ -48,6 +48,7 @@ export function throwDbError(error: unknown): never {
       message: error.message,
       cause: error,
     });
+    
   else if (error instanceof Prisma.PrismaClientValidationError)
     throw new TRPCError({
       code: 'INTERNAL_SERVER_ERROR',

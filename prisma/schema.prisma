@@ -38,9 +38,9 @@ model Profile {
     location   Location? @relation(fields: [locationId], references: [id], onDelete: Cascade)
     locationId String
 
-    provider Provider?
+    providerInfo Provider?
 
-    customer Customer?
+    customerInfo Customer?
 
     deletedAt DateTime? @updatedAt
 
@@ -54,7 +54,7 @@ model Provider {
     profession     String?
     isFaceToFace   Boolean? @default(true)
     isRemote       Boolean? @default(true)
-    showCasePhotos Photo[] // Should be Max 03 photos
+    showCasePhotos File[] // Should be Max 03 photos
 
     skills                  Skill[]
     serviceRequestResponses ProviderServiceRequestResponse[]
@@ -104,10 +104,11 @@ model Service {
     updatedAt DateTime @updatedAt
 }
 
-model Photo {
-    id  String  @id @default(cuid())
-    key String? @unique
-    url String
+model File {
+    id   String  @id @default(cuid())
+    name String
+    url  String
+    key  String? @unique
 
     serviceRequest   ServiceRequest? @relation(fields: [serviceRequestId], references: [id], onDelete: Cascade)
     serviceRequestId String?
@@ -119,26 +120,28 @@ model Photo {
 }
 
 model ServiceRequest {
-    id                     String  @id @default(cuid())
+    id                     String   @id @default(cuid())
     title                  String
-    slug                   String  @unique
-    description            String
+    slug                   String   @unique
+    description            String?
     phoneToContact         String
-    photos                 Photo[] // Should be Max 03 photos
-    numberOfProviderNeeded Int     @default(1)
-    duration               String?
-    startDate              String
-    endDate                String?
-    startHour              String?
-    estimatedPrice         String
-    location               String
+    photos                 File[] // Should be Max 03 photos
+    numberOfProviderNeeded Int?     @default(1)
+    willWantProposal       Boolean? @default(false)
+    nbOfHours              Float?
+    date                   DateTime @db.Date
+    startHour              Float
+    estimatedPrice         Float?
+
+    location   Location @relation(fields: [locationId], references: [id])
+    locationId String
 
     status ServiceRequestStatus? @default(value: OPEN)
 
     providerResponses ProviderServiceRequestResponse[]
 
-    author   Customer @relation(fields: [authorId], references: [id], onDelete: Cascade)
-    authorId String
+    customerAuthor   Customer @relation(fields: [customerAuthorId], references: [id], onDelete: Cascade)
+    customerAuthorId String
 
     service   Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
     serviceId String
@@ -152,8 +155,8 @@ model ProviderServiceRequestResponse {
     text          String
     proposedPrice String?
 
-    author   Provider @relation(fields: [authorId], references: [id])
-    authorId String
+    providerAuthor   Provider @relation(fields: [providerAuthorId], references: [id])
+    providerAuthorId String
 
     ServiceRequest   ServiceRequest @relation(fields: [serviceRequestId], references: [id], onDelete: Cascade)
     serviceRequestId String
@@ -189,12 +192,13 @@ model Session {
 }
 
 model Location {
-    id       String    @id @default(cuid())
-    name     String    @unique
-    lat      String
-    long     String
-    wikidata String?
-    Profile  Profile[]
+    id             String           @id @default(cuid())
+    name           String           @unique
+    lat            String
+    long           String
+    wikidata       String?
+    Profile        Profile[]
+    ServiceRequest ServiceRequest[]
 }
 
 model User {

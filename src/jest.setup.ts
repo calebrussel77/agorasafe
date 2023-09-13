@@ -1,4 +1,5 @@
 /* eslint-disable jest/no-mocks-import */
+import '@testing-library/jest-dom/extend-expect';
 import '@testing-library/jest-dom';
 import 'whatwg-fetch';
 

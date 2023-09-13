@@ -80,7 +80,8 @@ const MyApp = (props: AppPageProps) => {
           path: router.asPath ?? '/',
           origin: WEBSITE_URL,
         })}
-      />
+        />
+        <NoSSR>
       <AnimatePresence mode="wait" onExitComplete={handleExitComplete}>
         <AppProvider
           {...{
@@ -88,7 +89,6 @@ const MyApp = (props: AppPageProps) => {
             initialProfileState,
           }}
         >
-          <NoSSR>
             <PageTransition>
               <ProfileSession />
               {getLayout(
@@ -96,9 +96,9 @@ const MyApp = (props: AppPageProps) => {
                 router
               )}
             </PageTransition>
-          </NoSSR>
         </AppProvider>
       </AnimatePresence>
+          </NoSSR>
     </>
   );
 };

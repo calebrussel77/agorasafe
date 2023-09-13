@@ -1,6 +1,7 @@
 import { faker } from '@faker-js/faker';
 import { PrismaClient } from '@prisma/client';
-import slugify from 'slugify';
+
+import { slugit } from '@/utils/strings';
 
 import { formatDateToString } from '../src/lib/date-fns';
 import { serviceCategories, services } from './data';
@@ -201,10 +202,10 @@ const createCategoriesWithServices = async () => {
     await prisma.categoryService.create({
       data: {
         name: el.categoryName,
-        slug: slugify(el.categoryName),
+        slug: slugit(el.categoryName),
         services: {
           connectOrCreate: el.services.map(name => ({
-            create: { name, slug: slugify(name) },
+            create: { name, slug: slugit(name) },
             where: { name },
           })),
         },

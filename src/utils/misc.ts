@@ -88,3 +88,65 @@ export const invariant: (
 };
 
 export const noop = () => {};
+
+export function getCompletionPercentage<T extends number | string | unknown>(
+  elements: T[],
+  step: number
+): number {
+  // Check that the step is within the valid range (between 0 and the length of the array - 1)
+  if (step < 0 || step >= elements.length) {
+    throw new Error('The step must be a valid index within the array.');
+  }
+
+  // Calculate the total of elements up to the given step
+  const elementsUpToStep = elements.slice(0, step + 1);
+  const total =
+    typeof elements[0] === 'number'
+      ? elementsUpToStep.reduce((acc, current) => acc + Number(current), 0)
+      : elementsUpToStep.length;
+
+  // Calculate the completion percentage
+  const percentage = (total / elements.length) * 100;
+
+  return Math.floor(percentage);
+}
+
+export function isEmpty(element: unknown): boolean {
+  if (element === null || element === undefined) {
+    // Check for null or undefined
+    return true;
+  }
+
+  if (typeof element === 'string') {
+    // Check for an empty string
+    return element.trim() === '';
+  }
+
+  if (typeof element === 'number') {
+    // Check for NaN (which is considered empty for numbers)
+    return isNaN(element);
+  }
+
+  if (Array.isArray(element)) {
+    // Check for an empty array or an array of empty objects
+    if (element.length === 0) {
+      return true;
+    }
+    if (
+      element.every(
+        item =>
+          typeof item === 'object' && Object.keys(item as object).length === 0
+      )
+    ) {
+      return true;
+    }
+  }
+
+  if (typeof element === 'object') {
+    // Check for an empty object
+    return Object.keys(element).length === 0;
+  }
+
+  // If none of the conditions match, consider the element not empty
+  return false;
+}

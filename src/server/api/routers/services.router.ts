@@ -1,4 +1,4 @@
-import { createTRPCRouter, protectedProcedure } from '@/server/api/trpc';
+import { createTRPCRouter, publicProcedure } from '@/server/api/trpc';
 
 import {
   getAllServiceCategoriesController,
@@ -8,10 +8,10 @@ import {
 import { getAllQuerySchema } from '../validations/base.validations';
 
 export const servicesRouter = createTRPCRouter({
-  getAllservices: protectedProcedure
+  getAllservices: publicProcedure
     .input(getAllServicesWithCategorySchema)
     .query(({ input }) => getAllServicesController(input)),
-  getAllServiceCategories: protectedProcedure
+  getAllServiceCategories: publicProcedure
     .input(getAllQuerySchema)
     .query(({ input }) => getAllServiceCategoriesController(input)),
 });

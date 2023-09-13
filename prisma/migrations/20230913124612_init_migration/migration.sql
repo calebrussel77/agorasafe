@@ -2,6 +2,9 @@
 CREATE TYPE "Sex" AS ENUM ('MALE', 'FEMALE');
 
 -- CreateEnum
+CREATE TYPE "Role" AS ENUM ('ADMIN', 'MEMBER');
+
+-- CreateEnum
 CREATE TYPE "ServiceRequestStatus" AS ENUM ('OPEN', 'CLOSED');
 
 -- CreateEnum
@@ -26,7 +29,10 @@ CREATE TABLE "Profile" (
     "avatar" TEXT,
     "bio" TEXT,
     "type" "ProfileType" NOT NULL,
+    "phone" TEXT,
     "userId" TEXT NOT NULL,
+    "locationId" TEXT NOT NULL,
+    "deletedAt" TIMESTAMP(3),
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -40,9 +46,6 @@ CREATE TABLE "Provider" (
     "profession" TEXT,
     "isFaceToFace" BOOLEAN DEFAULT true,
     "isRemote" BOOLEAN DEFAULT true,
-    "showcasePhotoOne" TEXT,
-    "showcasePhotoTwo" TEXT,
-    "showcasePhotoThree" TEXT,
     "profileId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -78,10 +81,23 @@ CREATE TABLE "Service" (
     "name" TEXT NOT NULL,
     "slug" TEXT,
     "description" TEXT,
+    "categoryServiceId" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "Service_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Photo" (
+    "id" TEXT NOT NULL,
+    "key" TEXT,
+    "url" TEXT NOT NULL,
+    "serviceRequestId" TEXT,
+    "providerId" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "Photo_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -91,14 +107,12 @@ CREATE TABLE "ServiceRequest" (
     "slug" TEXT NOT NULL,
     "description" TEXT NOT NULL,
     "phoneToContact" TEXT NOT NULL,
-    "photoOne" TEXT,
-    "photoTwo" TEXT,
-    "photoThree" TEXT,
-    "numberOfProviderNeeded" INTEGER NOT NULL,
+    "numberOfProviderNeeded" INTEGER NOT NULL DEFAULT 1,
     "duration" TEXT,
-    "start_date" TEXT NOT NULL,
-    "end_date" TEXT,
-    "estimated_price" TEXT NOT NULL,
+    "startDate" TEXT NOT NULL,
+    "endDate" TEXT,
+    "startHour" TEXT,
+    "estimatedPrice" TEXT NOT NULL,
     "location" TEXT NOT NULL,
     "status" "ServiceRequestStatus" DEFAULT 'OPEN',
     "authorId" TEXT NOT NULL,
@@ -165,13 +179,13 @@ CREATE TABLE "User" (
     "firstName" TEXT NOT NULL,
     "lastName" TEXT NOT NULL,
     "fullName" TEXT NOT NULL,
+    "hasBeenOnboarded" BOOLEAN DEFAULT false,
     "picture" TEXT,
     "birthdate" TEXT,
     "email" TEXT NOT NULL,
     "emailVerified" TIMESTAMP(3),
-    "phone" TEXT,
     "sex" "Sex" DEFAULT 'MALE',
-    "locationId" TEXT,
+    "role" "Role" NOT NULL DEFAULT 'MEMBER',
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -187,12 +201,6 @@ CREATE TABLE "VerificationToken" (
 
 -- CreateTable
 CREATE TABLE "_ProviderToSkill" (
-    "A" TEXT NOT NULL,
-    "B" TEXT NOT NULL
-);
-
--- CreateTable
-CREATE TABLE "_CategoryServiceToService" (
     "A" TEXT NOT NULL,
     "B" TEXT NOT NULL
 );
@@ -225,6 +233,9 @@ CREATE UNIQUE INDEX "Service_name_key" ON "Service"("name");
 CREATE UNIQUE INDEX "Service_slug_key" ON "Service"("slug");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "Photo_key_key" ON "Photo"("key");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "ServiceRequest_slug_key" ON "ServiceRequest"("slug");
 
 -- CreateIndex
@@ -232,6 +243,9 @@ CREATE UNIQUE INDEX "Account_provider_providerAccountId_key" ON "Account"("provi
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Session_sessionToken_key" ON "Session"("sessionToken");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Location_name_key" ON "Location"("name");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
@@ -248,20 +262,26 @@ CREATE UNIQUE INDEX "_ProviderToSkill_AB_unique" ON "_ProviderToSkill"("A", "B")
 -- CreateIndex
 CREATE INDEX "_ProviderToSkill_B_index" ON "_ProviderToSkill"("B");
 
--- CreateIndex
-CREATE UNIQUE INDEX "_CategoryServiceToService_AB_unique" ON "_CategoryServiceToService"("A", "B");
-
--- CreateIndex
-CREATE INDEX "_CategoryServiceToService_B_index" ON "_CategoryServiceToService"("B");
-
 -- AddForeignKey
 ALTER TABLE "Profile" ADD CONSTRAINT "Profile_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Profile" ADD CONSTRAINT "Profile_locationId_fkey" FOREIGN KEY ("locationId") REFERENCES "Location"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Provider" ADD CONSTRAINT "Provider_profileId_fkey" FOREIGN KEY ("profileId") REFERENCES "Profile"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Customer" ADD CONSTRAINT "Customer_profileId_fkey" FOREIGN KEY ("profileId") REFERENCES "Profile"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Service" ADD CONSTRAINT "Service_categoryServiceId_fkey" FOREIGN KEY ("categoryServiceId") REFERENCES "CategoryService"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Photo" ADD CONSTRAINT "Photo_serviceRequestId_fkey" FOREIGN KEY ("serviceRequestId") REFERENCES "ServiceRequest"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Photo" ADD CONSTRAINT "Photo_providerId_fkey" FOREIGN KEY ("providerId") REFERENCES "Provider"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "ServiceRequest" ADD CONSTRAINT "ServiceRequest_authorId_fkey" FOREIGN KEY ("authorId") REFERENCES "Customer"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -282,16 +302,7 @@ ALTER TABLE "Account" ADD CONSTRAINT "Account_userId_fkey" FOREIGN KEY ("userId"
 ALTER TABLE "Session" ADD CONSTRAINT "Session_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "User" ADD CONSTRAINT "User_locationId_fkey" FOREIGN KEY ("locationId") REFERENCES "Location"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE "_ProviderToSkill" ADD CONSTRAINT "_ProviderToSkill_A_fkey" FOREIGN KEY ("A") REFERENCES "Provider"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "_ProviderToSkill" ADD CONSTRAINT "_ProviderToSkill_B_fkey" FOREIGN KEY ("B") REFERENCES "Skill"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "_CategoryServiceToService" ADD CONSTRAINT "_CategoryServiceToService_A_fkey" FOREIGN KEY ("A") REFERENCES "CategoryService"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "_CategoryServiceToService" ADD CONSTRAINT "_CategoryServiceToService_B_fkey" FOREIGN KEY ("B") REFERENCES "Service"("id") ON DELETE CASCADE ON UPDATE CASCADE;
