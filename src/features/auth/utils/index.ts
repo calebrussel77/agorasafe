@@ -1,6 +1,7 @@
 import { REDIRECT_QUERY_KEY } from '@/constants';
 
 import { generateUrlWithSearchParams } from '@/utils/routing';
+import { isWindowDefined } from '@/utils/type-guards';
 
 export const loginRedirectReasons = {
   'session-expired':
@@ -39,10 +40,9 @@ export function getLoginLink({
   reason?: LoginRedirectReason;
 }) {
   return `${generateUrlWithSearchParams('/auth/login', {
-    [REDIRECT_QUERY_KEY]:
-      typeof window !== 'undefined'
-        ? window.location.pathname
-        : redirectUrl || '/',
+    [REDIRECT_QUERY_KEY]: isWindowDefined()
+      ? window.location.pathname
+      : redirectUrl || '/',
     reason,
   })}`;
 }

@@ -47,3 +47,7 @@ export function isRegExpString(input: string): boolean {
     return false; // If an error occurs, it's not a valid regex
   }
 }
+
+export const isWindowDefined = () => {
+  return typeof window !== 'undefined';
+};

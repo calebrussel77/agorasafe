@@ -37,14 +37,6 @@ declare module 'next-auth' {
       hasBeenOnboarded: boolean;
       role: Role;
     };
-    // currentProfile?: {
-    //   id: string;
-    //   name: string;
-    //   slug: string;
-    //   avatar: string;
-    //   hasBeenOnboarded: boolean;
-    //   role: Role;
-    // };
     version: number;
   }
 
@@ -134,14 +126,10 @@ export const authOptions: NextAuthOptions = {
   debug: false,
   logger: {
     error(code, ...message) {
-      console.error(code, message);
       sentryCaptureException({ code, message });
     },
     warn(code, ...message) {
       sentryCaptureException({ code, message });
-    },
-    debug(code, ...message) {
-      console.log(code, message);
     },
   },
   jwt: {

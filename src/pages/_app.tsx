@@ -78,24 +78,24 @@ const MyApp = (props: AppPageProps) => {
           origin: WEBSITE_URL,
         })}
       />
-      <NoSSR>
-        <AnimatePresence mode="wait" onExitComplete={handleExitComplete}>
-          <AppProvider
-            {...{
-              session,
-              initialProfileState,
-            }}
-          >
-            <PageTransition>
-              <ProfileSession />
-              {getLayout(
-                <Component {...pageProps} key={router.asPath} />,
-                router
-              )}
-            </PageTransition>
-          </AppProvider>
-        </AnimatePresence>
-      </NoSSR>
+      {/* <NoSSR> */}
+      <AnimatePresence mode="wait" onExitComplete={handleExitComplete}>
+        <AppProvider
+          {...{
+            session,
+            initialProfileState,
+          }}
+        >
+          <PageTransition>
+            <ProfileSession />
+            {getLayout(
+              <Component {...pageProps} key={router.asPath} />,
+              router
+            )}
+          </PageTransition>
+        </AppProvider>
+      </AnimatePresence>
+      {/* </NoSSR> */}
     </>
   );
 };

@@ -3,12 +3,13 @@ import { createServerSideHelpers } from '@trpc/react-query/server';
 import {
   type GetServerSidePropsContext,
   type GetServerSidePropsResult,
+  type NextApiRequest,
   type Redirect,
 } from 'next';
 import { type Session } from 'next-auth';
 import superjson from 'superjson';
 
-import { CurrentProfile } from '@/features/profiles';
+import { type CurrentProfile } from '@/features/profiles';
 
 import { appRouter } from '../api/root';
 import { createInnerTRPCContext } from '../api/trpc';
@@ -21,7 +22,7 @@ export const getServerProxySSGHelpers = async (
 ) => {
   const ssg = createServerSideHelpers({
     router: appRouter,
-    ctx: createInnerTRPCContext({ session }),
+    ctx: createInnerTRPCContext({ session, req: ctx.req as NextApiRequest }),
     transformer: superjson,
   });
   return ssg;
@@ -57,6 +58,7 @@ export function createServerSideProps<P>({
       isClient,
       ssg,
       session,
+      profile: initialState?.profile,
     })) as GetPropsFnResult<P> | undefined;
 
     const returnedProps = result?.props as GetPropsFnResult<P>['props'];

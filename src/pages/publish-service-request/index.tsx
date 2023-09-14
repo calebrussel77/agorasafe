@@ -173,6 +173,7 @@ const querySchema = z.object({
 
 export const getServerSideProps = createServerSideProps({
   resolver: ({ ctx, profile }) => {
+
     const result = querySchema.safeParse(ctx.query);
 
     // if (!profile || !result.success) return { notFound: true };

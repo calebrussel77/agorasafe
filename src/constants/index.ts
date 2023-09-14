@@ -1,6 +1,18 @@
 import { env } from '@/env.mjs';
 import { ProfileType } from '@prisma/client';
 
+import { isWindowDefined } from '@/utils/type-guards';
+
+const getWebsiteUrl = () => {
+  if (isDev) return 'http://localhost:3000';
+
+  if (env.NEXT_PUBLIC_APP_URL) return env.NEXT_PUBLIC_APP_URL;
+
+  if (isWindowDefined()) return window.location.origin;
+
+  return 'https://agorasafe.vercel.app';
+};
+
 export const isDev = process.env.NODE_ENV === 'development';
 
 export const isProd = process.env.NODE_ENV === 'production';
@@ -9,9 +21,7 @@ export const SESSION_VERSION = 0.1;
 
 export const PROFILE_VERSION = 0.1;
 
-export const WEBSITE_URL = isDev
-  ? 'http://localhost:3000'
-  : env.NEXT_PUBLIC_APP_URL || 'https://agorasafe.vercel.app';
+export const WEBSITE_URL = getWebsiteUrl();
 
 export const APP_NAME = env.NEXT_PUBLIC_APP_NAME || 'Agorasafe.com';
 
@@ -31,62 +41,5 @@ export const APP_PROFILES_INFO = [
     title: 'Client',
     description: `Je souhaite créer des démandes de services et payer des personnes capables de satisfaire mes besoins.`,
     type: ProfileType.CUSTOMER,
-  },
-];
-
-export const APP_PROFILE_LINKS = [
-  {
-    id: 1,
-    iconUrl: '/icons/home.svg',
-    disabled: false,
-    type: COMMON_PROFILE_TYPE,
-    title: 'Tableau de bord',
-    description: 'Accéder à mon tableau de bord personnel',
-    href: '/dashboard',
-  },
-  {
-    id: 2,
-    iconUrl: '/icons/clipboard-signature.svg',
-    disabled: false,
-    type: ProfileType.CUSTOMER,
-    title: 'Mes demandes',
-    description: 'Consulter mes demandes de service',
-    href: '/dashboard/my-requests',
-  },
-  {
-    id: 3,
-    iconUrl: '/icons/messages-square.svg',
-    disabled: false,
-    type: COMMON_PROFILE_TYPE,
-    title: 'Conversations',
-    description: 'Consulter mes messages inbox',
-    href: '/dashboard/inbox',
-  },
-  {
-    id: 4,
-    iconUrl: '/icons/clipboard-paste.svg',
-    disabled: false,
-    title: 'Services postulés',
-    type: ProfileType.PROVIDER,
-    description: "Accéder aux services auxquels j'ai postulé",
-    href: '/dashboard/applied-services',
-  },
-  {
-    id: 6,
-    iconUrl: '/icons/settings.svg',
-    disabled: false,
-    type: COMMON_PROFILE_TYPE,
-    title: 'Paramètres',
-    description: 'Gérer mes paramètres utilisateur',
-    href: '/dashboard/settings',
-  },
-  {
-    id: 5,
-    iconUrl: '/icons/user.svg',
-    disabled: false,
-    type: COMMON_PROFILE_TYPE,
-    title: 'Mon profil',
-    description: 'Accéder à mon profil publique',
-    href: '#',
   },
 ];

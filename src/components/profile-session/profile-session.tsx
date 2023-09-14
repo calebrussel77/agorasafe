@@ -23,7 +23,7 @@ const ProfileSession = () => {
     }
   }, [isAuth, status, resetProfile]);
 
-  if (status === 'loading') return;
+  if (status === 'loading') return <></>;
 
   return (
     <>
