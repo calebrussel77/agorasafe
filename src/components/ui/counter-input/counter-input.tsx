@@ -28,7 +28,6 @@ const CounterInput: FC<CounterInputProps> = ({
   step = 0.5,
   ...rest
 }) => {
-  console.log({ value });
 
   const [count, setCount] = useState<number>(Number(value));
 

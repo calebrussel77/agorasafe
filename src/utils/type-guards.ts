@@ -37,3 +37,13 @@ export function isArrayOfFile(value: unknown): value is File[] {
   }
   return value.every(element => element instanceof File);
 }
+
+export function isRegExpString(input: string): boolean {
+  try {
+    // Attempt to create a RegExp object from the input string
+    new RegExp(input);
+    return true; // If successful, it's a valid regex
+  } catch (e) {
+    return false; // If an error occurs, it's not a valid regex
+  }
+}

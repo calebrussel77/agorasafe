@@ -41,7 +41,7 @@ const ChooseProfileModale = ({
 
   const onProfileClick = async (profile: CurrentProfile) => {
     if (router.asPath !== '/') {
-      void router.push('/');
+      window.location.href = '/';
     }
     await wait(500);
     updateProfile(profile);

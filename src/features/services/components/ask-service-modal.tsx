@@ -43,7 +43,11 @@ const AskServiceModal: FC<AskServiceModalProps> = ({ children }) => {
   const { reset, updateServiceRequest } = usePublishServiceRequest();
   const [query, setQuery] = useState('');
 
-  const { data, isInitialLoading, error } = useGetAllServiceCategories();
+  const { data, isInitialLoading, error } = useGetAllServiceCategories(
+    undefined,
+    { enabled: isOpen }
+  );
+
   const {
     data: dataServices,
     isInitialLoading: isServicesLoading,
@@ -111,7 +115,7 @@ const AskServiceModal: FC<AskServiceModalProps> = ({ children }) => {
     >
       <div
         className={cn(
-          'relative mx-2 mb-6 h-full flex-1 overflow-x-hidden px-2'
+          'relative mx-2 mb-6 h-full flex-1 overflow-x-hidden px-2 pt-2'
         )}
       >
         {!query && (
@@ -121,12 +125,14 @@ const AskServiceModal: FC<AskServiceModalProps> = ({ children }) => {
               from={{ x: -620, opacity: 0 }}
               isVisible={!selectedCategory}
             >
-              {data?.categories?.length === 0 &&  <EmptyState
-                icon={<Search />}
-                className="my-3"
-                name="Aucune catégorie trouvé"
-                description="Nous n'avons trouvés aucune catégorie à vous afficher."/>
-              }
+              {data?.categories?.length === 0 && (
+                <EmptyState
+                  icon={<Search />}
+                  className="my-3"
+                  name="Aucune catégorie trouvé"
+                  description="Nous n'avons trouvés aucune catégorie à vous afficher."
+                />
+              )}
 
               {data?.categories?.map(category => (
                 <AskServiceItem

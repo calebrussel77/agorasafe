@@ -5,7 +5,7 @@ import {
   getAllServicesWithCategory,
 } from './services.repository';
 import {
-  type CreateServiceRequestInput,
+  CreateServiceRequestInput,
   type GetAllServicesWithCategoryInput,
 } from './services.validations';
 

@@ -24,10 +24,6 @@ const getInitialState = (
         cookies[agorasafeProfileStorageName] ??
           JSON.stringify(parsedInitialState)
       ) as { state?: PersistedState };
-      // const state = JSON.parse(
-      //   decompress(cookies[agorasafeProfileStorageName]) ??
-      //     JSON.stringify(parsedInitialState)
-      // ) as { state?: PersistedState };
 
       return state && state.state
         ? { ...state.state, ...overrideState }

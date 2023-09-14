@@ -15,6 +15,7 @@ export const useCurrentUser = () => {
     isAuthWithProfile,
     hasCurrentProfile: !!profile,
     profile,
+    status,
     updateUser: update,
     updateProfile: setProfile,
     resetProfile: reset,

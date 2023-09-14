@@ -25,7 +25,29 @@ addRouteGuard({
   canAccess: () => !isProd,
 });
 
-//#region Logic
+addRouteGuard({
+  matcher: [
+    /*
+     * Match all request paths except for the ones starting with:
+     * - api (API routes)
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
+     * - onboarding (onboarding paths)
+     */
+
+    '/((?!api|_next/static|_next/image|onboarding|favicon.ico).*)',
+    '/',
+  ],
+  redirect: `/onboarding/choose-profile-type`,
+  canAccess: ({ user, currentProfile }) => {
+    if (user?.hasBeenOnboarded === false && !currentProfile) {
+      return false;
+    }
+    return true;
+  },
+});
+
 type RouteGuard = {
   matcher: string[];
   isMatch: (pathname: string) => boolean;

@@ -37,6 +37,14 @@ declare module 'next-auth' {
       hasBeenOnboarded: boolean;
       role: Role;
     };
+    // currentProfile?: {
+    //   id: string;
+    //   name: string;
+    //   slug: string;
+    //   avatar: string;
+    //   hasBeenOnboarded: boolean;
+    //   role: Role;
+    // };
     version: number;
   }
 

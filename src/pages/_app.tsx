@@ -5,13 +5,10 @@ import '@/assets/styles/globals.css';
 import { WEBSITE_URL } from '@/constants';
 import { AppProvider } from '@/providers/app-provider';
 import { type ProfileStore } from '@/stores/profile-store';
-import { getInitialState } from '@/stores/profile-store/initial-state';
 import { AnimatePresence } from 'framer-motion';
 import { type NextPage } from 'next';
 import { type Session } from 'next-auth';
-import { getSession } from 'next-auth/react';
-import App from 'next/app';
-import { type AppContext, type AppProps } from 'next/app';
+import { type AppProps } from 'next/app';
 import { GoogleAnalytics } from 'nextjs-google-analytics';
 import { type ReactElement, type ReactNode, useMemo } from 'react';
 
@@ -26,7 +23,7 @@ import { api } from '@/utils/api';
 import { buildCanonical } from '@/lib/next-seo-config';
 import { displayProgressBarOnRouteChange } from '@/lib/progress-bar';
 
-import { useNewDeploy } from '@/hooks/use-new-deploy';
+// import { useNewDeploy } from '@/hooks/use-new-deploy';
 import { useNotificationNetwork } from '@/hooks/use-notification-network';
 
 displayProgressBarOnRouteChange();
@@ -51,7 +48,7 @@ function handleExitComplete() {
 }
 
 const MyApp = (props: AppPageProps) => {
-  useNewDeploy();
+  // useNewDeploy();
   useNotificationNetwork();
   const {
     Component,
@@ -80,15 +77,15 @@ const MyApp = (props: AppPageProps) => {
           path: router.asPath ?? '/',
           origin: WEBSITE_URL,
         })}
-        />
-        <NoSSR>
-      <AnimatePresence mode="wait" onExitComplete={handleExitComplete}>
-        <AppProvider
-          {...{
-            session,
-            initialProfileState,
-          }}
-        >
+      />
+      <NoSSR>
+        <AnimatePresence mode="wait" onExitComplete={handleExitComplete}>
+          <AppProvider
+            {...{
+              session,
+              initialProfileState,
+            }}
+          >
             <PageTransition>
               <ProfileSession />
               {getLayout(
@@ -96,44 +93,11 @@ const MyApp = (props: AppPageProps) => {
                 router
               )}
             </PageTransition>
-        </AppProvider>
-      </AnimatePresence>
-          </NoSSR>
+          </AppProvider>
+        </AnimatePresence>
+      </NoSSR>
     </>
   );
-};
-
-MyApp.getInitialProps = async (appContext: AppContext) => {
-  const initialProps = await App.getInitialProps(appContext);
-  const pathname = appContext?.ctx?.pathname;
-  const url = appContext.ctx?.req?.url;
-  const isClient = !url || url?.startsWith('/_next/data');
-  const initialState = appContext.ctx?.req?.headers
-    ? getInitialState(appContext.ctx?.req?.headers)
-    : null;
-
-  // getSession works both server-side and client-side but we want to avoid any calls to /api/auth/session
-  // on page load, so we only call it server-side.
-  const session = !isClient ? await getSession(appContext?.ctx) : null;
-
-  if (
-    session &&
-    !initialState?.profile &&
-    !session?.user?.hasBeenOnboarded &&
-    !pathname?.startsWith('/onboarding')
-  ) {
-    appContext.ctx?.res?.writeHead(302, {
-      Location: `/onboarding/choose-profile-type`,
-    });
-    appContext.ctx?.res?.end();
-  }
-
-  return {
-    pageProps: {
-      ...initialProps.pageProps,
-      session,
-    },
-  };
 };
 
 export default api.withTRPC(MyApp);

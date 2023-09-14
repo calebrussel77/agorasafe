@@ -39,8 +39,8 @@ export default function AddNewProfilePage({
       await updateUser({
         user: { ...session?.user, hasBeenOnboarded: true },
       });
-      resetProfile();
       void router.push('/');
+      resetProfile();
     },
   });
 

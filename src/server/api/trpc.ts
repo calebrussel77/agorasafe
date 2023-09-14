@@ -7,15 +7,20 @@
  * need to use are documented accordingly near the end.
  */
 import { SESSION_VERSION } from '@/constants';
+import { getInitialState } from '@/stores/profile-store/initial-state';
 import { TRPCError, initTRPC } from '@trpc/server';
 import { type CreateNextContextOptions } from '@trpc/server/adapters/next';
+import { NextApiRequest } from 'next';
 import { type Session } from 'next-auth';
 import superjson from 'superjson';
 
-import { type CurrentProfile } from '@/features/profiles';
-
 import { getServerAuthSession } from '@/server/auth';
 import { prisma } from '@/server/db';
+
+import {
+  throwAuthorizationError,
+  throwBadRequestError,
+} from '../utils/error-handling';
 
 /**
  * 1. CONTEXT
@@ -27,6 +32,7 @@ import { prisma } from '@/server/db';
 
 type CreateContextOptions = {
   session: Session | null;
+  req: NextApiRequest;
 };
 
 /**
@@ -42,6 +48,7 @@ type CreateContextOptions = {
 export const createInnerTRPCContext = (opts: CreateContextOptions) => {
   return {
     session: opts.session,
+    req: opts.req,
     prisma,
   };
 };
@@ -60,6 +67,7 @@ export const createTRPCContext = async (opts: CreateNextContextOptions) => {
 
   return createInnerTRPCContext({
     session,
+    req,
   });
 };
 
@@ -103,6 +111,8 @@ export const publicProcedure = t.procedure;
 
 /** Reusable middleware that enforces users are logged in before running the procedure. */
 const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
+  const initialState = getInitialState(ctx.req.headers);
+
   if (!ctx.session || !ctx.session.user) {
     throw new TRPCError({ code: 'UNAUTHORIZED' });
   }
@@ -115,6 +125,56 @@ const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
     ctx: {
       // infers the `session` as non-nullable
       session: { ...ctx.session, user: ctx.session.user },
+      initialState,
+    },
+  });
+});
+
+const enforceProfileIsCustomer = t.middleware(({ ctx, next }) => {
+  const initialState = getInitialState(ctx.req.headers);
+
+  if (!ctx.session || !ctx.session.user) {
+    throwAuthorizationError();
+  }
+
+  if (ctx.session && ctx.session.version !== SESSION_VERSION) {
+    throwAuthorizationError();
+  }
+
+  if (initialState?.profile?.type !== 'CUSTOMER') {
+    throwBadRequestError();
+  }
+
+  return next({
+    ctx: {
+      // infers the `session` as non-nullable
+      session: { ...ctx.session, user: ctx.session.user },
+      initialState,
+    },
+  });
+});
+
+/** Reusable middleware that enforces users are logged in before running the procedure. */
+const enforceProfileIsProvider = t.middleware(({ ctx, next }) => {
+  const initialState = getInitialState(ctx.req.headers);
+
+  if (!ctx.session || !ctx.session.user) {
+    throwAuthorizationError();
+  }
+
+  if (ctx.session && ctx.session.version !== SESSION_VERSION) {
+    throwAuthorizationError();
+  }
+
+  if (initialState?.profile?.type !== 'PROVIDER') {
+    throwBadRequestError();
+  }
+
+  return next({
+    ctx: {
+      // infers the `session` as non-nullable
+      session: { ...ctx.session, user: ctx.session.user },
+      initialState,
     },
   });
 });
@@ -127,4 +187,9 @@ const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
  *
  * @see https://trpc.io/docs/procedures
  */
+
 export const protectedProcedure = t.procedure.use(enforceUserIsAuthed);
+
+export const providerProcedure = t.procedure.use(enforceProfileIsProvider);
+
+export const customerProcedure = t.procedure.use(enforceProfileIsCustomer);
