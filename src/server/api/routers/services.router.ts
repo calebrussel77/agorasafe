@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import {
   createTRPCRouter,
   customerProcedure,
@@ -24,5 +27,7 @@ export const servicesRouter = createTRPCRouter({
 
   publishServiceRequest: customerProcedure
     .input(createServiceRequestSchema)
-    .query(({ input, ctx }) => createServiceRequestController(input, 'sss')),
+    .mutation(({ input, ctx }) =>
+      createServiceRequestController(input, ctx?.profile?.id)
+    ),
 });

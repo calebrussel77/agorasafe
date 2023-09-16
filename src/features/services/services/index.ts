@@ -5,6 +5,7 @@ import {
   type GetAllServiceCategoriesOptions,
   type GetAllservicesInput,
   type GetAllservicesOptions,
+  type PublishServiceRequestOptions,
 } from '../types';
 
 export const useGetAllServices = (
@@ -24,3 +25,23 @@ export const useGetAllServiceCategories = (
     ...restOptions,
   });
 };
+
+export const useCreateServiceRequest = ({
+  onSuccess,
+  onError,
+  ...restOptions
+}: PublishServiceRequestOptions = {}) => {
+  const data = api.services.publishServiceRequest.useMutation({
+    onSuccess(data, variables, ctx) {
+      onSuccess?.(data, variables, ctx);
+    },
+    onError(err, variables, context) {
+      onError?.(err, variables, context);
+    },
+    ...restOptions,
+  });
+
+  return data;
+};
+
+export const useGetServiceRequest = (id: string) => {};

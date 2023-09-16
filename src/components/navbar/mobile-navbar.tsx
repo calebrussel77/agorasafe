@@ -31,12 +31,7 @@ const MobileNavbar: FC<MobileNavbarProps> = ({ navigations }) => {
     isFetching,
     error,
     refetch,
-  } = useGetProfileConfig(
-    {
-      profileId: profile?.id as string,
-    },
-    { enabled: !!profile?.id }
-  );
+  } = useGetProfileConfig({ enabled: !!profile?.id });
 
   return (
     <>
@@ -58,7 +53,7 @@ const MobileNavbar: FC<MobileNavbarProps> = ({ navigations }) => {
                 <>
                   <button className="-mx-3 flex w-full items-center gap-4 rounded-sm px-6 py-2 hover:bg-gray-100">
                     <UserAvatar
-                      src={profile.avatar as string}
+                      src={profile.avatar}
                       alt={profile.name}
                       type={profile.type}
                       className="h-10 w-10"

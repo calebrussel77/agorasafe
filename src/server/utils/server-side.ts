@@ -3,7 +3,6 @@ import { createServerSideHelpers } from '@trpc/react-query/server';
 import {
   type GetServerSidePropsContext,
   type GetServerSidePropsResult,
-  type NextApiRequest,
   type Redirect,
 } from 'next';
 import { type Session } from 'next-auth';
@@ -17,12 +16,13 @@ import { getServerAuthSession } from '../auth';
 
 export const getServerProxySSGHelpers = async (
   ctx: GetServerSidePropsContext,
-  session: Session | null
+  session: Session | null,
+  profile: CurrentProfile | null
   // eslint-disable-next-line @typescript-eslint/require-await
 ) => {
   const ssg = createServerSideHelpers({
     router: appRouter,
-    ctx: createInnerTRPCContext({ session, req: ctx.req as NextApiRequest }),
+    ctx: createInnerTRPCContext({ session, profile }),
     transformer: superjson,
   });
   return ssg;
@@ -50,7 +50,11 @@ export function createServerSideProps<P>({
 
     const ssg =
       shouldUseSSG && (prefetch === 'always' || !isClient)
-        ? await getServerProxySSGHelpers(context, session)
+        ? await getServerProxySSGHelpers(
+            context,
+            session,
+            initialState?.profile
+          )
         : undefined;
 
     const result = (await resolver({

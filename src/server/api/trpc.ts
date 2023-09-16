@@ -10,17 +10,15 @@ import { SESSION_VERSION } from '@/constants';
 import { getInitialState } from '@/stores/profile-store/initial-state';
 import { TRPCError, initTRPC } from '@trpc/server';
 import { type CreateNextContextOptions } from '@trpc/server/adapters/next';
-import { NextApiRequest } from 'next';
 import { type Session } from 'next-auth';
 import superjson from 'superjson';
+
+import { type CurrentProfile } from '@/features/profiles';
 
 import { getServerAuthSession } from '@/server/auth';
 import { prisma } from '@/server/db';
 
-import {
-  throwAuthorizationError,
-  throwBadRequestError,
-} from '../utils/error-handling';
+import { throwForbiddenError } from '../utils/error-handling';
 
 /**
  * 1. CONTEXT
@@ -32,7 +30,7 @@ import {
 
 type CreateContextOptions = {
   session: Session | null;
-  req: NextApiRequest;
+  profile: CurrentProfile | null;
 };
 
 /**
@@ -48,7 +46,7 @@ type CreateContextOptions = {
 export const createInnerTRPCContext = (opts: CreateContextOptions) => {
   return {
     session: opts.session,
-    req: opts.req,
+    profile: opts.profile,
     prisma,
   };
 };
@@ -62,12 +60,12 @@ export const createInnerTRPCContext = (opts: CreateContextOptions) => {
 export const createTRPCContext = async (opts: CreateNextContextOptions) => {
   const { req, res } = opts;
 
-  // Get the session from the server using the getServerSession wrapper function
   const session = await getServerAuthSession({ req, res });
+  const initialState = getInitialState(req.headers);
 
   return createInnerTRPCContext({
     session,
-    req,
+    profile: initialState?.profile,
   });
 };
 
@@ -109,87 +107,101 @@ export const createTRPCRouter = t.router;
  */
 export const publicProcedure = t.procedure;
 
-/** Reusable middleware that enforces users are logged in before running the procedure. */
-const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
-  const initialState = getInitialState(ctx.req.headers);
-
-  if (!ctx.session || !ctx.session.user) {
-    throw new TRPCError({ code: 'UNAUTHORIZED' });
-  }
-
-  if (ctx.session && ctx.session.version !== SESSION_VERSION) {
+const isAuthed = t.middleware(({ ctx, next }) => {
+  if (
+    !ctx.session?.user ||
+    (ctx.session && ctx.session.version !== SESSION_VERSION)
+  ) {
     throw new TRPCError({ code: 'UNAUTHORIZED' });
   }
 
   return next({
     ctx: {
-      // infers the `session` as non-nullable
       session: { ...ctx.session, user: ctx.session.user },
-      initialState,
     },
   });
 });
 
-const enforceProfileIsCustomer = t.middleware(({ ctx, next }) => {
-  const initialState = getInitialState(ctx.req.headers);
-
-  if (!ctx.session || !ctx.session.user) {
-    throwAuthorizationError();
+const hasProfile = t.middleware(({ ctx, next }) => {
+  if (
+    !ctx.session?.user ||
+    (ctx.session && ctx.session.version !== SESSION_VERSION)
+  ) {
+    throw new TRPCError({ code: 'UNAUTHORIZED' });
   }
 
-  if (ctx.session && ctx.session.version !== SESSION_VERSION) {
-    throwAuthorizationError();
-  }
-
-  if (initialState?.profile?.type !== 'CUSTOMER') {
-    throwBadRequestError();
+  if (!ctx?.profile) {
+    throwForbiddenError();
   }
 
   return next({
     ctx: {
-      // infers the `session` as non-nullable
       session: { ...ctx.session, user: ctx.session.user },
-      initialState,
+      profile: ctx.profile,
     },
   });
 });
 
-/** Reusable middleware that enforces users are logged in before running the procedure. */
-const enforceProfileIsProvider = t.middleware(({ ctx, next }) => {
-  const initialState = getInitialState(ctx.req.headers);
-
-  if (!ctx.session || !ctx.session.user) {
-    throwAuthorizationError();
+const isCustomer = t.middleware(({ ctx, next }) => {
+  if (
+    !ctx.session?.user ||
+    (ctx.session && ctx.session.version !== SESSION_VERSION)
+  ) {
+    throw new TRPCError({ code: 'UNAUTHORIZED' });
   }
 
-  if (ctx.session && ctx.session.version !== SESSION_VERSION) {
-    throwAuthorizationError();
-  }
-
-  if (initialState?.profile?.type !== 'PROVIDER') {
-    throwBadRequestError();
+  if (ctx?.profile?.type !== 'CUSTOMER') {
+    throwForbiddenError();
   }
 
   return next({
     ctx: {
-      // infers the `session` as non-nullable
       session: { ...ctx.session, user: ctx.session.user },
-      initialState,
+      profile: ctx.profile,
+    },
+  });
+});
+
+const isProvider = t.middleware(({ ctx, next }) => {
+  if (
+    !ctx.session?.user ||
+    (ctx.session && ctx.session.version !== SESSION_VERSION)
+  ) {
+    throw new TRPCError({ code: 'UNAUTHORIZED' });
+  }
+
+  if (ctx?.profile?.type !== 'PROVIDER') {
+    throwForbiddenError();
+  }
+
+  return next({
+    ctx: {
+      session: { ...ctx.session, user: ctx.session.user },
+      profile: ctx.profile,
     },
   });
 });
 
 /**
- * Protected (authenticated) procedure
- *
- * If you want a query or mutation to ONLY be accessible to logged in users, use this. It verifies
- * the session is valid and guarantees `ctx.session.user` is not null.
- *
- * @see https://trpc.io/docs/procedures
- */
+ * Protected Procedure used when the user is connected
+ * but does'nt have a profile selected
+ **/
+export const protectedProcedure = t.procedure.use(isAuthed);
 
-export const protectedProcedure = t.procedure.use(enforceUserIsAuthed);
+/**
+ * Protected Procedure used when the user is connected
+ * and have a profile selected (could be any type of profiles)
+ **/
+export const profileProcedure = t.procedure.use(hasProfile);
 
-export const providerProcedure = t.procedure.use(enforceProfileIsProvider);
+/**
+ * Protected Procedure used when the user is connected
+ * with Provider profile
+ **/
+export const providerProcedure = protectedProcedure.use(isProvider);
 
-export const customerProcedure = t.procedure.use(enforceProfileIsCustomer);
+/**
+ * Protected Procedure used when the user is connected
+ * with Customer profile
+ **/
+export const customerProcedure = protectedProcedure.use(isCustomer);

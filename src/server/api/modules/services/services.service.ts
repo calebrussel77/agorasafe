@@ -1,12 +1,16 @@
+import { throwBadRequestError } from '@/server/utils/error-handling';
+
 import { type GetAllQueryInput } from '../../validations/base.validations';
 import {
   createServiceRequest,
   getAllCategoryServices,
   getAllServicesWithCategory,
+  getServiceRequestWithDetails,
 } from './services.repository';
 import {
-  CreateServiceRequestInput,
+  type CreateServiceRequestInput,
   type GetAllServicesWithCategoryInput,
+  type GetServiceRequestInput,
 } from './services.validations';
 
 export const getAllServicesService = async (
@@ -35,10 +39,28 @@ export const createServiceRequestService = async (
   inputs: CreateServiceRequestInput,
   profileId: string
 ) => {
-  const categories = await createServiceRequest({ inputs, profileId });
+  const serviceRequest = await createServiceRequest({ inputs, profileId });
 
   return {
-    categories,
+    serviceRequest,
+    success: true,
+  };
+};
+
+export const getServiceRequestService = async (
+  inputs: GetServiceRequestInput,
+  profileId: string
+) => {
+  if (!inputs.id && !inputs.slug)
+    throwBadRequestError("L'id ou le slug est requis");
+
+  const serviceRequestDetails = await getServiceRequestWithDetails({
+    inputs,
+    profileId,
+  });
+
+  return {
+    serviceRequest: serviceRequestDetails,
     success: true,
   };
 };

@@ -1,12 +1,15 @@
 import { throwDbError } from '../../../utils/error-handling';
 import { getProfileConfigService } from './profile-config.service';
-import { type GetProfileConfigValidation } from './profile-config.validations';
 
 export const getProfileConfigController = async (
-  inputs: GetProfileConfigValidation
+  profileId: string,
+  userId: string
 ) => {
   try {
-    const serviceResponse = await getProfileConfigService(inputs);
+    const serviceResponse = await getProfileConfigService({
+      profileId,
+      userId,
+    });
 
     return {
       ...serviceResponse,

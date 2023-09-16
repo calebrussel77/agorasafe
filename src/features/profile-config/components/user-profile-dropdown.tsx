@@ -56,7 +56,7 @@ const UserProfileDropdown: FC<UserProfileDropdownProps> = ({
         <button className="flex items-center">
           <UserAvatar
             onClick={onToggle}
-            src={(currentProfile.avatar as string) || '/sed'}
+            src={currentProfile.avatar}
             alt={currentProfile.name}
             type={currentProfile.type}
             className="h-7 w-7"
@@ -92,7 +92,7 @@ const UserProfileDropdown: FC<UserProfileDropdownProps> = ({
                 <GroupItem
                   iconBefore={
                     <UserAvatar
-                      src={currentProfile.avatar as string}
+                      src={currentProfile.avatar}
                       alt={currentProfile.name}
                       type={currentProfile.type}
                     />

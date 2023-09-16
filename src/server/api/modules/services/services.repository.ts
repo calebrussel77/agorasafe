@@ -9,6 +9,7 @@ import { type GetAllQueryInput } from '../../validations/base.validations';
 import {
   type CreateServiceRequestInput,
   type GetAllServicesWithCategoryInput,
+  type GetServiceRequestInput,
 } from './services.validations';
 
 export function getAllServicesWithCategory({
@@ -100,15 +101,18 @@ export function createServiceRequest({
     photos,
     willWantProposal,
     location,
-    serviceId,
+    serviceSlug,
+    categorySlug,
   } = inputs;
+
+  const titleSluged = slugit(title);
 
   return prisma.serviceRequest.create({
     data: {
       date,
       phoneToContact,
       description,
-      slug: slugit(title),
+      slug: titleSluged,
       startHour,
       title,
       customerAuthor: {
@@ -122,7 +126,14 @@ export function createServiceRequest({
       nbOfHours,
       willWantProposal,
       service: {
-        connect: { id: serviceId },
+        connectOrCreate: {
+          where: { slug: serviceSlug },
+          create: {
+            name: title,
+            slug: titleSluged,
+            categoryService: { connect: { slug: categorySlug } },
+          },
+        },
       },
       photos: {
         createMany: {
@@ -142,3 +153,19 @@ export function createServiceRequest({
     },
   });
 }
+
+export const getServiceRequestWithDetails = ({
+  inputs: { id, slug },
+  profileId,
+}: {
+  inputs: GetServiceRequestInput;
+  profileId: string;
+}) => {
+  return prisma.serviceRequest.findUnique({
+    where: {
+      id: id ?? undefined,
+      slug: slug ?? undefined,
+      customerAuthor: { profileId },
+    },
+  });
+};

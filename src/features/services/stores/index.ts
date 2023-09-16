@@ -1,4 +1,8 @@
-import { type LocationInput, type PhoneInput } from '@/validations';
+import {
+  type DateInput,
+  type LocationInput,
+  type PhoneInput,
+} from '@/validations';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
@@ -8,15 +12,16 @@ export type PublishServiceRequestFormStore = {
   title: string;
   description: string;
   phoneToContact: PhoneInput;
-  photos?: Array<{ key: string; url: string; name: string }>;
+  photos: Array<{ key: string; url: string; name: string }>;
   numberOfProviderNeeded?: number;
   willWantProposal?: boolean;
-  nbOfHours?: number;
-  date: string;
-  startHour: string;
-  estimatedPrice: string;
+  nbOfHours: number;
+  date: DateInput;
+  startHour: number;
+  estimatedPrice: number;
   location: LocationInput;
-  serviceId: string;
+  serviceSlug: string;
+  categorySlug: string;
 };
 
 export type PublishServiceRequest = {
@@ -68,6 +73,7 @@ export const initializePublishServiceRequestStore = (
             newState.serviceRequest[categorySlug] = {
               ...newState.serviceRequest[categorySlug],
               ...serviceRequestData,
+              categorySlug,
             };
 
             return newState;

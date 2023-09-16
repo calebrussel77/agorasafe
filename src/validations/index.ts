@@ -13,6 +13,8 @@ export const locationSchema = z.object({
   long: z.coerce.string().default('-00'),
   wikidata: z.string().optional(),
 });
+export const dateSchema = z.coerce.date();
 
 export type PhoneInput = z.infer<typeof phoneSchema>;
 export type LocationInput = z.infer<typeof locationSchema>;
+export type DateInput = z.infer<typeof dateSchema>;

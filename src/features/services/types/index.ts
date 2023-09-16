@@ -13,6 +13,9 @@ export type GetAllServiceCategoriesOptions =
 export type GetAllservicesOptions =
   ReactQueryOptions['services']['getAllservices'];
 
+export type PublishServiceRequestOptions =
+  ReactQueryOptions['services']['publishServiceRequest'];
+
 export type GetAllServiceCategoriesOutput =
   RouterOutputs['services']['getAllServiceCategories'];
 export type GetAllservicesOutput = RouterOutputs['services']['getAllservices'];

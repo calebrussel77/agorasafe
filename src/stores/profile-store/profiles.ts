@@ -10,7 +10,7 @@ import { createPersistStorage } from './persist-storage';
 
 // define types for state values and actions separately
 export type PersistedState = {
-  profile: CurrentProfile;
+  profile: CurrentProfile | null;
 };
 
 type Actions = {

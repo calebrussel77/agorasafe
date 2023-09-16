@@ -26,8 +26,27 @@ export const getProfilesByUserIdService = async (
   //Get all profiles of the current user
   const profiles = await getProfilesWithLocationByUserId(userId);
 
+  if (!profiles) {
+    throwNotFoundError('Utilisateur non trouvé !');
+  }
+
+  const userProfiles = profiles.map(profile => ({
+    id: profile.id,
+    name: profile.name,
+    type: profile.type,
+    avatar: profile.avatar,
+    slug: profile.slug,
+    phone: profile.phone,
+    deletedAt: profile.deletedAt,
+    location: {
+      name: profile?.location?.name,
+      long: profile.location?.long,
+      lat: profile.location?.lat,
+    },
+  }));
+
   return {
-    profiles: profiles,
+    profiles: userProfiles,
     message: `Ravie de vous avoir ${name}, Avec quel profil souhaitez-vous interagir ?`,
     success: true,
   };

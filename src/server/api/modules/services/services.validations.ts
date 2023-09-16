@@ -1,4 +1,4 @@
-import { locationSchema, phoneSchema } from '@/validations';
+import { dateSchema, locationSchema, phoneSchema } from '@/validations';
 import { z } from 'zod';
 
 import { getAllQuerySchema } from '../../validations/base.validations';
@@ -6,6 +6,11 @@ import { getAllQuerySchema } from '../../validations/base.validations';
 export const getAllServicesWithCategorySchema = getAllQuerySchema.extend({
   categoryServiceSlug: z.string().trim().optional(),
   categoryServiceId: z.string().trim().optional(),
+});
+
+export const getServiceRequestSchema = z.object({
+  id: z.string().trim().optional(),
+  slug: z.string().trim().optional(),
 });
 
 export const createServiceRequestSchema = z.object({
@@ -20,10 +25,11 @@ export const createServiceRequestSchema = z.object({
   numberOfProviderNeeded: z.number().optional(),
   willWantProposal: z.boolean().optional(),
   nbOfHours: z.number(),
-  date: z.date(),
+  date: dateSchema,
   startHour: z.number(),
   estimatedPrice: z.number().optional(),
-  serviceId: z.string(),
+  serviceSlug: z.string().optional(),
+  categorySlug: z.string(),
 });
 
 export type CreateServiceRequestInput = z.infer<
@@ -33,3 +39,5 @@ export type CreateServiceRequestInput = z.infer<
 export type GetAllServicesWithCategoryInput = z.infer<
   typeof getAllServicesWithCategorySchema
 >;
+
+export type GetServiceRequestInput = z.infer<typeof getServiceRequestSchema>;

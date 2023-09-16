@@ -12,3 +12,5 @@ export * from './components/ask-service-item';
 export * from './stores';
 
 export * from './constants';
+
+export * from './services';
