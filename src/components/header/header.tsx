@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils';
 import { useAppearOnTarget } from '@/hooks/use-appear-on-target';
 
 import { MobileNavbar, Navbar } from '../navbar';
-import { Sheet } from '../ui/sheet';
+import { Sheet, SheetContent, SheetTrigger } from '../ui/sheet';
 
 const navigations = [
   { name: 'Explorer', href: '#' },
@@ -55,17 +55,17 @@ const Header = ({ children }: { children?: ReactNode }) => {
       >
         <Navbar navigations={navigations}>
           <Sheet>
-            <Sheet.Trigger asChild>
+            <SheetTrigger asChild>
               <button
                 type="button"
                 className="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5"
               >
                 <Menu className="h-6 w-6" aria-hidden="true" />
               </button>
-            </Sheet.Trigger>
-            <Sheet.Content className="w-[75%] bg-white p-0">
+            </SheetTrigger>
+            <SheetContent className="w-[75%] bg-white p-0">
               <MobileNavbar navigations={navigations} />
-            </Sheet.Content>
+            </SheetContent>
           </Sheet>
         </Navbar>
         {children}

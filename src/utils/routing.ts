@@ -29,6 +29,13 @@ export const handleRouteBack = ({
   void router.push(to);
 };
 
+const getAbsoluteUrl = (baseURL: string) => {
+  return new URL(baseURL, WEBSITE_URL);
+};
+
+export const getAbsoluteHrefUrl = (baseUrl: string) =>
+  getAbsoluteUrl(baseUrl).href;
+
 export function generateUrlWithSearchParams(
   baseURL: string,
   params: Record<string, string | number | boolean | null | undefined>
@@ -41,7 +48,7 @@ export function generateUrlWithSearchParams(
     }
   });
 
-  const url = new URL(baseURL, WEBSITE_URL);
+  const url = getAbsoluteUrl(baseURL);
   url.search = searchParams.toString();
 
   return url.href;

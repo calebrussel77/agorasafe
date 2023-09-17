@@ -19,6 +19,50 @@ export function isValidURL(value: unknown): value is string {
   }
 }
 
+export function isEmpty(element: unknown): boolean {
+  if (element === null || element === undefined) {
+    // Check for null or undefined
+    return true;
+  }
+
+  if (typeof element === 'string') {
+    // Check for an empty string
+    return element.trim() === '';
+  }
+
+  if (typeof element === 'number') {
+    // Check for NaN (which is considered empty for numbers)
+    return isNaN(element);
+  }
+
+  if (isArray(element)) {
+    // Check for an empty array or an array of empty objects
+    if (element.length === 0) {
+      return true;
+    }
+    if (
+      element.every(
+        item =>
+          typeof item === 'object' && Object.keys(item as object).length === 0
+      )
+    ) {
+      return true;
+    }
+  }
+
+  if (typeof element === 'object') {
+    // Check for an empty object
+    return Object.keys(element).length === 0;
+  }
+
+  // If none of the conditions match, consider the element not empty
+  return false;
+}
+
+export function isEmptyArray(value: unknown): value is [] {
+  return Array.isArray(value) && value.length === 0;
+}
+
 export function isDecimal(value: number | string) {
   return Number(value) % 1 != 0;
 }

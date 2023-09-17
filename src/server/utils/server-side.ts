@@ -1,3 +1,4 @@
+import { type ProfileStore } from '@/stores/profile-store';
 import { getInitialState } from '@/stores/profile-store/initial-state';
 import { createServerSideHelpers } from '@trpc/react-query/server';
 import {
@@ -40,12 +41,18 @@ export function createServerSideProps<P>({
   prefetch = 'once',
 }: CreateServerSidePropsProps<P>) {
   return async (context: GetServerSidePropsContext) => {
-    const initialState = getInitialState(context.req.headers);
-
     const isClient = context.req.url?.startsWith('/_next/data') ?? false;
-    const session = shouldUseSession
-      ? await getServerAuthSession(context)
-      : null;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const session: Session | null =
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      (context.req as any)['session'] ??
+      (shouldUseSession ? await getServerAuthSession(context) : null);
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const initialState: ProfileStore =
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      (context.req as any)['initialState'] ??
+      getInitialState(context.req.headers);
 
     const ssg =
       shouldUseSSG && (prefetch === 'always' || !isClient)

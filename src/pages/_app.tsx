@@ -2,14 +2,20 @@
 
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 import '@/assets/styles/globals.css';
-import { WEBSITE_URL } from '@/constants';
+import { WEBSITE_URL, isMaintenanceMode } from '@/constants';
 import { MainLayout } from '@/layouts';
 import { AppProvider } from '@/providers/app-provider';
-import { type ProfileStore } from '@/stores/profile-store';
+import {
+  type ProfileStore,
+  agorasafeProfileStorageName,
+} from '@/stores/profile-store';
+import { getInitialState } from '@/stores/profile-store/initial-state';
+import { getCookies } from 'cookies-next';
 import { AnimatePresence } from 'framer-motion';
 import { type NextPage } from 'next';
 import { type Session } from 'next-auth';
-import { type AppProps } from 'next/app';
+import { getSession } from 'next-auth/react';
+import App, { type AppContext, type AppProps } from 'next/app';
 import { GoogleAnalytics } from 'nextjs-google-analytics';
 import { type ReactElement, type ReactNode, useMemo } from 'react';
 
@@ -83,7 +89,6 @@ const MyApp = (props: AppPageProps) => {
           origin: WEBSITE_URL,
         })}
       />
-      {/* <NoSSR> */}
       <AnimatePresence mode="wait" onExitComplete={handleExitComplete}>
         <AppProvider
           {...{
@@ -100,9 +105,61 @@ const MyApp = (props: AppPageProps) => {
           </PageTransition>
         </AppProvider>
       </AnimatePresence>
-      {/* </NoSSR> */}
     </>
   );
+};
+
+MyApp.getInitialProps = async (appContext: AppContext) => {
+  const initialProps = await App.getInitialProps(appContext);
+  const url = appContext.ctx?.req?.url;
+  const isClient = !url || url?.startsWith('/_next/data');
+
+  const { pageProps, ...appProps } = initialProps;
+
+  const cookies = getCookies(appContext.ctx);
+
+  if (isMaintenanceMode) {
+    return {
+      pageProps: {
+        ...pageProps,
+        isMaintenanceMode,
+      },
+      ...appProps,
+    };
+  } else {
+    const hasAuthCookie =
+      !isClient && Object.keys(cookies).some(x => x.endsWith('session-token'));
+
+    const hasProfileCookie =
+      !isClient &&
+      Object.keys(cookies).some(x => x === agorasafeProfileStorageName);
+
+    const session = hasAuthCookie ? await getSession(appContext.ctx) : null;
+    const initialProfileState =
+      hasProfileCookie && appContext.ctx.req
+        ? getInitialState(appContext.ctx.req?.headers)
+        : null;
+
+    // Pass this via the request so we can use it in SSR
+    if (session && appContext.ctx.req) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      (appContext.ctx.req as any)['session'] = session;
+    }
+
+    if (initialProfileState && appContext.ctx.req) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      (appContext.ctx.req as any)['initialState'] = initialProfileState;
+    }
+
+    return {
+      pageProps: {
+        ...pageProps,
+        session,
+        initialProfileState,
+      },
+      ...appProps,
+    };
+  }
 };
 
 export default api.withTRPC(MyApp);

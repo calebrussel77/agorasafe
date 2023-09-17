@@ -44,6 +44,7 @@ const User: FC<UserProps> = ({
     <div>
       <GroupItem
         {...rest}
+        classNames={{ root: cn('py-0', classNames?.root) }}
         isHoverDisabled
         iconBefore={
           shouldIncludeAvatar && (
@@ -78,7 +79,12 @@ const User: FC<UserProps> = ({
                 'flex items-center gap-x-1 font-bold leading-none tracking-tight'
               )}
             >
-              <Typography as="h3" variant="h4" className={classNames?.name}>
+              <Typography
+                as="h3"
+                variant="h4"
+                truncate
+                className={cn('line-clamp-1', classNames?.name)}
+              >
                 {profile?.name}
               </Typography>
               {withBadges && (
