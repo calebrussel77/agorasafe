@@ -46,10 +46,11 @@ export const createServiceRequestController = async (
 };
 
 export const getServiceRequestController = async (
-  inputs: GetServiceRequestInput
+  inputs: GetServiceRequestInput,
+  profileId: string
 ) => {
   try {
-    return await getServiceRequestService(inputs);
+    return await getServiceRequestService(inputs, profileId);
   } catch (error) {
     throwDbError(error);
   }

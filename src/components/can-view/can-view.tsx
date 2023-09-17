@@ -39,7 +39,7 @@ const getCanViewCheck = ({
   const isAdmin = userRole === 'ADMIN';
 
   // Admin users can do anything
-  if (isAdmin) return true;
+  // if (isAdmin) return true;
 
   // when an accessCheck function is provided, ensure that passes as well as the permissions
   if (accessCheck) {

@@ -175,7 +175,9 @@ const PublishPage = ({
         <Header>
           <ProgressBar progress={progress} />
         </Header>
-        {isLoading && <FullSpinner />}
+        {isLoading && (
+          <FullSpinner loadingText="Publication de votre demande..." />
+        )}
         <CenterContent className="container w-full min-w-[38rem] max-w-2xl pb-12">
           <div className="w-full">
             <Typography as="h1" variant="h4" className="pb-6 text-brand-600">

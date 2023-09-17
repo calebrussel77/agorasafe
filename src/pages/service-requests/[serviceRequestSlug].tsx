@@ -1,5 +1,5 @@
 import {
-  FileQuestionIcon,
+  FolderClock,
   MapPin,
   MoreVertical,
   PhoneCall,
@@ -8,25 +8,27 @@ import {
 } from 'lucide-react';
 import { Calendar } from 'lucide-react';
 import { EyeOffIcon } from 'lucide-react';
+import { MoveLeft } from 'lucide-react';
 import { type InferGetServerSidePropsType } from 'next';
 import { useRouter } from 'next/router';
 import { z } from 'zod';
 
 import { CanView } from '@/components/can-view';
 import { AsyncWrapper } from '@/components/ui/async-wrapper';
-import { Avatar } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { EmptyState } from '@/components/ui/empty-state';
 import { GroupItem } from '@/components/ui/group-item';
 import { IconContainer } from '@/components/ui/icon-container';
+import { Image } from '@/components/ui/image';
 import { Inline } from '@/components/ui/inline';
 import { CenterContent } from '@/components/ui/layout';
 import { Seo } from '@/components/ui/seo';
 import { Truncate } from '@/components/ui/truncate';
 import { Typography } from '@/components/ui/typography';
 import { User } from '@/components/user';
-import { UserAvatar } from '@/components/user-avatar';
 
+import { MakeOfferModal } from '@/features/service-requests';
 import {
   mapServiceRequestStatusToString,
   useGetServiceRequest,
@@ -45,30 +47,6 @@ const meta = {
   description: (serviceRequestDeescription: string) =>
     `${serviceRequestDeescription}`,
 };
-
-const comments = [
-  {
-    id: 1,
-    name: 'Leslie Alexander',
-    date: '4d ago',
-    imageId: '1494790108377-be9c29b29330',
-    body: 'Ducimus quas delectus ad maxime totam doloribus reiciendis ex. Tempore dolorem maiores. Similique voluptatibus tempore non ut.',
-  },
-  {
-    id: 2,
-    name: 'Michael Foster',
-    date: '4d ago',
-    imageId: '1519244703995-f4e0f30006d5',
-    body: 'Et ut autem. Voluptatem eum dolores sint necessitatibus quos. Quis eum qui dolorem accusantium voluptas voluptatem ipsum. Quo facere iusto quia accusamus veniam id explicabo et aut.',
-  },
-  {
-    id: 3,
-    name: 'Dries Vincent',
-    date: '4d ago',
-    imageId: '1506794778202-cad84cf45f1d',
-    body: 'Expedita consequatur sit ea voluptas quo ipsam recusandae. Ab sint et voluptatem repudiandae voluptatem et eveniet. Nihil quas consequatur autem. Perferendis rerum et.',
-  },
-];
 
 const ServiceRequestPublicationPage = ({
   profile,
@@ -92,6 +70,7 @@ const ServiceRequestPublicationPage = ({
 
   const offersCount = offersData?.serviceRequestOffers?.length;
   const isStatusOpen = data?.serviceRequest?.status === 'OPEN';
+  const isSelected = data?.serviceRequest?.isProfileChoosed;
 
   return (
     <>
@@ -104,17 +83,32 @@ const ServiceRequestPublicationPage = ({
         }
         description={meta.description(data?.serviceRequest?.description || '')}
       />
-      <CenterContent className="container mt-10 min-w-[600px] max-w-5xl space-y-10">
+      <CenterContent className="container mt-6 max-w-5xl space-y-10 px-4 lg:min-w-[600px]">
         <AsyncWrapper isLoading={isInitialLoading} error={error}>
           <section
             aria-labelledby="service-request-main-infos"
             className="w-full"
           >
-            {/* Main */}
-            <div className="h-80 w-full rounded-lg border bg-gray-50 shadow-sm" />
-            <div className="mt-6 flex items-center justify-between">
+            <button
+              onClick={router.back}
+              className="mb-3 flex items-center gap-2"
+            >
+              <MoveLeft className="h-5 w-5" />
+              <span>Retour</span>
+            </button>
+            <Image
+              src="/images/artistique-cover-photo.jpg"
+              alt="Image blanche"
+              className="h-64 w-full rounded-lg border bg-gray-50 object-top shadow-sm md:h-80"
+            />
+            <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
               <div>
-                <div className="flex items-center gap-2">
+                <Typography variant="small">
+                  Publiée{' '}
+                  {data?.serviceRequest?.createdAt &&
+                    formatDateToString(data?.serviceRequest?.createdAt, 'PP')}
+                </Typography>
+                <div className="mt-1 flex items-center gap-2">
                   <Typography as="h2">{data?.serviceRequest?.title}</Typography>
                   <Badge
                     content={mapServiceRequestStatusToString(
@@ -142,9 +136,11 @@ const ServiceRequestPublicationPage = ({
                   />
                 </Inline>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex flex-row-reverse items-center gap-2 sm:flex-row">
                 <CanView allowedProfiles={['PROVIDER']}>
-                  <Button size="sm">Faire une proposition</Button>
+                  <MakeOfferModal>
+                    <Button size="sm">Faire une offre</Button>
+                  </MakeOfferModal>
                 </CanView>
                 {isAuthorMine && (
                   <Button
@@ -190,71 +186,74 @@ const ServiceRequestPublicationPage = ({
             <Truncate hasEllipsisText lines={3} className="mt-3">
               {data?.serviceRequest?.description}
             </Truncate>
-            <Typography variant="small" className="mt-3 flex justify-end">
-              Publiée{' '}
-              {data?.serviceRequest?.createdAt &&
-                formatDateToString(data?.serviceRequest?.createdAt, 'PP')}
-            </Typography>
             <div className="mt-6">
               <Typography variant="subtle">Données personnelles</Typography>
               <div className="mt-3 flex w-full max-w-xl flex-wrap items-center justify-between gap-y-3">
                 <User profile={data?.serviceRequest?.author?.profile} />
-                <GroupItem
-                  isHoverDisabled
-                  iconBefore={<PhoneCall className="h-5 w-5 text-brand-500" />}
-                  name={
-                    <Typography className="font-semibold">
-                      {formatPhoneNumber(
-                        data?.serviceRequest?.author?.profile?.phone || ''
-                      )}
-                    </Typography>
-                  }
-                  description={
-                    <div className="flex items-center gap-2 text-xs text-gray-500">
-                      <EyeOffIcon className="h-4 w-4" />
-                      Masqué jusqu'à la réservation
-                    </div>
-                  }
-                />
+                {(isAuthorMine || isSelected) && (
+                  <GroupItem
+                    isHoverDisabled
+                    iconBefore={
+                      <PhoneCall className="h-5 w-5 text-brand-500" />
+                    }
+                    name={
+                      <Typography className="font-semibold">
+                        {formatPhoneNumber(
+                          data?.serviceRequest?.author?.profile?.phone || ''
+                        )}
+                      </Typography>
+                    }
+                    description={
+                      <div className="flex items-center gap-2 text-xs text-gray-500">
+                        <EyeOffIcon className="h-4 w-4" />
+                        Masqué jusqu'à la réservation
+                      </div>
+                    }
+                  />
+                )}
               </div>
             </div>
           </section>
         </AsyncWrapper>
         <AsyncWrapper isLoading={isInitialLoadingOffers} error={offersError}>
           <section aria-labelledby="comment-section" className="w-full">
-            <Typography as="h3">
-              Propositions offertes ({offersCount})
-            </Typography>
+            <Typography as="h3">Offres ({offersCount})</Typography>
             <div className="mt-6 border bg-white shadow-md sm:overflow-hidden sm:rounded-lg">
               <div className="px-4 py-6 sm:px-6">
-                <ul role="list" className="space-y-8">
-                  {offersData?.serviceRequestOffers.map(offer => (
-                    <li key={offer.id}>
-                      <User profile={offer?.author?.profile} />
-                      <div>
-                        <div className="mt-1 text-sm text-gray-700">
-                          {htmlParse(offer?.text)}
-                        </div>
-                        <div className="mt-2 space-x-2 text-sm">
-                          <Inline>
-                            <span className="font-medium text-gray-500">
-                              sss
-                              {/* {comment.date} */}
-                            </span>
-                            <button
-                              type="button"
-                              className="font-medium text-gray-900"
-                            >
-                              Reply
-                            </button>
-                          </Inline>
-                        </div>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
+                {offersData?.serviceRequestOffers?.length == 0 && (
+                  <EmptyState
+                    icon={<FolderClock />}
+                    name="Aucune offre trouvée"
+                    description="Ici vous trouverez la liste des offres de service faits par des prestataires"
+                  />
+                )}
+                {offersData?.serviceRequestOffers &&
+                  offersData?.serviceRequestOffers?.length > 0 && (
+                    <ul role="list" className="space-y-8">
+                      {offersData?.serviceRequestOffers.map(offer => (
+                        <li key={offer.id}>
+                          <User profile={offer?.author?.profile} />
+                          <div className="ml-10 mt-1">
+                            <div className="mt-1 text-sm text-gray-700">
+                              {htmlParse(offer?.text)}
+                            </div>
+                            <Inline className="mt-2 space-x-2 text-sm">
+                              <span className="font-medium text-gray-500">
+                                {formatDateToString(offer?.createdAt)}
+                              </span>
+                              {isAuthorMine && (
+                                <Button type="button" variant="ghost" size="sm">
+                                  Sélectionner
+                                </Button>
+                              )}
+                            </Inline>
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
               </div>
-              <div className="bg-gray-50 px-4 py-6 sm:px-6">
+              {/* <div className="bg-gray-50 px-4 py-6 sm:px-6">
                 <div className="flex space-x-3">
                   <div className="flex-shrink-0">
                     <Avatar className="h-10 w-10 rounded-full" alt="" />
@@ -295,7 +294,7 @@ const ServiceRequestPublicationPage = ({
                     </form>
                   </div>
                 </div>
-              </div>
+              </div> */}
             </div>
           </section>
         </AsyncWrapper>

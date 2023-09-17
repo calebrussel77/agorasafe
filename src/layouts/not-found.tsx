@@ -18,7 +18,7 @@ export function NotFound() {
           404
         </Typography>
         <Typography as="h2" className="mt-3 text-center font-normal">
-          La page que vous recherchez n'existe page ! Elle a peut être été
+          La page que vous recherchez n'existe pas ! Elle a peut être été
           déplacée.
         </Typography>
         <Button asChild className="mt-10">

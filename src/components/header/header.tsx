@@ -1,6 +1,6 @@
 import { Menu } from 'lucide-react';
 import { useRouter } from 'next/router';
-import {  type ReactNode, useRef } from 'react';
+import { type ReactNode, useRef } from 'react';
 
 import { cn } from '@/lib/utils';
 
@@ -63,7 +63,7 @@ const Header = ({ children }: { children?: ReactNode }) => {
                 <Menu className="h-6 w-6" aria-hidden="true" />
               </button>
             </Sheet.Trigger>
-            <Sheet.Content className="w-[75%] bg-white p-0 sm:w-1/2">
+            <Sheet.Content className="w-[75%] bg-white p-0">
               <MobileNavbar navigations={navigations} />
             </Sheet.Content>
           </Sheet>

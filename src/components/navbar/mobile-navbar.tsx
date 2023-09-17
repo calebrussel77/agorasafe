@@ -51,7 +51,10 @@ const MobileNavbar: FC<MobileNavbarProps> = ({ navigations }) => {
               {profile ? (
                 <>
                   <button className="-mx-3 flex w-full items-center gap-4 rounded-sm px-6 py-2 hover:bg-gray-100">
-                    <User profile={profile} />
+                    <User
+                      profile={profile}
+                      classNames={{ name: 'text-base' }}
+                    />
                   </button>
                   <Separator />
                   {userProfileConfig?.canAddNewProfile && (

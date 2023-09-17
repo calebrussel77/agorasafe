@@ -178,6 +178,9 @@ export const getServiceRequestWithDetails = ({
     },
     include: {
       location: true,
+      choosedProviders: {
+        select: { provider: { select: { profile: { select: { id: true } } } } },
+      },
       author: { select: { profile: { select: simpleProfileSelect } } },
       photos: true,
     },
@@ -209,6 +212,7 @@ export function getServiceRequestOffers({
     select: {
       id: true,
       text: true,
+      createdAt: true,
       proposedPrice: true,
       author: { include: { profile: { select: simpleProfileSelect } } },
     },

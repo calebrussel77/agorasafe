@@ -60,6 +60,8 @@ const UserProfileDropdown: FC<UserProfileDropdownProps> = ({
             onClick={onToggle}
             profile={currentProfile}
             withLocation={false}
+            canLinkToProfile={false}
+            classNames={{ name: 'text-base' }}
             withProfileTypeInitial
           />
           <ChevronDown className="ml-2 h-4 w-4 flex-shrink-0" />
@@ -87,7 +89,7 @@ const UserProfileDropdown: FC<UserProfileDropdownProps> = ({
                   </div>
                 </div>
               ) : (
-                <User profile={currentProfile} />
+                <User profile={currentProfile} canLinkToProfile={false} />
                 // <GroupItem
                 //   iconBefore={
                 //     <UserAvatar

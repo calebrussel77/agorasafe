@@ -4,6 +4,7 @@ import { prisma } from '@/server/db';
 import { getDynamicDbSlug } from '@/server/utils/db-slug';
 
 import {
+  throwAuthorizationError,
   throwBadRequestError,
   throwNotFoundError,
 } from '../../../utils/error-handling';
@@ -30,6 +31,8 @@ export const getProfilesByUserIdService = async (
   if (!profiles) {
     throwNotFoundError('Utilisateur non trouvé !');
   }
+  
+  if (profiles.length === 0) throwAuthorizationError();
 
   return {
     profiles,

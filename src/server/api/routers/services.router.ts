@@ -38,7 +38,9 @@ export const servicesRouter = createTRPCRouter({
 
   getServiceRequest: profileProcedure
     .input(getServiceRequestSchema)
-    .query(({ input }) => getServiceRequestController(input)),
+    .query(({ input, ctx }) =>
+      getServiceRequestController(input, ctx.profile.id)
+    ),
 
   getServiceRequestOffers: profileProcedure
     .input(getServiceRequestOffersSchema)

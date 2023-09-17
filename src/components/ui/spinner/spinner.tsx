@@ -25,10 +25,17 @@ const Spinner = forwardRef<
 
 Spinner.displayName = 'Spinner';
 
-const FullSpinner = () => {
+const FullSpinner = ({
+  loadingText = 'Chargement...',
+}: {
+  loadingText?: string;
+}) => {
   return (
     <div className="fixed inset-0 z-40 flex h-full w-full items-center justify-center bg-white bg-opacity-70 backdrop-blur-sm backdrop-filter transition-all duration-200 ease-in-out">
-      <Spinner variant="primary" className="relative z-20 h-12 w-12" />
+      <div className="relative z-20 flex flex-col items-center justify-center gap-y-1">
+        <Spinner variant="primary" className="h-16 w-16" />
+        {loadingText}
+      </div>
     </div>
   );
 };
