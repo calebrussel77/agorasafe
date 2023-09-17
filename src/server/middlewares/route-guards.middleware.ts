@@ -9,11 +9,7 @@ import { createMiddleware } from './utils';
 const routeGuards: RouteGuard[] = [];
 
 addRouteGuard({
-  matcher: [
-    '/onboarding/:path*',
-    '/add-new-profile',
-    '/publish-service/:path*',
-  ],
+  matcher: ['/onboarding/:path*', '/publish-service-request/:path*'],
   canAccess: ({ user }) => {
     return !!user;
   },

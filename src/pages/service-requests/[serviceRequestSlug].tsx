@@ -313,7 +313,7 @@ export const getServerSideProps = createServerSideProps({
   resolver: async ({ ctx, profile, ssg }) => {
     const result = querySchema.safeParse(ctx.query);
 
-    if (!result.success || !profile) return { notFound: true };
+    if (!result.success) return { notFound: true };
 
     const { serviceRequestSlug: serviceRequestSlugQuery } = result.data;
 
