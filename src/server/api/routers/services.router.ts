@@ -36,13 +36,11 @@ export const servicesRouter = createTRPCRouter({
       createServiceRequestController(input, ctx?.profile?.id)
     ),
 
-  getServiceRequest: profileProcedure
+  getServiceRequest: publicProcedure
     .input(getServiceRequestSchema)
-    .query(({ input, ctx }) =>
-      getServiceRequestController(input, ctx.profile.id)
-    ),
+    .query(({ input, ctx }) => getServiceRequestController(input)),
 
-  getServiceRequestOffers: profileProcedure
+  getServiceRequestOffers: publicProcedure
     .input(getServiceRequestOffersSchema)
     .query(({ input }) => getServiceRequestOffersController(input)),
 });
