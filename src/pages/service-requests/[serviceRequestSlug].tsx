@@ -36,6 +36,8 @@ import {
 } from '@/features/services';
 
 import { formatPhoneNumber } from '@/utils/misc';
+import { getAbsoluteHrefUrl } from '@/utils/routing';
+import { isEmptyArray } from '@/utils/type-guards';
 
 import { formatDateToString } from '@/lib/date-fns';
 import { htmlParse } from '@/lib/html-react-parser';
@@ -64,23 +66,21 @@ const ServiceRequestPublicationPage = ({
   } = useServiceRequestOffers({
     serviceRequestSlug: serviceRequestSlugQuery,
   });
-
+  const defaultCoverBgUrl = '/images/artistique-cover-photo.jpg';
   const isAuthorMine =
     profile?.id === data?.serviceRequest?.author?.profile?.id;
-
   const offersCount = offersData?.serviceRequestOffers?.length;
   const isStatusOpen = data?.serviceRequest?.status === 'OPEN';
   const isSelected = data?.serviceRequest?.isProfileChoosed;
+  const coverBg = isEmptyArray(data?.serviceRequest?.photos)
+    ? getAbsoluteHrefUrl(defaultCoverBgUrl)
+    : data?.serviceRequest?.photos?.[0]?.url;
 
   return (
     <>
       <Seo
         title={meta.title(data?.serviceRequest?.title || '')}
-        image={
-          data?.serviceRequest?.photos
-            ? data?.serviceRequest?.photos[0]?.url
-            : undefined
-        }
+        image={coverBg}
         description={meta.description(data?.serviceRequest?.description || '')}
       />
       <CenterContent className="container mt-6 max-w-5xl space-y-10 px-4 lg:min-w-[600px]">
@@ -97,8 +97,8 @@ const ServiceRequestPublicationPage = ({
               <span>Retour</span>
             </button>
             <Image
-              src="/images/artistique-cover-photo.jpg"
-              alt="Image blanche"
+              src={defaultCoverBgUrl}
+              alt="Image artistique de fond"
               className="h-64 w-full rounded-lg border bg-gray-50 object-top shadow-sm md:h-80"
             />
             <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
@@ -220,7 +220,7 @@ const ServiceRequestPublicationPage = ({
             <Typography as="h3">Offres ({offersCount})</Typography>
             <div className="mt-6 border bg-white shadow-md sm:overflow-hidden sm:rounded-lg">
               <div className="px-4 py-6 sm:px-6">
-                {offersData?.serviceRequestOffers?.length == 0 && (
+                {isEmptyArray(offersData?.serviceRequestOffers) && (
                   <EmptyState
                     icon={<FolderClock />}
                     name="Aucune offre trouvée"
@@ -308,6 +308,7 @@ const querySchema = z.object({
 });
 
 export const getServerSideProps = createServerSideProps({
+  shouldUseSession: true,
   shouldUseSSG: true,
   resolver: async ({ ctx, profile, ssg }) => {
     const result = querySchema.safeParse(ctx.query);

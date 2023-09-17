@@ -5,7 +5,7 @@ import { formatDateToString } from '../src/lib/date-fns';
 import { slugit } from '../src/utils/strings';
 import { serviceCategories, services } from './data';
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient({ log: ['warn', 'error'] });
 
 // import fs from 'fs'
 // import { faker } from '@faker-js/faker'

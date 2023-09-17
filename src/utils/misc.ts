@@ -1,3 +1,5 @@
+import { isArray } from './type-guards';
+
 export const randomBetween = (min: number, max: number) => {
   return Math.floor(Math.random() * (max - min + 1) + min);
 };
@@ -108,44 +110,4 @@ export function getCompletionPercentage<T extends number | string | unknown>(
   const percentage = (total / elements.length) * 100;
 
   return Math.floor(percentage);
-}
-
-export function isEmpty(element: unknown): boolean {
-  if (element === null || element === undefined) {
-    // Check for null or undefined
-    return true;
-  }
-
-  if (typeof element === 'string') {
-    // Check for an empty string
-    return element.trim() === '';
-  }
-
-  if (typeof element === 'number') {
-    // Check for NaN (which is considered empty for numbers)
-    return isNaN(element);
-  }
-
-  if (Array.isArray(element)) {
-    // Check for an empty array or an array of empty objects
-    if (element.length === 0) {
-      return true;
-    }
-    if (
-      element.every(
-        item =>
-          typeof item === 'object' && Object.keys(item as object).length === 0
-      )
-    ) {
-      return true;
-    }
-  }
-
-  if (typeof element === 'object') {
-    // Check for an empty object
-    return Object.keys(element).length === 0;
-  }
-
-  // If none of the conditions match, consider the element not empty
-  return false;
 }

@@ -23,8 +23,12 @@ const ProfileDetailsPage = ({
 
   return (
     <>
-      <Seo title={meta.title(profile?.name)} description={meta.description} />
-      <CenterContent className="container w-full min-w-[38rem] max-w-2xl pb-12">
+      <Seo
+        title={meta.title(profile?.name)}
+        image={profile?.avatar || undefined}
+        description={meta.description}
+      />
+      <CenterContent className="container w-full max-w-2xl pb-12">
         <div className="w-full">
           <Typography as="h1" variant="h4" className="pb-6 text-brand-600">
             Étape {profileSlugQuery}
@@ -40,6 +44,8 @@ const querySchema = z.object({
 });
 
 export const getServerSideProps = createServerSideProps({
+  shouldUseSession: true,
+  shouldUseSSG: true,
   resolver: ({ ctx, profile }) => {
     const result = querySchema.safeParse(ctx.query);
 

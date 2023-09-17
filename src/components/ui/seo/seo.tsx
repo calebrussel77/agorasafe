@@ -93,7 +93,7 @@ const Seo = (props: SeoProps): JSX.Element => {
   const truncatedDescription = truncateOnWord(description, 158);
   const seoObject = buildSeoMeta({
     title,
-    image,
+    image: image ?? undefined,
     description: truncatedDescription,
     canonical,
     siteName,
