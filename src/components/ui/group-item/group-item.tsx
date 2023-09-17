@@ -11,12 +11,13 @@ type ClassNames = {
   description: string;
 };
 
-type GroupItemProps = {
+export type GroupItemProps = {
   name: ReactNode;
+  isHoverDisabled?: boolean;
   className?: string;
   description?: ReactNode;
-  iconBefore?: ReactElement;
-  iconAfter?: ReactElement;
+  iconBefore?: ReactNode;
+  iconAfter?: ReactNode;
   onClick?: () => void;
   /**
    * Classname or List of classes to change the classNames of the groupItem.
@@ -38,6 +39,7 @@ type GroupItemProps = {
 const GroupItem: FC<GroupItemProps> = ({
   className,
   description,
+  isHoverDisabled,
   name,
   classNames,
   iconAfter,
@@ -51,7 +53,8 @@ const GroupItem: FC<GroupItemProps> = ({
     <div
       onClick={onClick}
       className={cn(
-        'default__transition -mx-3 flex items-center gap-x-3 rounded-md px-3 py-2 hover:bg-gray-100',
+        'default__transition -mx-3 flex items-center gap-x-3 rounded-md px-3 py-2',
+        !isHoverDisabled && 'hover:bg-gray-100',
         className,
         classNames?.root
       )}

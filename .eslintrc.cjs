@@ -48,6 +48,10 @@ const config = {
     'no-console': 'off',
     'no-unsafe-optional-chaining': 0,
     '@typescript-eslint/no-unsafe-call': 'off',
+    '@typescript-eslint/restrict-template-expressions': [
+      'warn',
+      { allowNullish: true },
+    ],
     '@typescript-eslint/no-explicit-any': 'off',
     'testing-library/render-result-naming-convention': 'off',
     '@typescript-eslint/no-empty-function': 'off',

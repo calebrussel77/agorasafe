@@ -3,26 +3,25 @@ import { createServerSideHelpers } from '@trpc/react-query/server';
 import {
   type GetServerSidePropsContext,
   type GetServerSidePropsResult,
-  type NextApiRequest,
   type Redirect,
 } from 'next';
 import { type Session } from 'next-auth';
 import superjson from 'superjson';
 
-import { type CurrentProfile } from '@/features/profiles';
-
+import { type SimpleProfile } from '../api/modules/profiles';
 import { appRouter } from '../api/root';
 import { createInnerTRPCContext } from '../api/trpc';
 import { getServerAuthSession } from '../auth';
 
 export const getServerProxySSGHelpers = async (
   ctx: GetServerSidePropsContext,
-  session: Session | null
+  session: Session | null,
+  profile: SimpleProfile | null
   // eslint-disable-next-line @typescript-eslint/require-await
 ) => {
   const ssg = createServerSideHelpers({
     router: appRouter,
-    ctx: createInnerTRPCContext({ session, req: ctx.req as NextApiRequest }),
+    ctx: createInnerTRPCContext({ session, profile }),
     transformer: superjson,
   });
   return ssg;
@@ -44,13 +43,17 @@ export function createServerSideProps<P>({
     const initialState = getInitialState(context.req.headers);
 
     const isClient = context.req.url?.startsWith('/_next/data') ?? false;
-    const session =
-      (context.req as never)['session'] ??
-      (shouldUseSession ? await getServerAuthSession(context) : null);
+    const session = shouldUseSession
+      ? await getServerAuthSession(context)
+      : null;
 
     const ssg =
       shouldUseSSG && (prefetch === 'always' || !isClient)
-        ? await getServerProxySSGHelpers(context, session)
+        ? await getServerProxySSGHelpers(
+            context,
+            session,
+            initialState?.profile
+          )
         : undefined;
 
     const result = (await resolver({
@@ -102,5 +105,5 @@ type CustomGetServerSidePropsContext = {
   isClient: boolean;
   ssg?: AsyncReturnType<typeof getServerProxySSGHelpers>;
   session?: Session | null;
-  profile?: CurrentProfile | null;
+  profile?: SimpleProfile | null;
 };

@@ -42,6 +42,7 @@ const buildSeoMeta = (pageProps: {
   return {
     title: title,
     canonical: canonical,
+    description,
     openGraph: {
       site_name: siteName,
       type: 'website',

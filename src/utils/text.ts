@@ -31,7 +31,7 @@ export const truncateOnWord = (
 };
 
 export const formatNumberToText = (
-  value: string | number | undefined,
+  value: number,
   variant: CounterInputProps['variant']
 ) => {
   const numericValue = Number(value);
@@ -48,7 +48,7 @@ export const formatNumberToText = (
     }`;
   }
 
-  return value;
+  return value.toString();
 };
 
 export const deSerialize = <T>(jsonString: string | null) => {
@@ -60,3 +60,4 @@ export const deSerialize = <T>(jsonString: string | null) => {
 export const serialize = (object: unknown) => {
   return JSON.stringify(object);
 };
+

@@ -1,11 +1,15 @@
 import { type InferGetServerSidePropsType } from 'next';
+import { useRouter } from 'next/router';
 import { z } from 'zod';
 
 import { Header } from '@/components/header';
 import { Card } from '@/components/ui/card';
 import { CenterContent } from '@/components/ui/layout';
 import { ProgressBar } from '@/components/ui/progress-bar';
+import { SectionMessage } from '@/components/ui/section-message';
 import { Seo } from '@/components/ui/seo';
+import { FullSpinner } from '@/components/ui/spinner';
+import { ToastAction, useToast } from '@/components/ui/toast';
 import { Typography } from '@/components/ui/typography';
 
 import {
@@ -15,103 +19,20 @@ import {
   NumberHoursForm,
   PhoneForm,
   PhotosForm,
+  type PublishServiceRequestFormStore,
   StartHourForm,
   publishServiceSteps,
 } from '@/features/services';
+import { useCreateServiceRequest } from '@/features/services';
 
-import { getCompletionPercentage } from '@/utils/misc';
-import { getIsCustomer } from '@/utils/profile';
+import { getCompletionPercentage, wait } from '@/utils/misc';
 
 import { createServerSideProps } from '@/server/utils/server-side';
 
-import { useCatchNavigation } from '@/hooks/use-catch-navigation';
+import { useCurrentUser } from '@/hooks/use-current-user';
 import { useStepper } from '@/hooks/use-stepper';
 
 const totalStepCount = publishServiceSteps?.length;
-
-type RenderStepFormProps = {
-  currentStep: number;
-  nextStep: () => void;
-  prevStep: () => void;
-};
-
-const renderStepForm = ({
-  currentStep,
-  nextStep,
-  prevStep,
-}: RenderStepFormProps) => {
-  switch (currentStep) {
-    case 1:
-      return (
-        <BasicInfoForm
-          {...{
-            nextStep,
-          }}
-        />
-      );
-    case 2:
-      return (
-        <NumberHoursForm
-          {...{
-            nextStep,
-            prevStep,
-          }}
-        />
-      );
-    case 3:
-      return (
-        <DateForm
-          {...{
-            nextStep,
-            prevStep,
-          }}
-        />
-      );
-    case 4:
-      return (
-        <StartHourForm
-          {...{
-            nextStep,
-            prevStep,
-          }}
-        />
-      );
-    case 5:
-      return (
-        <AddressForm
-          {...{
-            nextStep,
-            prevStep,
-          }}
-        />
-      );
-    case 6:
-      return (
-        <PhoneForm
-          {...{
-            nextStep,
-            prevStep,
-          }}
-        />
-      );
-    case 7:
-      return (
-        <PhotosForm
-          {...{
-            prevStep,
-          }}
-        />
-      );
-    default:
-      return (
-        <BasicInfoForm
-          {...{
-            nextStep,
-          }}
-        />
-      );
-  }
-};
 
 const meta = {
   title: 'Publier une demande de service',
@@ -122,14 +43,130 @@ const meta = {
 
 const PublishPage = ({
   modeQuery,
-  categorySlugQuery,
-  titleQuery,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const { step: currentStep, nextStep, prevStep } = useStepper();
+  const router = useRouter();
+  const { toast } = useToast();
+  const { isLoading, error, mutate } = useCreateServiceRequest({
+    async onSuccess(data) {
+      const href = `/service-requests/${data?.serviceRequest?.slug}`;
+
+      toast({
+        variant: 'success',
+        title: 'Demande de service publiée',
+        description:
+          'Votre demande de service a bien été publiée auprès des prestaires',
+        actions: (
+          <ToastAction
+            onClick={() => void router.push(href)}
+            variant="default"
+            altText={`Voir la demande ${data?.serviceRequest?.title}`}
+          >
+            Voir la demande
+          </ToastAction>
+        ),
+      });
+      await wait(4500);
+      void router.push(href);
+    },
+    onError(error) {
+      toast({
+        variant: 'danger',
+        title: "Une erreur s'est produite",
+        description: error?.message,
+      });
+    },
+  });
+
   const progress = getCompletionPercentage(
     publishServiceSteps,
     currentStep - 1
   );
+
+  const onSubmit = (data: PublishServiceRequestFormStore) => {
+    mutate({
+      ...data,
+      numberOfProviderNeeded: 2,
+      estimatedPrice: 20000,
+      photos: [],
+    });
+  };
+
+  const renderStepForm = () => {
+    switch (currentStep) {
+      case 1:
+        return (
+          <BasicInfoForm
+            {...{
+              nextStep,
+            }}
+          />
+        );
+      case 2:
+        return (
+          <NumberHoursForm
+            {...{
+              nextStep,
+              prevStep,
+            }}
+          />
+        );
+      case 3:
+        return (
+          <DateForm
+            {...{
+              nextStep,
+              prevStep,
+            }}
+          />
+        );
+      case 4:
+        return (
+          <StartHourForm
+            {...{
+              nextStep,
+              prevStep,
+            }}
+          />
+        );
+      case 5:
+        return (
+          <AddressForm
+            {...{
+              nextStep,
+              prevStep,
+            }}
+          />
+        );
+      case 6:
+        return (
+          <PhoneForm
+            {...{
+              nextStep,
+              prevStep,
+            }}
+          />
+        );
+      case 7:
+        return (
+          <PhotosForm
+            {...{
+              onSubmit,
+              isLoading,
+              prevStep,
+            }}
+          />
+        );
+      default:
+        return (
+          <BasicInfoForm
+            {...{
+              nextStep,
+            }}
+          />
+        );
+    }
+  };
 
   return (
     <>
@@ -138,6 +175,9 @@ const PublishPage = ({
         <Header>
           <ProgressBar progress={progress} />
         </Header>
+        {isLoading && (
+          <FullSpinner loadingText="Publication de votre demande..." />
+        )}
         <CenterContent className="container w-full min-w-[38rem] max-w-2xl pb-12">
           <div className="w-full">
             <Typography as="h1" variant="h4" className="pb-6 text-brand-600">
@@ -150,13 +190,14 @@ const PublishPage = ({
                     ? 'Avez-vous des précisions à apporter ?'
                     : publishServiceSteps[currentStep - 1]?.title}
                 </Card.Title>
+                {error && (
+                  <SectionMessage title={error.message} appareance="danger" />
+                )}
                 {/* <Card.Description>
                 {publishServiceSteps[currentStep - 1]?.description}
               </Card.Description> */}
               </Card.Header>
-              <Card.Content>
-                {renderStepForm({ currentStep, nextStep, prevStep })}
-              </Card.Content>
+              <Card.Content>{renderStepForm()}</Card.Content>
             </Card>
           </div>
         </CenterContent>
@@ -173,22 +214,16 @@ const querySchema = z.object({
 
 export const getServerSideProps = createServerSideProps({
   resolver: ({ ctx, profile }) => {
-
     const result = querySchema.safeParse(ctx.query);
 
-    // if (!profile || !result.success) return { notFound: true };
-    if (!result.success) return { notFound: true };
+    if (!profile || !result.success) return { notFound: true };
 
-    // const isCustomer = getIsCustomer(profile?.type);
-
-    // if (!isCustomer) return { notFound: true };
-
-    const categorySlugQuery = result.data.category;
     const modeQuery = result.data.mode;
-    const titleQuery = result.data.title ?? null;
 
-    return { props: { categorySlugQuery, modeQuery, titleQuery } };
+    return { props: { modeQuery } };
   },
 });
+
+PublishPage.getLayout = (page: React.ReactElement) => page;
 
 export default PublishPage;

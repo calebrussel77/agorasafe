@@ -2,6 +2,7 @@ import { Prisma } from '@prisma/client';
 import { TRPCError } from '@trpc/server';
 import { type TRPC_ERROR_CODE_KEY } from '@trpc/server/rpc';
 
+
 const prismaErrorToTrpcCode: Record<string, TRPC_ERROR_CODE_KEY> = {
   P1008: 'TIMEOUT',
   P2000: 'BAD_REQUEST',
@@ -48,7 +49,6 @@ export function throwDbError(error: unknown): never {
       message: error.message,
       cause: error,
     });
-    
   else if (error instanceof Prisma.PrismaClientValidationError)
     throw new TRPCError({
       code: 'INTERNAL_SERVER_ERROR',
@@ -113,6 +113,14 @@ export function throwNotFoundError(message: string | null = null): never {
   message ??= "Impossible de trouver l'entité.";
   throw new TRPCError({
     code: 'NOT_FOUND',
+    message,
+  });
+}
+
+export function throwForbiddenError(message: string | null = null): never {
+  message ??= "Vous n'êtes pas autorisé à effectuer cette action.";
+  throw new TRPCError({
+    code: 'FORBIDDEN',
     message,
   });
 }

@@ -28,7 +28,6 @@ const CounterInput: FC<CounterInputProps> = ({
   step = 0.5,
   ...rest
 }) => {
-
   const [count, setCount] = useState<number>(Number(value));
 
   const isMoreThanOne = count > 1;
@@ -64,7 +63,13 @@ const CounterInput: FC<CounterInputProps> = ({
         <Minus className="h-5 w-5" />
       </Button>
       <Typography as="h3">{formatNumberToText(count, variant)}</Typography>
-      <input type="number" value={count} className="sr-only" {...rest} />
+      <input
+        type="number"
+        readOnly
+        value={count}
+        className="sr-only"
+        {...rest}
+      />
       <Button
         disabled={!isLessThanSeventeen}
         onClick={inCrement}

@@ -1,15 +1,28 @@
 import { type Prisma } from '@prisma/client';
 
+import { makeRandomId } from '@/utils/misc';
 import { slugit } from '@/utils/strings';
 
 import { prisma } from '@/server/db';
+import { getDynamicDbSlug } from '@/server/utils/db-slug';
+import { throwDbError } from '@/server/utils/error-handling';
 import { DEFAULT_PAGE_SIZE } from '@/server/utils/pagination';
 
 import { type GetAllQueryInput } from '../../validations/base.validations';
-import {
-  type CreateServiceRequestInput,
-  type GetAllServicesWithCategoryInput,
+import { simpleProfileSelect } from '../profiles';
+import type {
+  CreateServiceRequestInput,
+  GetAllServicesWithCategoryInput,
+  GetServiceRequestInput,
+  GetServiceRequestOffersInput,
 } from './services.validations';
+
+const getServiceRequestBySlug = (slug: string) => {
+  return prisma.serviceRequest.findUnique({
+    where: { slug },
+    select: { slug: true },
+  });
+};
 
 export function getAllServicesWithCategory({
   query,
@@ -81,7 +94,7 @@ export function getAllCategoryServices({
   });
 }
 
-export function createServiceRequest({
+export async function createServiceRequest({
   inputs,
   profileId,
 }: {
@@ -100,18 +113,21 @@ export function createServiceRequest({
     photos,
     willWantProposal,
     location,
-    serviceId,
+    serviceSlug,
+    categorySlug,
   } = inputs;
+
+  const titleSluged = await getDynamicDbSlug(title, getServiceRequestBySlug);
 
   return prisma.serviceRequest.create({
     data: {
       date,
       phoneToContact,
       description,
-      slug: slugit(title),
+      slug: titleSluged,
       startHour,
       title,
-      customerAuthor: {
+      author: {
         connectOrCreate: {
           where: { profileId },
           create: { profile: { connect: { id: profileId } } },
@@ -122,7 +138,14 @@ export function createServiceRequest({
       nbOfHours,
       willWantProposal,
       service: {
-        connect: { id: serviceId },
+        connectOrCreate: {
+          where: { slug: serviceSlug },
+          create: {
+            name: title,
+            slug: titleSluged,
+            categoryService: { connect: { slug: categorySlug } },
+          },
+        },
       },
       photos: {
         createMany: {
@@ -139,6 +162,59 @@ export function createServiceRequest({
           },
         },
       },
+    },
+  });
+}
+
+export const getServiceRequestWithDetails = ({
+  inputs: { id, slug },
+}: {
+  inputs: GetServiceRequestInput;
+}) => {
+  return prisma.serviceRequest.findUnique({
+    where: {
+      id: id ?? undefined,
+      slug: slug ?? undefined,
+    },
+    include: {
+      location: true,
+      choosedProviders: {
+        select: { provider: { select: { profile: { select: { id: true } } } } },
+      },
+      author: { select: { profile: { select: simpleProfileSelect } } },
+      photos: true,
+    },
+  });
+};
+
+export function getServiceRequestOffers({
+  inputs: {
+    query,
+    page,
+    limit = DEFAULT_PAGE_SIZE,
+    serviceRequestId,
+    serviceRequestSlug,
+  },
+}: {
+  inputs: GetServiceRequestOffersInput;
+}) {
+  const skip = page ? (page - 1) * limit : undefined;
+
+  return prisma.serviceRequestOffer.findMany({
+    where: {
+      serviceRequestId,
+      serviceRequest: serviceRequestSlug
+        ? { slug: serviceRequestSlug }
+        : undefined,
+    },
+    skip,
+    take: limit,
+    select: {
+      id: true,
+      text: true,
+      createdAt: true,
+      proposedPrice: true,
+      author: { include: { profile: { select: simpleProfileSelect } } },
     },
   });
 }

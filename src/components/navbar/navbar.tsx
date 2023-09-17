@@ -27,10 +27,9 @@ const Navbar: FC<NavbarProps> = ({ className, children, navigations }) => {
   const { profile, isAuthWithProfile } = useCurrentUser();
   const { isDropdownMenuOpen, onToggleDropdownMenu } = useDropdownMenu();
 
-  const { data, isLoading, error } = useGetProfileConfig(
-    { profileId: profile?.id as string },
-    { enabled: isDropdownMenuOpen }
-  );
+  const { data, isLoading, error } = useGetProfileConfig({
+    enabled: isDropdownMenuOpen,
+  });
 
   return (
     <nav
@@ -69,7 +68,7 @@ const Navbar: FC<NavbarProps> = ({ className, children, navigations }) => {
           <UserProfileDropdown
             isOpen={isDropdownMenuOpen}
             onToggle={onToggleDropdownMenu}
-            currentProfile={profile}
+            currentProfile={profile as never}
             userProfileConfig={data as never}
             error={error as never}
             isLoading={isLoading}

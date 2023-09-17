@@ -2,6 +2,15 @@ import { type Prisma } from '@prisma/client';
 
 import { prisma } from '@/server/db';
 
+import { simpleProfileSelect } from './profiles.select';
+
+export const getProfileBySlug = (slug: string) => {
+  return prisma.profile.findUnique({
+    where: { slug },
+    select: { slug: true },
+  });
+};
+
 export function createProfileByUserId({
   userId,
   ...data
@@ -21,6 +30,7 @@ export async function getProfiles() {
 export async function getProfileById(profileId: string) {
   return prisma.profile.findUnique({
     where: { id: profileId },
+    select: simpleProfileSelect,
   });
 }
 
@@ -29,6 +39,7 @@ export async function getProfilesByUserId(userId: string) {
     where: {
       userId,
     },
+    select: simpleProfileSelect,
   });
 }
 
@@ -37,12 +48,6 @@ export async function getProfilesWithLocationByUserId(userId: string) {
     where: {
       userId,
     },
-    include: {
-      location: { select: { id: true, name: true, lat: true, long: true } },
-    },
+    select: simpleProfileSelect,
   });
-}
-
-export async function getProfilesCount() {
-  return prisma.profile.count();
 }

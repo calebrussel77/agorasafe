@@ -1,4 +1,4 @@
-import { type TRPCError } from '@trpc/server';
+import { TRPCError } from '@trpc/server';
 import { useRouter } from 'next/router';
 
 import { cn } from '@/lib/utils';
@@ -30,6 +30,7 @@ export function SectionError({
   const router = useRouter();
   const shouldRetry = !!onRetry;
   const errorMessage = `${error ? error.message : ''}`;
+  const errorCode = error && error instanceof TRPCError ? error['code'] : null;
 
   return (
     <div
@@ -54,7 +55,7 @@ export function SectionError({
       </h3>
       <p className="mt-1 max-w-md text-gray-500">{errorMessage}</p>
 
-      {hasActions && (
+      {hasActions && errorCode !== 'UNAUTHORIZED' && (
         <div className="mt-6 flex items-center gap-3">
           <Button
             size="sm"
@@ -70,7 +71,7 @@ export function SectionError({
               type="button"
               size="sm"
             >
-              Retour à laccueil
+              Retour à l'accueil
             </Button>
           )}
         </div>

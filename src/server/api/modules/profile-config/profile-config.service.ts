@@ -6,12 +6,12 @@ import {
   getAddProfileInfos,
   getFilteredLinksByType,
 } from './profile-config.utils';
-import { type GetProfileConfigValidation } from './profile-config.validations';
 
-export const getProfileConfigService = async (
-  data: GetProfileConfigValidation
-) => {
-  const { profileId, userId } = data;
+export const getProfileConfigService = async (inputs: {
+  profileId: string;
+  userId: string;
+}) => {
+  const { profileId, userId } = inputs;
 
   const user = await getUserById(userId);
 

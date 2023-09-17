@@ -66,12 +66,14 @@ const AskServiceModal: FC<AskServiceModalProps> = ({ children }) => {
   const onSelectService = ({
     categorySlug,
     title,
+    serviceSlug,
   }: {
     categorySlug: string;
     title: string;
+    serviceSlug: string;
   }) => {
     reset();
-    updateServiceRequest({ title }, categorySlug);
+    updateServiceRequest({ title, serviceSlug }, categorySlug);
     onOpenChange(false);
   };
 
@@ -177,6 +179,7 @@ const AskServiceModal: FC<AskServiceModalProps> = ({ children }) => {
                       void onSelectService({
                         categorySlug: service?.categoryService?.slug as string,
                         title: service?.name,
+                        serviceSlug: service?.slug as string,
                       })
                     }
                     href={generateUrlWithSearchParams(

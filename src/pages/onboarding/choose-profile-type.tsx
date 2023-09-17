@@ -7,7 +7,7 @@ import { ChooseProfileTypeForm } from '@/features/profiles';
 
 import { useCurrentUser } from '@/hooks/use-current-user';
 
-const ChooseAccountTypePage = () => {
+const ChooseProfileTypePage = () => {
   const { session } = useCurrentUser();
 
   return (
@@ -42,4 +42,6 @@ const ChooseAccountTypePage = () => {
   );
 };
 
-export default ChooseAccountTypePage;
+ChooseProfileTypePage.getLayout = (page: React.ReactElement) => page;
+
+export default ChooseProfileTypePage;

@@ -1,7 +1,7 @@
 import { MoveLeft } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { useState } from 'react';
+import React, { useState } from 'react';
 
 import { GoogleSolidIcon } from '@/components/icons/google-solid-icon';
 import { LogoSymbolIcon } from '@/components/icons/logo-icon';
@@ -149,5 +149,7 @@ export const getServerSideProps = createServerSideProps({
     }
   },
 });
+
+LoginPage.getLayout = (page: React.ReactElement) => page;
 
 export default LoginPage;

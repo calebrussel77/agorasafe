@@ -1,4 +1,4 @@
-import { type Prettify } from '@/types';
+import { type ProfileType } from '@prisma/client';
 
 import {
   type ReactQueryOptions,
@@ -18,7 +18,3 @@ export type CreateProfileOptions =
   ReactQueryOptions['profiles']['createProfile'];
 export type CreateProfileOutput = RouterOutputs['profiles']['createProfile'];
 export type CreateProfileInput = RouterInputs['profiles']['createProfile'];
-
-export type CurrentProfile = Prettify<
-  GetUserProfilesOutput['profiles'][number]
-> | null;

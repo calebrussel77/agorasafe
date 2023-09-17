@@ -1,15 +1,17 @@
 import { USER_PROFILES_LIMIT_COUNT } from '@/constants';
-import slugify from 'slugify';
 
 import { prisma } from '@/server/db';
+import { getDynamicDbSlug } from '@/server/utils/db-slug';
 
 import {
+  throwAuthorizationError,
   throwBadRequestError,
   throwNotFoundError,
 } from '../../../utils/error-handling';
 import { getUserById, updateUserById } from '../users';
 import {
   createProfileByUserId,
+  getProfileBySlug,
   getProfilesWithLocationByUserId,
 } from './profiles.repository';
 import { getProfileCreationMessage } from './profiles.utils';
@@ -26,8 +28,14 @@ export const getProfilesByUserIdService = async (
   //Get all profiles of the current user
   const profiles = await getProfilesWithLocationByUserId(userId);
 
+  if (!profiles) {
+    throwNotFoundError('Utilisateur non trouvé !');
+  }
+  
+  if (profiles.length === 0) throwAuthorizationError();
+
   return {
-    profiles: profiles,
+    profiles,
     message: `Ravie de vous avoir ${name}, Avec quel profil souhaitez-vous interagir ?`,
     success: true,
   };
@@ -49,6 +57,8 @@ export const createProfileService = async (inputs: CreateProfileValidation) => {
       `Vous ne pouvez utliser que maximum ${USER_PROFILES_LIMIT_COUNT} Profils pour votre compte !`
     );
   }
+
+  const slug = await getDynamicDbSlug(name, getProfileBySlug);
 
   const [_, profile] = await prisma.$transaction([
     //Update the user infos by phone and location created
@@ -73,7 +83,7 @@ export const createProfileService = async (inputs: CreateProfileValidation) => {
       },
       name: name,
       type: profileType,
-      slug: slugify(name, { lower: true }), //TODO create the slug function to properly handle this
+      slug,
     }),
   ]);
 

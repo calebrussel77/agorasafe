@@ -28,7 +28,7 @@ const MainLayout: FC<MainProps> = ({
       <Seo title={title} description={description} {...rest} />
       <div className={cn('flex h-full min-h-screen flex-col', className)}>
         {header}
-        <div className="mb-auto flex h-full flex-1 flex-col">{children}</div>
+        <main className="mb-auto flex h-full flex-1 flex-col">{children}</main>
         {footer}
       </div>
     </>

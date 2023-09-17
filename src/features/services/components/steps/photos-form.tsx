@@ -8,16 +8,23 @@ import { DropzoneUpload, useUpload } from '@/components/ui/uploadthing';
 
 import { generateArray } from '@/utils/misc';
 
+import {
+  type PublishServiceRequestFormStore,
+  usePublishServiceRequest,
+} from '../../stores';
 import { FixedFooterForm } from '../fixed-footer-form';
-import { usePublishServiceRequest } from '../../stores';
 
 type PhotosFormData = {
   photos: File[];
 };
 
-type PhotosFormProps = { prevStep: () => void };
+type PhotosFormProps = {
+  prevStep: () => void;
+  onSubmit: (formData: PublishServiceRequestFormStore) => void;
+  isLoading?: boolean;
+};
 
-const PhotosForm = ({ prevStep }: PhotosFormProps) => {
+const PhotosForm = ({ prevStep, onSubmit, isLoading }: PhotosFormProps) => {
   const router = useRouter();
   const categorySlugQuery = router?.query?.category as string;
 
@@ -44,7 +51,8 @@ const PhotosForm = ({ prevStep }: PhotosFormProps) => {
   });
 
   const onHandleSubmit = (formData: Partial<PhotosFormData>) => {
-    console.log(formData);
+    if (!serviceRequest) return;
+    onSubmit(serviceRequest as PublishServiceRequestFormStore);
   };
 
   return (
@@ -59,7 +67,6 @@ const PhotosForm = ({ prevStep }: PhotosFormProps) => {
               name={`photos.${index}`}
               render={({ field: { onChange, value } }) => {
                 const fileValue = value as File[];
-                console.log(value as never);
 
                 return (
                   <DropzoneUpload
@@ -78,7 +85,9 @@ const PhotosForm = ({ prevStep }: PhotosFormProps) => {
           <Button type="button" onClick={prevStep} variant="ghost" size="lg">
             Retour
           </Button>
-          <Button size="lg">Publier ma demande</Button>
+          <Button size="lg" isLoading={isLoading}>
+            Publier ma demande
+          </Button>
         </FixedFooterForm>
       </Form>
     </>

@@ -1,12 +1,25 @@
+import { formatPhoneNumber } from '@/utils/misc';
+
+import { throwBadRequestError } from '@/server/utils/error-handling';
+
 import { type GetAllQueryInput } from '../../validations/base.validations';
 import {
   createServiceRequest,
   getAllCategoryServices,
   getAllServicesWithCategory,
+  getServiceRequestOffers,
+  getServiceRequestWithDetails,
 } from './services.repository';
 import {
+  getFomattedProviderNeeded,
+  getFormattedDatePeriod,
+  getFormattedDuration,
+} from './services.utils';
+import type {
   CreateServiceRequestInput,
-  type GetAllServicesWithCategoryInput,
+  GetAllServicesWithCategoryInput,
+  GetServiceRequestInput,
+  GetServiceRequestOffersInput,
 } from './services.validations';
 
 export const getAllServicesService = async (
@@ -35,10 +48,57 @@ export const createServiceRequestService = async (
   inputs: CreateServiceRequestInput,
   profileId: string
 ) => {
-  const categories = await createServiceRequest({ inputs, profileId });
+  const serviceRequest = await createServiceRequest({ inputs, profileId });
 
   return {
-    categories,
+    serviceRequest,
+    success: true,
+  };
+};
+
+export const getServiceRequestService = async (
+  inputs: GetServiceRequestInput,
+  profileId: string
+) => {
+  const serviceRequestDetails = await getServiceRequestWithDetails({
+    inputs,
+  });
+
+  const isProfileChoosed = serviceRequestDetails?.choosedProviders?.some(
+    choosedProvider => choosedProvider.provider.profile.id === profileId
+  );
+
+  return {
+    serviceRequest: {
+      ...serviceRequestDetails,
+      phoneToContactFormatted: formatPhoneNumber(
+        serviceRequestDetails?.phoneToContact || ''
+      ),
+      datePeriodFormattedText: getFormattedDatePeriod(
+        serviceRequestDetails?.date,
+        serviceRequestDetails?.startHour
+      ),
+      nbHoursFomattedText: getFormattedDuration(
+        serviceRequestDetails?.nbOfHours
+      ),
+      nbProviderNeededFormattedText: getFomattedProviderNeeded(
+        serviceRequestDetails?.numberOfProviderNeeded
+      ),
+      isProfileChoosed,
+    },
+    success: true,
+  };
+};
+
+export const getServiceRequestOffersService = async (
+  inputs: GetServiceRequestOffersInput
+) => {
+  const serviceRequestOffers = await getServiceRequestOffers({
+    inputs,
+  });
+
+  return {
+    serviceRequestOffers,
     success: true,
   };
 };

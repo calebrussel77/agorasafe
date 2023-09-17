@@ -20,35 +20,35 @@ const Image = forwardRef<
 
   return (
     <>
-      <NextImage
-        ref={ref}
-        blurDataURL={blurDataURL()}
-        fill={fill}
-        placeholder="blur"
-        quality={100}
-        {...{
-          'data-hover': dataAttr(isHovered),
-          'data-loaded': dataAttr(isLoaded),
-          onLoad: handleImageOnLoad,
-          ...hoverProps,
-        }}
-        className={cn(
-          [
-            'flex',
-            'object-cover',
-            'w-full',
-            'h-full',
-            'transition-opacity',
-            '!duration-500',
-            'opacity-0',
-            'data-[loaded=true]:opacity-100',
-          ],
-          className
-        )}
-        src={src}
-        alt={alt}
-        {...props}
-      />
+      <div className={cn('relative overflow-hidden', className)}>
+        <NextImage
+          ref={ref}
+          blurDataURL={blurDataURL()}
+          fill={fill}
+          placeholder="blur"
+          quality={100}
+          {...{
+            'data-hover': dataAttr(isHovered),
+            'data-loaded': dataAttr(isLoaded),
+            onLoad: handleImageOnLoad,
+            ...hoverProps,
+          }}
+          className={cn(
+            [
+              'flex',
+              'object-cover',
+              'transition-opacity',
+              '!duration-500',
+              'opacity-0',
+              'data-[loaded=true]:opacity-100',
+            ],
+            className
+          )}
+          src={src}
+          alt={alt}
+          {...props}
+        />
+      </div>
 
       {!isLoaded && (
         <div className="m-auto flex h-full w-full items-center justify-center align-middle">

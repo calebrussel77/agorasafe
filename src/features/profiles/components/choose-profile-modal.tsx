@@ -15,8 +15,9 @@ import { UserBadge } from '@/components/user-badge';
 
 import { generateArray, wait } from '@/utils/misc';
 
+import { type SimpleProfile } from '@/server/api/modules/profiles';
+
 import { useUserProfiles } from '../services';
-import { type CurrentProfile } from '../types';
 import { ProfileItemSkeleton } from './profile-item-skeleton';
 
 type ChooseProfileModaleProps = {
@@ -39,7 +40,7 @@ const ChooseProfileModale = ({
     staleTime: 60 * 1000,
   });
 
-  const onProfileClick = async (profile: CurrentProfile) => {
+  const onProfileClick = async (profile: SimpleProfile) => {
     if (router.asPath !== '/') {
       window.location.href = '/';
     }
@@ -50,7 +51,7 @@ const ChooseProfileModale = ({
         <UserAvatar
           className="h-8 w-8"
           src={profile?.avatar as string}
-          type={profile?.type as ProfileType}
+          type={profile?.type}
         />
       ),
       variant: 'success',

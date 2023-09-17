@@ -1,7 +1,7 @@
 import { type Session } from 'next-auth';
 import { type NextRequest, type NextResponse } from 'next/server';
 
-import { type CurrentProfile } from '@/features/profiles';
+import { type SimpleProfile } from '../api/modules/profiles';
 
 export type Middleware = {
   matcher: string[];
@@ -10,7 +10,7 @@ export type Middleware = {
   handler: (ctx: {
     request: NextRequest;
     user: Session['user'] | null;
-    currentProfile: CurrentProfile;
+    currentProfile: SimpleProfile | null;
     redirect: (to: string) => NextResponse;
   }) => Promise<NextResponse | void> | NextResponse | void;
 };

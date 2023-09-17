@@ -1,6 +1,10 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import {
   createTRPCRouter,
   customerProcedure,
+  profileProcedure,
   publicProcedure,
 } from '@/server/api/trpc';
 
@@ -10,6 +14,10 @@ import {
   getAllServiceCategoriesController,
   getAllServicesController,
   getAllServicesWithCategorySchema,
+  getServiceRequestController,
+  getServiceRequestOffersController,
+  getServiceRequestOffersSchema,
+  getServiceRequestSchema,
 } from '../modules/services';
 import { getAllQuerySchema } from '../validations/base.validations';
 
@@ -24,5 +32,17 @@ export const servicesRouter = createTRPCRouter({
 
   publishServiceRequest: customerProcedure
     .input(createServiceRequestSchema)
-    .query(({ input, ctx }) => createServiceRequestController(input, 'sss')),
+    .mutation(({ input, ctx }) =>
+      createServiceRequestController(input, ctx?.profile?.id)
+    ),
+
+  getServiceRequest: profileProcedure
+    .input(getServiceRequestSchema)
+    .query(({ input, ctx }) =>
+      getServiceRequestController(input, ctx.profile.id)
+    ),
+
+  getServiceRequestOffers: profileProcedure
+    .input(getServiceRequestOffersSchema)
+    .query(({ input }) => getServiceRequestOffersController(input)),
 });

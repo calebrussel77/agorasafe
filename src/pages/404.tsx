@@ -1,4 +1,3 @@
-import { getMainLayout } from '@/layouts';
 import { NotFound } from '@/layouts/not-found';
 
 export default function NotFoundPage() {
@@ -7,4 +6,3 @@ export default function NotFoundPage() {
 }
 
 NotFoundPage.shouldDisableAnalytics = true;
-NotFoundPage.getLayout = getMainLayout;
