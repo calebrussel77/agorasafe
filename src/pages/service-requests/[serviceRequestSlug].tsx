@@ -71,7 +71,9 @@ const ServiceRequestPublicationPage = ({
     profile?.id === data?.serviceRequest?.author?.profile?.id;
   const offersCount = offersData?.serviceRequestOffers?.length;
   const isStatusOpen = data?.serviceRequest?.status === 'OPEN';
-  const isSelected = data?.serviceRequest?.isProfileChoosed;
+  const isSelected = data?.serviceRequest?.choosedProviders?.some(
+    choosedProvider => choosedProvider.provider.profile.id === profile?.id
+  );
   const coverBg = isEmptyArray(data?.serviceRequest?.photos)
     ? getAbsoluteHrefUrl(defaultCoverBgUrl)
     : data?.serviceRequest?.photos?.[0]?.url;

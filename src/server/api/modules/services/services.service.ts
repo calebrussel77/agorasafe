@@ -57,16 +57,11 @@ export const createServiceRequestService = async (
 };
 
 export const getServiceRequestService = async (
-  inputs: GetServiceRequestInput,
-  profileId: string
+  inputs: GetServiceRequestInput
 ) => {
   const serviceRequestDetails = await getServiceRequestWithDetails({
     inputs,
   });
-
-  const isProfileChoosed = serviceRequestDetails?.choosedProviders?.some(
-    choosedProvider => choosedProvider.provider.profile.id === profileId
-  );
 
   return {
     serviceRequest: {
@@ -84,7 +79,7 @@ export const getServiceRequestService = async (
       nbProviderNeededFormattedText: getFomattedProviderNeeded(
         serviceRequestDetails?.numberOfProviderNeeded
       ),
-      isProfileChoosed,
+      // isProfileChoosed,
     },
     success: true,
   };
