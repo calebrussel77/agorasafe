@@ -1,3 +1,5 @@
+import { formatPhoneNumber } from '@/utils/misc';
+
 import { throwBadRequestError } from '@/server/utils/error-handling';
 
 import { type GetAllQueryInput } from '../../validations/base.validations';
@@ -5,12 +7,19 @@ import {
   createServiceRequest,
   getAllCategoryServices,
   getAllServicesWithCategory,
+  getServiceRequestOffers,
   getServiceRequestWithDetails,
 } from './services.repository';
 import {
-  type CreateServiceRequestInput,
-  type GetAllServicesWithCategoryInput,
-  type GetServiceRequestInput,
+  getFomattedProviderNeeded,
+  getFormattedDatePeriod,
+  getFormattedDuration,
+} from './services.utils';
+import type {
+  CreateServiceRequestInput,
+  GetAllServicesWithCategoryInput,
+  GetServiceRequestInput,
+  GetServiceRequestOffersInput,
 } from './services.validations';
 
 export const getAllServicesService = async (
@@ -48,19 +57,42 @@ export const createServiceRequestService = async (
 };
 
 export const getServiceRequestService = async (
-  inputs: GetServiceRequestInput,
-  profileId: string
+  inputs: GetServiceRequestInput
 ) => {
-  if (!inputs.id && !inputs.slug)
-    throwBadRequestError("L'id ou le slug est requis");
-
   const serviceRequestDetails = await getServiceRequestWithDetails({
     inputs,
-    profileId,
   });
 
   return {
-    serviceRequest: serviceRequestDetails,
+    serviceRequest: {
+      ...serviceRequestDetails,
+      phoneToContactFormatted: formatPhoneNumber(
+        serviceRequestDetails?.phoneToContact || ''
+      ),
+      datePeriodFormattedText: getFormattedDatePeriod(
+        serviceRequestDetails?.date,
+        serviceRequestDetails?.startHour
+      ),
+      nbHoursFomattedText: getFormattedDuration(
+        serviceRequestDetails?.nbOfHours
+      ),
+      nbProviderNeededFormattedText: getFomattedProviderNeeded(
+        serviceRequestDetails?.numberOfProviderNeeded
+      ),
+    },
+    success: true,
+  };
+};
+
+export const getServiceRequestOffersService = async (
+  inputs: GetServiceRequestOffersInput
+) => {
+  const serviceRequestOffers = await getServiceRequestOffers({
+    inputs,
+  });
+
+  return {
+    serviceRequestOffers,
     success: true,
   };
 };

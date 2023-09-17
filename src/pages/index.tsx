@@ -1,6 +1,3 @@
-/* eslint-disable @next/next/no-img-element */
-import { getMainLayout } from '@/layouts';
-
 import {
   FeaturesSection,
   HeroSection,
@@ -23,7 +20,5 @@ const HomePage: AppPageProps['Component'] = () => {
     </>
   );
 };
-
-HomePage.getLayout = getMainLayout;
 
 export default HomePage;

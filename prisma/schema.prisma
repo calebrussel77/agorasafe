@@ -18,9 +18,10 @@ model Skill {
     id        String     @id @default(cuid())
     name      String     @unique
     slug      String
-    createdAt DateTime   @default(now())
-    updatedAt DateTime   @updatedAt
     providers Provider[]
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 }
 
 model Profile {
@@ -56,11 +57,13 @@ model Provider {
     isRemote       Boolean? @default(true)
     showCasePhotos File[] // Should be Max 03 photos
 
-    skills                  Skill[]
-    serviceRequestResponses ProviderServiceRequestResponse[]
+    skills               Skill[]
+    serviceRequestOffers ServiceRequestOffer[]
 
     profile   Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
     profileId String  @unique
+
+    ServiceRequestParticipations ServiceRequestProvider[]
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
@@ -117,6 +120,7 @@ model File {
     providerId String?
 
     createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 }
 
 model ServiceRequest {
@@ -126,7 +130,7 @@ model ServiceRequest {
     description            String?
     phoneToContact         String
     photos                 File[] // Should be Max 03 photos
-    numberOfProviderNeeded Int?     @default(1)
+    numberOfProviderNeeded Int      @default(1)
     willWantProposal       Boolean? @default(false)
     nbOfHours              Float?
     date                   DateTime @db.Date
@@ -138,10 +142,12 @@ model ServiceRequest {
 
     status ServiceRequestStatus? @default(value: OPEN)
 
-    providerResponses ProviderServiceRequestResponse[]
+    offers ServiceRequestOffer[]
 
-    customerAuthor   Customer @relation(fields: [customerAuthorId], references: [id], onDelete: Cascade)
-    customerAuthorId String
+    choosedProviders ServiceRequestProvider[]
+
+    author   Customer @relation(fields: [authorId], references: [id], onDelete: Cascade)
+    authorId String
 
     service   Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
     serviceId String
@@ -150,16 +156,33 @@ model ServiceRequest {
     updatedAt DateTime @updatedAt
 }
 
-model ProviderServiceRequestResponse {
+model ServiceRequestOffer {
     id            String  @id @default(cuid())
-    text          String
+    text          String  @db.Text
     proposedPrice String?
 
-    providerAuthor   Provider @relation(fields: [providerAuthorId], references: [id])
-    providerAuthorId String
+    author   Provider @relation(fields: [authorId], references: [id])
+    authorId String
 
-    ServiceRequest   ServiceRequest @relation(fields: [serviceRequestId], references: [id], onDelete: Cascade)
+    serviceRequest   ServiceRequest @relation(fields: [serviceRequestId], references: [id], onDelete: Cascade)
     serviceRequestId String
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+model ServiceRequestProvider {
+    id   String  @id @default(cuid())
+    note String? @db.Text
+
+    provider   Provider @relation(fields: [providerId], references: [id])
+    providerId String
+
+    serviceRequest   ServiceRequest @relation(fields: [serviceRequestId], references: [id], onDelete: Cascade)
+    serviceRequestId String
+
+    removedAt DateTime?
+    createdAt DateTime  @default(now())
 }
 
 // Necessary for Next auth

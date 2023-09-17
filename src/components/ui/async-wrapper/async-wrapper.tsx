@@ -21,7 +21,7 @@ const AsyncWrapper: FC<AsyncWrapperProps> = ({
 }) => {
   return (
     <>
-      {isLoading && (
+      {isLoading ? (
         <>
           {loader ? (
             loader
@@ -31,14 +31,16 @@ const AsyncWrapper: FC<AsyncWrapperProps> = ({
             </CenterContent>
           )}
         </>
-      )}
-
-      {error ? (
-        <ErrorWrapper error={error} onRetryError={onRetryError}>
-          {children}
-        </ErrorWrapper>
       ) : (
-        children
+        <>
+          {error ? (
+            <ErrorWrapper error={error} onRetryError={onRetryError}>
+              {children}
+            </ErrorWrapper>
+          ) : (
+            children
+          )}
+        </>
       )}
     </>
   );

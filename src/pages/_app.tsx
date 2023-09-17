@@ -3,6 +3,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 import '@/assets/styles/globals.css';
 import { WEBSITE_URL } from '@/constants';
+import { MainLayout } from '@/layouts';
 import { AppProvider } from '@/providers/app-provider';
 import { type ProfileStore } from '@/stores/profile-store';
 import { AnimatePresence } from 'framer-motion';
@@ -64,7 +65,11 @@ const MyApp = (props: AppPageProps) => {
 
   // Use the layout defined at the page level, if available
   const getLayout = useMemo(
-    () => Component.getLayout ?? ((page: React.ReactElement) => page),
+    () =>
+      Component.getLayout ??
+      ((page: React.ReactElement) => (
+        <MainLayout {...page.props}>{page}</MainLayout>
+      )),
     [Component.getLayout]
   );
 

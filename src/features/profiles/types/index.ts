@@ -18,18 +18,3 @@ export type CreateProfileOptions =
   ReactQueryOptions['profiles']['createProfile'];
 export type CreateProfileOutput = RouterOutputs['profiles']['createProfile'];
 export type CreateProfileInput = RouterInputs['profiles']['createProfile'];
-
-export type CurrentProfile = {
-  id: string;
-  name: string;
-  type: ProfileType;
-  avatar: string;
-  slug: string;
-  phone: string;
-  deletedAt: Date;
-  location: {
-    name: string;
-    long: number;
-    lat: number;
-  };
-};

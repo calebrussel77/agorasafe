@@ -10,16 +10,18 @@ import { ErrorWrapper, SectionError } from '@/components/ui/error';
 import { GroupItem } from '@/components/ui/group-item';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Typography } from '@/components/ui/typography';
+import { User } from '@/components/user';
 import { UserAvatar } from '@/components/user-avatar';
 import { UserBadge } from '@/components/user-badge';
 
 import { useAuth } from '@/features/auth';
-import { type CurrentProfile } from '@/features/profiles';
 
 import { generateArray } from '@/utils/misc';
 import { isPathMatchRoute } from '@/utils/routing';
 
 import { cn } from '@/lib/utils';
+
+import { type SimpleProfile } from '@/server/api/modules/profiles';
 
 import { useCurrentUser } from '@/hooks/use-current-user';
 
@@ -31,7 +33,7 @@ interface UserProfileDropdownProps {
   isOpen?: boolean;
   onToggle?: () => void;
   userProfileConfig: GetProfileConfigOutput;
-  currentProfile: CurrentProfile;
+  currentProfile: SimpleProfile;
 }
 
 const UserProfileDropdown: FC<UserProfileDropdownProps> = ({
@@ -54,16 +56,12 @@ const UserProfileDropdown: FC<UserProfileDropdownProps> = ({
         className="ml-4 hidden rounded-full lg:flex"
       >
         <button className="flex items-center">
-          <UserAvatar
+          <User
             onClick={onToggle}
-            src={currentProfile.avatar}
-            alt={currentProfile.name}
-            type={currentProfile.type}
-            className="h-7 w-7"
+            profile={currentProfile}
+            withLocation={false}
+            withProfileTypeInitial
           />
-          <Typography truncate lines={1} className="ml-3 font-semibold">
-            {currentProfile.name}
-          </Typography>
           <ChevronDown className="ml-2 h-4 w-4 flex-shrink-0" />
         </button>
       </DropdownMenu.Trigger>
@@ -89,43 +87,44 @@ const UserProfileDropdown: FC<UserProfileDropdownProps> = ({
                   </div>
                 </div>
               ) : (
-                <GroupItem
-                  iconBefore={
-                    <UserAvatar
-                      src={currentProfile.avatar}
-                      alt={currentProfile.name}
-                      type={currentProfile.type}
-                    />
-                  }
-                  name={
-                    <div className="flex items-start">
-                      <Typography
-                        as="h3"
-                        variant="h4"
-                        className="font-semibold"
-                        truncate
-                      >
-                        {currentProfile.name}
-                      </Typography>
-                      <UserBadge
-                        className="ml-1.5"
-                        type={currentProfile.type}
-                      />
-                    </div>
-                  }
-                  description={
-                    <Typography
-                      truncate
-                      variant="small"
-                      className="flex w-full items-center text-muted-foreground"
-                    >
-                      {currentProfile?.location?.name}
-                    </Typography>
-                  }
-                  classNames={{
-                    root: 'flex items-center hover:bg-transparent',
-                  }}
-                />
+                <User profile={currentProfile} />
+                // <GroupItem
+                //   iconBefore={
+                //     <UserAvatar
+                //       src={currentProfile.avatar}
+                //       alt={currentProfile.name}
+                //       type={currentProfile.type}
+                //     />
+                //   }
+                //   name={
+                //     <div className="flex items-start">
+                //       <Typography
+                //         as="h3"
+                //         variant="h4"
+                //         className="font-semibold"
+                //         truncate
+                //       >
+                //         {currentProfile.name}
+                //       </Typography>
+                //       <UserBadge
+                //         className="ml-1.5"
+                //         type={currentProfile.type}
+                //       />
+                //     </div>
+                //   }
+                //   description={
+                //     <Typography
+                //       truncate
+                //       variant="small"
+                //       className="flex w-full items-center text-muted-foreground"
+                //     >
+                //       {currentProfile?.location?.name}
+                //     </Typography>
+                //   }
+                //   classNames={{
+                //     root: 'flex items-center hover:bg-transparent',
+                //   }}
+                // />
               )}
             </DropdownMenu.Label>
             <DropdownMenu.Separator />

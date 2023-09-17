@@ -4,6 +4,7 @@
 import {
   createTRPCRouter,
   customerProcedure,
+  profileProcedure,
   publicProcedure,
 } from '@/server/api/trpc';
 
@@ -13,6 +14,10 @@ import {
   getAllServiceCategoriesController,
   getAllServicesController,
   getAllServicesWithCategorySchema,
+  getServiceRequestController,
+  getServiceRequestOffersController,
+  getServiceRequestOffersSchema,
+  getServiceRequestSchema,
 } from '../modules/services';
 import { getAllQuerySchema } from '../validations/base.validations';
 
@@ -30,4 +35,12 @@ export const servicesRouter = createTRPCRouter({
     .mutation(({ input, ctx }) =>
       createServiceRequestController(input, ctx?.profile?.id)
     ),
+
+  getServiceRequest: profileProcedure
+    .input(getServiceRequestSchema)
+    .query(({ input }) => getServiceRequestController(input)),
+
+  getServiceRequestOffers: profileProcedure
+    .input(getServiceRequestOffersSchema)
+    .query(({ input }) => getServiceRequestOffersController(input)),
 });

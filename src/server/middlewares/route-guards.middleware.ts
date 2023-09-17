@@ -3,8 +3,7 @@ import { type Session } from 'next-auth';
 import { type NextRequest } from 'next/server';
 import { pathToRegexp } from 'path-to-regexp';
 
-import { type CurrentProfile } from '@/features/profiles';
-
+import { type SimpleProfile } from '../api/modules/profiles';
 import { createMiddleware } from './utils';
 
 const routeGuards: RouteGuard[] = [];
@@ -54,7 +53,7 @@ type RouteGuard = {
   canAccess: (ctx: {
     request: NextRequest;
     user: Session['user'] | null;
-    currentProfile: CurrentProfile;
+    currentProfile: SimpleProfile | null;
   }) => boolean | undefined;
   redirect?: string;
 };

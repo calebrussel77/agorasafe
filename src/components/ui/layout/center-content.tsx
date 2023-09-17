@@ -12,7 +12,7 @@ const CenterContent: FC<CenterContentProps> = ({
   return (
     <div
       className={cn(
-        'flex h-full w-full flex-1 flex-col items-center justify-center p-2 md:p-6',
+        'flex h-full w-full max-w-2xl flex-1 flex-col items-center justify-center p-2 md:p-6',
         className
       )}
       {...props}

@@ -1,5 +1,3 @@
-import { WEBSITE_URL } from '@/constants';
-
 export const randomBetween = (min: number, max: number) => {
   return Math.floor(Math.random() * (max - min + 1) + min);
 };
@@ -7,7 +5,8 @@ export const randomBetween = (min: number, max: number) => {
 export const wait = (t: number) =>
   new Promise(resolve => setTimeout(resolve, t));
 
-export const makeRandomId = (): string => Math.random().toString(36).slice(2);
+export const makeRandomId = (): string =>
+  Math.random().toString(36).substring(2, 8);
 
 export const isStringsArray = (arr: Array<unknown>) =>
   arr.every(i => typeof i === 'string');

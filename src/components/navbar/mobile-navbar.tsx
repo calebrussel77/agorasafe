@@ -15,8 +15,7 @@ import { AsyncWrapper } from '../ui/async-wrapper';
 import { Button } from '../ui/button';
 import { Separator } from '../ui/separator';
 import { Typography } from '../ui/typography';
-import { UserAvatar } from '../user-avatar';
-import { UserBadge } from '../user-badge';
+import { User } from '../user';
 
 interface MobileNavbarProps {
   className?: string;
@@ -52,26 +51,7 @@ const MobileNavbar: FC<MobileNavbarProps> = ({ navigations }) => {
               {profile ? (
                 <>
                   <button className="-mx-3 flex w-full items-center gap-4 rounded-sm px-6 py-2 hover:bg-gray-100">
-                    <UserAvatar
-                      src={profile.avatar}
-                      alt={profile.name}
-                      type={profile.type}
-                      className="h-10 w-10"
-                    />
-                    <div className="text-left">
-                      <Typography
-                        as="h3"
-                        variant="h4"
-                        className="font-semibold"
-                        truncate
-                      >
-                        {profile.name}
-                      </Typography>
-                      <UserBadge
-                        className="flex-shrink-0 text-xs"
-                        type={profile.type}
-                      />
-                    </div>
+                    <User profile={profile} />
                   </button>
                   <Separator />
                   {userProfileConfig?.canAddNewProfile && (

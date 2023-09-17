@@ -13,12 +13,11 @@ import { type CreateNextContextOptions } from '@trpc/server/adapters/next';
 import { type Session } from 'next-auth';
 import superjson from 'superjson';
 
-import { type CurrentProfile } from '@/features/profiles';
-
 import { getServerAuthSession } from '@/server/auth';
 import { prisma } from '@/server/db';
 
 import { throwForbiddenError } from '../utils/error-handling';
+import { type SimpleProfile } from './modules/profiles';
 
 /**
  * 1. CONTEXT
@@ -30,7 +29,7 @@ import { throwForbiddenError } from '../utils/error-handling';
 
 type CreateContextOptions = {
   session: Session | null;
-  profile: CurrentProfile | null;
+  profile: SimpleProfile | null;
 };
 
 /**

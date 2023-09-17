@@ -1,5 +1,4 @@
 import { type InferGetServerSidePropsType } from 'next';
-import { type Session } from 'next-auth';
 import { useRouter } from 'next/router';
 import { z } from 'zod';
 
@@ -10,26 +9,25 @@ import { Typography } from '@/components/ui/typography';
 import { createServerSideProps } from '@/server/utils/server-side';
 
 const meta = {
-  title: (session: Session) => `${session?.user?.name} - Demande de service`,
+  title: (profileName: string) => `${profileName} - Profil personnel`,
   description: `Renseignez les informations ci-dessous pour facilement gérer vos
     projets, consulter vos candidatures, rechercher des prestataires
     ou des demandes de service, etc.`,
 };
 
-const PublishPage = ({
-  session,
-  userSlugQuery,
-  serviceRequestSlugQuery,
+const ProfileDetailsPage = ({
+  profile,
+  profileSlugQuery,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const router = useRouter();
 
   return (
     <>
-      <Seo title={meta.title(session)} description={meta.description} />
+      <Seo title={meta.title(profile?.name)} description={meta.description} />
       <CenterContent className="container w-full min-w-[38rem] max-w-2xl pb-12">
         <div className="w-full">
           <Typography as="h1" variant="h4" className="pb-6 text-brand-600">
-            Étape {serviceRequestSlugQuery}
+            Étape {profileSlugQuery}
           </Typography>
         </div>
       </CenterContent>
@@ -38,22 +36,19 @@ const PublishPage = ({
 };
 
 const querySchema = z.object({
-  userSlug: z.string(),
-  serviceRequestSlug: z.string().optional(),
+  profileSlug: z.string(),
 });
 
 export const getServerSideProps = createServerSideProps({
-  shouldUseSession: true,
-  resolver: ({ ctx, session }) => {
+  resolver: ({ ctx, profile }) => {
     const result = querySchema.safeParse(ctx.query);
 
-    if (!result.success) return { notFound: true };
+    if (!result.success || !profile) return { notFound: true };
 
-    const userSlugQuery = result.data.userSlug;
-    const serviceRequestSlugQuery = result.data.serviceRequestSlug;
+    const profileSlugQuery = result.data.profileSlug;
 
-    return { props: { userSlugQuery, serviceRequestSlugQuery, session } };
+    return { props: { profileSlugQuery, profile } };
   },
 });
 
-export default PublishPage;
+export default ProfileDetailsPage;

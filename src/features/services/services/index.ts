@@ -1,11 +1,15 @@
 import { api } from '@/utils/api';
 
-import {
-  type GetAllServiceCategoriesInput,
-  type GetAllServiceCategoriesOptions,
-  type GetAllservicesInput,
-  type GetAllservicesOptions,
-  type PublishServiceRequestOptions,
+import type {
+  GetAllServiceCategoriesInput,
+  GetAllServiceCategoriesOptions,
+  GetAllservicesInput,
+  GetAllservicesOptions,
+  GetServiceRequestInput,
+  GetServiceRequestOffersInput,
+  GetServiceRequestOffersOptions,
+  GetServiceRequestOptions,
+  PublishServiceRequestOptions,
 } from '../types';
 
 export const useGetAllServices = (
@@ -44,4 +48,20 @@ export const useCreateServiceRequest = ({
   return data;
 };
 
-export const useGetServiceRequest = (id: string) => {};
+export const useGetServiceRequest = (
+  inputs: GetServiceRequestInput,
+  options?: GetServiceRequestOptions
+) => {
+  return api.services.getServiceRequest.useQuery(inputs, {
+    ...options,
+  });
+};
+
+export const useServiceRequestOffers = (
+  inputs: GetServiceRequestOffersInput,
+  options?: GetServiceRequestOffersOptions
+) => {
+  return api.services.getServiceRequestOffers.useQuery(inputs, {
+    ...options,
+  });
+};

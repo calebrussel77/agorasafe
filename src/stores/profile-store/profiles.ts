@@ -4,17 +4,17 @@ import { createContext, useContext } from 'react';
 import { createStore, useStore as useZustandStore } from 'zustand';
 import { type StateStorage, persist } from 'zustand/middleware';
 
-import { type CurrentProfile } from '@/features/profiles';
+import { type SimpleProfile } from '@/server/api/modules/profiles';
 
 import { createPersistStorage } from './persist-storage';
 
 // define types for state values and actions separately
 export type PersistedState = {
-  profile: CurrentProfile | null;
+  profile: SimpleProfile | null;
 };
 
 type Actions = {
-  setProfile: (profile: CurrentProfile) => void;
+  setProfile: (profile: SimpleProfile) => void;
   reset: () => void;
 };
 
@@ -59,7 +59,7 @@ export const initializeProfileStore = (
       set => ({
         ...initialState,
         ...preloadedState,
-        setProfile: (profile: CurrentProfile) =>
+        setProfile: (profile: SimpleProfile) =>
           set(state => ({ ...state, profile })),
         reset: () => set(initialState),
       }),

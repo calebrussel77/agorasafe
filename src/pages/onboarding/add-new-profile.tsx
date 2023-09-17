@@ -95,8 +95,9 @@ export default function AddNewProfilePage({
   );
 }
 
-const querySchema = z.object({ profile_type: z.nativeEnum(ProfileType) });
+AddNewProfilePage.getLayout = (page: React.ReactElement) => page;
 
+const querySchema = z.object({ profile_type: z.nativeEnum(ProfileType) });
 export const getServerSideProps = createServerSideProps({
   resolver: ({ ctx }) => {
     const result = querySchema.safeParse(ctx.query);

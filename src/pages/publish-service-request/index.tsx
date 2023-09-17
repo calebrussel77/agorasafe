@@ -44,16 +44,12 @@ const meta = {
 const PublishPage = ({
   modeQuery,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
-  const { profile } = useCurrentUser();
-
   const { step: currentStep, nextStep, prevStep } = useStepper();
   const router = useRouter();
   const { toast } = useToast();
   const { isLoading, error, mutate } = useCreateServiceRequest({
     async onSuccess(data) {
-      const href = `/service-requests/${profile?.slug as string}/${
-        data?.serviceRequest?.slug
-      }`;
+      const href = `/service-requests/${data?.serviceRequest?.slug}`;
 
       toast({
         variant: 'success',
@@ -225,5 +221,7 @@ export const getServerSideProps = createServerSideProps({
     return { props: { modeQuery } };
   },
 });
+
+PublishPage.getLayout = (page: React.ReactElement) => page;
 
 export default PublishPage;

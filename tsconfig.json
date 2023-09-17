@@ -35,7 +35,7 @@
     "**/*.ts",
     "**/*.tsx",
     "**/*.cjs",
-    "**/*.mjs"
-, "next-sitemap.config.js"  ],
+    "**/*.mjs",
+    "next-sitemap.config.js"  ],
   "exclude": ["node_modules", ".history"]
 }
