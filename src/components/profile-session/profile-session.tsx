@@ -1,36 +1,41 @@
+import { initializeProfileStore } from '@/stores/profile-store';
 import React from 'react';
 
 import { ChooseProfileModale } from '@/features/profiles';
 
 import { useCurrentUser } from '@/hooks/use-current-user';
 
+import { NoSSR } from '../ui/no-ssr';
+
 const ProfileSession = () => {
   const {
-    isAuth,
     session,
     status,
     updateProfile,
     hasCurrentProfile,
     resetProfile,
+    profile,
   } = useCurrentUser();
 
   // reset profile store on sign out
   React.useEffect(() => {
-    if (status === 'loading') return;
+    if (status === 'loading' || status === 'authenticated') return;
 
-    if (!isAuth) {
-      resetProfile();
+    if (status === 'unauthenticated') {
+      initializeProfileStore().persist.clearStorage();
     }
-  }, [isAuth, status, resetProfile]);
-
-  if (status === 'loading') return <></>;
+  }, [status]);
 
   return (
-    <>
-      {isAuth && session?.user?.hasBeenOnboarded && !hasCurrentProfile && (
-        <ChooseProfileModale {...{ updateProfile, resetProfile, session }} />
-      )}
-    </>
+    <NoSSR>
+      {status === 'authenticated' &&
+      session?.user?.hasBeenOnboarded === true &&
+      !hasCurrentProfile ? (
+        <ChooseProfileModale
+          {...{ updateProfile, resetProfile, session, profile }}
+        />
+      ) : null}
+    </NoSSR>
   );
 };
 

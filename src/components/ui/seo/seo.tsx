@@ -51,17 +51,29 @@ const buildSeoMeta = (pageProps: {
       images: [
         {
           url: image,
+          width: 1200,
+          height: 630,
+          alt: 'Agorasafe',
+          type: 'image/png',
         },
       ],
     },
     additionalMetaTags: [
       {
-        property: 'name',
-        content: title,
+        name: 'Charset',
+        content: 'UTF-8',
       },
       {
-        property: 'description',
-        content: description,
+        name: 'Distribution',
+        content: 'Global', // indicates that your webpage is intended for everyone
+      },
+      {
+        name: 'Rating',
+        content: 'General', // lets the younger web-surfers know the content is appropriate
+      },
+      {
+        property: 'name',
+        content: title,
       },
       {
         name: 'description',

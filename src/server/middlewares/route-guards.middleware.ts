@@ -36,6 +36,7 @@ addRouteGuard({
   ],
   redirect: `/onboarding/choose-profile-type`,
   canAccess: ({ user, currentProfile }) => {
+
     if (user?.hasBeenOnboarded === false && !currentProfile) {
       return false;
     }
