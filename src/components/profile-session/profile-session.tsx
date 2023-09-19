@@ -4,8 +4,11 @@ import React from 'react';
 import { ChooseProfileModale } from '@/features/profiles';
 
 import { useCurrentUser } from '@/hooks/use-current-user';
+import { useToastOnPageReload } from '@/hooks/use-toast-on-page-reload';
 
+import { Avatar } from '../ui/avatar';
 import { NoSSR } from '../ui/no-ssr';
+import { ToastAction, useToast } from '../ui/toast';
 
 const ProfileSession = () => {
   const {
@@ -16,6 +19,35 @@ const ProfileSession = () => {
     resetProfile,
     profile,
   } = useCurrentUser();
+  const { toast } = useToast();
+  const { reloadWithToast } = useToastOnPageReload(() =>
+    toast({
+      icon: (
+        <Avatar
+          isBordered
+          className="h-10 w-10"
+          src={profile?.avatar as string}
+          alt={`Avatar de ${profile?.name}`}
+        />
+      ),
+      variant: 'success',
+      description: (
+        <p className="text-sm">
+          Vous interagissez maintenant en tant que{' '}
+          <span className="font-semibold">{profile?.name}</span>
+        </p>
+      ),
+      actions: (
+        <ToastAction
+          onClick={resetProfile}
+          variant="ghost"
+          altText="Annuler l'action"
+        >
+          Annuler
+        </ToastAction>
+      ),
+    })
+  );
 
   // reset profile store on sign out
   React.useEffect(() => {
@@ -31,9 +63,7 @@ const ProfileSession = () => {
       {status === 'authenticated' &&
       session?.user?.hasBeenOnboarded === true &&
       !hasCurrentProfile ? (
-        <ChooseProfileModale
-          {...{ updateProfile, resetProfile, session, profile }}
-        />
+        <ChooseProfileModale {...{ updateProfile, reloadWithToast, session }} />
       ) : null}
     </NoSSR>
   );

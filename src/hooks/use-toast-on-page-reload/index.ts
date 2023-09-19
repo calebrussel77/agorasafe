@@ -1,16 +1,23 @@
 import { useEffect } from 'react';
 
+import { wait } from '@/utils/misc';
+
 const showToastStrorageKey = 'showToastOnReload';
 
 // Custom hook for displaying a toast message after a page reload
 const useToastOnPageReload = (toastFn: () => void) => {
+  // Check if there's a flag in localStorage indicating the toast should be shown
+
   useEffect(() => {
-    // Check if there's a flag in localStorage indicating the toast should be shown
     const shouldShowToast = localStorage.getItem(showToastStrorageKey);
 
-    if (shouldShowToast) {
-      // Display the toast message
-      toastFn();
+    if (Boolean(shouldShowToast)) {
+      wait(700)
+        .then(() => {
+          // Display the toast message
+          toastFn();
+        })
+        .catch(e => console.log(e));
 
       // Remove the flag from localStorage
       localStorage.removeItem(showToastStrorageKey);

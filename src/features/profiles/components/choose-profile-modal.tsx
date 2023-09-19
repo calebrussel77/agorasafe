@@ -16,54 +16,20 @@ import { generateArray } from '@/utils/misc';
 
 import { type SimpleProfile } from '@/server/api/modules/profiles';
 
-import { useToastOnPageReload } from '@/hooks/use-toast-on-page-reload';
-
 import { useUserProfiles } from '../services';
 import { ProfileItemSkeleton } from './profile-item-skeleton';
 
 type ChooseProfileModaleProps = {
-  updateProfile: ProfileStore['setProfile'];
-  resetProfile: ProfileStore['reset'];
   session: Session | null;
-  profile: ProfileStore['profile'];
+  reloadWithToast: () => void;
+  updateProfile: ProfileStore['setProfile'];
 };
 
 const ChooseProfileModale = ({
-  profile,
   session,
-  resetProfile,
+  reloadWithToast,
   updateProfile,
 }: ChooseProfileModaleProps) => {
-  const { toast } = useToast();
-  const { reloadWithToast } = useToastOnPageReload(() =>
-    toast({
-      icon: (
-        <User
-          withName={false}
-          withLocation={false}
-          withBadges={false}
-          profile={profile}
-        />
-      ),
-      variant: 'success',
-      description: (
-        <p>
-          Vous interagissez maintenant en tant que{' '}
-          <span className="font-semibold">{profile?.name}</span>
-        </p>
-      ),
-      actions: (
-        <ToastAction
-          onClick={resetProfile}
-          variant="ghost"
-          altText="Undo l'action"
-        >
-          Undo
-        </ToastAction>
-      ),
-    })
-  );
-
   // profiles query
   const { data, isInitialLoading, error, refetch } = useUserProfiles({
     enabled: !!session?.user,

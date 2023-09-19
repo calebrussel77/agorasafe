@@ -1,17 +1,14 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-generator client {
-    provider = "prisma-client-js"
+datasource db {
+    provider     = "mysql"
+    url          = env("DATABASE_URL")
+    relationMode = "prisma"
 }
 
-datasource db {
-    provider = "postgresql"
-    // NOTE: When using postgresql, mysql or sqlserver, uncomment the @db.Text annotations in model Account below
-    // Further reading:
-    // https://next-auth.js.org/adapters/prisma#create-the-prisma-schema
-    // https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#string
-    url      = env("DATABASE_URL")
+generator client {
+    provider = "prisma-client-js"
 }
 
 model Skill {
@@ -47,6 +44,9 @@ model Profile {
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
+
+    @@index([userId])
+    @@index([locationId])
 }
 
 model Provider {
@@ -105,6 +105,8 @@ model Service {
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
+
+    @@index([categoryServiceId])
 }
 
 model File {
@@ -121,6 +123,9 @@ model File {
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
+
+    @@index([providerId])
+    @@index([serviceRequestId])
 }
 
 model ServiceRequest {
@@ -137,7 +142,7 @@ model ServiceRequest {
     startHour              Float
     estimatedPrice         Float?
 
-    location   Location @relation(fields: [locationId], references: [id])
+    location   Location @relation(fields: [locationId], references: [id], onDelete: Cascade)
     locationId String
 
     status ServiceRequestStatus? @default(value: OPEN)
@@ -154,6 +159,10 @@ model ServiceRequest {
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
+
+    @@index([serviceId])
+    @@index([authorId])
+    @@index([locationId])
 }
 
 model ServiceRequestOffer {
@@ -169,6 +178,9 @@ model ServiceRequestOffer {
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
+
+    @@index([serviceRequestId])
+    @@index([authorId])
 }
 
 model ServiceRequestProvider {
@@ -183,6 +195,9 @@ model ServiceRequestProvider {
 
     removedAt DateTime?
     createdAt DateTime  @default(now())
+
+    @@index([providerId])
+    @@index([serviceRequestId])
 }
 
 // Necessary for Next auth
@@ -203,6 +218,7 @@ model Account {
     userId String
 
     @@unique([provider, providerAccountId])
+    @@index([userId])
 }
 
 model Session {
@@ -212,6 +228,8 @@ model Session {
 
     user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
     userId String
+
+    @@index([userId])
 }
 
 model Location {
