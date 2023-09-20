@@ -1,7 +1,5 @@
 import { type ProfileStore } from '@/stores/profile-store';
-import { type ProfileType } from '@prisma/client';
 import { type Session } from 'next-auth';
-import { useRouter } from 'next/router';
 
 import { Button } from '@/components/ui/button';
 import { ErrorWrapper, SectionError } from '@/components/ui/error';
@@ -10,10 +8,11 @@ import { Modal } from '@/components/ui/modal';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ToastAction, useToast } from '@/components/ui/toast';
 import { Typography } from '@/components/ui/typography';
+import { User } from '@/components/user';
 import { UserAvatar } from '@/components/user-avatar';
 import { UserBadge } from '@/components/user-badge';
 
-import { generateArray, wait } from '@/utils/misc';
+import { generateArray } from '@/utils/misc';
 
 import { type SimpleProfile } from '@/server/api/modules/profiles';
 
@@ -21,60 +20,29 @@ import { useUserProfiles } from '../services';
 import { ProfileItemSkeleton } from './profile-item-skeleton';
 
 type ChooseProfileModaleProps = {
-  updateProfile: ProfileStore['setProfile'];
-  resetProfile: ProfileStore['reset'];
   session: Session | null;
+  reloadWithToast: () => void;
+  updateProfile: ProfileStore['setProfile'];
 };
 
 const ChooseProfileModale = ({
   session,
-  resetProfile,
+  reloadWithToast,
   updateProfile,
 }: ChooseProfileModaleProps) => {
-  const router = useRouter();
-  const { toast } = useToast();
-
   // profiles query
   const { data, isInitialLoading, error, refetch } = useUserProfiles({
     enabled: !!session?.user,
     staleTime: 60 * 1000,
   });
 
-  const onProfileClick = async (profile: SimpleProfile) => {
-    if (router.asPath !== '/') {
-      window.location.href = '/';
-    }
-    await wait(500);
+  const onProfileClick = (profile: SimpleProfile) => {
     updateProfile(profile);
-    toast({
-      icon: (
-        <UserAvatar
-          className="h-8 w-8"
-          src={profile?.avatar as string}
-          type={profile?.type}
-        />
-      ),
-      variant: 'success',
-      description: (
-        <p>
-          Vous interagissez maintenant en tant que{' '}
-          <span className="font-semibold">{profile?.name}</span>
-        </p>
-      ),
-      actions: (
-        <ToastAction
-          onClick={resetProfile}
-          variant="ghost"
-          altText="Undo l'action"
-        >
-          Undo
-        </ToastAction>
-      ),
-    });
+    reloadWithToast();
   };
 
   return (
-    <Modal classNames={{ root: 'max-w-2xl' }} open={!!session?.user}>
+    <Modal classNames={{ root: 'max-w-2xl' }} open={!!session}>
       <CenterContent className="w-full">
         <h1 className="text-center text-3xl font-semibold">
           Avec qui souhaitez-vous continuer ?

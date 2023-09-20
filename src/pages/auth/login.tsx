@@ -63,13 +63,11 @@ const LoginPage = () => {
         </button>
         <div className="relative hidden h-full flex-col bg-muted p-10 text-white dark:border-r lg:flex">
           <div className="absolute inset-0 z-10 bg-gray-900/40" />
-          <div>
-            <Image
-              src="/images/login-image.png"
-              alt="Femme qui tresse une tête"
-              className="h-full w-full"
-            />
-          </div>
+          <Image
+            src="/images/login-image.png"
+            alt="Femme qui tresse une tête"
+            className="absolute inset-0 h-full w-full"
+          />
           <div className="relative z-20">
             <LogoSymbolIcon className="h-8 w-auto" />
           </div>

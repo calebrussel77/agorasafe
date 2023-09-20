@@ -21,7 +21,9 @@ const DefaultSeo = (props: DefaultSeoProps) => {
           images: [
             {
               url: APP_IMAGE_PREVIEW,
-              alt: 'agorasafe preview',
+              width: 1200,
+              height: 630,
+              alt: 'Agorasafe.com',
               type: 'image/png',
             },
           ],

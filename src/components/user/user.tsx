@@ -18,6 +18,7 @@ interface UserProps extends Partial<GroupItemProps> {
   shouldIncludeAvatar?: boolean;
   withBadges?: boolean;
   withLocation?: boolean;
+  withName?: boolean;
   canLinkToProfile?: boolean;
   profile: Partial<SimpleProfile> | null | undefined;
   withProfileTypeInitial?: boolean;
@@ -31,6 +32,7 @@ const User: FC<UserProps> = ({
   withProfileTypeInitial = false,
   withBadges = true,
   withLocation = true,
+  withName = true,
   avatarProps,
   classNames,
   ...rest
@@ -70,34 +72,36 @@ const User: FC<UserProps> = ({
           )
         }
         name={
-          <UserProfileLink
-            profile={profile}
-            canLinkToProfile={canLinkToProfile}
-          >
-            <div
-              className={cn(
-                'flex items-center gap-x-1 font-bold leading-none tracking-tight'
-              )}
+          withName && (
+            <UserProfileLink
+              profile={profile}
+              canLinkToProfile={canLinkToProfile}
             >
-              <Typography
-                as="h3"
-                variant="h4"
-                truncate
-                className={cn('line-clamp-1', classNames?.name)}
+              <div
+                className={cn(
+                  'flex items-center gap-x-1 font-bold leading-none tracking-tight'
+                )}
               >
-                {profile?.name}
-              </Typography>
-              {withBadges && (
-                <UserBadge
-                  type={profile?.type as never}
-                  withProfileTypeInitial={withProfileTypeInitial}
-                />
-              )}
-              {isAdmin && (
-                <ShieldCheck className="h-4 w-4 flex-shrink-0 text-green-500" />
-              )}
-            </div>
-          </UserProfileLink>
+                <Typography
+                  as="h3"
+                  variant="h4"
+                  truncate
+                  className={cn('line-clamp-1', classNames?.name)}
+                >
+                  {profile?.name}
+                </Typography>
+                {withBadges && (
+                  <UserBadge
+                    type={profile?.type as never}
+                    withProfileTypeInitial={withProfileTypeInitial}
+                  />
+                )}
+                {isAdmin && (
+                  <ShieldCheck className="h-4 w-4 flex-shrink-0 text-green-500" />
+                )}
+              </div>
+            </UserProfileLink>
+          )
         }
         description={
           withLocation ? (

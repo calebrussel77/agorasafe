@@ -30,6 +30,7 @@ import { api } from '@/utils/api';
 import { buildCanonical } from '@/lib/next-seo-config';
 import { displayProgressBarOnRouteChange } from '@/lib/progress-bar';
 
+import { useCurrentUser } from '@/hooks/use-current-user';
 // import { useNewDeploy } from '@/hooks/use-new-deploy';
 import { useNotificationNetwork } from '@/hooks/use-notification-network';
 

@@ -29,13 +29,14 @@ export const CookieStorage = {
   },
   setItem: (name, value) => {
     Cookies.set(name, value, {
-      sameSite: 'strict',
+      sameSite: 'lax',
       path: '/',
+      expires: 30 * 24 * 60 * 60, // 30 days
       secure: process.env.NODE_ENV === 'production',
     });
   },
   removeItem: name => {
-    return Cookies.remove(name);
+    return Cookies.remove(name, { path: '/' });
   },
 } satisfies StateStorage;
 
