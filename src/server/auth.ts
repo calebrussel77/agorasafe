@@ -37,7 +37,7 @@ declare module 'next-auth' {
       hasBeenOnboarded: boolean;
       role: Role;
     };
-    version: number;
+    version: string;
   }
 
   interface User {
@@ -58,13 +58,17 @@ export const authOptions: NextAuthOptions = {
       session.user = (
         token.user ? token.user : session.user
       ) as Session['user'];
+      session.version = (
+        token.version ? token.version : session.version
+      ) as Session['version'];
 
-      return { ...session, version: SESSION_VERSION };
+      return { ...session };
     },
     async jwt({ token, user, trigger, session }) {
       if (trigger === 'update' && session) {
         const _session = session as Session;
         token.user = _session.user;
+        token.version = SESSION_VERSION;
       }
       if ((trigger === 'signIn' || trigger === 'signUp') && user) {
         try {
@@ -80,6 +84,8 @@ export const authOptions: NextAuthOptions = {
             hasBeenOnboarded: _user.hasBeenOnboarded,
             role: _user.role,
           };
+
+          token.version = SESSION_VERSION;
         } catch (e) {
           throwDbError(e);
         }

@@ -129,6 +129,9 @@ const hasProfile = t.middleware(({ ctx, next }) => {
     throw new TRPCError({ code: 'UNAUTHORIZED' });
   }
 
+  console.log(ctx.session.version);
+  console.log(SESSION_VERSION);
+
   if (!ctx?.profile) {
     throwForbiddenError();
   }

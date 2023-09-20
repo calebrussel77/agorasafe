@@ -19,9 +19,9 @@ export const isProd = process.env.NODE_ENV === 'production';
 
 export const isMaintenanceMode = process.env.MAINTENANCE_MODE === 'true';
 
-export const SESSION_VERSION = 0.1;
+export const SESSION_VERSION = process.env.NEXT_PUBLIC_SESSION_VERSION;
 
-export const PROFILE_VERSION = 0.1;
+export const PROFILE_VERSION = process.env.NEXT_PUBLIC_PROFILE_VERSION;
 
 export const WEBSITE_URL = getWebsiteUrl();
 

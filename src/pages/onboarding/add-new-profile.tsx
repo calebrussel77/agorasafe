@@ -32,15 +32,14 @@ export default function AddNewProfilePage({
   profileTypeQuery,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const router = useRouter();
-  const { resetProfile, updateUser, session } = useCurrentUser();
+  const { updateUser, session } = useCurrentUser();
 
   const { mutate, error, isLoading } = useCreateProfile({
     async onSuccess(data) {
       await updateUser({
         user: { ...session?.user, hasBeenOnboarded: true },
       });
-      void router.push('/');
-      resetProfile();
+      await router.push('/');
     },
   });
 

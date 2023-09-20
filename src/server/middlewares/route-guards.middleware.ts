@@ -9,9 +9,10 @@ import { createMiddleware } from './utils';
 const routeGuards: RouteGuard[] = [];
 
 addRouteGuard({
-  matcher: ['/onboarding/:path*', '/publish-service-request/:path*'],
-  canAccess: ({ user }) => {
-    return !!user;
+  matcher: ['/onboarding/:path*'],
+  redirect: '/',
+  canAccess: ({ user, currentProfile }) => {
+    return !!user && !currentProfile;
   },
 });
 
@@ -36,8 +37,7 @@ addRouteGuard({
   ],
   redirect: `/onboarding/choose-profile-type`,
   canAccess: ({ user, currentProfile }) => {
-
-    if (user?.hasBeenOnboarded === false && !currentProfile) {
+    if (user?.hasBeenOnboarded == false && !currentProfile) {
       return false;
     }
     return true;

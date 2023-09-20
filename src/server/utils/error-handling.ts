@@ -2,7 +2,6 @@ import { Prisma } from '@prisma/client';
 import { TRPCError } from '@trpc/server';
 import { type TRPC_ERROR_CODE_KEY } from '@trpc/server/rpc';
 
-
 const prismaErrorToTrpcCode: Record<string, TRPC_ERROR_CODE_KEY> = {
   P1008: 'TIMEOUT',
   P2000: 'BAD_REQUEST',
@@ -70,21 +69,19 @@ export const handleTRPCError = (error: unknown) => {
     if (error instanceof Prisma.PrismaClientKnownRequestError)
       throw new TRPCError({
         code: prismaErrorToTrpcCode[error.code] ?? 'INTERNAL_SERVER_ERROR',
-        message: error.message,
-        cause: error,
+        message:
+          "Une erreur s'est produite lors de votre requête, Veuillez réessayer plus tard.",
       });
     else if (error instanceof Prisma.PrismaClientValidationError)
       throw new TRPCError({
         code: 'INTERNAL_SERVER_ERROR',
         message: 'Erreur de validation de la base de donnée.',
-        cause: error,
       });
     else
       throw new TRPCError({
         code: 'INTERNAL_SERVER_ERROR',
         message:
           "Une erreur inattendue s'est produite, veuillez réessayer plus tard.",
-        cause: error,
       });
   }
 };

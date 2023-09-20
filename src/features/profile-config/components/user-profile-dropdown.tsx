@@ -90,43 +90,6 @@ const UserProfileDropdown: FC<UserProfileDropdownProps> = ({
                 </div>
               ) : (
                 <User profile={currentProfile} canLinkToProfile={false} />
-                // <GroupItem
-                //   iconBefore={
-                //     <UserAvatar
-                //       src={currentProfile.avatar}
-                //       alt={currentProfile.name}
-                //       type={currentProfile.type}
-                //     />
-                //   }
-                //   name={
-                //     <div className="flex items-start">
-                //       <Typography
-                //         as="h3"
-                //         variant="h4"
-                //         className="font-semibold"
-                //         truncate
-                //       >
-                //         {currentProfile.name}
-                //       </Typography>
-                //       <UserBadge
-                //         className="ml-1.5"
-                //         type={currentProfile.type}
-                //       />
-                //     </div>
-                //   }
-                //   description={
-                //     <Typography
-                //       truncate
-                //       variant="small"
-                //       className="flex w-full items-center text-muted-foreground"
-                //     >
-                //       {currentProfile?.location?.name}
-                //     </Typography>
-                //   }
-                //   classNames={{
-                //     root: 'flex items-center hover:bg-transparent',
-                //   }}
-                // />
               )}
             </DropdownMenu.Label>
             <DropdownMenu.Separator />
@@ -144,6 +107,7 @@ const UserProfileDropdown: FC<UserProfileDropdownProps> = ({
                 {userProfileConfig?.canAddNewProfile && (
                   <>
                     <Link
+                      onClick={resetProfile}
                       href={userProfileConfig?.addNewProfileHref}
                       className="w-full"
                     >

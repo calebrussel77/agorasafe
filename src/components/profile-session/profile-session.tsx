@@ -1,4 +1,7 @@
 import { initializeProfileStore } from '@/stores/profile-store';
+import { type Session } from 'next-auth';
+import { type SessionContextValue } from 'next-auth/react';
+import { useRouter } from 'next/router';
 import React from 'react';
 
 import { ChooseProfileModale } from '@/features/profiles';
@@ -10,6 +13,25 @@ import { Avatar } from '../ui/avatar';
 import { NoSSR } from '../ui/no-ssr';
 import { ToastAction, useToast } from '../ui/toast';
 
+const shouldDisplayProfileDialog = ({
+  status,
+  session,
+  hasCurrentProfile,
+  isOnboardingPages,
+}: {
+  status: SessionContextValue['status'];
+  session: Session | null;
+  hasCurrentProfile: boolean;
+  isOnboardingPages: boolean;
+}) => {
+  return (
+    status === 'authenticated' &&
+    session?.user?.hasBeenOnboarded === true &&
+    !hasCurrentProfile &&
+    !isOnboardingPages
+  );
+};
+
 const ProfileSession = () => {
   const {
     session,
@@ -20,6 +42,9 @@ const ProfileSession = () => {
     profile,
   } = useCurrentUser();
   const { toast } = useToast();
+  const router = useRouter();
+  const isOnboardingPages = router.pathname.startsWith('/onboarding');
+
   const { reloadWithToast } = useToastOnPageReload(() =>
     toast({
       icon: (
@@ -60,9 +85,12 @@ const ProfileSession = () => {
 
   return (
     <NoSSR>
-      {status === 'authenticated' &&
-      session?.user?.hasBeenOnboarded === true &&
-      !hasCurrentProfile ? (
+      {shouldDisplayProfileDialog({
+        status,
+        session,
+        hasCurrentProfile,
+        isOnboardingPages,
+      }) ? (
         <ChooseProfileModale {...{ updateProfile, reloadWithToast, session }} />
       ) : null}
     </NoSSR>

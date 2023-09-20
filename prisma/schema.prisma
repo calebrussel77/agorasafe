@@ -26,7 +26,7 @@ model Profile {
     slug   String      @unique
     name   String      @unique
     avatar String?
-    bio    String?
+    bio    String?     @db.Text
     type   ProfileType
     phone  String?
 
@@ -130,9 +130,9 @@ model File {
 
 model ServiceRequest {
     id                     String   @id @default(cuid())
-    title                  String
+    title                  String   @db.Text
     slug                   String   @unique
-    description            String?
+    description            String?  @db.Text
     phoneToContact         String
     photos                 File[] // Should be Max 03 photos
     numberOfProviderNeeded Int      @default(1)
