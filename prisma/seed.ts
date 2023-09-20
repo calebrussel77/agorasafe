@@ -229,6 +229,9 @@ const destroyData = async () => {
     console.log('🧹 Deleting users...');
     await prisma.user.deleteMany();
 
+    console.log('🧹 Deleting sessions...');
+    await prisma.session.deleteMany();
+
     console.log('🧹 Deleting services...');
     await prisma.service.deleteMany();
 

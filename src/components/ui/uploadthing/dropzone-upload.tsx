@@ -63,22 +63,18 @@ export const DropzoneUpload = ({
 
   if (shouldDisplayImage && imageUrl) {
     return (
-      <div
+      <Image
+        src={imageUrl}
+        isLoading={isLoading}
+        onRemove={() => handleRemove(value[0] as FileWithPath)}
+        alt="image-preview"
         className={cn(
-          'default__transition group relative flex h-[200px] w-full flex-col items-center justify-center gap-3 border border-dashed border-gray-400 bg-gray-50 p-2 text-center transition duration-200 hover:bg-gray-200 disabled:cursor-not-allowed disabled:bg-gray-300',
+          'default__transition group relative flex h-[200px] w-full border border-dashed border-gray-400 transition duration-200 hover:bg-gray-200 disabled:cursor-not-allowed disabled:bg-gray-300',
           isLoading &&
             'pointer-events-none cursor-not-allowed hover:bg-inherit',
           className
         )}
-      >
-        <Image src={imageUrl} alt="image-preview" />
-        <button
-          onClick={() => handleRemove(value[0] as FileWithPath)}
-          className="absolute right-2 top-1 rounded-full bg-brand-50 p-1 text-brand-500 shadow-sm hover:text-brand-600"
-        >
-          <X className="h-4 w-4" />
-        </button>
-      </div>
+      />
     );
   }
 

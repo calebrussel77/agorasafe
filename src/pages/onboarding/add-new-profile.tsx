@@ -7,6 +7,7 @@ import { z } from 'zod';
 import { Card } from '@/components/ui/card';
 import { CenterContent } from '@/components/ui/layout';
 import { Seo } from '@/components/ui/seo';
+import { toast } from '@/components/ui/toast';
 
 import {
   type CreateNewProfileInput,
@@ -19,6 +20,7 @@ import { getProfileTypeName } from '@/utils/profile';
 import { createServerSideProps } from '@/server/utils/server-side';
 
 import { useCurrentUser } from '@/hooks/use-current-user';
+import { useToastOnPageChange } from '@/hooks/use-toast-on-page-change';
 
 const meta = {
   title: (profileType: ProfileType) =>
@@ -28,20 +30,25 @@ const meta = {
   ou des demandes de service, etc.`,
 };
 
+const redirectUrl = '/';
 export default function AddNewProfilePage({
   profileTypeQuery,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const router = useRouter();
   const { updateUser, session } = useCurrentUser();
-
-  const { mutate, error, isLoading } = useCreateProfile({
+  const { mutate, error, isLoading, data, isSuccess } = useCreateProfile({
     async onSuccess(data) {
       await updateUser({
         user: { ...session?.user, hasBeenOnboarded: true },
       });
-      await router.push('/');
+      await router.push(redirectUrl);
     },
   });
+
+  useToastOnPageChange(
+    redirectUrl,
+    () => isSuccess && toast({ variant: 'success', description: data?.message })
+  );
 
   const onRegister = (data: CreateNewProfileInput) => {
     mutate({

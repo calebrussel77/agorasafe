@@ -1,6 +1,5 @@
 import { type ProfileStore } from '@/stores/profile-store';
 import ProfileStoreProvider from '@/stores/profile-store/profile-store-provider';
-import { motion } from 'framer-motion';
 import { SessionProvider } from 'next-auth/react';
 import { type FC, type PropsWithChildren } from 'react';
 

@@ -70,7 +70,7 @@ const PhotosForm = ({ prevStep, onSubmit, isLoading }: PhotosFormProps) => {
 
                 return (
                   <DropzoneUpload
-                    isLoading={isUploading}
+                    isLoading={true}
                     icon={<Camera className="h-7 w-7" />}
                     label="Ajouter une photo"
                     value={fileValue}
