@@ -2,7 +2,7 @@ import { Wifi, WifiOff } from 'lucide-react';
 import { useEffect } from 'react';
 import { useNetworkState } from 'react-use';
 
-import { ToastAction, useToast } from '@/components/ui/toast';
+import { useToast } from '@/components/ui/toast';
 
 const useNotificationNetwork = () => {
   const state = useNetworkState();
@@ -29,7 +29,6 @@ const useNotificationNetwork = () => {
         icon: <WifiOff className="h-5 w-5" />,
         variant: 'warning',
         title: 'Vous êtes actuellement hors ligne.',
-        actions: <ToastAction altText="Valider">Valider</ToastAction>,
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
