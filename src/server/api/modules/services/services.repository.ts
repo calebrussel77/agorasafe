@@ -36,10 +36,7 @@ export function getAllServicesWithCategory({
     : undefined;
 
   if (query)
-    OR = [
-      { name: { contains: query, mode: 'insensitive' } },
-      { description: { contains: query, mode: 'insensitive' } },
-    ];
+    OR = [{ name: { contains: query } }, { description: { contains: query } }];
 
   return prisma.service.findMany({
     take: limit,
@@ -70,10 +67,7 @@ export function getAllCategoryServices({
     undefined;
 
   if (query)
-    OR = [
-      { name: { contains: query, mode: 'insensitive' } },
-      { description: { contains: query, mode: 'insensitive' } },
-    ];
+    OR = [{ name: { contains: query } }, { description: { contains: query } }];
 
   return prisma.categoryService.findMany({
     where: {

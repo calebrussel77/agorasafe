@@ -37,7 +37,7 @@ declare module 'next-auth' {
       hasBeenOnboarded: boolean;
       role: Role;
     };
-    version: string;
+    version: number;
   }
 
   interface User {
