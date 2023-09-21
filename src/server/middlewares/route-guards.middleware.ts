@@ -8,13 +8,15 @@ import { createMiddleware } from './utils';
 
 const routeGuards: RouteGuard[] = [];
 
-addRouteGuard({
-  matcher: ['/onboarding/:path*'],
-  redirect: '/',
-  canAccess: ({ user }) => {
-    return !!user; //TODO: add to the condition the check of user Max. profiles number
-  },
-});
+// addRouteGuard({
+//   matcher: ['/onboarding/:path*'],
+//   redirect: '/',
+//   canAccess: ({ user }) => {
+//     console.log({ user });
+
+//     return !!user; //TODO: add to the condition the check of user Max. profiles number
+//   },
+// });
 
 addRouteGuard({
   matcher: ['/testing/:path*'],

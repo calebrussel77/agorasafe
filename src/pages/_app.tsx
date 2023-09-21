@@ -70,6 +70,7 @@ const MyApp = (props: AppPageProps) => {
     router,
   } = props;
 
+  console.warn({ session });
   // Use the layout defined at the page level, if available
   const getLayout = useMemo(
     () =>
