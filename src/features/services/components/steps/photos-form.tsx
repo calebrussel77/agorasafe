@@ -80,8 +80,6 @@ const PhotosForm = ({ prevStep, onSubmit, isLoading }: PhotosFormProps) => {
               render={({ field: { onChange, value } }) => {
                 const fileValue = value as File[];
 
-                // console.log({ fileValue });
-
                 return (
                   <DropzoneUpload
                     // isLoading={true}

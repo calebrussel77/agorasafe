@@ -7,8 +7,6 @@ const useToastOnPageChange = (desiredUrl: string, toastFn: () => void) => {
   useEffect(() => {
     // Listen for route changes
     const handleRouteChange = (url: string) => {
-      console.log({ url });
-
       // Check if the URL has changed to the desired route
       if (url === desiredUrl) {
         // Display the toast message function

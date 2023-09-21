@@ -79,7 +79,10 @@ const MyApp = (props: AppPageProps) => {
     () =>
       Component.getLayout ??
       ((page: React.ReactElement) => (
-        <MainLayout {...page.props}>{page}</MainLayout>
+        <>
+          <ProfileSession />
+          <MainLayout {...page.props}>{page}</MainLayout>
+        </>
       )),
     [Component.getLayout]
   );
@@ -102,7 +105,6 @@ const MyApp = (props: AppPageProps) => {
           }}
         >
           <PageTransition>
-            <ProfileSession />
             {getLayout(
               <Component {...pageProps} key={router.asPath} />,
               router
@@ -150,10 +152,6 @@ MyApp.getInitialProps = async (appContext: AppContext) => {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       (appContext.ctx.req as any)['initialState'] = initialProfileState;
     }
-
-    console.log({ session });
-
-    console.log({ hasAuthCookie });
 
     return {
       pageProps: {
