@@ -42,7 +42,7 @@ const ChooseProfileModale = ({
   };
 
   return (
-    <Modal classNames={{ root: 'max-w-2xl' }} open={!!session}>
+    <Modal classNames={{ root: 'max-w-2xl' }} open={true}>
       <CenterContent className="w-full">
         <h1 className="text-center text-3xl font-semibold">
           Avec qui souhaitez-vous continuer ?
