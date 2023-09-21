@@ -77,6 +77,8 @@ export const routeGuardsMiddleware = createMiddleware({
   handler: ({ currentProfile, user, request, redirect }) => {
     const { pathname } = request.nextUrl;
 
+    console.log({ user }, 'From routeGuardsMiddleware called');
+
     for (const routeGuard of routeGuards) {
       if (!routeGuard.isMatch(pathname)) continue;
       if (routeGuard.canAccess({ user, request, currentProfile })) continue;
