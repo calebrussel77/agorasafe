@@ -71,6 +71,9 @@ const MyApp = (props: AppPageProps) => {
   } = props;
 
   console.warn({ session });
+
+  console.warn({ isMaintenanceMode });
+
   // Use the layout defined at the page level, if available
   const getLayout = useMemo(
     () =>
@@ -120,6 +123,8 @@ MyApp.getInitialProps = async (appContext: AppContext) => {
 
   const cookies = getCookies(appContext.ctx);
 
+  console.log({ cookies });
+
   if (isMaintenanceMode) {
     return {
       pageProps: {
@@ -131,6 +136,8 @@ MyApp.getInitialProps = async (appContext: AppContext) => {
   } else {
     const hasAuthCookie =
       !isClient && Object.keys(cookies).some(x => x.endsWith('session-token'));
+
+    console.log({ hasAuthCookie });
 
     const hasProfileCookie =
       !isClient &&
@@ -147,6 +154,10 @@ MyApp.getInitialProps = async (appContext: AppContext) => {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       (appContext.ctx.req as any)['session'] = session;
     }
+
+    console.log({ session });
+
+    console.log(appContext.ctx);
 
     if (initialProfileState && appContext.ctx.req) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
