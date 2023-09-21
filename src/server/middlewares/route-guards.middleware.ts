@@ -33,12 +33,17 @@ addRouteGuard({
      */
 
     '/((?!api|_next/static|_next/image|onboarding|favicon.ico).*)',
+    '/fr/((?!api|_next/static|_next/image|onboarding|favicon.ico).*)',
+    '/en/((?!api|_next/static|_next/image|onboarding|favicon.ico).*)',
     '/',
+    '/fr',
+    '/en',
   ],
   redirect: `/onboarding/choose-profile-type`,
-  canAccess: ({ user, currentProfile }) => {
+  canAccess: ({ user, currentProfile, request }) => {
     console.log({ user }, 'From Middleware');
     console.log({ currentProfile }, 'From Middleware');
+    console.log({ request }, 'From Middleware');
 
     if (user && user.hasBeenOnboarded === false && !currentProfile) {
       return false;
