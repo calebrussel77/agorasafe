@@ -1,5 +1,5 @@
 import { ProfileType } from '@prisma/client';
-import { MoveLeft } from 'lucide-react';
+import { CheckCircle, MoveLeft } from 'lucide-react';
 import { type InferGetServerSidePropsType } from 'next';
 import { useRouter } from 'next/router';
 import { z } from 'zod';
@@ -7,7 +7,7 @@ import { z } from 'zod';
 import { Card } from '@/components/ui/card';
 import { CenterContent } from '@/components/ui/layout';
 import { Seo } from '@/components/ui/seo';
-import { toast } from '@/components/ui/toast';
+import { ToastAction, toast } from '@/components/ui/toast';
 
 import {
   type CreateNewProfileInput,
@@ -43,9 +43,16 @@ export default function AddNewProfilePage({
         user: { ...session?.user, hasBeenOnboarded: true },
       });
       toast({
-        variant: 'success',
-        description: htmlParse(data?.message),
         delay: 4000,
+        icon: <CheckCircle className="h-10 w-10 text-green-600" />,
+        variant: 'success',
+        title: `Profil ${data?.profile?.name} créé`,
+        description: (
+          <p className="flex items-center text-sm">
+            Vous pouvez désormais switcher entre vos profils créés via votre{' '}
+            <span className="font-semibold">menu utilisateur</span>
+          </p>
+        ),
       });
       await router.push(redirectUrl);
     },
