@@ -21,8 +21,8 @@ const ChooseProfileTypePage = () => {
             <GroupItem
               iconBefore={
                 <Avatar
-                  title={session?.user?.name}
-                  src={session?.user?.avatar}
+                src={session?.user?.avatar}
+                alt={session?.user?.name}
                 />
               }
               name={session?.user?.name as never}

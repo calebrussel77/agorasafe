@@ -17,14 +17,15 @@ import {
 
 import { getProfileTypeName } from '@/utils/profile';
 
+import { htmlParse } from '@/lib/html-react-parser';
+
 import { createServerSideProps } from '@/server/utils/server-side';
 
 import { useCurrentUser } from '@/hooks/use-current-user';
-import { useToastOnPageChange } from '@/hooks/use-toast-on-page-change';
 
 const meta = {
   title: (profileType: ProfileType) =>
-    `Ajouter un profil ${getProfileTypeName(profileType).toLowerCase()}`,
+    `Ajouter un profil ${getProfileTypeName(profileType)?.toLowerCase()}`,
   description: `Renseignez les informations ci-dessous pour facilement gérer vos
   projets, consulter vos candidatures, rechercher des prestataires
   ou des demandes de service, etc.`,
@@ -36,19 +37,19 @@ export default function AddNewProfilePage({
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const router = useRouter();
   const { updateUser, session } = useCurrentUser();
-  const { mutate, error, isLoading, data, isSuccess } = useCreateProfile({
+  const { mutate, error, isLoading } = useCreateProfile({
     async onSuccess(data) {
       await updateUser({
         user: { ...session?.user, hasBeenOnboarded: true },
       });
+      toast({
+        variant: 'success',
+        description: htmlParse(data?.message),
+        delay: 4000,
+      });
       await router.push(redirectUrl);
     },
   });
-
-  useToastOnPageChange(
-    redirectUrl,
-    () => isSuccess && toast({ variant: 'success', description: data?.message })
-  );
 
   const onRegister = (data: CreateNewProfileInput) => {
     mutate({
