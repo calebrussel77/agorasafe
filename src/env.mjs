@@ -45,7 +45,6 @@ export const env = createEnv({
     NEXT_PUBLIC_COMPANY_NAME: z.string(),
     NEXT_PUBLIC_DEBUG: z.string(),
     NEXT_PUBLIC_GA_MEASUREMENT_ID: z.string(),
-    NEXT_PUBLIC_SENTRY_AUTH_TOKEN: z.string(),
   },
 
   /**
@@ -75,7 +74,6 @@ export const env = createEnv({
     NEXT_PUBLIC_SENTRY_DSN: process.env.NEXT_PUBLIC_SENTRY_DSN,
     UPLOADTHING_SECRET: process.env.UPLOADTHING_SECRET,
     UPLOADTHING_APP_ID: process.env.UPLOADTHING_APP_ID,
-    NEXT_PUBLIC_SENTRY_AUTH_TOKEN: process.env.NEXT_PUBLIC_SENTRY_AUTH_TOKEN,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation.
