@@ -72,7 +72,7 @@ const MyApp = (props: AppPageProps) => {
 
   console.warn({ session });
 
-  console.warn({ isMaintenanceMode });
+  console.warn({ initialProfileState });
 
   // Use the layout defined at the page level, if available
   const getLayout = useMemo(
@@ -139,15 +139,10 @@ MyApp.getInitialProps = async (appContext: AppContext) => {
 
     console.log({ hasAuthCookie });
 
-    const hasProfileCookie =
-      !isClient &&
-      Object.keys(cookies).some(x => x === agorasafeProfileStorageName);
-
     const session = hasAuthCookie ? await getSession(appContext.ctx) : null;
-    const initialProfileState =
-      hasProfileCookie && appContext.ctx.req
-        ? getInitialState(appContext.ctx.req?.headers)
-        : null;
+    const initialProfileState = appContext.ctx.req
+      ? getInitialState(appContext.ctx.req?.headers)
+      : null;
 
     // Pass this via the request so we can use it in SSR
     if (session && appContext.ctx.req) {
@@ -155,14 +150,16 @@ MyApp.getInitialProps = async (appContext: AppContext) => {
       (appContext.ctx.req as any)['session'] = session;
     }
 
+    if (initialProfileState) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      (appContext.ctx.req as any)['initialState'] = initialProfileState;
+    }
+
     console.log({ session });
 
     console.log(appContext.ctx);
 
-    if (initialProfileState && appContext.ctx.req) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      (appContext.ctx.req as any)['initialState'] = initialProfileState;
-    }
+    console.log(initialProfileState);
 
     return {
       pageProps: {

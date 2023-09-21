@@ -77,21 +77,25 @@ const ProfileSession = () => {
 
   // reset profile store on sign out
   React.useEffect(() => {
-    if (status === 'loading' || status === 'authenticated') return;
-
     if (status === 'unauthenticated') {
       initializeProfileStore().persist.clearStorage();
     }
   }, [status]);
 
+  console.log(
+    status === 'authenticated' &&
+      session?.user?.hasBeenOnboarded === true &&
+      !hasCurrentProfile &&
+      !isOnboardingPages,
+    'From profile session'
+  );
+
   return (
     <NoSSR>
-      {shouldDisplayProfileDialog({
-        status,
-        session,
-        hasCurrentProfile,
-        isOnboardingPages,
-      }) ? (
+      {status === 'authenticated' &&
+      session?.user?.hasBeenOnboarded === true &&
+      !hasCurrentProfile &&
+      !isOnboardingPages ? (
         <ChooseProfileModale {...{ updateProfile, reloadWithToast, session }} />
       ) : null}
     </NoSSR>
