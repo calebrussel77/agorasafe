@@ -5,8 +5,8 @@ import { type Variant } from '@/utils/variants';
 
 import type { ToastActionElement, ToastProps } from './toast';
 
-const TOAST_LIMIT = 2;
-const TOAST_REMOVE_DELAY = 1000000;
+const TOAST_LIMIT = 1;
+const TOAST_REMOVE_DELAY = 1_500_000;
 
 type ToasterToast = Omit<ToastProps, 'hasOneAction' | 'title'> & {
   id: string;
@@ -149,7 +149,7 @@ function toast({ ...props }: Toast) {
       type: 'UPDATE_TOAST',
       toast: { ...props, id },
     });
-    
+
   const dismiss = () => dispatch({ type: 'DISMISS_TOAST', toastId: id });
 
   dispatch({
