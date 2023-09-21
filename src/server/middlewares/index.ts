@@ -24,6 +24,9 @@ export async function runMiddlewares(request: NextRequest) {
     secret: env.NEXTAUTH_JWT_SECRET,
   });
 
+  console.log({ token }, 'FROM GET TOKEN');
+  console.log(env.NEXTAUTH_JWT_SECRET, 'ENV FROM GET TOKEN');
+
   for (const middleware of middlewares) {
     if (middleware.shouldRun && !middleware.shouldRun(request)) continue;
 
