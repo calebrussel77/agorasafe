@@ -2,7 +2,7 @@ import { initializeProfileStore } from '@/stores/profile-store';
 import { type Session } from 'next-auth';
 import { type SessionContextValue } from 'next-auth/react';
 import { useRouter } from 'next/router';
-import React from 'react';
+import React, { useState } from 'react';
 
 import { ChooseProfileModale } from '@/features/profiles';
 
@@ -12,25 +12,6 @@ import { useToastOnPageReload } from '@/hooks/use-toast-on-page-reload';
 import { Avatar } from '../ui/avatar';
 import { NoSSR } from '../ui/no-ssr';
 import { ToastAction, useToast } from '../ui/toast';
-
-const shouldDisplayProfileDialog = ({
-  status,
-  session,
-  hasCurrentProfile,
-  isOnboardingPages,
-}: {
-  status: SessionContextValue['status'];
-  session: Session | null;
-  hasCurrentProfile: boolean;
-  isOnboardingPages: boolean;
-}) => {
-  return (
-    status === 'authenticated' &&
-    session?.user?.hasBeenOnboarded === true &&
-    !hasCurrentProfile &&
-    !isOnboardingPages
-  );
-};
 
 const ProfileSession = () => {
   const {
@@ -42,6 +23,7 @@ const ProfileSession = () => {
     profile,
   } = useCurrentUser();
   const { toast } = useToast();
+  const [shouldDisplayModal, setShouldDisplayModal] = useState(false);
   const router = useRouter();
   const isOnboardingPages = router.pathname.startsWith('/onboarding');
 
@@ -82,16 +64,24 @@ const ProfileSession = () => {
     }
   }, [status]);
 
+  // effect to setting the value of session and profile store. initially it's null
+  React.useEffect(() => {
+    if (
+      status === 'authenticated' &&
+      session?.user?.hasBeenOnboarded === true &&
+      !hasCurrentProfile &&
+      !isOnboardingPages
+    ) {
+      setShouldDisplayModal(true);
+    }
+  }, [hasCurrentProfile, isOnboardingPages, session?.user, status]);
+
   console.log({ session }, 'From profile session');
+  console.log({ shouldDisplayModal }, 'From profile session');
 
   return (
     <NoSSR>
-      {shouldDisplayProfileDialog({
-        status,
-        hasCurrentProfile,
-        isOnboardingPages,
-        session,
-      }) ? (
+      {shouldDisplayModal ? (
         <ChooseProfileModale {...{ updateProfile, reloadWithToast, session }} />
       ) : null}
     </NoSSR>
