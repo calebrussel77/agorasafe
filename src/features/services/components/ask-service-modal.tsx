@@ -122,20 +122,19 @@ const AskServiceModal: FC<AskServiceModalProps> = ({ children }) => {
       >
         {!query && (
           <AsyncWrapper isLoading={isInitialLoading} error={error}>
+            {data?.categories?.length === 0 && (
+              <EmptyState
+                icon={<Search />}
+                className="my-3"
+                name="Aucune catégorie trouvé"
+                description="Nous n'avons trouvés aucune catégorie à vous afficher."
+              />
+            )}
             <FadeAnimation
               className={cn('grid grid-cols-1 gap-x-6 gap-y-3 sm:grid-cols-2')}
               from={{ x: -620, opacity: 0 }}
               isVisible={!selectedCategory}
             >
-              {data?.categories?.length === 0 && (
-                <EmptyState
-                  icon={<Search />}
-                  className="my-3"
-                  name="Aucune catégorie trouvé"
-                  description="Nous n'avons trouvés aucune catégorie à vous afficher."
-                />
-              )}
-
               {data?.categories?.map(category => (
                 <AskServiceItem
                   onClick={() => onSelectCategory(category)}

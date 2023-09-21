@@ -6,9 +6,7 @@ import { ErrorWrapper, SectionError } from '@/components/ui/error';
 import { CenterContent } from '@/components/ui/layout';
 import { Modal } from '@/components/ui/modal';
 import { Skeleton } from '@/components/ui/skeleton';
-import { ToastAction, useToast } from '@/components/ui/toast';
 import { Typography } from '@/components/ui/typography';
-import { User } from '@/components/user';
 import { UserAvatar } from '@/components/user-avatar';
 import { UserBadge } from '@/components/user-badge';
 

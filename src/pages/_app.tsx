@@ -123,8 +123,6 @@ MyApp.getInitialProps = async (appContext: AppContext) => {
 
   const cookies = getCookies(appContext.ctx);
 
-  console.log({ cookies });
-
   if (isMaintenanceMode) {
     return {
       pageProps: {
@@ -137,9 +135,7 @@ MyApp.getInitialProps = async (appContext: AppContext) => {
     const hasAuthCookie =
       !isClient && Object.keys(cookies).some(x => x.endsWith('session-token'));
 
-    console.log({ hasAuthCookie });
-
-    const session = hasAuthCookie ? await getSession(appContext.ctx) : null;
+    const session = await getSession(appContext.ctx); // TODO: Try to find a way to always execute this on server side and have the initial state on the client
     const initialProfileState = appContext.ctx.req
       ? getInitialState(appContext.ctx.req?.headers)
       : null;
@@ -157,9 +153,7 @@ MyApp.getInitialProps = async (appContext: AppContext) => {
 
     console.log({ session });
 
-    console.log(appContext.ctx);
-
-    console.log(initialProfileState);
+    console.log({ hasAuthCookie });
 
     return {
       pageProps: {

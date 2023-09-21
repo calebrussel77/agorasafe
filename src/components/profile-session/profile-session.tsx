@@ -82,20 +82,16 @@ const ProfileSession = () => {
     }
   }, [status]);
 
-  console.log(
-    status === 'authenticated' &&
-      session?.user?.hasBeenOnboarded === true &&
-      !hasCurrentProfile &&
-      !isOnboardingPages,
-    'From profile session'
-  );
+  console.log({ session }, 'From profile session');
 
   return (
     <NoSSR>
-      {status === 'authenticated' &&
-      session?.user?.hasBeenOnboarded === true &&
-      !hasCurrentProfile &&
-      !isOnboardingPages ? (
+      {shouldDisplayProfileDialog({
+        status,
+        hasCurrentProfile,
+        isOnboardingPages,
+        session,
+      }) ? (
         <ChooseProfileModale {...{ updateProfile, reloadWithToast, session }} />
       ) : null}
     </NoSSR>

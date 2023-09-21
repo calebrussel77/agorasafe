@@ -51,6 +51,9 @@ const config = {
   },
 };
 
+const SENTRY_AUTH_TOKEN =
+  process.env.SENTRY_AUTH_TOKEN || process.env.NEXT_PUBLIC_SENTRY_AUTH_TOKEN;
+
 export default withSentryConfig(
   config,
   {
@@ -62,7 +65,7 @@ export default withSentryConfig(
 
     org: 'caleb-russel-org',
     project: 'agorasafe',
-    authToken: process.env.SENTRY_AUTH_TOKEN,
+    authToken: SENTRY_AUTH_TOKEN,
   },
   {
     // For all available options, see:
