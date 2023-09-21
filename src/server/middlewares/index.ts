@@ -15,7 +15,7 @@ export const middlewareMatcher = middlewares.flatMap(
 );
 
 export async function runMiddlewares(request: NextRequest) {
-  let user: Session['user'] | null = null;
+  let userInfo: { user: Session['user'] | null } | null = null;
   let hasToken = true;
   const redirect = (to: string) =>
     NextResponse.redirect(new URL(to, request.url));
@@ -24,18 +24,18 @@ export async function runMiddlewares(request: NextRequest) {
 
   for (const middleware of middlewares) {
     if (middleware.shouldRun && !middleware.shouldRun(request)) continue;
-    if (middleware.useSession && !user && hasToken) {
+    if (middleware.useSession && !userInfo && hasToken) {
       const token = await getToken({
         req: request,
         secret: env.NEXTAUTH_JWT_SECRET,
       });
 
       if (!token) hasToken = false;
-      user = token?.user as Session['user'];
+      userInfo = token as { user: Session['user'] };
     }
     const response = await middleware.handler({
       request,
-      user,
+      user: userInfo && userInfo?.user ? userInfo?.user : null,
       currentProfile: initialState?.profile,
       redirect,
     });
