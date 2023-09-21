@@ -43,7 +43,7 @@ addRouteGuard({
   canAccess: ({ user, currentProfile, request }) => {
     console.log({ user }, 'From Middleware');
     console.log({ currentProfile }, 'From Middleware');
-    console.log({ request }, 'From Middleware');
+    console.log(request?.url, 'URL From Middleware');
 
     if (user && user.hasBeenOnboarded === false && !currentProfile) {
       return false;
