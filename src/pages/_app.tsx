@@ -22,10 +22,9 @@ import { type ReactElement, type ReactNode, useMemo } from 'react';
 import { DefaultSeo } from '@/components/default-seo';
 import { Meta } from '@/components/meta';
 import { PageTransition } from '@/components/page-transition';
-import { ProfileSession } from '@/components/profile-session';
-import { NoSSR } from '@/components/ui/no-ssr';
 
 import { api } from '@/utils/api';
+import { isWindowDefined } from '@/utils/type-guards';
 
 import { buildCanonical } from '@/lib/next-seo-config';
 import { displayProgressBarOnRouteChange } from '@/lib/progress-bar';
@@ -50,7 +49,7 @@ export type AppPageProps = {
 }>;
 
 function handleExitComplete() {
-  if (typeof window !== 'undefined') {
+  if (isWindowDefined()) {
     window.scrollTo({ top: 0 });
   }
 }
@@ -70,17 +69,12 @@ const MyApp = (props: AppPageProps) => {
     router,
   } = props;
 
-  console.warn({ session });
-
-  console.warn({ initialProfileState });
-
   // Use the layout defined at the page level, if available
   const getLayout = useMemo(
     () =>
       Component.getLayout ??
       ((page: React.ReactElement) => (
         <>
-          <ProfileSession />
           <MainLayout {...page.props}>{page}</MainLayout>
         </>
       )),
@@ -137,7 +131,7 @@ MyApp.getInitialProps = async (appContext: AppContext) => {
     const hasAuthCookie =
       !isClient && Object.keys(cookies).some(x => x.endsWith('session-token'));
 
-    const session = await getSession(appContext.ctx); // TODO: Try to find a way to always execute this on server side and have the initial state on the client
+    const session = hasAuthCookie ? await getSession(appContext.ctx) : null;
     const initialProfileState = appContext.ctx.req
       ? getInitialState(appContext.ctx.req?.headers)
       : null;

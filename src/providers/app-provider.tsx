@@ -3,6 +3,7 @@ import ProfileStoreProvider from '@/stores/profile-store/profile-store-provider'
 import { SessionProvider } from 'next-auth/react';
 import { type FC, type PropsWithChildren } from 'react';
 
+import { ProfileSession } from '@/components/profile-session';
 import { Toaster } from '@/components/ui/toast';
 
 import { type AppPageProps } from '@/pages/_app';
@@ -18,21 +19,20 @@ const AppProvider: FC<PropsWithChildren<AppPagePropsWithChildren>> = ({
   children,
 }) => {
   return (
-    <>
-      <SessionProvider
-        session={session ?? undefined}
-        refetchOnWindowFocus={false}
-        refetchWhenOffline={false}
-        refetchInterval={5 * 60}
+    <SessionProvider
+      session={session ?? undefined}
+      refetchOnWindowFocus={false}
+      refetchWhenOffline={false}
+      refetchInterval={5 * 60}
+    >
+      <ProfileStoreProvider
+        {...((initialProfileState as ProfileStore) ?? undefined)}
       >
-        <ProfileStoreProvider
-          {...((initialProfileState as ProfileStore) ?? undefined)}
-        >
-          {children}
-          <Toaster />
-        </ProfileStoreProvider>
-      </SessionProvider>
-    </>
+        {children}
+        <ProfileSession />
+        <Toaster />
+      </ProfileStoreProvider>
+    </SessionProvider>
   );
 };
 
