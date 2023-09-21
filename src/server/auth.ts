@@ -140,7 +140,7 @@ export const authOptions: NextAuthOptions = {
   },
   jwt: {
     maxAge: 30 * 24 * 60 * 60, // 30 days
-    secret: env.NEXTAUTH_JWT_SECRET,
+    secret: env.NEXTAUTH_SECRET,
   },
 };
 

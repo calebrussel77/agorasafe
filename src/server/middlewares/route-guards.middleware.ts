@@ -32,12 +32,8 @@ addRouteGuard({
      * - onboarding (onboarding paths)
      */
 
-    '/((?!api|_next/static|_next/image|onboarding|favicon.ico).*)',
-    '/fr/((?!api|_next/static|_next/image|onboarding|favicon.ico).*)',
-    '/en/((?!api|_next/static|_next/image|onboarding|favicon.ico).*)',
+    '/((?!api|_next/static|_next/image|monitoring|images|onboarding|favicon.ico).*)',
     '/',
-    '/fr',
-    '/en',
   ],
   redirect: `/onboarding/choose-profile-type`,
   canAccess: ({ user, currentProfile, request }) => {
