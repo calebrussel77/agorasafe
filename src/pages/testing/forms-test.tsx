@@ -26,7 +26,7 @@ const ALLOWED_TYPES = Object.keys(ProfileType);
 
 const meta = {
   title: (profileType: ProfileType) =>
-    `Ajouter un profil ${getProfileTypeName(profileType).toLowerCase()}`,
+    `Ajouter un profil ${getProfileTypeName(profileType)?.toLowerCase()}`,
   description: `Renseignez les informations ci-dessous pour facilement gérer vos
   projets, consulter vos candidatures, rechercher des prestataires
   ou des demandes de service, etc.`,

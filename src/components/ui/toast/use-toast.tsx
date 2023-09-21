@@ -8,7 +8,7 @@ import type { ToastActionElement, ToastProps } from './toast';
 const TOAST_LIMIT = 1;
 const TOAST_REMOVE_DELAY = 1_500_000;
 
-type ToasterToast = Omit<ToastProps, 'hasOneAction' | 'title'> & {
+type ToasterToast = Pick<ToastProps, 'onOpenChange' | 'open'> & {
   id: string;
   title?: React.ReactNode;
   icon?: JSX.Element;
@@ -139,10 +139,24 @@ function dispatch(action: Action) {
   });
 }
 
-type Toast = Omit<ToasterToast, 'id'>;
+type Toast = Omit<ToasterToast, 'id'> & { delay?: number };
 
-function toast({ ...props }: Toast) {
+function toast({ delay = 0, ...props }: Toast) {
   const id = genId();
+
+  const timeoutId = setTimeout(() => {
+    dispatch({
+      type: 'ADD_TOAST',
+      toast: {
+        ...props,
+        id,
+        open: true,
+        onOpenChange: open => {
+          if (!open) dismiss();
+        },
+      },
+    });
+  }, delay);
 
   const update = (props: ToasterToast) =>
     dispatch({
@@ -150,19 +164,10 @@ function toast({ ...props }: Toast) {
       toast: { ...props, id },
     });
 
-  const dismiss = () => dispatch({ type: 'DISMISS_TOAST', toastId: id });
-
-  dispatch({
-    type: 'ADD_TOAST',
-    toast: {
-      ...props,
-      id,
-      open: true,
-      onOpenChange: open => {
-        if (!open) dismiss();
-      },
-    },
-  });
+  const dismiss = () => {
+    clearTimeout(timeoutId);
+    return dispatch({ type: 'DISMISS_TOAST', toastId: id });
+  };
 
   return {
     id: id,
