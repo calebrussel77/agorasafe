@@ -107,7 +107,7 @@ const UserProfileDropdown: FC<UserProfileDropdownProps> = ({
                 {userProfileConfig?.canAddNewProfile && (
                   <>
                     <Link
-                      onClick={resetProfile}
+                      // onClick={resetProfile}
                       href={userProfileConfig?.addNewProfileHref}
                       className="w-full"
                     >

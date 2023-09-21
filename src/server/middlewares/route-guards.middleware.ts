@@ -11,8 +11,8 @@ const routeGuards: RouteGuard[] = [];
 addRouteGuard({
   matcher: ['/onboarding/:path*'],
   redirect: '/',
-  canAccess: ({ user, currentProfile }) => {
-    return !!user && !currentProfile;
+  canAccess: ({ user }) => {
+    return !!user; //TODO: add to the condition the check of user Max. profiles number
   },
 });
 
@@ -37,7 +37,7 @@ addRouteGuard({
   ],
   redirect: `/onboarding/choose-profile-type`,
   canAccess: ({ user, currentProfile }) => {
-    if (user?.hasBeenOnboarded == false && !currentProfile) {
+    if (user && user.hasBeenOnboarded === false && !currentProfile) {
       return false;
     }
     return true;

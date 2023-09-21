@@ -6,12 +6,16 @@ import { generateClientDropzoneAccept } from 'uploadthing/client';
 
 import { cn } from '@/lib/utils';
 
-import { getImageUrl } from '../file-upload';
+import { checkIsImageFile } from '../file-upload';
 import { Preview as DefaultPreview } from '../file-upload/preview';
 import { Image } from '../image';
 import { Spinner } from '../spinner';
 
 type ValidFileTypes = 'image' | 'video' | 'audio' | 'blob' | 'pdf' | 'text';
+
+export interface FileWithPreview extends File {
+  preview?: string;
+}
 
 interface DropzoneUploadProps {
   className?: string;
@@ -19,9 +23,9 @@ interface DropzoneUploadProps {
   icon?: ReactElement | JSX.Element;
   label?: string;
   preview?: typeof DefaultPreview | null;
-  onChange?: (acceptedFiles: FileWithPath[]) => void;
-  onRemove?: (acceptedFile: FileWithPath) => void;
-  value: FileWithPath[];
+  onChange?: (acceptedFiles: FileWithPreview[]) => void;
+  onRemove?: (acceptedFile: FileWithPreview) => void;
+  value: FileWithPreview[];
   isLoading?: boolean;
   maxSize?: number;
   maxFiles?: number;
@@ -44,16 +48,24 @@ export const DropzoneUpload = ({
   maxFiles,
   className,
 }: PropsWithChildren<DropzoneUploadProps>) => {
-  const shouldDisplayImage = value && value?.length === 1;
-  const imageUrl = value && getImageUrl(value[0] as File);
+  const isSingleFile = value && value?.length === 1;
+  const imageUrl = value && value[0]?.preview;
+  const isImageCanBeDisplay =
+    isSingleFile && checkIsImageFile(value[0] as File) && imageUrl;
 
-  const { getRootProps, getInputProps } = useDropzone({
-    onDrop: acceptedFiles => onChange && onChange(acceptedFiles),
-    maxSize,
-    multiple,
-    maxFiles,
-    accept: fileTypes ? generateClientDropzoneAccept(fileTypes) : undefined,
-  });
+  const handleChange = (acceptedFiles: FileWithPath[]) => {
+    const newFiles: FileWithPreview[] = Array.from(acceptedFiles).map(
+      (file: FileWithPreview) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        file.preview = URL.createObjectURL(file);
+        return file;
+      }
+    );
+
+    onChange && onChange(newFiles);
+    // onBlur && onBlur();
+  };
 
   const handleRemove: DropzoneUploadProps['onRemove'] = removedFile => {
     const newFiles = value?.filter(file => file !== removedFile);
@@ -61,24 +73,28 @@ export const DropzoneUpload = ({
     onRemove && onRemove(removedFile);
   };
 
-  if (shouldDisplayImage && imageUrl) {
+  const { getRootProps, getInputProps } = useDropzone({
+    onDrop: acceptedFiles => handleChange(acceptedFiles),
+    maxSize,
+    multiple,
+    maxFiles,
+    accept: fileTypes ? generateClientDropzoneAccept(fileTypes) : undefined,
+  });
+
+  if (isImageCanBeDisplay) {
     return (
-      <div
+      <Image
+        src={imageUrl}
+        isLoading={isLoading}
+        onRemove={() => handleRemove(value[0] as FileWithPreview)}
+        alt="image-preview"
         className={cn(
-          'default__transition group relative flex h-[200px] w-full flex-col items-center justify-center gap-3 border border-dashed border-gray-400 bg-gray-50 p-2 text-center transition duration-200 hover:bg-gray-200 disabled:cursor-not-allowed disabled:bg-gray-300',
+          'default__transition group relative flex h-[200px] w-full border border-dashed border-gray-400 transition duration-200 hover:bg-gray-200 disabled:cursor-not-allowed disabled:bg-gray-300',
           isLoading &&
             'pointer-events-none cursor-not-allowed hover:bg-inherit',
           className
         )}
-      >
-        <Image src={imageUrl} alt="image-preview" />
-        <button
-          onClick={() => handleRemove(value[0] as FileWithPath)}
-          className="absolute right-2 top-1 rounded-full bg-brand-50 p-1 text-brand-500 shadow-sm hover:text-brand-600"
-        >
-          <X className="h-4 w-4" />
-        </button>
-      </div>
+      />
     );
   }
 

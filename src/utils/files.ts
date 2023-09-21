@@ -1,10 +1,15 @@
-
 import { isArray } from './type-guards';
 
-export const getFilePreviewUrl = (file: File) => {
-  if (!file) return;
+export const getFilePreviewUrl = (file: File & { blob?: never }) => {
+  // If the file is not an image or is null, return null
+  if (!file || !/^image\//.test(file.type)) {
+    return null;
+  }
 
   const reader = new FileReader();
+  reader.onloadend = () => {
+    file.blob = reader.result as never;
+  };
   reader.readAsDataURL(file);
   const previewUrl = URL.createObjectURL(file);
 
@@ -34,4 +39,3 @@ export function serializeFile(fileObject: File | File[] | string) {
 
   return JSON.stringify(newFile);
 }
-

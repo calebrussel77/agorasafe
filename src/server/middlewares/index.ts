@@ -31,7 +31,7 @@ export async function runMiddlewares(request: NextRequest) {
       });
 
       if (!token) hasToken = false;
-      user = token as Session['user'];
+      user = token?.user as Session['user'];
     }
     const response = await middleware.handler({
       request,

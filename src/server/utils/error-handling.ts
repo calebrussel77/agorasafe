@@ -45,13 +45,15 @@ export function throwDbError(error: unknown): never {
   } else if (error instanceof Prisma.PrismaClientKnownRequestError)
     throw new TRPCError({
       code: prismaErrorToTrpcCode[error.code] ?? 'INTERNAL_SERVER_ERROR',
-      message: error.message,
+      message:
+        "Une erreur inattendue s'est produite. Notre équipe a été informée et résoudra cette erreur dès que possible.",
       cause: error,
     });
   else if (error instanceof Prisma.PrismaClientValidationError)
     throw new TRPCError({
       code: 'INTERNAL_SERVER_ERROR',
-      message: 'Erreur de validation de la base de donnée.',
+      message:
+        "Une erreur inattendue s'est produite. Notre équipe a été informée et résoudra cette erreur dès que possible.",
       cause: error,
     });
 
@@ -75,13 +77,14 @@ export const handleTRPCError = (error: unknown) => {
     else if (error instanceof Prisma.PrismaClientValidationError)
       throw new TRPCError({
         code: 'INTERNAL_SERVER_ERROR',
-        message: 'Erreur de validation de la base de donnée.',
+        message:
+          "Une erreur inattendue s'est produite. Notre équipe a été informée et résoudra cette erreur dès que possible.",
       });
     else
       throw new TRPCError({
         code: 'INTERNAL_SERVER_ERROR',
         message:
-          "Une erreur inattendue s'est produite, veuillez réessayer plus tard.",
+          "Une erreur inattendue s'est produite. Notre équipe a été informée et résoudra cette erreur dès que possible.",
       });
   }
 };

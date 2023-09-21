@@ -21,7 +21,7 @@ export default createNextApiHandler({
       );
     }
 
-    // Capture all need errors without zod error, and send to Sentry
+    // Capture all needed errors without zod errors, and send to Sentry
     if (ALLOWED_SENTRY_EXCEPTION_CODE_REPORTS.includes(error.code)) {
       sentryCaptureException({ error, ctx, path });
     }

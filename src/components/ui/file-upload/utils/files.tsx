@@ -94,9 +94,14 @@ export function getFileIcon(file: FileType, forceFileType?: ForceFileType) {
   }
 }
 
-export const getImageUrl = (file: string | File) => {
+export const checkIsImageFile = (file: string | File) => {
   const mimeType = getMimeType(file);
   const isImage = mimeType && mimeType.startsWith('image/');
+  return isImage;
+};
+
+export const getImageUrl = (file: string | File) => {
+  const isImage = checkIsImageFile(file);
 
   if (isImage && file instanceof File) {
     return getFilePreviewUrl(file);
