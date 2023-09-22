@@ -68,10 +68,17 @@ export const authOptions: NextAuthOptions = {
       if (trigger === 'update' && session) {
         const _session = session as Session;
         token.user = _session.user;
-        token.version = SESSION_VERSION;
       } else {
         if (user) {
           try {
+            console.log('JWT CALLBACK CALLED', {
+              token,
+              user,
+              trigger,
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+              session,
+            });
+
             const _user = await getUserByEmail(user?.email as string);
 
             if (!_user) throwNotFoundError();
@@ -84,13 +91,14 @@ export const authOptions: NextAuthOptions = {
               hasBeenOnboarded: _user.hasBeenOnboarded,
               role: _user.role,
             };
-
-            token.version = SESSION_VERSION;
           } catch (e) {
             throwDbError(e);
           }
         }
       }
+
+      token.version = SESSION_VERSION;
+
       return token;
     },
   },
