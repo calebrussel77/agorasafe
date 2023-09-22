@@ -1,3 +1,4 @@
+import { env } from '@/env.mjs';
 import { getInitialState } from '@/stores/profile-store/initial-state';
 import { type Session } from 'next-auth';
 import { getToken } from 'next-auth/jwt';
@@ -26,6 +27,8 @@ export async function runMiddlewares(request: NextRequest) {
     if (middleware.useSession && !user && hasToken) {
       const token = await getToken({
         req: request,
+        secret: env.NEXTAUTH_SECRET,
+        secureCookie: env.NEXTAUTH_URL.startsWith('https://'),
       });
       console.log({ token }, 'On the for Loop');
 
