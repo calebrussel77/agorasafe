@@ -69,28 +69,28 @@ export const authOptions: NextAuthOptions = {
         const _session = session as Session;
         token.user = _session.user;
         token.version = SESSION_VERSION;
-      }
-      if ((trigger === 'signIn' || trigger === 'signUp') && user) {
-        try {
-          const _user = await getUserByEmail(user?.email || '');
+      } else {
+        if (user) {
+          try {
+            const _user = await getUserByEmail(user?.email as string);
 
-          if (!_user) throwNotFoundError();
+            if (!_user) throwNotFoundError();
 
-          token.user = {
-            id: user?.id,
-            email: user?.email,
-            name: user?.fullName,
-            avatar: user?.picture,
-            hasBeenOnboarded: _user.hasBeenOnboarded,
-            role: _user.role,
-          };
+            token.user = {
+              id: user?.id,
+              email: user?.email,
+              name: user?.fullName,
+              avatar: user?.picture,
+              hasBeenOnboarded: _user.hasBeenOnboarded,
+              role: _user.role,
+            };
 
-          token.version = SESSION_VERSION;
-        } catch (e) {
-          throwDbError(e);
+            token.version = SESSION_VERSION;
+          } catch (e) {
+            throwDbError(e);
+          }
         }
       }
-
       return token;
     },
   },
@@ -129,7 +129,7 @@ export const authOptions: NextAuthOptions = {
     signIn: '/auth/login',
     error: '/auth/login',
   },
-  debug: false,
+  debug: true,
   logger: {
     error(code, ...message) {
       sentryCaptureException({ code, message });
@@ -140,8 +140,9 @@ export const authOptions: NextAuthOptions = {
   },
   jwt: {
     maxAge: 30 * 24 * 60 * 60, // 30 days
-    secret: env.NEXTAUTH_SECRET,
+    secret: env.NEXTAUTH_JWT_SECRET,
   },
+  secret: env.NEXTAUTH_SECRET,
 };
 
 /**
