@@ -26,9 +26,7 @@ export function getUserByEmail(userEmail: string) {
     where: { email: userEmail },
     select: {
       id: true,
-      email: true,
       hasBeenOnboarded: true,
-      picture: true,
       role: true,
     },
   });

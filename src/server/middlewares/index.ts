@@ -2,8 +2,7 @@ import { env } from '@/env.mjs';
 import { getInitialState } from '@/stores/profile-store/initial-state';
 import { type Session } from 'next-auth';
 import { getToken } from 'next-auth/jwt';
-import { type NextRequestWithAuth } from 'next-auth/middleware';
-import { NextResponse } from 'next/server';
+import { type NextRequest, NextResponse } from 'next/server';
 
 import { routeGuardsMiddleware } from './route-guards.middleware';
 import { type Middleware } from './utils';
@@ -15,22 +14,28 @@ export const middlewareMatcher = middlewares.flatMap(
   middleware => middleware.matcher
 );
 
-export async function runMiddlewares(request: NextRequestWithAuth) {
+export async function runMiddlewares(request: NextRequest) {
+  let user: Session['user'] | null = null;
+  let hasToken = true;
   const redirect = (to: string) =>
     NextResponse.redirect(new URL(to, request.url));
 
   const initialState = getInitialState(request.headers);
-  const token = request?.nextauth?.token || null;
-
-  console.log({ token }, 'FROM GET TOKEN');
-  console.log(request?.nextauth, 'FROM GET TOKEN');
 
   for (const middleware of middlewares) {
     if (middleware.shouldRun && !middleware.shouldRun(request)) continue;
+    if (middleware.useSession && !user && hasToken) {
+      const token = await getToken({
+        req: request,
+        secret: env.NEXTAUTH_JWT_SECRET,
+      });
 
+      if (!token) hasToken = false;
+      user = token?.user as Session['user'];
+    }
     const response = await middleware.handler({
       request,
-      user: token && token?.user ? (token?.user as Session['user']) : null,
+      user,
       currentProfile: initialState?.profile,
       redirect,
     });

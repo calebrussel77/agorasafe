@@ -37,9 +37,8 @@ addRouteGuard({
   ],
   redirect: `/onboarding/choose-profile-type`,
   canAccess: ({ user, currentProfile, request }) => {
-    console.log({ user }, 'From Middleware');
-    console.log({ currentProfile }, 'From Middleware');
     console.log(request?.url, 'URL From Middleware');
+    console.log({ user }, 'USER From Middleware');
 
     if (user && user.hasBeenOnboarded === false && !currentProfile) {
       return false;
@@ -77,8 +76,6 @@ export const routeGuardsMiddleware = createMiddleware({
   useSession: true,
   handler: ({ currentProfile, user, request, redirect }) => {
     const { pathname } = request.nextUrl;
-
-    console.log({ user }, 'From routeGuardsMiddleware called');
 
     for (const routeGuard of routeGuards) {
       if (!routeGuard.isMatch(pathname)) continue;

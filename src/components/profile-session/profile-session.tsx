@@ -82,8 +82,6 @@ const ProfileSession = () => {
     }
   }, [status]);
 
-  console.log(session, 'From profile session');
-
   return (
     <NoSSR>
       {shouldDisplayProfileDialog({
