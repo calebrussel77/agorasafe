@@ -28,9 +28,11 @@ export async function runMiddlewares(request: NextRequest) {
       const token = await getToken({
         req: request,
         secret: env.NEXTAUTH_SECRET,
-        secureCookie: env.NEXTAUTH_URL.startsWith('https://'),
+        secureCookie: true,
+        // secureCookie: env.NEXTAUTH_URL.startsWith('https://'),
       });
       console.log({ token }, 'On the for Loop');
+      console.log(env.NEXTAUTH_URL, 'On the for Loop');
 
       if (!token) hasToken = false;
       user = token?.user as Session['user'];
