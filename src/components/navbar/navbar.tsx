@@ -24,7 +24,7 @@ interface NavbarProps {
 }
 
 const Navbar: FC<NavbarProps> = ({ className, children, navigations }) => {
-  const { profile, isAuthWithProfile } = useCurrentUser();
+  const { profile, isAuth } = useCurrentUser();
   const { isDropdownMenuOpen, onToggleDropdownMenu } = useDropdownMenu();
 
   const { data, isLoading, error } = useGetProfileConfig({
@@ -64,7 +64,7 @@ const Navbar: FC<NavbarProps> = ({ className, children, navigations }) => {
             </LoginRedirect>
           </AskServiceModal>
         </CanView>
-        {isAuthWithProfile ? (
+        <CanView allowedProfiles={['CUSTOMER', 'PROVIDER']}>
           <UserProfileDropdown
             isOpen={isDropdownMenuOpen}
             onToggle={onToggleDropdownMenu}
@@ -73,7 +73,8 @@ const Navbar: FC<NavbarProps> = ({ className, children, navigations }) => {
             error={error as never}
             isLoading={isLoading}
           />
-        ) : (
+        </CanView>
+        {!isAuth && (
           <Link
             href="/auth/login"
             className="ml-4 hidden text-sm font-semibold leading-6 lg:flex"

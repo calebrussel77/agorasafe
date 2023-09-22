@@ -129,7 +129,7 @@ export const authOptions: NextAuthOptions = {
     signIn: '/auth/login',
     error: '/auth/login',
   },
-  debug: true,
+  debug: false,
   logger: {
     error(code, ...message) {
       sentryCaptureException({ code, message });
@@ -138,11 +138,6 @@ export const authOptions: NextAuthOptions = {
       sentryCaptureException({ code, message });
     },
   },
-  jwt: {
-    maxAge: 30 * 24 * 60 * 60, // 30 days
-    secret: env.NEXTAUTH_JWT_SECRET,
-  },
-  secret: env.NEXTAUTH_SECRET,
 };
 
 /**
