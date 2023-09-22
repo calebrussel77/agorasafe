@@ -57,8 +57,10 @@ const CanView = ({
   renderNoAccess = () => null,
   children,
 }: PropsWithChildren<CanViewProps>) => {
-  const { profile: currentProfile, session, isAuth } = useCurrentUser();
+  const { profile: currentProfile, session, isAuth, status } = useCurrentUser();
   const profileTypes = currentProfile?.type ? [currentProfile?.type] : [];
+
+  if (status === 'loading') return <></>;
 
   //For some actions who need to be also public
   if (isPublic && !isAuth) return children;
