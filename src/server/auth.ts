@@ -146,6 +146,7 @@ export const authOptions: NextAuthOptions = {
       sentryCaptureException({ code, message });
     },
   },
+  secret: env.NEXTAUTH_SECRET,
 };
 
 /**
