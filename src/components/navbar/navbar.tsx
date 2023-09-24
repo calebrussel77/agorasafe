@@ -19,11 +19,17 @@ import { useDropdownMenu } from '../ui/dropdown-menu';
 
 interface NavbarProps {
   className?: string;
+  isHeaderScrolled: boolean;
   navigations: Array<{ name: string; href: string }>;
   children?: ReactNode;
 }
 
-const Navbar: FC<NavbarProps> = ({ className, children, navigations }) => {
+const Navbar: FC<NavbarProps> = ({
+  isHeaderScrolled,
+  className,
+  children,
+  navigations,
+}) => {
   const { profile, isAuth } = useCurrentUser();
   const { isDropdownMenuOpen, onToggleDropdownMenu } = useDropdownMenu();
 
@@ -47,13 +53,18 @@ const Navbar: FC<NavbarProps> = ({ className, children, navigations }) => {
       </div>
       <div className="ml-4 hidden lg:flex lg:items-center lg:gap-x-12">
         {navigations.map(item => (
-          <a
+          <Link
             key={item.name}
             href={item.href}
-            className="text-sm font-semibold leading-6"
+            className={cn(
+              'default__transition rounded-md px-2 py-1 text-sm font-semibold leading-6',
+              isHeaderScrolled
+                ? 'hover:bg-brand-50 hover:text-brand-600'
+                : 'hover:bg-gray-500'
+            )}
           >
             {item.name}
-          </a>
+          </Link>
         ))}
       </div>
       <div className="flex items-center lg:flex-1 lg:justify-end">
@@ -66,6 +77,7 @@ const Navbar: FC<NavbarProps> = ({ className, children, navigations }) => {
         </CanView>
         <CanView allowedProfiles={['CUSTOMER', 'PROVIDER']}>
           <UserProfileDropdown
+            isHeaderScrolled={isHeaderScrolled}
             isOpen={isDropdownMenuOpen}
             onToggle={onToggleDropdownMenu}
             currentProfile={profile as never}

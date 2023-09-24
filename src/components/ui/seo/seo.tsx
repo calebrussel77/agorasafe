@@ -40,7 +40,7 @@ const buildSeoMeta = (pageProps: {
     siteName = seoConfig.headSeo.siteName,
   } = pageProps;
   return {
-    title: title,
+    title: title || undefined,
     canonical: canonical,
     description,
     openGraph: {

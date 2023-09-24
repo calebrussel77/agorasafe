@@ -49,6 +49,9 @@ const PhoneForm = ({ nextStep, prevStep }: PhoneFormProps) => {
         <Field label="Numéro de téléphone" required>
           <Controller
             control={control}
+            rules={{
+              required: 'Le numéro de téléphone à contacter est requis',
+            }}
             name="phoneToContact"
             render={({ field: { ref, onChange, value }, fieldState }) => (
               <PhoneInput

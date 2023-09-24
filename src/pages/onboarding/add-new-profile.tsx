@@ -46,11 +46,14 @@ export default function AddNewProfilePage({
         delay: 4000,
         icon: <CheckCircle className="h-10 w-10 text-green-600" />,
         variant: 'success',
-        title: `Profil ${data?.profile?.name} créé`,
+        title: `Profil ${getProfileTypeName(
+          data?.profile?.type
+        )} créé`,
         description: (
           <p className="flex items-center text-sm">
-            Vous pouvez désormais switcher entre vos profils créés via votre{' '}
-            <span className="font-semibold">menu utilisateur</span>
+            Le profil{' '}
+            <span className="font-semibold">{data?.profile?.name}</span> a bien
+            été créé avec succès.
           </p>
         ),
       });

@@ -3,9 +3,11 @@ import { Controller } from 'react-hook-form';
 
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
+import { Field } from '@/components/ui/field';
 import { Form, useZodForm } from '@/components/ui/form';
 
 import { addDurationToDate } from '@/lib/date-fns';
+import { cn } from '@/lib/utils';
 
 import {
   type PublishServiceRequestFormStore,
@@ -48,19 +50,25 @@ const DateForm = ({ nextStep, prevStep }: DateFormProps) => {
         <div className="flex justify-center">
           <Controller
             control={control}
+            rules={{ required: 'La date est requise' }}
             name="date"
-            render={({ field: { onChange, value, ...rest } }) => {
+            render={({ field: { onChange, value, ...rest }, fieldState }) => {
               return (
-                <Calendar
-                  mode="single"
-                  numberOfMonths={2}
-                  fromDate={defaultDate}
-                  toDate={defaultEndDate}
-                  selected={value as Date}
-                  onSelect={onChange}
-                  className="rounded-md border shadow-md"
-                  {...rest}
-                />
+                <Field error={fieldState?.error?.message}>
+                  <Calendar
+                    mode="single"
+                    numberOfMonths={2}
+                    fromDate={defaultDate}
+                    toDate={defaultEndDate}
+                    selected={value as Date}
+                    onSelect={onChange}
+                    className={cn(
+                      'rounded-md border shadow-md',
+                      fieldState?.error?.message && 'border-2 border-red-500'
+                    )}
+                    {...rest}
+                  />
+                </Field>
               );
             }}
           />

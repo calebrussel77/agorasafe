@@ -124,7 +124,7 @@ export const Field = forwardRef<HTMLDivElement, FieldProps>(
           </Container>
 
           {hasHintText && !hasVariantMessage && (
-            <HelperMessage>{hint}</HelperMessage>
+            <HelperMessage className='mt-0.5'>{hint}</HelperMessage>
           )}
 
           {successText && (

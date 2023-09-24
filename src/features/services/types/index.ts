@@ -29,6 +29,8 @@ export type GetServiceRequestOffersInput =
 
 export type PublishServiceRequestOptions =
   ReactQueryOptions['services']['publishServiceRequest'];
+export type PublishServiceRequestInputs =
+  RouterInputs['services']['publishServiceRequest'];
 
 export type GetAllServiceCategoriesOutput =
   RouterOutputs['services']['getAllServiceCategories'];

@@ -56,6 +56,7 @@ const AddressForm = ({ nextStep, prevStep }: AddressFormProps) => {
           <Controller
             control={control}
             name="location"
+            rules={{ required: "L'adresse de localisation est requise." }}
             render={({ field: { onChange, value } }) => (
               <ComboBox
                 onChange={onChange}

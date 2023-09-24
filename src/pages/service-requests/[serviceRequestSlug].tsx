@@ -1,4 +1,5 @@
 import {
+  Banknote,
   FolderClock,
   MapPin,
   MoreVertical,
@@ -11,19 +12,23 @@ import { EyeOffIcon } from 'lucide-react';
 import { MoveLeft } from 'lucide-react';
 import { type InferGetServerSidePropsType } from 'next';
 import { useRouter } from 'next/router';
+import { useEffect } from 'react';
+import { useCopyToClipboard } from 'react-use';
 import { z } from 'zod';
 
 import { CanView } from '@/components/can-view';
 import { AsyncWrapper } from '@/components/ui/async-wrapper';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { DropdownMenu } from '@/components/ui/dropdown-menu';
 import { EmptyState } from '@/components/ui/empty-state';
 import { GroupItem } from '@/components/ui/group-item';
 import { IconContainer } from '@/components/ui/icon-container';
-import { Image } from '@/components/ui/image';
+import { Image, ImageGridGallery } from '@/components/ui/image';
 import { Inline } from '@/components/ui/inline';
 import { CenterContent } from '@/components/ui/layout';
 import { Seo } from '@/components/ui/seo';
+import { toast } from '@/components/ui/toast';
 import { Truncate } from '@/components/ui/truncate';
 import { Typography } from '@/components/ui/typography';
 import { User } from '@/components/user';
@@ -36,6 +41,7 @@ import {
 } from '@/features/services';
 
 import { formatPhoneNumber } from '@/utils/misc';
+import { formatPrice } from '@/utils/number';
 import { getAbsoluteHrefUrl } from '@/utils/routing';
 import { isEmptyArray } from '@/utils/type-guards';
 
@@ -55,6 +61,8 @@ const ServiceRequestPublicationPage = ({
   serviceRequestSlugQuery,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const router = useRouter();
+  const [state, copyToClipboard] = useCopyToClipboard();
+
   const { data, isInitialLoading, error } = useGetServiceRequest({
     slug: serviceRequestSlugQuery,
   });
@@ -69,19 +77,34 @@ const ServiceRequestPublicationPage = ({
   const defaultCoverBgUrl = '/images/artistique-cover-photo.jpg';
   const isAuthorMine =
     profile?.id === data?.serviceRequest?.author?.profile?.id;
+  const authorName = data?.serviceRequest?.author?.profile?.name;
   const offersCount = offersData?.serviceRequestOffers?.length;
   const isStatusOpen = data?.serviceRequest?.status === 'OPEN';
+  const pageLink = getAbsoluteHrefUrl(router.asPath);
   const isSelected = data?.serviceRequest?.choosedProviders?.some(
     choosedProvider => choosedProvider.provider.profile.id === profile?.id
   );
+
   const coverBg = isEmptyArray(data?.serviceRequest?.photos)
     ? getAbsoluteHrefUrl(defaultCoverBgUrl)
     : data?.serviceRequest?.photos?.[0]?.url;
 
+  useEffect(() => {
+    if (state.value)
+      toast({
+        variant: 'success',
+        title: 'Lien copié avec succès',
+      });
+  }, [state]);
+
   return (
     <>
       <Seo
-        title={meta.title(data?.serviceRequest?.title || '')}
+        title={
+          authorName
+            ? meta.title(`${authorName} - ${data?.serviceRequest?.title}`)
+            : ''
+        }
         image={coverBg}
         description={meta.description(data?.serviceRequest?.description || '')}
       />
@@ -98,11 +121,20 @@ const ServiceRequestPublicationPage = ({
               <MoveLeft className="h-5 w-5" />
               <span>Retour</span>
             </button>
-            <Image
-              src={defaultCoverBgUrl}
-              alt="Image artistique de fond"
-              className="h-64 w-full rounded-lg border bg-gray-50 object-top shadow-sm md:h-80"
-            />
+            {data?.serviceRequest?.photos &&
+            data?.serviceRequest?.photos?.length > 0 ? (
+              <ImageGridGallery
+                className="h-64 w-full bg-gray-100 md:h-80"
+                images={data?.serviceRequest?.photos}
+              />
+            ) : (
+              <Image
+                src={defaultCoverBgUrl}
+                alt="Image artistique de fond"
+                className="h-64 w-full rounded-lg border bg-gray-50 object-top shadow-sm md:h-80"
+              />
+            )}
+
             <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
               <div>
                 <Typography variant="small">
@@ -152,12 +184,45 @@ const ServiceRequestPublicationPage = ({
                     {isStatusOpen ? 'Annuler ma demande' : 'Démander à nouveau'}
                   </Button>
                 )}
-                <Button variant="outline" size="sm">
-                  <MoreVertical className="h-5 w-5" />
-                </Button>
+                <DropdownMenu>
+                  <DropdownMenu.Trigger asChild>
+                    <Button variant="outline" size="sm">
+                      <MoreVertical className="h-5 w-5" />
+                    </Button>
+                  </DropdownMenu.Trigger>
+                  <DropdownMenu.Content>
+                    <DropdownMenu.Item
+                      onClick={() => copyToClipboard(pageLink)}
+                    >
+                      Copier le lien
+                    </DropdownMenu.Item>
+                    <DropdownMenu.Item asChild>
+                      <a
+                        href={`https://web.whatsapp.com/send?text=${pageLink}`}
+                      >
+                        Partager sur whatsapp
+                      </a>
+                    </DropdownMenu.Item>
+                  </DropdownMenu.Content>
+                </DropdownMenu>
               </div>
             </div>
             <div className="mt-3">
+              {data?.serviceRequest?.estimatedPrice && (
+                <GroupItem
+                  isHoverDisabled
+                  iconBefore={
+                    <IconContainer>
+                      <Banknote className="h-4 w-4" />
+                    </IconContainer>
+                  }
+                  name={
+                    <Typography className="font-semibold">
+                      {formatPrice(data?.serviceRequest?.estimatedPrice)}
+                    </Typography>
+                  }
+                />
+              )}
               <GroupItem
                 isHoverDisabled
                 iconBefore={
@@ -255,48 +320,6 @@ const ServiceRequestPublicationPage = ({
                     </ul>
                   )}
               </div>
-              {/* <div className="bg-gray-50 px-4 py-6 sm:px-6">
-                <div className="flex space-x-3">
-                  <div className="flex-shrink-0">
-                    <Avatar className="h-10 w-10 rounded-full" alt="" />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <form action="#">
-                      <div>
-                        <label htmlFor="comment" className="sr-only">
-                          About
-                        </label>
-                        <textarea
-                          id="comment"
-                          name="comment"
-                          rows={3}
-                          className="block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
-                          placeholder="Add a note"
-                          defaultValue={''}
-                        />
-                      </div>
-                      <div className="mt-3 flex items-center justify-between">
-                        <a
-                          href="#"
-                          className="group inline-flex items-start space-x-2 text-sm text-gray-500 hover:text-gray-900"
-                        >
-                          <FileQuestionIcon
-                            className="h-5 w-5 flex-shrink-0 text-gray-400 group-hover:text-gray-500"
-                            aria-hidden="true"
-                          />
-                          <span>Some HTML is okay.</span>
-                        </a>
-                        <button
-                          type="submit"
-                          className="inline-flex items-center justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
-                        >
-                          Comment
-                        </button>
-                      </div>
-                    </form>
-                  </div>
-                </div>
-              </div> */}
             </div>
           </section>
         </AsyncWrapper>

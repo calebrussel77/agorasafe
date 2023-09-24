@@ -20,3 +20,21 @@ export function numberWithCommas(value: number | string | undefined) {
     ? `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
     : '';
 }
+
+export function formatPrice(
+  price: number | string | undefined | null,
+  options: {
+    currency?: 'USD' | 'EUR' | 'CFA' | 'BDT';
+    notation?: Intl.NumberFormatOptions['notation'];
+  } = {}
+) {
+  if (!price) return '';
+
+  const { currency = 'CFA', notation = 'standard' } = options;
+
+  return new Intl.NumberFormat('fr-FR', {
+    style: 'currency',
+    currency,
+    notation,
+  }).format(Number(price));
+}

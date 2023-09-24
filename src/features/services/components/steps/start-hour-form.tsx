@@ -29,7 +29,9 @@ const StartHourForm = ({ nextStep, prevStep }: StartHourFormProps) => {
   const form = useZodForm({
     mode: 'onChange',
     defaultValues: {
-      startHour: serviceRequest?.startHour,
+      startHour:
+        serviceRequest?.startHour ||
+        generateHoursBetweenSevenAmAndtwentyOnePm()[2],
     },
   });
 
@@ -49,7 +51,9 @@ const StartHourForm = ({ nextStep, prevStep }: StartHourFormProps) => {
               key={el}
               control={control}
               name="startHour"
-              rules={{ required: true }}
+              rules={{
+                required: "L'heure de début de la prestation est requise.",
+              }}
               render={({ field: { onChange, value, ...rest } }) => {
                 return (
                   <Button

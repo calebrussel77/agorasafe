@@ -8,8 +8,7 @@ import { CenterContent } from '@/components/ui/layout';
 import { ProgressBar } from '@/components/ui/progress-bar';
 import { SectionMessage } from '@/components/ui/section-message';
 import { Seo } from '@/components/ui/seo';
-import { FullSpinner } from '@/components/ui/spinner';
-import { ToastAction, useToast } from '@/components/ui/toast';
+import { useToast } from '@/components/ui/toast';
 import { Typography } from '@/components/ui/typography';
 
 import {
@@ -19,17 +18,16 @@ import {
   NumberHoursForm,
   PhoneForm,
   PhotosForm,
-  type PublishServiceRequestFormStore,
   StartHourForm,
   publishServiceSteps,
 } from '@/features/services';
 import { useCreateServiceRequest } from '@/features/services';
+import { type PublishServiceRequestInputs } from '@/features/services';
 
-import { getCompletionPercentage, wait } from '@/utils/misc';
+import { getCompletionPercentage } from '@/utils/misc';
 
 import { createServerSideProps } from '@/server/utils/server-side';
 
-import { useCurrentUser } from '@/hooks/use-current-user';
 import { useStepper } from '@/hooks/use-stepper';
 
 const totalStepCount = publishServiceSteps?.length;
@@ -48,25 +46,16 @@ const PublishPage = ({
   const router = useRouter();
   const { toast } = useToast();
   const { isLoading, error, mutate } = useCreateServiceRequest({
-    async onSuccess(data) {
+    onSuccess(data) {
       const href = `/service-requests/${data?.serviceRequest?.slug}`;
 
       toast({
+        delay: 4000,
         variant: 'success',
         title: 'Demande de service publiée',
         description:
           'Votre demande de service a bien été publiée auprès des prestaires',
-        actions: (
-          <ToastAction
-            onClick={() => void router.push(href)}
-            variant="default"
-            altText={`Voir la demande ${data?.serviceRequest?.title}`}
-          >
-            Voir la demande
-          </ToastAction>
-        ),
       });
-      await wait(4500);
       void router.push(href);
     },
     onError(error) {
@@ -83,12 +72,11 @@ const PublishPage = ({
     currentStep - 1
   );
 
-  const onSubmit = (data: PublishServiceRequestFormStore) => {
+  const onSubmit = (data: PublishServiceRequestInputs) => {
     mutate({
       ...data,
       numberOfProviderNeeded: 2,
-      estimatedPrice: 20000,
-      photos: [],
+      estimatedPrice: 26500,
     });
   };
 
@@ -175,9 +163,6 @@ const PublishPage = ({
         <Header>
           <ProgressBar progress={progress} />
         </Header>
-        {isLoading && (
-          <FullSpinner loadingText="Publication de votre demande..." />
-        )}
         <CenterContent className="container w-full min-w-[38rem] max-w-2xl pb-12">
           <div className="w-full">
             <Typography as="h1" variant="h4" className="pb-6 text-brand-600">

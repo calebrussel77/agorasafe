@@ -7,12 +7,9 @@ import { AutoAnimate } from '@/components/ui/auto-animate';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { DropdownMenu } from '@/components/ui/dropdown-menu';
 import { ErrorWrapper, SectionError } from '@/components/ui/error';
-import { GroupItem } from '@/components/ui/group-item';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Typography } from '@/components/ui/typography';
 import { User } from '@/components/user';
-import { UserAvatar } from '@/components/user-avatar';
-import { UserBadge } from '@/components/user-badge';
 
 import { useAuth } from '@/features/auth';
 
@@ -34,6 +31,7 @@ interface UserProfileDropdownProps {
   onToggle?: () => void;
   userProfileConfig: GetProfileConfigOutput;
   currentProfile: SimpleProfile;
+  isHeaderScrolled: boolean;
 }
 
 const UserProfileDropdown: FC<UserProfileDropdownProps> = ({
@@ -42,6 +40,7 @@ const UserProfileDropdown: FC<UserProfileDropdownProps> = ({
   isLoading,
   isOpen,
   error,
+  isHeaderScrolled,
   onToggle,
 }) => {
   const { onSignOut } = useAuth();
@@ -55,7 +54,12 @@ const UserProfileDropdown: FC<UserProfileDropdownProps> = ({
         asChild
         className="ml-4 hidden rounded-full lg:flex"
       >
-        <button className="flex items-center">
+        <button
+          className={cn(
+            'default__transition flex items-center px-2 py-1',
+            isHeaderScrolled ? 'hover:bg-brand-50' : 'hover:bg-gray-500'
+          )}
+        >
           <User
             onClick={onToggle}
             profile={currentProfile}
