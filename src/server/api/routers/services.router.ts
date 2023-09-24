@@ -18,6 +18,8 @@ import {
   getServiceRequestOffersController,
   getServiceRequestOffersSchema,
   getServiceRequestSchema,
+  updateServiceRequestController,
+  updateServiceRequestSchema,
 } from '../modules/services';
 import { getAllQuerySchema } from '../validations/base.validations';
 
@@ -35,6 +37,10 @@ export const servicesRouter = createTRPCRouter({
     .mutation(({ input, ctx }) =>
       createServiceRequestController(input, ctx?.profile?.id)
     ),
+
+  updateServiceRequest: profileProcedure
+    .input(updateServiceRequestSchema)
+    .mutation(({ input }) => updateServiceRequestController(input)),
 
   getServiceRequest: publicProcedure
     .input(getServiceRequestSchema)

@@ -23,19 +23,18 @@ import { Preview as DefaultPreview } from './preview';
 const DEFAULT_MAX_FILE_SIZE = 200 * 10 * 1000;
 const DEFAULT_FILE_TYPES = 'image/*';
 
-export interface FileWithPreviewBlob extends File {
+export interface FileWithPreview extends File {
   preview?: string;
-  blob?: string | ArrayBuffer;
 }
 
-export type FileWithPreviewBlobType = FileWithPreviewBlob | string;
+export type FileWithPreviewType = FileWithPreview;
 
-type HandleRemoveType = (file: FileWithPreviewBlobType) => void;
+type HandleRemoveType = (file: FileWithPreviewType) => void;
 
 type FileChildrenProps = {
   openFile: () => void;
   disabled: boolean | undefined;
-  files: FileWithPreviewBlobType[];
+  files: FileWithPreviewType[];
   onRemoveFile: HandleRemoveType;
 };
 
@@ -46,7 +45,7 @@ export interface FileUploadOptions {
   icon?: ReactElement | JSX.Element;
   maxSize?: number;
   handleAddFile?: (
-    files: FileWithPreviewBlobType[] | FileWithPreviewBlobType
+    files: FileWithPreviewType[] | FileWithPreviewType
   ) => void;
   handleRemoveFile?: HandleRemoveType;
   preview?: typeof DefaultPreview | null;
@@ -63,7 +62,7 @@ export type FileUploadProps = Omit<
 
 const ensureArray: (
   value: unknown[] | unknown
-) => FileWithPreviewBlobType[] = value => {
+) => FileWithPreviewType[] = value => {
   if (Array.isArray(value)) {
     return value;
   } else if (value) {
@@ -95,7 +94,7 @@ export const FileUpload = forwardRef<HTMLInputElement, FileUploadProps>(
     ref
   ) => {
     // We always keep an array of files
-    const [files, setFiles] = useState<FileWithPreviewBlobType[]>(
+    const [files, setFiles] = useState<FileWithPreviewType[]>(
       ensureArray(value)
     );
     const inputRef = useRef<HTMLInputElement>();
@@ -109,28 +108,13 @@ export const FileUpload = forwardRef<HTMLInputElement, FileUploadProps>(
       }
     }, [value]);
 
-    // Clean up URL on unmount
-    // useEffect(() => {
-    //   return () => {
-    //     files &&
-    //       files.map(file =>
-    //         file instanceof File
-    //           ? URL.revokeObjectURL(file.preview as string)
-    //           : file
-    //       );
-    //   };
-    // }, [files]);
-
     const handleChange: React.ChangeEventHandler<HTMLInputElement> = e => {
-      let newFiles: FileWithPreviewBlob[] | FileWithPreviewBlob = Array.from(
+      let newFiles: FileWithPreview[] | FileWithPreview = Array.from(
         e.target.files as never
         //@ts-expect-error unexpected ts error fot this type
-      ).map((file: FileWithPreviewBlob) => {
+      ).map((file: FileWithPreview) => {
         const reader = new FileReader();
         reader.readAsDataURL(file);
-        reader.onloadend = () => {
-          file.blob = reader.result as never;
-        };
         file.preview = URL.createObjectURL(file);
         return file;
       });

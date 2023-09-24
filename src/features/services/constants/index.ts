@@ -7,6 +7,13 @@ export const publishServiceSteps = [
     libero fugiat.`,
   },
   {
+    title: 'De combien de personnes avez-vous besoin ?',
+    description: `Lorem ipsum, dolor sit amet consectetur adipisicing elit. At est
+    modi aliquam rem quos cumque velit! Consequatur placeat, itaque,
+    quod repudiandae deleniti ut eligendi minus fuga ratione, magni
+    libero fugiat.`,
+  },
+  {
     title: "De combien d'heures de services avez-vous besoin ?",
     description: `Lorem ipsum, dolor sit amet consectetur adipisicing elit. At est
     modi aliquam rem quos cumque velit! Consequatur placeat, itaque,

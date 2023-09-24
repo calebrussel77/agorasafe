@@ -9,17 +9,20 @@ import {
   getAllServicesWithCategory,
   getServiceRequestOffers,
   getServiceRequestWithDetails,
+  updateServiceRequest,
 } from './services.repository';
 import {
   getFomattedProviderNeeded,
   getFormattedDatePeriod,
   getFormattedDuration,
+  getFormattedEstimatedPrice,
 } from './services.utils';
 import type {
   CreateServiceRequestInput,
   GetAllServicesWithCategoryInput,
   GetServiceRequestInput,
   GetServiceRequestOffersInput,
+  UpdateServiceRequestInput,
 } from './services.validations';
 
 export const getAllServicesService = async (
@@ -56,6 +59,17 @@ export const createServiceRequestService = async (
   };
 };
 
+export const updateServiceRequestService = async (
+  inputs: UpdateServiceRequestInput
+) => {
+  const updatedServiceRequest = await updateServiceRequest({ inputs });
+
+  return {
+    updatedServiceRequest,
+    success: true,
+  };
+};
+
 export const getServiceRequestService = async (
   inputs: GetServiceRequestInput
 ) => {
@@ -78,6 +92,10 @@ export const getServiceRequestService = async (
       ),
       nbProviderNeededFormattedText: getFomattedProviderNeeded(
         serviceRequestDetails?.numberOfProviderNeeded
+      ),
+      estimatedPriceFormatted: getFormattedEstimatedPrice(
+        serviceRequestDetails?.estimatedPrice,
+        'Prix non défini'
       ),
       // isProfileChoosed,
     },

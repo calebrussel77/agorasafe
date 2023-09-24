@@ -10,6 +10,7 @@ import type {
   GetServiceRequestOffersOptions,
   GetServiceRequestOptions,
   PublishServiceRequestOptions,
+  UpdateServiceRequestOptions,
 } from '../types';
 
 export const useGetAllServices = (
@@ -37,6 +38,29 @@ export const useCreateServiceRequest = ({
 }: PublishServiceRequestOptions = {}) => {
   const data = api.services.publishServiceRequest.useMutation({
     onSuccess(data, variables, ctx) {
+      onSuccess?.(data, variables, ctx);
+    },
+    onError(err, variables, context) {
+      onError?.(err, variables, context);
+    },
+    ...restOptions,
+  });
+
+  return data;
+};
+
+export const useUpdateServiceRequest = ({
+  onSuccess,
+  onError,
+  ...restOptions
+}: UpdateServiceRequestOptions = {}) => {
+  const queryUtils = api.useContext();
+
+  const data = api.services.updateServiceRequest.useMutation({
+    async onSuccess(data, variables, ctx) {
+      //Invalidate single service request query 
+      await queryUtils.services.getServiceRequest.invalidate({slug: data?.updatedServiceRequest?.slug});
+      
       onSuccess?.(data, variables, ctx);
     },
     onError(err, variables, context) {

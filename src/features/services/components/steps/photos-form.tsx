@@ -12,7 +12,7 @@ import { toast } from '@/components/ui/toast';
 import { DropzoneUpload, useUpload } from '@/components/ui/uploadthing';
 
 import { generateArray } from '@/utils/misc';
-import { isArrayOfFile } from '@/utils/type-guards';
+import { isArrayOfFile, isEmptyArray } from '@/utils/type-guards';
 
 import { usePublishServiceRequest } from '../../stores';
 import { type PublishServiceRequestInputs } from '../../types';
@@ -49,7 +49,6 @@ const PhotosForm = ({ prevStep, onSubmit, isLoading }: PhotosFormProps) => {
   const { control } = form;
   const { fields } = useFieldArray({ control, name: 'photos' });
 
-  // useTra
   const { startUpload, isUploading } = useUpload({
     endpoint: 'serviceRequestPhotos',
     onError(error) {
@@ -69,7 +68,7 @@ const PhotosForm = ({ prevStep, onSubmit, isLoading }: PhotosFormProps) => {
       .flatMap(el => el) as File[]; //Get array of file required to uploadThing
 
     startTransition(async () => {
-      const files = await startUpload(photos);
+      const files = !isEmptyArray(photos) ? await startUpload(photos) : [];
       const formattedPhotos =
         files?.map(file => ({
           key: file?.key,
@@ -87,7 +86,7 @@ const PhotosForm = ({ prevStep, onSubmit, isLoading }: PhotosFormProps) => {
 
   return (
     <>
-      {(isPending || isLoading) && (
+      {(isPending || isLoading || isUploading) && (
         <FullSpinner loadingText="Publication de votre demande..." />
       )}
       <Form form={form} onSubmit={onHandleSubmit}>

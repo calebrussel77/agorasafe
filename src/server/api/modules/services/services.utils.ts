@@ -1,3 +1,4 @@
+import { formatPrice } from '@/utils/number';
 import { formatNumberToText } from '@/utils/text';
 
 import { formatDateToString } from '@/lib/date-fns';
@@ -30,4 +31,13 @@ export const getFomattedProviderNeeded = (
   if (nbreProviderNeeded === 1) return `${nbreProviderNeeded} Prestataire`;
 
   return `${nbreProviderNeeded} Prestataires`;
+};
+
+export const getFormattedEstimatedPrice = (
+  price: number | undefined | null,
+  textToDisplayWhenUndefined = 'Aucun prix positionné'
+) => {
+  if (!price) return textToDisplayWhenUndefined;
+
+  return formatPrice(price);
 };

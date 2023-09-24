@@ -71,7 +71,7 @@ export const createProfileService = async (inputs: CreateProfileValidation) => {
     //Create a profile for the given user
     createProfileByUserId({
       userId,
-      phone,
+      phone, 
       location: {
         connectOrCreate: {
           where: { name: location.name },

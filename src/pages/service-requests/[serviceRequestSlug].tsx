@@ -38,6 +38,7 @@ import {
   mapServiceRequestStatusToString,
   useGetServiceRequest,
   useServiceRequestOffers,
+  useUpdateServiceRequest,
 } from '@/features/services';
 
 import { formatPhoneNumber } from '@/utils/misc';
@@ -65,6 +66,15 @@ const ServiceRequestPublicationPage = ({
 
   const { data, isInitialLoading, error } = useGetServiceRequest({
     slug: serviceRequestSlugQuery,
+  });
+  const { isLoading: isLoadingUpdate, mutate } = useUpdateServiceRequest({
+    onError(error) {
+      toast({
+        variant: 'danger',
+        title: 'Une erreur est survenue',
+        description: error?.message,
+      });
+    },
   });
 
   const {
@@ -148,7 +158,7 @@ const ServiceRequestPublicationPage = ({
                     content={mapServiceRequestStatusToString(
                       data?.serviceRequest?.status
                     )}
-                    variant={isStatusOpen ? 'primary' : 'outline'}
+                    variant={isStatusOpen ? 'primary' : 'danger'}
                   />
                 </div>
                 <Inline>
@@ -179,9 +189,18 @@ const ServiceRequestPublicationPage = ({
                 {isAuthorMine && (
                   <Button
                     size="sm"
+                    onClick={() =>
+                      mutate({
+                        serviceRequestSlug: serviceRequestSlugQuery,
+                        status: isStatusOpen ? 'CLOSED' : 'OPEN',
+                      })
+                    }
+                    isLoading={isLoadingUpdate}
                     variant={isStatusOpen ? 'outline' : 'default'}
                   >
-                    {isStatusOpen ? 'Annuler ma demande' : 'Démander à nouveau'}
+                    {isStatusOpen
+                      ? 'Annuler ma demande'
+                      : 'Republier ma demande'}
                   </Button>
                 )}
                 <DropdownMenu>
@@ -191,15 +210,20 @@ const ServiceRequestPublicationPage = ({
                     </Button>
                   </DropdownMenu.Trigger>
                   <DropdownMenu.Content>
+                    {isAuthorMine && (
+                      <DropdownMenu.Item
+                      // onClick={() => copyToClipboard(pageLink)}
+                      >
+                        Editer ma demande
+                      </DropdownMenu.Item>
+                    )}
                     <DropdownMenu.Item
                       onClick={() => copyToClipboard(pageLink)}
                     >
                       Copier le lien
                     </DropdownMenu.Item>
                     <DropdownMenu.Item asChild>
-                      <a
-                        href={`https://web.whatsapp.com/send?text=${pageLink}`}
-                      >
+                      <a href={`https://wa.me/send?text=${pageLink}`}>
                         Partager sur whatsapp
                       </a>
                     </DropdownMenu.Item>
@@ -208,21 +232,19 @@ const ServiceRequestPublicationPage = ({
               </div>
             </div>
             <div className="mt-3">
-              {data?.serviceRequest?.estimatedPrice && (
-                <GroupItem
-                  isHoverDisabled
-                  iconBefore={
-                    <IconContainer>
-                      <Banknote className="h-4 w-4" />
-                    </IconContainer>
-                  }
-                  name={
-                    <Typography className="font-semibold">
-                      {formatPrice(data?.serviceRequest?.estimatedPrice)}
-                    </Typography>
-                  }
-                />
-              )}
+              <GroupItem
+                isHoverDisabled
+                iconBefore={
+                  <IconContainer>
+                    <Banknote className="h-4 w-4" />
+                  </IconContainer>
+                }
+                name={
+                  <Typography className="font-semibold">
+                    {data?.serviceRequest?.estimatedPriceFormatted}
+                  </Typography>
+                }
+              />
               <GroupItem
                 isHoverDisabled
                 iconBefore={

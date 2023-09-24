@@ -3,26 +3,34 @@ import { useLocationSearch } from '@/services';
 import { phoneSchema } from '@/validations';
 import { ProfileType } from '@prisma/client';
 import { type TRPCClientErrorLike } from '@trpc/client';
-import { MapPin } from 'lucide-react';
+import { CameraIcon, MapPin } from 'lucide-react';
+import { useTransition } from 'react';
 import { Controller } from 'react-hook-form';
 import { z } from 'zod';
 
 import { Avatar } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ComboBox } from '@/components/ui/combobox';
 import { Field } from '@/components/ui/field';
+import { FileUpload } from '@/components/ui/file-upload';
 import { Form, useZodForm } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { PhoneInput } from '@/components/ui/phone-input';
 import { RadioGroup } from '@/components/ui/radio-group';
 import { SectionMessage } from '@/components/ui/section-message';
+import { toast } from '@/components/ui/toast';
 import { Typography } from '@/components/ui/typography';
+import { useUpload } from '@/components/ui/uploadthing';
+
+import { isArray } from '@/utils/type-guards';
 
 import { cn } from '@/lib/utils';
 
 import { type AppRouter } from '@/server/api/root';
 
 const schema = z.object({
+  avatar: z.any().optional(),
   name: z.string(),
   phone: phoneSchema,
   profileType: z.nativeEnum(ProfileType),
@@ -52,17 +60,25 @@ const CreateProfileForm = ({
 }: CreateProfileFormProps) => {
   const form = useZodForm({
     schema,
-    mode: 'onChange',
   });
 
-  const {
-    control,
-    watch,
-    formState: { errors },
-  } = form;
+  const { startUpload, isUploading } = useUpload({
+    endpoint: 'profilePhotos',
+    onError(error) {
+      toast({
+        variant: 'danger',
+        title: "Une erreur s'est produite",
+        description:
+          "Une erreur s'est produite lors de l'upload de votre avatar",
+      });
+    },
+  });
+
+  const { control, watch } = form;
 
   const { locationSearch, setLocationSearch, data, isFetching } =
     useLocationSearch();
+  const [isPending, startTransition] = useTransition();
 
   const watchLocation = watch('location');
   const watchPhone = watch('phone');
@@ -70,15 +86,26 @@ const CreateProfileForm = ({
 
   const isDisabled =
     isLoading ||
+    isUploading ||
     !watchName ||
     !watchLocation ||
     !watchPhone ||
     watchPhone.length <= 3;
 
   const onHandleSubmit = (formData: CreateNewProfileInput) => {
-    onSubmit({
-      ...formData,
-      phone: `+${formData.phone}`,
+    startTransition(async () => {
+      const files = formData?.avatar
+        ? await startUpload([formData?.avatar as File])
+        : undefined;
+
+      const formattedAvatar =
+        isArray(files) && files ? files[0]?.url : undefined;
+
+      onSubmit({
+        ...formData,
+        phone: `+${formData.phone}`,
+        avatar: formattedAvatar,
+      });
     });
   };
 
@@ -92,44 +119,81 @@ const CreateProfileForm = ({
       >
         {error && <SectionMessage title={error.message} />}
         <div className="mx-auto flex items-center justify-center">
-          <Avatar size="xl" />
+          <Field>
+            <Controller
+              control={control}
+              name="avatar"
+              render={({ field: { ref, onChange, value } }) => (
+                <FileUpload
+                  ref={ref}
+                  onChange={onChange}
+                  value={(value as never) || []} // When you aren't give a default value, we have a max rerender issues
+                  preview={null}
+                >
+                  {({ openFile, files }) => {
+                    return (
+                      <Badge
+                        content={
+                          <button
+                            type="button"
+                            onClick={openFile}
+                            className="rounded-full p-0.5"
+                          >
+                            <CameraIcon className="h-4 w-4" />
+                          </button>
+                        }
+                        variant="primary"
+                        size="sm"
+                        placement="bottom-right"
+                      >
+                        <Avatar
+                          className="h-20 w-20"
+                          onClick={openFile}
+                          alt="preview image"
+                          src={files[0]?.preview || undefined}
+                          isBordered
+                        />
+                      </Badge>
+                    );
+                  }}
+                </FileUpload>
+              )}
+            />
+          </Field>
         </div>
         <div className="grid grid-cols-2 gap-4">
-        <Field label="Nom" required>
-          <Controller
-            control={control}
-            name="name"
-            render={({ field: { ref, onChange, value }, fieldState }) => (
-              <Input
-                ref={ref}
-                variant={fieldState.error ? 'danger' : undefined}
-                autoFocus={true}
-                onChange={onChange}
-                value={(value as never) || ''}
-                placeholder="Entrez le nom de votre profil"
-              />
-            )}
-          />
-        </Field>
-        <Field
-          label="Numéro de téléphone"
-          required
-        >
-          <Controller
-            control={control}
-            name="phone"
-            render={({ field: { ref, onChange, value }, fieldState }) => (
-              <PhoneInput
-                ref={ref}
-                variant={fieldState.error ? 'danger' : undefined}
-                autoFocus={true}
-                onChange={onChange}
-                value={value as never}
-                placeholder="Entrez votre numéro de téléphone"
-              />
-            )}
-          />
-        </Field>
+          <Field label="Nom" required>
+            <Controller
+              control={control}
+              name="name"
+              render={({ field: { ref, onChange, value }, fieldState }) => (
+                <Input
+                  ref={ref}
+                  variant={fieldState.error ? 'danger' : undefined}
+                  autoFocus={true}
+                  onChange={onChange}
+                  value={(value as never) || ''}
+                  placeholder="Entrez le nom de votre profil"
+                />
+              )}
+            />
+          </Field>
+          <Field label="Numéro de téléphone" required>
+            <Controller
+              control={control}
+              name="phone"
+              render={({ field: { ref, onChange, value }, fieldState }) => (
+                <PhoneInput
+                  ref={ref}
+                  variant={fieldState.error ? 'danger' : undefined}
+                  autoFocus={true}
+                  onChange={onChange}
+                  value={value as never}
+                  placeholder="Entrez votre numéro de téléphone"
+                />
+              )}
+            />
+          </Field>
         </div>
         <Field
           label="Localisation"
@@ -139,7 +203,7 @@ const CreateProfileForm = ({
           <Controller
             control={control}
             name="location"
-            render={({ field: { onChange, value }, fieldState }) => (
+            render={({ field: { onChange, value } }) => (
               <ComboBox
                 onChange={onChange}
                 value={value as never}
@@ -203,7 +267,7 @@ const CreateProfileForm = ({
         <Button
           aria-label="Créer un nouveau profil"
           disabled={isDisabled}
-          isLoading={isLoading}
+          isLoading={isLoading || isPending || isUploading}
           className="mt-6 flex w-full items-center justify-center font-semibold"
         >
           Créer le profil

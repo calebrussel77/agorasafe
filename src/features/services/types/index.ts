@@ -39,3 +39,8 @@ export type GetAllservicesOutput = RouterOutputs['services']['getAllservices'];
 export type ServiceItem = GetAllservicesOutput['services'][number];
 export type ServiceCategoryItem =
   GetAllServiceCategoriesOutput['categories'][number];
+
+export type UpdateServiceRequestOptions =
+  ReactQueryOptions['services']['updateServiceRequest'];
+export type UpdateServiceRequestInputs =
+  RouterInputs['services']['updateServiceRequest'];
