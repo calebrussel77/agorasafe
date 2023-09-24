@@ -43,19 +43,11 @@ export default function AddNewProfilePage({
         user: { ...session?.user, hasBeenOnboarded: true },
       });
       toast({
-        delay: 4000,
+        delay: 3000,
         icon: <CheckCircle className="h-10 w-10 text-green-600" />,
         variant: 'success',
-        title: `Profil ${getProfileTypeName(
-          data?.profile?.type
-        )} créé`,
-        description: (
-          <p className="flex items-center text-sm">
-            Le profil{' '}
-            <span className="font-semibold">{data?.profile?.name}</span> a bien
-            été créé avec succès.
-          </p>
-        ),
+        title: `Profil ${getProfileTypeName(data?.profile?.type)} créé`,
+        description: `Le profil ${data?.profile?.name} a été crée avec succès.`,
       });
       await router.push(redirectUrl);
     },
@@ -65,6 +57,7 @@ export default function AddNewProfilePage({
     mutate({
       name: data.name,
       phone: data.phone,
+      avatar: data.avatar as string,
       profileType: data.profileType,
       location: {
         lat: data.location.lat,

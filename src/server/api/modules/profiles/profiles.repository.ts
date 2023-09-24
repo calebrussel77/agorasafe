@@ -13,13 +13,13 @@ export const getProfileBySlug = (slug: string) => {
 
 export function createProfileByUserId({
   userId,
-  avatar,
   ...data
 }: Omit<Prisma.ProfileCreateInput, 'user'> & { userId: string }) {
+  console.log({ data }, 'DATA repository server');
+
   return prisma.profile.create({
     data: {
       user: { connect: { id: userId } },
-      avatar: avatar || undefined,
       ...data,
     },
   });

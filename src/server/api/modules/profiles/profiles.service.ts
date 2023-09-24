@@ -44,7 +44,7 @@ export const getProfilesByUserIdService = async (
 };
 
 export const createProfileService = async (inputs: CreateProfileValidation) => {
-  const { name, profileType, userId, location, phone } = inputs;
+  const { name, profileType, userId, location, phone, avatar } = inputs;
 
   const redirectUrl = profileType === 'PROVIDER' ? '/' : '/';
 
@@ -61,6 +61,8 @@ export const createProfileService = async (inputs: CreateProfileValidation) => {
   }
 
   const slug = await getDynamicDbSlug(name, getProfileBySlug);
+  
+  console.log({ avatar }, 'Server');
 
   const [_, profile] = await prisma.$transaction([
     //Update the user infos by phone and location created
@@ -71,7 +73,8 @@ export const createProfileService = async (inputs: CreateProfileValidation) => {
     //Create a profile for the given user
     createProfileByUserId({
       userId,
-      phone, 
+      phone,
+      avatar,
       location: {
         connectOrCreate: {
           where: { name: location.name },

@@ -47,7 +47,7 @@ const ProfileSession = () => {
 
   const { reloadWithToast } = useToastOnPageReload(() =>
     toast({
-      delay: 4000,
+      delay: 3000,
       icon: (
         <Avatar
           isBordered
