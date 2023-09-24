@@ -4,6 +4,7 @@ import { z } from 'zod';
 
 export const createProfileValidationSchema = z.object({
   name: z.string().trim(),
+  avatar: z.string().trim(),
   phone: phoneSchema,
   profileType: z.nativeEnum(ProfileType),
   location: z.object({

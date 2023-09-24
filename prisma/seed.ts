@@ -217,20 +217,20 @@ const destroyData = async () => {
   try {
     console.log('🌱 Cleaned up the database...');
 
-    console.log('🧹 Deleting profiles...');
-    await prisma.profile.deleteMany();
+    // console.log('🧹 Deleting profiles...');
+    // await prisma.profile.deleteMany();
 
-    console.log('🧹 Deleting locations...');
-    await prisma.location.deleteMany();
+    // console.log('🧹 Deleting locations...');
+    // await prisma.location.deleteMany();
 
-    console.log('🧹 Deleting accounts...');
-    await prisma.account.deleteMany();
+    // console.log('🧹 Deleting accounts...');
+    // await prisma.account.deleteMany();
 
-    console.log('🧹 Deleting users...');
-    await prisma.user.deleteMany();
+    // console.log('🧹 Deleting users...');
+    // await prisma.user.deleteMany();
 
-    console.log('🧹 Deleting sessions...');
-    await prisma.session.deleteMany();
+    // console.log('🧹 Deleting sessions...');
+    // await prisma.session.deleteMany();
 
     console.log('🧹 Deleting services...');
     await prisma.service.deleteMany();
@@ -238,8 +238,8 @@ const destroyData = async () => {
     console.log('🧹 Deleting service categories...');
     await prisma.categoryService.deleteMany();
 
-    console.log('🧹 Deleting service requests...');
-    await prisma.serviceRequest.deleteMany();
+    // console.log('🧹 Deleting service requests...');
+    // await prisma.serviceRequest.deleteMany();
 
     console.log(`🌱 Database has been cleaned up`);
     process.exit();
@@ -256,10 +256,10 @@ const importData = async () => {
     console.log(`🧹 Creating categories with services...`);
     await createCategoriesWithServices();
 
-    console.log(
-      `🧹 Creating user "Caleb Admin" with "ADMIN" role and 02 profiles...`
-    );
-    await createUserWithAdminRoleAndProfiles();
+    // console.log(
+    //   `🧹 Creating user "Caleb Admin" with "ADMIN" role and 02 profiles...`
+    // );
+    // await createUserWithAdminRoleAndProfiles();
 
     console.log(`🌱 Database has been seeded`);
 
