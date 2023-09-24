@@ -28,6 +28,7 @@ const ImageGridGalleryClient: FC<ImageGridGalleryClientProps> = ({
       <div
         className={cn(
           'h-64 w-full rounded-lg bg-gray-100',
+          imagesCount === 1 && 'grid grid-cols-1',
           imagesCount === 2 && 'grid grid-cols-2 gap-4',
           imagesCount === 3 && 'grid grid-flow-col grid-rows-4 gap-4',
           className || classNames?.root
@@ -39,7 +40,7 @@ const ImageGridGalleryClient: FC<ImageGridGalleryClientProps> = ({
             original={photo?.url}
             alt={photo?.name}
             width="1600"
-            height="1600"
+            height="1100"
           >
             {({ ref, open }) => (
               <Image

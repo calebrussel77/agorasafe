@@ -1,5 +1,7 @@
 import { type Prisma } from '@prisma/client';
 
+import { isEmptyArray } from '@/utils/type-guards';
+
 import { prisma } from '@/server/db';
 import { getDynamicDbSlug } from '@/server/utils/db-slug';
 import { DEFAULT_PAGE_SIZE } from '@/server/utils/pagination';
@@ -11,6 +13,7 @@ import type {
   GetAllServicesWithCategoryInput,
   GetServiceRequestInput,
   GetServiceRequestOffersInput,
+  UpdateServiceRequestInput,
 } from './services.validations';
 
 const getServiceRequestBySlug = (slug: string) => {
@@ -129,7 +132,7 @@ export async function createServiceRequest({
       willWantProposal,
       service: {
         connectOrCreate: {
-          where: { slug: serviceSlug },
+          where: { slug: serviceSlug || 'fake-slug' },
           create: {
             name: title,
             slug: titleSluged,
@@ -155,6 +158,55 @@ export async function createServiceRequest({
     },
   });
 }
+
+export const updateServiceRequest = ({
+  inputs,
+}: {
+  inputs: UpdateServiceRequestInput;
+}) => {
+  const { serviceRequestSlug, location, photos, ...rest } = inputs;
+
+  let _photos:
+    | Prisma.FileUpdateManyWithoutServiceRequestNestedInput
+    | undefined = undefined;
+
+  let _location:
+    | Prisma.LocationUpdateOneRequiredWithoutServiceRequestNestedInput
+    | undefined = undefined;
+
+  if (photos && !isEmptyArray(photos)) {
+    for (const photo of photos) {
+      _photos = {
+        connectOrCreate: {
+          where: { key: photo?.key as string },
+          create: { name: photo.name as string, url: photo.url as string },
+        },
+      };
+    }
+  }
+
+  if (location) {
+    _location = {
+      connectOrCreate: {
+        where: { name: location.value },
+        create: {
+          lat: location.lat as string,
+          long: location.long as string,
+          name: location.value as string,
+        },
+      },
+    };
+  }
+
+  return prisma.serviceRequest.update({
+    where: { slug: serviceRequestSlug },
+    data: {
+      ...rest,
+      photos: _photos,
+      location: _location,
+    },
+  });
+};
 
 export const getServiceRequestWithDetails = ({
   inputs: { id, slug },

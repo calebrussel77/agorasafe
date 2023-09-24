@@ -6,12 +6,14 @@ import {
   getAllServicesService,
   getServiceRequestOffersService,
   getServiceRequestService,
+  updateServiceRequestService,
 } from './services.service';
 import type {
   CreateServiceRequestInput,
   GetAllServicesWithCategoryInput,
   GetServiceRequestInput,
   GetServiceRequestOffersInput,
+  UpdateServiceRequestInput,
 } from './services.validations';
 
 export const getAllServicesController = async (
@@ -40,6 +42,16 @@ export const createServiceRequestController = async (
 ) => {
   try {
     return await createServiceRequestService(inputs, profileId);
+  } catch (error) {
+    throwDbError(error);
+  }
+};
+
+export const updateServiceRequestController = async (
+  inputs: UpdateServiceRequestInput
+) => {
+  try {
+    return await updateServiceRequestService(inputs);
   } catch (error) {
     throwDbError(error);
   }

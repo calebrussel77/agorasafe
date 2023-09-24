@@ -238,6 +238,9 @@ const destroyData = async () => {
     console.log('🧹 Deleting service categories...');
     await prisma.categoryService.deleteMany();
 
+    console.log('🧹 Deleting service requests...');
+    await prisma.serviceRequest.deleteMany();
+
     console.log(`🌱 Database has been cleaned up`);
     process.exit();
   } catch (error) {

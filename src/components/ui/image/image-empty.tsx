@@ -3,23 +3,16 @@ import { type ComponentProps, type FC, type ReactNode } from 'react';
 
 import { cn } from '@/lib/utils';
 
-type TImageEmptyProps = ComponentProps<'button'> & {
+type ImageEmptyProps = ComponentProps<'div'> & {
   className?: string;
-  isInteractive?: boolean;
   children?: ReactNode;
 };
-const ImageEmpty: FC<TImageEmptyProps> = ({
-  isInteractive,
-  className,
-  children,
-  ...rest
-}) => {
+
+const ImageEmpty: FC<ImageEmptyProps> = ({ className, children, ...rest }) => {
   return (
-    <button
-      type="button"
-      disabled={!isInteractive}
+    <div
       className={cn(
-        'border border-dashed border-gray-300 text-gray-600 rounded-md flex justify-center disabled:bg-gray-200 disabled:cursor-not-allowed hover:bg-gray-100 py-16 px-14 transition duration-300',
+        'flex justify-center rounded-md border border-dashed border-gray-300 px-14 py-16 text-gray-600',
         className
       )}
       {...rest}
@@ -27,9 +20,9 @@ const ImageEmpty: FC<TImageEmptyProps> = ({
       {children ? (
         children
       ) : (
-        <Camera className="flex-shrink-0 h-10 w-10 m-auto" />
+        <Camera className="m-auto h-10 w-10 flex-shrink-0" />
       )}
-    </button>
+    </div>
   );
 };
 

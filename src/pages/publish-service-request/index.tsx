@@ -18,6 +18,7 @@ import {
   NumberHoursForm,
   PhoneForm,
   PhotosForm,
+  ProviderNumberForm,
   StartHourForm,
   publishServiceSteps,
 } from '@/features/services';
@@ -75,8 +76,7 @@ const PublishPage = ({
   const onSubmit = (data: PublishServiceRequestInputs) => {
     mutate({
       ...data,
-      numberOfProviderNeeded: 2,
-      estimatedPrice: 26500,
+      numberOfProviderNeeded: Number(data?.numberOfProviderNeeded),
     });
   };
 
@@ -92,7 +92,7 @@ const PublishPage = ({
         );
       case 2:
         return (
-          <NumberHoursForm
+          <ProviderNumberForm
             {...{
               nextStep,
               prevStep,
@@ -101,7 +101,7 @@ const PublishPage = ({
         );
       case 3:
         return (
-          <DateForm
+          <NumberHoursForm
             {...{
               nextStep,
               prevStep,
@@ -110,7 +110,7 @@ const PublishPage = ({
         );
       case 4:
         return (
-          <StartHourForm
+          <DateForm
             {...{
               nextStep,
               prevStep,
@@ -119,7 +119,7 @@ const PublishPage = ({
         );
       case 5:
         return (
-          <AddressForm
+          <StartHourForm
             {...{
               nextStep,
               prevStep,
@@ -128,7 +128,7 @@ const PublishPage = ({
         );
       case 6:
         return (
-          <PhoneForm
+          <AddressForm
             {...{
               nextStep,
               prevStep,
@@ -136,6 +136,15 @@ const PublishPage = ({
           />
         );
       case 7:
+        return (
+          <PhoneForm
+            {...{
+              nextStep,
+              prevStep,
+            }}
+          />
+        );
+      case 8:
         return (
           <PhotosForm
             {...{
@@ -163,7 +172,7 @@ const PublishPage = ({
         <Header>
           <ProgressBar progress={progress} />
         </Header>
-        <CenterContent className="container w-full min-w-[38rem] max-w-2xl pb-12">
+        <CenterContent className="container w-full max-w-2xl pb-12 md:min-w-[38rem]">
           <div className="w-full">
             <Typography as="h1" variant="h4" className="pb-6 text-brand-600">
               Étape {currentStep} / {totalStepCount}

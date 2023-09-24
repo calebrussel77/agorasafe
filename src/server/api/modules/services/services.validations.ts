@@ -1,4 +1,5 @@
 import { dateSchema, locationSchema, phoneSchema } from '@/validations';
+import { ServiceRequestStatus } from '@prisma/client';
 import { z } from 'zod';
 
 import { getAllQuerySchema } from '../../validations/base.validations';
@@ -35,6 +36,14 @@ export const createServiceRequestSchema = z.object({
   categorySlug: z.string(),
 });
 
+export const updateServiceRequestSchema = createServiceRequestSchema
+  .omit({ categorySlug: true, serviceSlug: true })
+  .deepPartial()
+  .extend({
+    serviceRequestSlug: z.string(),
+    status: z.nativeEnum(ServiceRequestStatus).optional(),
+  });
+
 export const getServiceRequestOffersSchema = getAllQuerySchema
   .extend({
     serviceRequestId: z.string().trim(),
@@ -48,6 +57,10 @@ export const getServiceRequestOffersSchema = getAllQuerySchema
 
 export type CreateServiceRequestInput = z.infer<
   typeof createServiceRequestSchema
+>;
+
+export type UpdateServiceRequestInput = z.infer<
+  typeof updateServiceRequestSchema
 >;
 
 export type GetAllServicesWithCategoryInput = z.infer<
