@@ -1,9 +1,9 @@
 import { faker } from '@faker-js/faker';
 import { PrismaClient } from '@prisma/client';
 
+import { serviceCategories, services } from '../src/data';
 import { formatDateToString } from '../src/lib/date-fns';
 import { slugit } from '../src/utils/strings';
-import { serviceCategories, services } from './data';
 
 const prisma = new PrismaClient({ log: ['warn', 'error'] });
 

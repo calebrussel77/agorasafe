@@ -17,10 +17,21 @@ const Image = forwardRef<
   ComponentProps<typeof NextImage> & {
     onRemove?: () => void;
     isLoading?: boolean;
+    isHoverable?: boolean;
   }
 >(
   (
-    { fill = true, className, isLoading, onRemove, alt, src, ...props },
+    {
+      fill = true,
+      className,
+      isLoading,
+      isHoverable = false,
+      onRemove,
+      alt,
+      src,
+      onClick,
+      ...props
+    },
     ref
   ) => {
     const { isHovered, hoverProps } = useHover({ isDisabled: false });
@@ -30,6 +41,13 @@ const Image = forwardRef<
     return (
       <>
         <div className={cn('relative overflow-hidden', className)}>
+          {isHoverable && (
+            <div
+              onClick={onClick}
+              className="default__transition absolute inset-0 z-20 flex items-center justify-center bg-gray-900/50 opacity-0 hover:opacity-100"
+            />
+          )}
+
           {hasCloseBtn && !isLoading && (
             <button
               onClick={onRemove}
@@ -47,6 +65,7 @@ const Image = forwardRef<
             ref={ref}
             blurDataURL={blurDataURL()}
             fill={fill}
+            onClick={onClick}
             placeholder="blur"
             quality={100}
             {...{

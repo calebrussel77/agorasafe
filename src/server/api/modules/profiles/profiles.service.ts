@@ -1,5 +1,7 @@
 import { USER_PROFILES_LIMIT_COUNT } from '@/constants';
 
+import { toTitleCase } from '@/utils/strings';
+
 import { prisma } from '@/server/db';
 import { getDynamicDbSlug } from '@/server/utils/db-slug';
 
@@ -31,7 +33,7 @@ export const getProfilesByUserIdService = async (
   if (!profiles) {
     throwNotFoundError('Utilisateur non trouvé !');
   }
-  
+
   if (profiles.length === 0) throwAuthorizationError();
 
   return {
@@ -81,7 +83,7 @@ export const createProfileService = async (inputs: CreateProfileValidation) => {
           },
         },
       },
-      name: name,
+      name: toTitleCase(name),
       type: profileType,
       slug,
     }),

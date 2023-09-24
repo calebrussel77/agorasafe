@@ -8,7 +8,6 @@ import { useFocus } from '@/hooks/use-focus';
 import { useMergeRefs } from '@/hooks/use-merge-refs';
 
 export type InputProps = React.InputHTMLAttributes<HTMLInputElement> & {
-  setParentValue?: (value: string) => void;
   loading?: boolean;
   variant?: Variant;
   autoFocus?: boolean;

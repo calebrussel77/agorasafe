@@ -10,6 +10,7 @@
 /* Librairies */
 @import 'keen-slider/keen-slider.min.css';
 @import 'react-phone-input-2/lib/style.css';
+@import 'photoswipe/dist/photoswipe.css';
 
 /*
  * End CSS Import statements 

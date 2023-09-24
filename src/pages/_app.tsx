@@ -5,10 +5,7 @@ import '@/assets/styles/globals.css';
 import { WEBSITE_URL, isMaintenanceMode } from '@/constants';
 import { MainLayout } from '@/layouts';
 import { AppProvider } from '@/providers/app-provider';
-import {
-  type ProfileStore,
-  agorasafeProfileStorageName,
-} from '@/stores/profile-store';
+import { type ProfileStore } from '@/stores/profile-store';
 import { getInitialState } from '@/stores/profile-store/initial-state';
 import { getCookies } from 'cookies-next';
 import { AnimatePresence } from 'framer-motion';
@@ -29,8 +26,6 @@ import { isWindowDefined } from '@/utils/type-guards';
 import { buildCanonical } from '@/lib/next-seo-config';
 import { displayProgressBarOnRouteChange } from '@/lib/progress-bar';
 
-import { useCurrentUser } from '@/hooks/use-current-user';
-// import { useNewDeploy } from '@/hooks/use-new-deploy';
 import { useNotificationNetwork } from '@/hooks/use-notification-network';
 
 displayProgressBarOnRouteChange();

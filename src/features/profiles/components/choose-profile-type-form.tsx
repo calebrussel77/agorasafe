@@ -49,7 +49,7 @@ const ChooseProfileTypeForm = () => {
                     'shadow-brand-500 ring-2 ring-brand-500'
                 )}
                 label={
-                  <div>
+                  <div className="flex-1">
                     <Typography as="h4">{siteProfile.title}</Typography>
                     <Typography variant="small" className="font-normal">
                       {siteProfile.description}

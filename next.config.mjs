@@ -26,6 +26,7 @@ const config = {
       'randomuser.me',
       'images.unsplash.com',
       'tailwindui.com',
+      'utfs.io',
     ],
   },
 

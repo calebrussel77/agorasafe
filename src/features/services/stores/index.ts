@@ -12,7 +12,6 @@ export type PublishServiceRequestFormStore = {
   title: string;
   description: string;
   phoneToContact: PhoneInput;
-  photos: Array<{ key: string; url: string; name: string }>;
   numberOfProviderNeeded?: number;
   willWantProposal?: boolean;
   nbOfHours: number;
@@ -25,10 +24,7 @@ export type PublishServiceRequestFormStore = {
 };
 
 export type PublishServiceRequest = {
-  serviceRequest: Record<
-    string,
-    Partial<PublishServiceRequestFormStore>
-  > | null;
+  serviceRequest: Record<string, PublishServiceRequestFormStore> | null;
 };
 
 // define types for state values and actions separately
@@ -72,7 +68,7 @@ export const initializePublishServiceRequestStore = (
             // Create a new nested object by copying the original data and updating the specified key
             newState.serviceRequest[categorySlug] = {
               ...newState.serviceRequest[categorySlug],
-              ...serviceRequestData,
+              ...(serviceRequestData as PublishServiceRequestFormStore),
               categorySlug,
             };
 

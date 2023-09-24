@@ -76,9 +76,7 @@ export function isString(value: unknown) {
 }
 
 export function isArrayOfFile(value: unknown): value is File[] {
-  if (!isArray(value)) {
-    return false; //The value is not an array
-  }
+  if (!isArray(value)) return false;
   return value.every(element => element instanceof File);
 }
 

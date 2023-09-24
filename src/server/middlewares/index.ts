@@ -29,7 +29,7 @@ export async function runMiddlewares(request: NextRequest) {
       const token = await getToken({
         req: request,
         secret: env.NEXTAUTH_SECRET,
-        secureCookie: !isDev
+        secureCookie: !isDev,
       });
       if (!token) hasToken = false;
       user = token?.user as Session['user'];

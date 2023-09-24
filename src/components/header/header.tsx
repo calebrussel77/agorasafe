@@ -53,7 +53,10 @@ const Header = ({ children }: { children?: ReactNode }) => {
           isAppear && 'text-gray-900'
         )}
       >
-        <Navbar navigations={navigations}>
+        <Navbar
+          navigations={navigations}
+          isHeaderScrolled={isHomePage ? isAppear : true}
+        >
           <Sheet>
             <SheetTrigger asChild>
               <button
