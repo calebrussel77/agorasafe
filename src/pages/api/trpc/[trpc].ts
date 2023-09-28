@@ -17,7 +17,7 @@ export default createNextApiHandler({
   onError: ({ path, error, ctx }) => {
     if (isDev) {
       console.error(
-        `❌ tRPC failed on ${path ?? '<no-path>'}: ${error.message}`
+        `❌ tRPC failed on ${path ?? '<no-path>'}: ${error.cause?.message}`
       );
     }
 

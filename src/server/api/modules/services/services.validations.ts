@@ -9,6 +9,12 @@ export const getAllServicesWithCategorySchema = getAllQuerySchema.extend({
   categoryServiceId: z.string().trim().optional(),
 });
 
+export const getAllServiceRequestsSchema = getAllQuerySchema
+  .extend({
+    status: z.nativeEnum(ServiceRequestStatus).optional(),
+    orderBy: z.enum(['desc', 'asc']).optional(),
+  })
+
 export const getServiceRequestSchema = z
   .object({
     id: z.string().trim(),
@@ -71,4 +77,8 @@ export type GetServiceRequestInput = z.infer<typeof getServiceRequestSchema>;
 
 export type GetServiceRequestOffersInput = z.infer<
   typeof getServiceRequestOffersSchema
+>;
+
+export type GetAllServiceRequestsInput = z.infer<
+  typeof getAllServiceRequestsSchema
 >;

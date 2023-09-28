@@ -10,7 +10,7 @@ interface AsyncWrapperProps {
   isLoading: boolean;
   loader?: ReactElement | JSX.Element;
   error: TRPCError | Error | { message: string } | undefined | null;
-  onRetryError?: () => void;
+  onRetryError?: () => Promise<unknown> | void;
 }
 const AsyncWrapper: FC<AsyncWrapperProps> = ({
   children,

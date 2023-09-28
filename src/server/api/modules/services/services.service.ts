@@ -6,6 +6,7 @@ import { type GetAllQueryInput } from '../../validations/base.validations';
 import {
   createServiceRequest,
   getAllCategoryServices,
+  getAllServiceRequests,
   getAllServicesWithCategory,
   getServiceRequestOffers,
   getServiceRequestWithDetails,
@@ -19,6 +20,7 @@ import {
 } from './services.utils';
 import type {
   CreateServiceRequestInput,
+  GetAllServiceRequestsInput,
   GetAllServicesWithCategoryInput,
   GetServiceRequestInput,
   GetServiceRequestOffersInput,
@@ -112,6 +114,17 @@ export const getServiceRequestOffersService = async (
 
   return {
     serviceRequestOffers,
+    success: true,
+  };
+};
+
+export const getAllServiceRequestsService = async (
+  inputs: GetAllServiceRequestsInput
+) => {
+  const serviceRequests = await getAllServiceRequests(inputs);
+
+  return {
+    serviceRequests,
     success: true,
   };
 };

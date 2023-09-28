@@ -3,6 +3,7 @@ import { type GetAllQueryInput } from '../../validations/base.validations';
 import {
   createServiceRequestService,
   getAllCategoryServicesService,
+  getAllServiceRequestsService,
   getAllServicesService,
   getServiceRequestOffersService,
   getServiceRequestService,
@@ -10,6 +11,7 @@ import {
 } from './services.service';
 import type {
   CreateServiceRequestInput,
+  GetAllServiceRequestsInput,
   GetAllServicesWithCategoryInput,
   GetServiceRequestInput,
   GetServiceRequestOffersInput,
@@ -72,6 +74,16 @@ export const getServiceRequestOffersController = async (
 ) => {
   try {
     return await getServiceRequestOffersService(inputs);
+  } catch (error) {
+    throwDbError(error);
+  }
+};
+
+export const getAllServiceRequestsController = async (
+  inputs: GetAllServiceRequestsInput
+) => {
+  try {
+    return await getAllServiceRequestsService(inputs);
   } catch (error) {
     throwDbError(error);
   }

@@ -6,10 +6,10 @@ import { isWindowDefined } from '@/utils/type-guards';
 export const loginRedirectReasons = {
   'session-expired':
     'Votre session a expiré par mesure de sécurité. Veuillez vous reconnecter pour continuer à accéder à votre compte.',
-  'publish-new-service':
-    'Vous devez être connecté pour publier une demande de service',
-  'report-content': 'You need to be logged in to report this content',
-  'report-model': 'You need to be logged in to report this model',
+  'create-service-request':
+    'Vous devez être connecté pour créer une demande de service',
+  'make-service-request-offer':
+    'Vous devez être connecté pour faire votre offre.',
   'report-review': 'You need to be logged in to report this review',
   'report-article': 'You need to be logged in to report this article',
   'report-user': 'You need to be logged in to report this user',

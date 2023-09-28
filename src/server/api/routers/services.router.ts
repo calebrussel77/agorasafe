@@ -12,6 +12,8 @@ import {
   createServiceRequestController,
   createServiceRequestSchema,
   getAllServiceCategoriesController,
+  getAllServiceRequestsController,
+  getAllServiceRequestsSchema,
   getAllServicesController,
   getAllServicesWithCategorySchema,
   getServiceRequestController,
@@ -37,7 +39,6 @@ export const servicesRouter = createTRPCRouter({
     .mutation(({ input, ctx }) =>
       createServiceRequestController(input, ctx?.profile?.id)
     ),
-
   updateServiceRequest: profileProcedure
     .input(updateServiceRequestSchema)
     .mutation(({ input }) => updateServiceRequestController(input)),
@@ -49,4 +50,8 @@ export const servicesRouter = createTRPCRouter({
   getServiceRequestOffers: publicProcedure
     .input(getServiceRequestOffersSchema)
     .query(({ input }) => getServiceRequestOffersController(input)),
+
+  getAllServiceRequests: publicProcedure
+    .input(getAllServiceRequestsSchema)
+    .query(({ input }) => getAllServiceRequestsController(input)),
 });

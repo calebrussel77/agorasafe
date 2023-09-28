@@ -26,6 +26,7 @@ const UserBadge: FC<UserBadgeProps> = ({
           ? getProfileTypeName(type).charAt(0)
           : getProfileTypeName(type)
       }
+      size="xs"
       className={cn('flex-shrink-0 rounded-md text-xs', className)}
       {...props}
     />

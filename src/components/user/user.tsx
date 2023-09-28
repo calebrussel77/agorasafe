@@ -79,7 +79,7 @@ const User: FC<UserProps> = ({
             >
               <div
                 className={cn(
-                  'flex items-center gap-x-1 font-bold leading-none tracking-tight'
+                  'flex items-center gap-x-1 font-semibold leading-none tracking-tight'
                 )}
               >
                 <Typography

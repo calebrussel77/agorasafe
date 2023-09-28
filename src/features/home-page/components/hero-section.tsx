@@ -56,19 +56,6 @@ const HeroSection: FC<HeroSectionProps> = ({}) => {
         </div>
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <div className="mx-auto max-w-2xl pb-16 pt-32 lg:pb-24">
-            <div className="hidden sm:mb-8 sm:flex sm:justify-center">
-              <div className="relative rounded-full px-3 py-1 text-sm leading-6 text-gray-200 ring-1 ring-white/30 hover:ring-white/40">
-                Enregistrez-vous dès aujourd'hui pour être parmi les premiers à
-                profiter des services exceptionnels sur Agorasafe.
-                <FormSubscriptionModal>
-                  <button className="ml-0.5 font-semibold text-brand-400">
-                    <span className="absolute inset-0" aria-hidden="true" />{' '}
-                    Inscrivez-vous maintenant{' '}
-                    <span aria-hidden="true">&rarr;</span>
-                  </button>
-                </FormSubscriptionModal>
-              </div>
-            </div>
             <div className="text-center">
               <Typography as="h1" variant="h1" className="text-white">
                 Découvrez des services exceptionnels à des prix abordables

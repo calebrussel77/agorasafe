@@ -24,7 +24,7 @@ const ErrorWrapper = ({
 }: {
   error: TRPCError | Error | { message: string } | undefined | null;
   errorComponent?: ReactNode;
-  onRetryError?: () => void;
+  onRetryError?: () => Promise<unknown> | void;
   children: ReactNode;
 }) => {
   return (

@@ -33,6 +33,7 @@ import { Truncate } from '@/components/ui/truncate';
 import { Typography } from '@/components/ui/typography';
 import { User } from '@/components/user';
 
+import { LoginRedirect } from '@/features/auth';
 import { MakeOfferModal } from '@/features/service-requests';
 import {
   mapServiceRequestStatusToString,
@@ -42,11 +43,10 @@ import {
 } from '@/features/services';
 
 import { formatPhoneNumber } from '@/utils/misc';
-import { formatPrice } from '@/utils/number';
 import { getAbsoluteHrefUrl } from '@/utils/routing';
 import { isEmptyArray } from '@/utils/type-guards';
 
-import { formatDateToString } from '@/lib/date-fns';
+import { dateToReadableString } from '@/lib/date-fns';
 import { htmlParse } from '@/lib/html-react-parser';
 
 import { createServerSideProps } from '@/server/utils/server-side';
@@ -56,7 +56,6 @@ const meta = {
   description: (serviceRequestDeescription: string) =>
     `${serviceRequestDeescription}`,
 };
-
 const ServiceRequestPublicationPage = ({
   profile,
   serviceRequestSlugQuery,
@@ -89,12 +88,14 @@ const ServiceRequestPublicationPage = ({
     profile?.id === data?.serviceRequest?.author?.profile?.id;
   const authorName = data?.serviceRequest?.author?.profile?.name;
   const offersCount = offersData?.serviceRequestOffers?.length;
+  const isProvider = profile?.type === 'PROVIDER';
   const isStatusOpen = data?.serviceRequest?.status === 'OPEN';
   const pageLink = getAbsoluteHrefUrl(router.asPath);
   const isSelected = data?.serviceRequest?.choosedProviders?.some(
     choosedProvider => choosedProvider.provider.profile.id === profile?.id
   );
 
+  const hasOffers = !isEmptyArray(offersData?.serviceRequestOffers);
   const coverBg = isEmptyArray(data?.serviceRequest?.photos)
     ? getAbsoluteHrefUrl(defaultCoverBgUrl)
     : data?.serviceRequest?.photos?.[0]?.url;
@@ -150,7 +151,7 @@ const ServiceRequestPublicationPage = ({
                 <Typography variant="small">
                   Publiée{' '}
                   {data?.serviceRequest?.createdAt &&
-                    formatDateToString(data?.serviceRequest?.createdAt, 'PP')}
+                    dateToReadableString(data?.serviceRequest?.createdAt)}
                 </Typography>
                 <div className="mt-1 flex items-center gap-2">
                   <Typography as="h2">{data?.serviceRequest?.title}</Typography>
@@ -309,11 +310,18 @@ const ServiceRequestPublicationPage = ({
             <Typography as="h3">Offres ({offersCount})</Typography>
             <div className="mt-6 border bg-white shadow-md sm:overflow-hidden sm:rounded-lg">
               <div className="px-4 py-6 sm:px-6">
-                {isEmptyArray(offersData?.serviceRequestOffers) && (
+                {!hasOffers && (
                   <EmptyState
                     icon={<FolderClock />}
                     name="Aucune offre trouvée"
                     description="Ici vous trouverez la liste des offres de service faits par des prestataires"
+                    primaryAction={
+                      <CanView allowedProfiles={['PROVIDER']} isPublic>
+                        <LoginRedirect reason="make-service-request-offer">
+                          <Button>Faire une offre</Button>
+                        </LoginRedirect>
+                      </CanView>
+                    }
                   />
                 )}
                 {offersData?.serviceRequestOffers &&
@@ -328,7 +336,7 @@ const ServiceRequestPublicationPage = ({
                             </div>
                             <Inline className="mt-2 space-x-2 text-sm">
                               <span className="font-medium text-gray-500">
-                                {formatDateToString(offer?.createdAt)}
+                                {dateToReadableString(offer?.createdAt)}
                               </span>
                               {isAuthorMine && (
                                 <Button type="button" variant="ghost" size="sm">

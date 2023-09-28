@@ -23,8 +23,8 @@ const classNameList = [
   'border-b',
   'bg-white',
   'text-gray-900',
-  'bg-opacity-70',
-  'bg__blurred',
+  // 'bg-opacity-70',
+  // 'bg__blurred',
 ];
 
 const Header = ({ children }: { children?: ReactNode }) => {

@@ -3,6 +3,8 @@ import { api } from '@/utils/api';
 import type {
   GetAllServiceCategoriesInput,
   GetAllServiceCategoriesOptions,
+  GetAllServiceRequestsInput,
+  GetAllServiceRequestsOptions,
   GetAllservicesInput,
   GetAllservicesOptions,
   GetServiceRequestInput,
@@ -62,6 +64,15 @@ export const useServiceRequestOffers = (
   options?: GetServiceRequestOffersOptions
 ) => {
   return api.services.getServiceRequestOffers.useQuery(inputs, {
+    ...options,
+  });
+};
+
+export const useGetAllServiceRequests = (
+  inputs: GetAllServiceRequestsInput,
+  options?: GetAllServiceRequestsOptions
+) => {
+  return api.services.getAllServiceRequests.useQuery(inputs, {
     ...options,
   });
 };

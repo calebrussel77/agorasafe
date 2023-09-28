@@ -70,7 +70,7 @@ const Navbar: FC<NavbarProps> = ({
       <div className="flex items-center lg:flex-1 lg:justify-end">
         <CanView allowedProfiles={['CUSTOMER']} isPublic>
           <AskServiceModal>
-            <LoginRedirect reason="publish-new-service">
+            <LoginRedirect reason="create-service-request">
               <Button size="sm">Demander un service</Button>
             </LoginRedirect>
           </AskServiceModal>

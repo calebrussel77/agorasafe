@@ -16,7 +16,6 @@ import { handleRouteBack } from '@/utils/routing';
 
 import { cn } from '@/lib/utils';
 
-import { getUserById } from '@/server/api/modules/users';
 import { createServerSideProps } from '@/server/utils/server-side';
 
 import { useRedirectUrl } from '@/hooks/use-redirect-url';

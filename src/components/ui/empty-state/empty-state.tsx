@@ -18,9 +18,9 @@ export interface EmptyStateProps {
   className?: string;
   description?: React.ReactNode;
   iconBefore?: React.ReactNode;
-  primaryAction?: React.ReactElement;
-  secondaryAction?: React.ReactElement;
-  tertiaryAction?: React.ReactElement;
+  primaryAction?: React.ReactNode;
+  secondaryAction?: React.ReactNode;
+  tertiaryAction?: React.ReactNode;
   icon?: React.ReactElement;
   /**
    * Classname or List of classes to change the classNames of the EmptyState.

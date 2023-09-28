@@ -1,7 +1,7 @@
 import { formatPrice } from '@/utils/number';
 import { formatNumberToText } from '@/utils/text';
 
-import { formatDateToString } from '@/lib/date-fns';
+import { dateToReadableString } from '@/lib/date-fns';
 
 export const getFormattedDatePeriod = (
   date: Date | undefined,
@@ -9,9 +9,7 @@ export const getFormattedDatePeriod = (
 ) => {
   if (!date || !startHour) return '';
   return (
-    formatDateToString(date, 'PPP') +
-    ' à ' +
-    formatNumberToText(startHour, 'hours')
+    dateToReadableString(date) + ' à ' + formatNumberToText(startHour, 'hours')
   );
 };
 

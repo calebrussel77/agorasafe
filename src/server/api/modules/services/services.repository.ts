@@ -15,11 +15,62 @@ import type {
   GetServiceRequestOffersInput,
   UpdateServiceRequestInput,
 } from './services.validations';
+import { type GetAllServiceRequestsInput } from './services.validations';
 
-const getServiceRequestBySlug = (slug: string) => {
+const _getServiceRequestBySlug = (slug: string) => {
   return prisma.serviceRequest.findUnique({
     where: { slug },
     select: { slug: true },
+  });
+};
+
+export const getAllServiceRequests = ({
+  limit,
+  page,
+  query,
+  orderBy = 'desc',
+  status = 'OPEN',
+}: GetAllServiceRequestsInput) => {
+  const skip = page ? (page - 1) * limit : undefined;
+
+  let OR: Prisma.ServiceRequestWhereInput[] | undefined = undefined;
+
+  if (query)
+    OR = [{ title: { contains: query } }, { description: { contains: query } }];
+
+  return prisma.serviceRequest.findMany({
+    where: { status, OR },
+    orderBy: { createdAt: orderBy },
+    select: {
+      id: true,
+      slug: true,
+      createdAt: true,
+      date: true,
+      title: true,
+      description: true,
+      location: { select: { lat: true, long: true, name: true } },
+      nbOfHours: true,
+      estimatedPrice: true,
+      willWantProposal: true,
+      author: { select: { profile: { select: simpleProfileSelect } } },
+      status: true,
+      service: {
+        select: { categoryService: { select: { name: true, slug: true } } },
+      },
+      photos: { select: { name: true, url: true } },
+      offers: {
+        select: {
+          author: {
+            select: {
+              profile: { select: { name: true, avatar: true, slug: true } },
+            },
+          },
+        },
+      },
+      _count: { select: { choosedProviders: true, offers: true } },
+    },
+    skip,
+    take: limit,
   });
 };
 
@@ -110,7 +161,7 @@ export async function createServiceRequest({
     categorySlug,
   } = inputs;
 
-  const titleSluged = await getDynamicDbSlug(title, getServiceRequestBySlug);
+  const titleSluged = await getDynamicDbSlug(title, _getServiceRequestBySlug);
 
   return prisma.serviceRequest.create({
     data: {
