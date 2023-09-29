@@ -1,13 +1,14 @@
+import { uniqWith } from '@/utils/arrays';
 import { formatPhoneNumber } from '@/utils/misc';
-
-import { throwBadRequestError } from '@/server/utils/error-handling';
 
 import { type GetAllQueryInput } from '../../validations/base.validations';
 import {
   createServiceRequest,
+  createServiceRequestComment,
   getAllCategoryServices,
+  getAllServiceRequests,
   getAllServicesWithCategory,
-  getServiceRequestOffers,
+  getServiceRequestComments,
   getServiceRequestWithDetails,
   updateServiceRequest,
 } from './services.repository';
@@ -18,10 +19,12 @@ import {
   getFormattedEstimatedPrice,
 } from './services.utils';
 import type {
+  CreateServiceRequestCommentInput,
   CreateServiceRequestInput,
+  GetAllServiceRequestsInput,
   GetAllServicesWithCategoryInput,
+  GetServiceRequestCommentsInput,
   GetServiceRequestInput,
-  GetServiceRequestOffersInput,
   UpdateServiceRequestInput,
 } from './services.validations';
 
@@ -47,6 +50,20 @@ export const getAllCategoryServicesService = async (
   };
 };
 
+export const createServiceRequestCommentService = async (
+  inputs: CreateServiceRequestCommentInput,
+  profileId: string
+) => {
+  const serviceRequestOffer = await createServiceRequestComment({
+    inputs,
+    profileId,
+  });
+
+  return {
+    serviceRequestOffer,
+    success: true,
+  };
+};
 export const createServiceRequestService = async (
   inputs: CreateServiceRequestInput,
   profileId: string
@@ -103,15 +120,41 @@ export const getServiceRequestService = async (
   };
 };
 
-export const getServiceRequestOffersService = async (
-  inputs: GetServiceRequestOffersInput
+export const getServiceRequestCommentsService = async (
+  inputs: GetServiceRequestCommentsInput
 ) => {
-  const serviceRequestOffers = await getServiceRequestOffers({
+  const serviceRequestComments = await getServiceRequestComments({
     inputs,
   });
 
   return {
-    serviceRequestOffers,
+    serviceRequestComments,
+    success: true,
+  };
+};
+
+export const getAllServiceRequestsService = async (
+  inputs: GetAllServiceRequestsInput
+) => {
+  const serviceRequests = await getAllServiceRequests(inputs);
+  const _serviceRequests = serviceRequests.map(serviceRequest => ({
+    ...serviceRequest,
+    nbHoursFomattedText: getFormattedDuration(serviceRequest?.nbOfHours),
+    nbProviderNeededFormattedText: getFomattedProviderNeeded(
+      serviceRequest?.numberOfProviderNeeded
+    ),
+    comments: uniqWith(
+      serviceRequest.comments,
+      (a, b) => a.author.slug === b.author.slug
+    ),
+    estimatedPriceFormatted: getFormattedEstimatedPrice(
+      serviceRequest?.estimatedPrice,
+      'Prix non défini'
+    ),
+  }));
+
+  return {
+    serviceRequests: _serviceRequests,
     success: true,
   };
 };

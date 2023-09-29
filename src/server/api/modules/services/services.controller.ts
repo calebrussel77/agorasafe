@@ -1,18 +1,22 @@
 import { throwDbError } from '../../../utils/error-handling';
 import { type GetAllQueryInput } from '../../validations/base.validations';
 import {
+  createServiceRequestCommentService,
   createServiceRequestService,
   getAllCategoryServicesService,
+  getAllServiceRequestsService,
   getAllServicesService,
-  getServiceRequestOffersService,
+  getServiceRequestCommentsService,
   getServiceRequestService,
   updateServiceRequestService,
 } from './services.service';
 import type {
+  CreateServiceRequestCommentInput,
   CreateServiceRequestInput,
+  GetAllServiceRequestsInput,
   GetAllServicesWithCategoryInput,
+  GetServiceRequestCommentsInput,
   GetServiceRequestInput,
-  GetServiceRequestOffersInput,
   UpdateServiceRequestInput,
 } from './services.validations';
 
@@ -36,6 +40,16 @@ export const getAllServiceCategoriesController = async (
   }
 };
 
+export const createServiceRequestCommentController = async (
+  inputs: CreateServiceRequestCommentInput,
+  profileId: string
+) => {
+  try {
+    return await createServiceRequestCommentService(inputs, profileId);
+  } catch (error) {
+    throwDbError(error);
+  }
+};
 export const createServiceRequestController = async (
   inputs: CreateServiceRequestInput,
   profileId: string
@@ -67,11 +81,21 @@ export const getServiceRequestController = async (
   }
 };
 
-export const getServiceRequestOffersController = async (
-  inputs: GetServiceRequestOffersInput
+export const getServiceRequestCommentsController = async (
+  inputs: GetServiceRequestCommentsInput
 ) => {
   try {
-    return await getServiceRequestOffersService(inputs);
+    return await getServiceRequestCommentsService(inputs);
+  } catch (error) {
+    throwDbError(error);
+  }
+};
+
+export const getAllServiceRequestsController = async (
+  inputs: GetAllServiceRequestsInput
+) => {
+  try {
+    return await getAllServiceRequestsService(inputs);
   } catch (error) {
     throwDbError(error);
   }

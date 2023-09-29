@@ -290,7 +290,7 @@ const AvatarGroup = ({
       aria-label={name}
       className={cn(
         appearance === 'stack' &&
-          'isolate flex items-start -space-x-3 overflow-hidden p-0.5',
+          'isolate flex items-start -space-x-2 overflow-hidden p-0.5',
         appearance === 'grid' &&
           'isolate grid grid-cols-4 place-items-start gap-3'
       )}
@@ -301,9 +301,9 @@ const AvatarGroup = ({
           avatar,
           {
             ...avatarData,
+            alt: avatarData.name,
             size,
             onClick: callback ? callback : undefined,
-            // style: {zIndex: `${idx - 4}`},
             className: 'relative inline-block rounded-full ring-2 ring-white',
           },
           idx
@@ -312,7 +312,9 @@ const AvatarGroup = ({
         return !isTooltipDisabled && !avatarData.disabled ? (
           <Tooltip key={composeUniqueKey(avatarData, idx)}>
             <Tooltip.Trigger>{finalAvatar}</Tooltip.Trigger>
-            <Tooltip.Content>{avatarData.name}</Tooltip.Content>
+            <Tooltip.Content className="text-xs">
+              {avatarData.name}
+            </Tooltip.Content>
           </Tooltip>
         ) : (
           finalAvatar

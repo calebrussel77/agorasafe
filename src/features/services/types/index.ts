@@ -20,12 +20,12 @@ export type GetAllservicesOptions =
 export type GetAllServiceCategoriesOptions =
   ReactQueryOptions['services']['getAllServiceCategories'];
 
-export type GetServiceRequestOffersOptions =
-  ReactQueryOptions['services']['getServiceRequestOffers'];
-export type GetServiceRequestOffersOutput =
-  RouterOutputs['services']['getServiceRequestOffers'];
-export type GetServiceRequestOffersInput =
-  RouterInputs['services']['getServiceRequestOffers'];
+export type GetServiceRequestCommentsOptions =
+  ReactQueryOptions['services']['getServiceRequestComments'];
+export type GetServiceRequestCommentsOutput =
+  RouterOutputs['services']['getServiceRequestComments'];
+export type GetServiceRequestCommentsInput =
+  RouterInputs['services']['getServiceRequestComments'];
 
 export type PublishServiceRequestOptions =
   ReactQueryOptions['services']['publishServiceRequest'];

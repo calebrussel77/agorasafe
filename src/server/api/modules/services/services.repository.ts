@@ -9,17 +9,68 @@ import { DEFAULT_PAGE_SIZE } from '@/server/utils/pagination';
 import { type GetAllQueryInput } from '../../validations/base.validations';
 import { simpleProfileSelect } from '../profiles';
 import type {
+  CreateServiceRequestCommentInput,
   CreateServiceRequestInput,
   GetAllServicesWithCategoryInput,
+  GetServiceRequestCommentsInput,
   GetServiceRequestInput,
-  GetServiceRequestOffersInput,
   UpdateServiceRequestInput,
 } from './services.validations';
+import { type GetAllServiceRequestsInput } from './services.validations';
 
-const getServiceRequestBySlug = (slug: string) => {
+const _getServiceRequestBySlug = (slug: string) => {
   return prisma.serviceRequest.findUnique({
     where: { slug },
     select: { slug: true },
+  });
+};
+
+export const getAllServiceRequests = ({
+  limit,
+  page,
+  query,
+  orderBy = 'desc',
+  status = 'OPEN',
+}: GetAllServiceRequestsInput) => {
+  const skip = page ? (page - 1) * limit : undefined;
+
+  let OR: Prisma.ServiceRequestWhereInput[] | undefined = undefined;
+
+  if (query)
+    OR = [{ title: { contains: query } }, { description: { contains: query } }];
+
+  return prisma.serviceRequest.findMany({
+    where: { status, OR },
+    orderBy: { createdAt: orderBy },
+    select: {
+      id: true,
+      slug: true,
+      createdAt: true,
+      date: true,
+      title: true,
+      description: true,
+      location: { select: { lat: true, long: true, name: true } },
+      nbOfHours: true,
+      estimatedPrice: true,
+      numberOfProviderNeeded: true,
+      willWantProposal: true,
+      author: { select: { profile: { select: simpleProfileSelect } } },
+      status: true,
+      service: {
+        select: { categoryService: { select: { name: true, slug: true } } },
+      },
+      photos: { select: { name: true, url: true } },
+      comments: {
+        select: {
+          author: {
+            select: { name: true, avatar: true, slug: true },
+          },
+        },
+      },
+      _count: { select: { choosedProviders: true, comments: true } },
+    },
+    skip,
+    take: limit,
   });
 };
 
@@ -110,7 +161,7 @@ export async function createServiceRequest({
     categorySlug,
   } = inputs;
 
-  const titleSluged = await getDynamicDbSlug(title, getServiceRequestBySlug);
+  const titleSluged = await getDynamicDbSlug(title, _getServiceRequestBySlug);
 
   return prisma.serviceRequest.create({
     data: {
@@ -155,6 +206,28 @@ export async function createServiceRequest({
           },
         },
       },
+    },
+  });
+}
+
+export function createServiceRequestComment({
+  inputs,
+  profileId,
+}: {
+  inputs: CreateServiceRequestCommentInput;
+  profileId: string;
+}) {
+  const { serviceRequestSlug, text } = inputs;
+
+  return prisma.comment.create({
+    data: {
+      text,
+      author: {
+        connect: {
+          id: profileId,
+        },
+      },
+      serviceRequest: { connect: { slug: serviceRequestSlug } },
     },
   });
 }
@@ -229,7 +302,7 @@ export const getServiceRequestWithDetails = ({
   });
 };
 
-export function getServiceRequestOffers({
+export function getServiceRequestComments({
   inputs: {
     query,
     page,
@@ -238,11 +311,12 @@ export function getServiceRequestOffers({
     serviceRequestSlug,
   },
 }: {
-  inputs: GetServiceRequestOffersInput;
+  inputs: GetServiceRequestCommentsInput;
 }) {
   const skip = page ? (page - 1) * limit : undefined;
 
-  return prisma.serviceRequestOffer.findMany({
+  return prisma.comment.findMany({
+    // orderBy: { createdAt: 'desc' },
     where: {
       serviceRequestId,
       serviceRequest: serviceRequestSlug
@@ -255,8 +329,7 @@ export function getServiceRequestOffers({
       id: true,
       text: true,
       createdAt: true,
-      proposedPrice: true,
-      author: { include: { profile: { select: simpleProfileSelect } } },
+      author: { select: simpleProfileSelect },
     },
   });
 }

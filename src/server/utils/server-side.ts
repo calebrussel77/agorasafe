@@ -28,12 +28,6 @@ export const getServerProxySSGHelpers = async (
   return ssg;
 };
 
-type AsyncReturnType<T extends (...args: any) => Promise<any>> = T extends (
-  ...args: any
-) => Promise<infer R>
-  ? R
-  : any;
-
 export function createServerSideProps<P>({
   resolver,
   shouldUseSSG,

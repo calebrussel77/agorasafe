@@ -2,7 +2,7 @@ import { useKeenSlider } from 'keen-slider/react';
 import { useState } from 'react';
 
 type UseFadeSliderImagesProps = {
-  images: Array<string>;
+  imagesCount: number;
   defaultOpacities?: Array<number>;
   duration?: number;
 };
@@ -10,7 +10,7 @@ type UseFadeSliderImagesProps = {
 const DEFAULT_DURATION_MS = 8_000;
 
 export const useFadeSliderImages = ({
-  images,
+  imagesCount,
   duration = DEFAULT_DURATION_MS,
   defaultOpacities = [],
 }: UseFadeSliderImagesProps) => {
@@ -18,7 +18,7 @@ export const useFadeSliderImages = ({
 
   const [sliderRef] = useKeenSlider<HTMLDivElement>(
     {
-      slides: images.length,
+      slides: imagesCount,
       loop: true,
       detailsChanged(s) {
         const newOpacities = s.track.details.slides.map(slide => slide.portion);

@@ -2,7 +2,7 @@ import { faker } from '@faker-js/faker';
 import { PrismaClient } from '@prisma/client';
 
 import { serviceCategories, services } from '../src/data';
-import { formatDateToString } from '../src/lib/date-fns';
+import { formatYearMonthDay } from '../src/lib/date-fns';
 import { slugit } from '../src/utils/strings';
 
 const prisma = new PrismaClient({ log: ['warn', 'error'] });
@@ -163,7 +163,7 @@ const createUserWithAdminRoleAndProfiles = async () => {
       firstName: 'Caleb',
       fullName: 'Caleb Admin',
       lastName: 'Admin',
-      birthdate: formatDateToString(faker.date.birthdate({ mode: 'year' })),
+      birthdate: formatYearMonthDay(faker.date.birthdate({ mode: 'year' })),
       sex: 'MALE',
       hasBeenOnboarded: true,
       role: 'ADMIN',

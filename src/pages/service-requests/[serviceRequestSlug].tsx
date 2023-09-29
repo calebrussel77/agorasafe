@@ -33,20 +33,22 @@ import { Truncate } from '@/components/ui/truncate';
 import { Typography } from '@/components/ui/typography';
 import { User } from '@/components/user';
 
-import { MakeOfferModal } from '@/features/service-requests';
+import {
+  DEFAULT_SERVICE_REQUEST_COVER_IMAGE,
+  ServiceRequestCommentForm,
+} from '@/features/service-requests';
 import {
   mapServiceRequestStatusToString,
   useGetServiceRequest,
-  useServiceRequestOffers,
+  useServiceRequestComments,
   useUpdateServiceRequest,
 } from '@/features/services';
 
 import { formatPhoneNumber } from '@/utils/misc';
-import { formatPrice } from '@/utils/number';
 import { getAbsoluteHrefUrl } from '@/utils/routing';
 import { isEmptyArray } from '@/utils/type-guards';
 
-import { formatDateToString } from '@/lib/date-fns';
+import { dateToReadableString } from '@/lib/date-fns';
 import { htmlParse } from '@/lib/html-react-parser';
 
 import { createServerSideProps } from '@/server/utils/server-side';
@@ -56,7 +58,6 @@ const meta = {
   description: (serviceRequestDeescription: string) =>
     `${serviceRequestDeescription}`,
 };
-
 const ServiceRequestPublicationPage = ({
   profile,
   serviceRequestSlugQuery,
@@ -78,25 +79,26 @@ const ServiceRequestPublicationPage = ({
   });
 
   const {
-    data: offersData,
-    isInitialLoading: isInitialLoadingOffers,
-    error: offersError,
-  } = useServiceRequestOffers({
+    data: commentsData,
+    isInitialLoading: isInitialLoadingComments,
+    error: commentsError,
+  } = useServiceRequestComments({
     serviceRequestSlug: serviceRequestSlugQuery,
   });
-  const defaultCoverBgUrl = '/images/artistique-cover-photo.jpg';
   const isAuthorMine =
     profile?.id === data?.serviceRequest?.author?.profile?.id;
   const authorName = data?.serviceRequest?.author?.profile?.name;
-  const offersCount = offersData?.serviceRequestOffers?.length;
+  const commentsCount = commentsData?.serviceRequestComments?.length;
+  const isProvider = profile?.type === 'PROVIDER';
   const isStatusOpen = data?.serviceRequest?.status === 'OPEN';
   const pageLink = getAbsoluteHrefUrl(router.asPath);
   const isSelected = data?.serviceRequest?.choosedProviders?.some(
     choosedProvider => choosedProvider.provider.profile.id === profile?.id
   );
 
+  const hasComments = !isEmptyArray(commentsData?.serviceRequestComments);
   const coverBg = isEmptyArray(data?.serviceRequest?.photos)
-    ? getAbsoluteHrefUrl(defaultCoverBgUrl)
+    ? DEFAULT_SERVICE_REQUEST_COVER_IMAGE
     : data?.serviceRequest?.photos?.[0]?.url;
 
   useEffect(() => {
@@ -139,7 +141,7 @@ const ServiceRequestPublicationPage = ({
               />
             ) : (
               <Image
-                src={defaultCoverBgUrl}
+                src={DEFAULT_SERVICE_REQUEST_COVER_IMAGE}
                 alt="Image artistique de fond"
                 className="h-64 w-full rounded-lg border bg-gray-50 object-top shadow-sm md:h-80"
               />
@@ -150,7 +152,7 @@ const ServiceRequestPublicationPage = ({
                 <Typography variant="small">
                   Publiée{' '}
                   {data?.serviceRequest?.createdAt &&
-                    formatDateToString(data?.serviceRequest?.createdAt, 'PP')}
+                    dateToReadableString(data?.serviceRequest?.createdAt)}
                 </Typography>
                 <div className="mt-1 flex items-center gap-2">
                   <Typography as="h2">{data?.serviceRequest?.title}</Typography>
@@ -182,9 +184,7 @@ const ServiceRequestPublicationPage = ({
               </div>
               <div className="flex flex-row-reverse items-center gap-2 sm:flex-row">
                 <CanView allowedProfiles={['PROVIDER']}>
-                  <MakeOfferModal>
-                    <Button size="sm">Faire une offre</Button>
-                  </MakeOfferModal>
+                  <Button size="sm">Faire une offre</Button>
                 </CanView>
                 {isAuthorMine && (
                   <Button
@@ -304,38 +304,47 @@ const ServiceRequestPublicationPage = ({
             </div>
           </section>
         </AsyncWrapper>
-        <AsyncWrapper isLoading={isInitialLoadingOffers} error={offersError}>
+        <AsyncWrapper
+          isLoading={isInitialLoadingComments}
+          error={commentsError}
+        >
           <section aria-labelledby="comment-section" className="w-full">
-            <Typography as="h3">Offres ({offersCount})</Typography>
-            <div className="mt-6 border bg-white shadow-md sm:overflow-hidden sm:rounded-lg">
-              <div className="px-4 py-6 sm:px-6">
-                {isEmptyArray(offersData?.serviceRequestOffers) && (
+            <Typography as="h3">Commentaires ({commentsCount})</Typography>
+            <div className="mt-6">
+              <div className="mx-auto w-full max-w-2xl space-y-6 py-6">
+                <ServiceRequestCommentForm
+                  serviceRequestSlug={serviceRequestSlugQuery}
+                />
+                {!hasComments && (
                   <EmptyState
                     icon={<FolderClock />}
-                    name="Aucune offre trouvée"
-                    description="Ici vous trouverez la liste des offres de service faits par des prestataires"
+                    name="Aucun commentaire"
+                    description="Ici vous trouverez la liste des commentaires faits par les prestataires intéressés par la demande."
                   />
                 )}
-                {offersData?.serviceRequestOffers &&
-                  offersData?.serviceRequestOffers?.length > 0 && (
-                    <ul role="list" className="space-y-8">
-                      {offersData?.serviceRequestOffers.map(offer => (
-                        <li key={offer.id}>
-                          <User profile={offer?.author?.profile} />
+                {commentsData?.serviceRequestComments &&
+                  commentsData?.serviceRequestComments?.length > 0 && (
+                    <ul role="list" className="space-y-3 py-2">
+                      {commentsData?.serviceRequestComments.map(comment => (
+                        <li
+                          key={comment.id}
+                          className="border bg-white px-6 py-4 shadow-sm sm:overflow-hidden sm:rounded-lg"
+                        >
+                          <User
+                            withProfileTypeInitial
+                            withOwnerBadge={comment?.author?.id === profile?.id}
+                            profile={comment?.author}
+                          />
                           <div className="ml-10 mt-1">
-                            <div className="mt-1 text-sm text-gray-700">
-                              {htmlParse(offer?.text)}
+                            <div className="mt-3 text-gray-600">
+                              {htmlParse(comment?.text)}
                             </div>
-                            <Inline className="mt-2 space-x-2 text-sm">
-                              <span className="font-medium text-gray-500">
-                                {formatDateToString(offer?.createdAt)}
+                            <div className="mt-1 flex w-full items-end justify-end space-x-2 text-sm">
+                              <span className="text-xs text-gray-500">
+                                Envoyée le{' '}
+                                {dateToReadableString(comment?.createdAt)}
                               </span>
-                              {isAuthorMine && (
-                                <Button type="button" variant="ghost" size="sm">
-                                  Sélectionner
-                                </Button>
-                              )}
-                            </Inline>
+                            </div>
                           </div>
                         </li>
                       ))}
@@ -368,7 +377,7 @@ export const getServerSideProps = createServerSideProps({
     await ssg?.services.getServiceRequest.prefetch({
       slug: serviceRequestSlugQuery,
     });
-    await ssg?.services.getServiceRequestOffers.prefetch({
+    await ssg?.services.getServiceRequestComments.prefetch({
       serviceRequestSlug: serviceRequestSlugQuery,
     });
 

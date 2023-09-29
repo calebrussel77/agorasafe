@@ -8,6 +8,7 @@ import { cn } from '@/lib/utils';
 import { type SimpleProfile } from '@/server/api/modules/profiles';
 
 import { type AvatarProps } from '../ui/avatar';
+import { Badge } from '../ui/badge';
 import { GroupItem, type GroupItemProps } from '../ui/group-item';
 import { Truncate } from '../ui/truncate';
 import { Typography } from '../ui/typography';
@@ -18,6 +19,7 @@ interface UserProps extends Partial<GroupItemProps> {
   shouldIncludeAvatar?: boolean;
   withBadges?: boolean;
   withLocation?: boolean;
+  withOwnerBadge?: boolean;
   withName?: boolean;
   canLinkToProfile?: boolean;
   profile: Partial<SimpleProfile> | null | undefined;
@@ -30,6 +32,7 @@ const User: FC<UserProps> = ({
   canLinkToProfile = true,
   shouldIncludeAvatar = true,
   withProfileTypeInitial = false,
+  withOwnerBadge = false,
   withBadges = true,
   withLocation = true,
   withName = true,
@@ -79,17 +82,18 @@ const User: FC<UserProps> = ({
             >
               <div
                 className={cn(
-                  'flex items-center gap-x-1 font-bold leading-none tracking-tight'
+                  'flex items-center gap-x-1 font-semibold leading-none tracking-tight'
                 )}
               >
                 <Typography
                   as="h3"
                   variant="h4"
                   truncate
-                  className={cn('line-clamp-1', classNames?.name)}
+                  className={cn('line-clamp-1 text-base', classNames?.name)}
                 >
                   {profile?.name}
                 </Typography>
+                {withOwnerBadge && <Badge content="Auteur" />}
                 {withBadges && (
                   <UserBadge
                     type={profile?.type as never}

@@ -9,6 +9,11 @@ export const getAllServicesWithCategorySchema = getAllQuerySchema.extend({
   categoryServiceId: z.string().trim().optional(),
 });
 
+export const getAllServiceRequestsSchema = getAllQuerySchema.extend({
+  status: z.nativeEnum(ServiceRequestStatus).optional(),
+  orderBy: z.enum(['desc', 'asc']).optional(),
+});
+
 export const getServiceRequestSchema = z
   .object({
     id: z.string().trim(),
@@ -16,6 +21,11 @@ export const getServiceRequestSchema = z
   })
   .partial()
   .refine(data => data.id || data.slug, "L'id ou le slug est requis");
+
+export const createServiceRequestCommentSchema = z.object({
+  text: z.string().trim(),
+  serviceRequestSlug: z.string(),
+});
 
 export const createServiceRequestSchema = z.object({
   title: z.string().trim(),
@@ -44,7 +54,7 @@ export const updateServiceRequestSchema = createServiceRequestSchema
     status: z.nativeEnum(ServiceRequestStatus).optional(),
   });
 
-export const getServiceRequestOffersSchema = getAllQuerySchema
+export const getServiceRequestCommentsSchema = getAllQuerySchema
   .extend({
     serviceRequestId: z.string().trim(),
     serviceRequestSlug: z.string().trim(),
@@ -59,6 +69,10 @@ export type CreateServiceRequestInput = z.infer<
   typeof createServiceRequestSchema
 >;
 
+export type CreateServiceRequestCommentInput = z.infer<
+  typeof createServiceRequestCommentSchema
+>;
+
 export type UpdateServiceRequestInput = z.infer<
   typeof updateServiceRequestSchema
 >;
@@ -69,6 +83,10 @@ export type GetAllServicesWithCategoryInput = z.infer<
 
 export type GetServiceRequestInput = z.infer<typeof getServiceRequestSchema>;
 
-export type GetServiceRequestOffersInput = z.infer<
-  typeof getServiceRequestOffersSchema
+export type GetServiceRequestCommentsInput = z.infer<
+  typeof getServiceRequestCommentsSchema
+>;
+
+export type GetAllServiceRequestsInput = z.infer<
+  typeof getAllServiceRequestsSchema
 >;

@@ -69,9 +69,7 @@ const MyApp = (props: AppPageProps) => {
     () =>
       Component.getLayout ??
       ((page: React.ReactElement) => (
-        <>
-          <MainLayout {...page.props}>{page}</MainLayout>
-        </>
+        <MainLayout {...page.props}>{page}</MainLayout>
       )),
     [Component.getLayout]
   );

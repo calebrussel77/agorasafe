@@ -92,7 +92,7 @@ const Image = forwardRef<
         </div>
 
         {!isLoaded && !hasCloseBtn && (
-          <div className="m-auto flex h-full w-full items-center justify-center align-middle">
+          <div className="absolute inset-0 flex h-full w-full items-center justify-center">
             <Camera className="h-10 w-10 flex-shrink-0 animate-pulse text-gray-400" />
           </div>
         )}
