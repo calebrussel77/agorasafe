@@ -135,14 +135,14 @@ const ServiceRequestCard: FC<ServiceRequestCardProps> = ({
             classNames={{ name: 'text-sm' }}
             avatarProps={{ size: 'xs' }}
           />
-          {serviceRequest?.offers && serviceRequest?.offers?.length > 0 && (
+          {serviceRequest?.comments && serviceRequest?.comments?.length > 0 && (
             <AvatarGroup
               maxCount={3}
               size="xs"
-              data={serviceRequest?.offers?.map(o => ({
-                name: o.author.profile.name,
-                src: o.author.profile.avatar as string,
-                href: `/u/${o.author.profile.slug}`,
+              data={serviceRequest?.comments?.map(comment => ({
+                name: comment.author.name,
+                src: comment.author.avatar as string,
+                href: `/u/${comment.author.slug}`,
               }))}
             />
           )}

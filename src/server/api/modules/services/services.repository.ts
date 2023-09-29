@@ -9,11 +9,11 @@ import { DEFAULT_PAGE_SIZE } from '@/server/utils/pagination';
 import { type GetAllQueryInput } from '../../validations/base.validations';
 import { simpleProfileSelect } from '../profiles';
 import type {
+  CreateServiceRequestCommentInput,
   CreateServiceRequestInput,
-  CreateServiceRequestOfferInput,
   GetAllServicesWithCategoryInput,
+  GetServiceRequestCommentsInput,
   GetServiceRequestInput,
-  GetServiceRequestOffersInput,
   UpdateServiceRequestInput,
 } from './services.validations';
 import { type GetAllServiceRequestsInput } from './services.validations';
@@ -60,16 +60,14 @@ export const getAllServiceRequests = ({
         select: { categoryService: { select: { name: true, slug: true } } },
       },
       photos: { select: { name: true, url: true } },
-      offers: {
+      comments: {
         select: {
           author: {
-            select: {
-              profile: { select: { name: true, avatar: true, slug: true } },
-            },
+            select: { name: true, avatar: true, slug: true },
           },
         },
       },
-      _count: { select: { choosedProviders: true, offers: true } },
+      _count: { select: { choosedProviders: true, comments: true } },
     },
     skip,
     take: limit,
@@ -212,22 +210,21 @@ export async function createServiceRequest({
   });
 }
 
-export async function createServiceRequestOffer({
+export function createServiceRequestComment({
   inputs,
   profileId,
 }: {
-  inputs: CreateServiceRequestOfferInput;
+  inputs: CreateServiceRequestCommentInput;
   profileId: string;
 }) {
   const { serviceRequestSlug, text } = inputs;
 
-  return prisma.serviceRequestOffer.create({
+  return prisma.comment.create({
     data: {
       text,
       author: {
-        connectOrCreate: {
-          where: { profileId },
-          create: { profile: { connect: { id: profileId } } },
+        connect: {
+          id: profileId,
         },
       },
       serviceRequest: { connect: { slug: serviceRequestSlug } },
@@ -305,7 +302,7 @@ export const getServiceRequestWithDetails = ({
   });
 };
 
-export function getServiceRequestOffers({
+export function getServiceRequestComments({
   inputs: {
     query,
     page,
@@ -314,11 +311,11 @@ export function getServiceRequestOffers({
     serviceRequestSlug,
   },
 }: {
-  inputs: GetServiceRequestOffersInput;
+  inputs: GetServiceRequestCommentsInput;
 }) {
   const skip = page ? (page - 1) * limit : undefined;
 
-  return prisma.serviceRequestOffer.findMany({
+  return prisma.comment.findMany({
     // orderBy: { createdAt: 'desc' },
     where: {
       serviceRequestId,
@@ -332,8 +329,7 @@ export function getServiceRequestOffers({
       id: true,
       text: true,
       createdAt: true,
-      proposedPrice: true,
-      author: { include: { profile: { select: simpleProfileSelect } } },
+      author: { select: simpleProfileSelect },
     },
   });
 }

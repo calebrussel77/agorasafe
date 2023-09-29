@@ -5,23 +5,22 @@ import {
   createTRPCRouter,
   customerProcedure,
   profileProcedure,
-  providerProcedure,
   publicProcedure,
 } from '@/server/api/trpc';
 
 import {
+  createServiceRequestCommentController,
+  createServiceRequestCommentSchema,
   createServiceRequestController,
-  createServiceRequestOfferController,
-  createServiceRequestOfferSchema,
   createServiceRequestSchema,
   getAllServiceCategoriesController,
   getAllServiceRequestsController,
   getAllServiceRequestsSchema,
   getAllServicesController,
   getAllServicesWithCategorySchema,
+  getServiceRequestCommentsController,
+  getServiceRequestCommentsSchema,
   getServiceRequestController,
-  getServiceRequestOffersController,
-  getServiceRequestOffersSchema,
   getServiceRequestSchema,
   updateServiceRequestController,
   updateServiceRequestSchema,
@@ -42,10 +41,10 @@ export const servicesRouter = createTRPCRouter({
     .mutation(({ input, ctx }) =>
       createServiceRequestController(input, ctx?.profile?.id)
     ),
-  createServiceRequestOffer: profileProcedure
-    .input(createServiceRequestOfferSchema)
+  createServiceRequestComment: profileProcedure
+    .input(createServiceRequestCommentSchema)
     .mutation(({ input, ctx }) =>
-      createServiceRequestOfferController(input, ctx?.profile?.id)
+      createServiceRequestCommentController(input, ctx?.profile?.id)
     ),
   updateServiceRequest: profileProcedure
     .input(updateServiceRequestSchema)
@@ -53,11 +52,11 @@ export const servicesRouter = createTRPCRouter({
 
   getServiceRequest: publicProcedure
     .input(getServiceRequestSchema)
-    .query(({ input, ctx }) => getServiceRequestController(input)),
+    .query(({ input }) => getServiceRequestController(input)),
 
-  getServiceRequestOffers: publicProcedure
-    .input(getServiceRequestOffersSchema)
-    .query(({ input }) => getServiceRequestOffersController(input)),
+  getServiceRequestComments: publicProcedure
+    .input(getServiceRequestCommentsSchema)
+    .query(({ input }) => getServiceRequestCommentsController(input)),
 
   getAllServiceRequests: publicProcedure
     .input(getAllServiceRequestsSchema)

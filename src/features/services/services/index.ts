@@ -5,9 +5,9 @@ import type {
   GetAllServiceCategoriesOptions,
   GetAllservicesInput,
   GetAllservicesOptions,
+  GetServiceRequestCommentsInput,
+  GetServiceRequestCommentsOptions,
   GetServiceRequestInput,
-  GetServiceRequestOffersInput,
-  GetServiceRequestOffersOptions,
   GetServiceRequestOptions,
   PublishServiceRequestOptions,
   UpdateServiceRequestOptions,
@@ -58,9 +58,11 @@ export const useUpdateServiceRequest = ({
 
   const data = api.services.updateServiceRequest.useMutation({
     async onSuccess(data, variables, ctx) {
-      //Invalidate single service request query 
-      await queryUtils.services.getServiceRequest.invalidate({slug: data?.updatedServiceRequest?.slug});
-      
+      //Invalidate single service request query
+      await queryUtils.services.getServiceRequest.invalidate({
+        slug: data?.updatedServiceRequest?.slug,
+      });
+
       onSuccess?.(data, variables, ctx);
     },
     onError(err, variables, context) {
@@ -81,11 +83,11 @@ export const useGetServiceRequest = (
   });
 };
 
-export const useServiceRequestOffers = (
-  inputs: GetServiceRequestOffersInput,
-  options?: GetServiceRequestOffersOptions
+export const useServiceRequestComments = (
+  inputs: GetServiceRequestCommentsInput,
+  options?: GetServiceRequestCommentsOptions
 ) => {
-  return api.services.getServiceRequestOffers.useQuery(inputs, {
+  return api.services.getServiceRequestComments.useQuery(inputs, {
     ...options,
   });
 };

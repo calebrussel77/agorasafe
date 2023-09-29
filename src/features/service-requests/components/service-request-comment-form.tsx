@@ -1,6 +1,5 @@
 import { z } from 'zod';
 
-import { CanView } from '@/components/can-view';
 import { Button } from '@/components/ui/button';
 import { Field } from '@/components/ui/field';
 import { Form, useZodForm } from '@/components/ui/form';
@@ -12,15 +11,15 @@ import { api } from '@/utils/api';
 
 import { cn } from '@/lib/utils';
 
-import { useCreateServiceRequestOffer } from '../services';
+import { useCreateServiceRequestComment } from '../services';
 
 const schema = z.object({
   text: z.string().trim(),
 });
 
-export type ServiceRequestOfferFormInput = z.infer<typeof schema>;
+export type ServiceRequestCommentFormInput = z.infer<typeof schema>;
 
-const ServiceRequestOfferForm = ({
+const ServiceRequestCommentForm = ({
   serviceRequestSlug,
   className,
 }: {
@@ -34,16 +33,16 @@ const ServiceRequestOfferForm = ({
   const { register, setValue } = form;
   const queryUtils = api.useContext();
 
-  const { mutate, isLoading } = useCreateServiceRequestOffer({
+  const { mutate, isLoading } = useCreateServiceRequestComment({
     onSuccess: async () => {
       setValue('text', '');
-      await queryUtils.services.getServiceRequestOffers.invalidate({
+      await queryUtils.services.getServiceRequestComments.invalidate({
         serviceRequestSlug,
       });
     },
   });
 
-  const onHandleSubmit = (formData: ServiceRequestOfferFormInput) => {
+  const onHandleSubmit = (formData: ServiceRequestCommentFormInput) => {
     mutate({
       text: formData?.text,
       serviceRequestSlug,
@@ -77,4 +76,4 @@ const ServiceRequestOfferForm = ({
   );
 };
 
-export { ServiceRequestOfferForm };
+export { ServiceRequestCommentForm };

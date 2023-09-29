@@ -1,16 +1,16 @@
 import { api } from '@/utils/api';
 
 import type {
-  CreateServiceRequestOfferOptions,
+  CreateServiceRequestCommentOptions,
   GetAllServiceCategoriesInput,
   GetAllServiceCategoriesOptions,
   GetAllServiceRequestsInput,
   GetAllServiceRequestsOptions,
   GetAllservicesInput,
   GetAllservicesOptions,
+  GetServiceRequestCommentsInput,
+  GetServiceRequestCommentsOptions,
   GetServiceRequestInput,
-  GetServiceRequestOffersInput,
-  GetServiceRequestOffersOptions,
   GetServiceRequestOptions,
   PublishServiceRequestOptions,
 } from '../types';
@@ -51,12 +51,12 @@ export const useCreateServiceRequest = ({
   return data;
 };
 
-export const useCreateServiceRequestOffer = ({
+export const useCreateServiceRequestComment = ({
   onSuccess,
   onError,
   ...restOptions
-}: CreateServiceRequestOfferOptions = {}) => {
-  const data = api.services.createServiceRequestOffer.useMutation({
+}: CreateServiceRequestCommentOptions = {}) => {
+  const data = api.services.createServiceRequestComment.useMutation({
     onSuccess(data, variables, ctx) {
       onSuccess?.(data, variables, ctx);
     },
@@ -78,11 +78,11 @@ export const useGetServiceRequest = (
   });
 };
 
-export const useServiceRequestOffers = (
-  inputs: GetServiceRequestOffersInput,
-  options?: GetServiceRequestOffersOptions
+export const useServiceRequestComments = (
+  inputs: GetServiceRequestCommentsInput,
+  options?: GetServiceRequestCommentsOptions
 ) => {
-  return api.services.getServiceRequestOffers.useQuery(inputs, {
+  return api.services.getServiceRequestComments.useQuery(inputs, {
     ...options,
   });
 };

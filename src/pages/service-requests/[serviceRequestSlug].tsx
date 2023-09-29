@@ -33,15 +33,14 @@ import { Truncate } from '@/components/ui/truncate';
 import { Typography } from '@/components/ui/typography';
 import { User } from '@/components/user';
 
-import { LoginRedirect } from '@/features/auth';
 import {
   DEFAULT_SERVICE_REQUEST_COVER_IMAGE,
-  ServiceRequestOfferForm,
+  ServiceRequestCommentForm,
 } from '@/features/service-requests';
 import {
   mapServiceRequestStatusToString,
   useGetServiceRequest,
-  useServiceRequestOffers,
+  useServiceRequestComments,
   useUpdateServiceRequest,
 } from '@/features/services';
 
@@ -80,16 +79,16 @@ const ServiceRequestPublicationPage = ({
   });
 
   const {
-    data: offersData,
-    isInitialLoading: isInitialLoadingOffers,
-    error: offersError,
-  } = useServiceRequestOffers({
+    data: commentsData,
+    isInitialLoading: isInitialLoadingComments,
+    error: commentsError,
+  } = useServiceRequestComments({
     serviceRequestSlug: serviceRequestSlugQuery,
   });
   const isAuthorMine =
     profile?.id === data?.serviceRequest?.author?.profile?.id;
   const authorName = data?.serviceRequest?.author?.profile?.name;
-  const offersCount = offersData?.serviceRequestOffers?.length;
+  const commentsCount = commentsData?.serviceRequestComments?.length;
   const isProvider = profile?.type === 'PROVIDER';
   const isStatusOpen = data?.serviceRequest?.status === 'OPEN';
   const pageLink = getAbsoluteHrefUrl(router.asPath);
@@ -97,7 +96,7 @@ const ServiceRequestPublicationPage = ({
     choosedProvider => choosedProvider.provider.profile.id === profile?.id
   );
 
-  const hasOffers = !isEmptyArray(offersData?.serviceRequestOffers);
+  const hasComments = !isEmptyArray(commentsData?.serviceRequestComments);
   const coverBg = isEmptyArray(data?.serviceRequest?.photos)
     ? DEFAULT_SERVICE_REQUEST_COVER_IMAGE
     : data?.serviceRequest?.photos?.[0]?.url;
@@ -305,44 +304,45 @@ const ServiceRequestPublicationPage = ({
             </div>
           </section>
         </AsyncWrapper>
-        <AsyncWrapper isLoading={isInitialLoadingOffers} error={offersError}>
+        <AsyncWrapper
+          isLoading={isInitialLoadingComments}
+          error={commentsError}
+        >
           <section aria-labelledby="comment-section" className="w-full">
-            <Typography as="h3">Commentaires ({offersCount})</Typography>
+            <Typography as="h3">Commentaires ({commentsCount})</Typography>
             <div className="mt-6">
               <div className="mx-auto w-full max-w-2xl space-y-6 py-6">
-                <ServiceRequestOfferForm
+                <ServiceRequestCommentForm
                   serviceRequestSlug={serviceRequestSlugQuery}
                 />
-                {!hasOffers && (
+                {!hasComments && (
                   <EmptyState
                     icon={<FolderClock />}
                     name="Aucun commentaire"
                     description="Ici vous trouverez la liste des commentaires faits par les prestataires intéressés par la demande."
                   />
                 )}
-                {offersData?.serviceRequestOffers &&
-                  offersData?.serviceRequestOffers?.length > 0 && (
+                {commentsData?.serviceRequestComments &&
+                  commentsData?.serviceRequestComments?.length > 0 && (
                     <ul role="list" className="space-y-3 py-2">
-                      {offersData?.serviceRequestOffers.map(offer => (
+                      {commentsData?.serviceRequestComments.map(comment => (
                         <li
-                          key={offer.id}
+                          key={comment.id}
                           className="border bg-white px-6 py-4 shadow-sm sm:overflow-hidden sm:rounded-lg"
                         >
                           <User
                             withProfileTypeInitial
-                            withOwnerBadge={
-                              offer?.author?.profile?.id === profile?.id
-                            }
-                            profile={offer?.author?.profile}
+                            withOwnerBadge={comment?.author?.id === profile?.id}
+                            profile={comment?.author}
                           />
                           <div className="ml-10 mt-1">
                             <div className="mt-3 text-gray-600">
-                              {htmlParse(offer?.text)}
+                              {htmlParse(comment?.text)}
                             </div>
                             <div className="mt-1 flex w-full items-end justify-end space-x-2 text-sm">
                               <span className="text-xs text-gray-500">
                                 Envoyée le{' '}
-                                {dateToReadableString(offer?.createdAt)}
+                                {dateToReadableString(comment?.createdAt)}
                               </span>
                             </div>
                           </div>
@@ -377,7 +377,7 @@ export const getServerSideProps = createServerSideProps({
     await ssg?.services.getServiceRequest.prefetch({
       slug: serviceRequestSlugQuery,
     });
-    await ssg?.services.getServiceRequestOffers.prefetch({
+    await ssg?.services.getServiceRequestComments.prefetch({
       serviceRequestSlug: serviceRequestSlugQuery,
     });
 

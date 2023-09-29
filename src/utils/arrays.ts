@@ -1,6 +1,5 @@
 /**
  * Removes duplicate elements from an array using a custom comparator function.
- *
  * @param array - The input array to remove duplicates from.
  * @param comparator - A custom function to compare elements for uniqueness.
  * @returns A new array with duplicate elements removed.
