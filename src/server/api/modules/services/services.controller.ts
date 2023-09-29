@@ -1,6 +1,7 @@
 import { throwDbError } from '../../../utils/error-handling';
 import { type GetAllQueryInput } from '../../validations/base.validations';
 import {
+  createServiceRequestOfferService,
   createServiceRequestService,
   getAllCategoryServicesService,
   getAllServiceRequestsService,
@@ -11,6 +12,7 @@ import {
 } from './services.service';
 import type {
   CreateServiceRequestInput,
+  CreateServiceRequestOfferInput,
   GetAllServiceRequestsInput,
   GetAllServicesWithCategoryInput,
   GetServiceRequestInput,
@@ -38,6 +40,16 @@ export const getAllServiceCategoriesController = async (
   }
 };
 
+export const createServiceRequestOfferController = async (
+  inputs: CreateServiceRequestOfferInput,
+  profileId: string
+) => {
+  try {
+    return await createServiceRequestOfferService(inputs, profileId);
+  } catch (error) {
+    throwDbError(error);
+  }
+};
 export const createServiceRequestController = async (
   inputs: CreateServiceRequestInput,
   profileId: string

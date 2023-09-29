@@ -9,11 +9,10 @@ export const getAllServicesWithCategorySchema = getAllQuerySchema.extend({
   categoryServiceId: z.string().trim().optional(),
 });
 
-export const getAllServiceRequestsSchema = getAllQuerySchema
-  .extend({
-    status: z.nativeEnum(ServiceRequestStatus).optional(),
-    orderBy: z.enum(['desc', 'asc']).optional(),
-  })
+export const getAllServiceRequestsSchema = getAllQuerySchema.extend({
+  status: z.nativeEnum(ServiceRequestStatus).optional(),
+  orderBy: z.enum(['desc', 'asc']).optional(),
+});
 
 export const getServiceRequestSchema = z
   .object({
@@ -22,6 +21,11 @@ export const getServiceRequestSchema = z
   })
   .partial()
   .refine(data => data.id || data.slug, "L'id ou le slug est requis");
+
+export const createServiceRequestOfferSchema = z.object({
+  text: z.string().trim(),
+  serviceRequestSlug: z.string(),
+});
 
 export const createServiceRequestSchema = z.object({
   title: z.string().trim(),
@@ -63,6 +67,10 @@ export const getServiceRequestOffersSchema = getAllQuerySchema
 
 export type CreateServiceRequestInput = z.infer<
   typeof createServiceRequestSchema
+>;
+
+export type CreateServiceRequestOfferInput = z.infer<
+  typeof createServiceRequestOfferSchema
 >;
 
 export type UpdateServiceRequestInput = z.infer<

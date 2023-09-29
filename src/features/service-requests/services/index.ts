@@ -1,6 +1,7 @@
 import { api } from '@/utils/api';
 
 import type {
+  CreateServiceRequestOfferOptions,
   GetAllServiceCategoriesInput,
   GetAllServiceCategoriesOptions,
   GetAllServiceRequestsInput,
@@ -38,6 +39,24 @@ export const useCreateServiceRequest = ({
   ...restOptions
 }: PublishServiceRequestOptions = {}) => {
   const data = api.services.publishServiceRequest.useMutation({
+    onSuccess(data, variables, ctx) {
+      onSuccess?.(data, variables, ctx);
+    },
+    onError(err, variables, context) {
+      onError?.(err, variables, context);
+    },
+    ...restOptions,
+  });
+
+  return data;
+};
+
+export const useCreateServiceRequestOffer = ({
+  onSuccess,
+  onError,
+  ...restOptions
+}: CreateServiceRequestOfferOptions = {}) => {
+  const data = api.services.createServiceRequestOffer.useMutation({
     onSuccess(data, variables, ctx) {
       onSuccess?.(data, variables, ctx);
     },

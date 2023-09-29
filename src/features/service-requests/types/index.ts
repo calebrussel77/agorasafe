@@ -41,6 +41,9 @@ export type ServiceCategoryItem =
 export type GetAllServiceRequestsOutput =
   RouterOutputs['services']['getAllServiceRequests'];
 export type GetAllServiceRequestsOptions =
-ReactQueryOptions['services']['getAllServiceRequests'];
+  ReactQueryOptions['services']['getAllServiceRequests'];
 export type GetAllServiceRequestsInput =
   RouterInputs['services']['getAllServiceRequests'];
+
+export type CreateServiceRequestOfferOptions =
+  ReactQueryOptions['services']['createServiceRequestOffer'];

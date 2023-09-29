@@ -34,7 +34,10 @@ import { Typography } from '@/components/ui/typography';
 import { User } from '@/components/user';
 
 import { LoginRedirect } from '@/features/auth';
-import { MakeOfferModal } from '@/features/service-requests';
+import {
+  DEFAULT_SERVICE_REQUEST_COVER_IMAGE,
+  ServiceRequestOfferForm,
+} from '@/features/service-requests';
 import {
   mapServiceRequestStatusToString,
   useGetServiceRequest,
@@ -83,7 +86,6 @@ const ServiceRequestPublicationPage = ({
   } = useServiceRequestOffers({
     serviceRequestSlug: serviceRequestSlugQuery,
   });
-  const defaultCoverBgUrl = '/images/artistique-cover-photo.jpg';
   const isAuthorMine =
     profile?.id === data?.serviceRequest?.author?.profile?.id;
   const authorName = data?.serviceRequest?.author?.profile?.name;
@@ -97,7 +99,7 @@ const ServiceRequestPublicationPage = ({
 
   const hasOffers = !isEmptyArray(offersData?.serviceRequestOffers);
   const coverBg = isEmptyArray(data?.serviceRequest?.photos)
-    ? getAbsoluteHrefUrl(defaultCoverBgUrl)
+    ? DEFAULT_SERVICE_REQUEST_COVER_IMAGE
     : data?.serviceRequest?.photos?.[0]?.url;
 
   useEffect(() => {
@@ -140,7 +142,7 @@ const ServiceRequestPublicationPage = ({
               />
             ) : (
               <Image
-                src={defaultCoverBgUrl}
+                src={DEFAULT_SERVICE_REQUEST_COVER_IMAGE}
                 alt="Image artistique de fond"
                 className="h-64 w-full rounded-lg border bg-gray-50 object-top shadow-sm md:h-80"
               />
@@ -183,9 +185,7 @@ const ServiceRequestPublicationPage = ({
               </div>
               <div className="flex flex-row-reverse items-center gap-2 sm:flex-row">
                 <CanView allowedProfiles={['PROVIDER']}>
-                  <MakeOfferModal>
-                    <Button size="sm">Faire une offre</Button>
-                  </MakeOfferModal>
+                  <Button size="sm">Faire une offre</Button>
                 </CanView>
                 {isAuthorMine && (
                   <Button
@@ -307,43 +307,44 @@ const ServiceRequestPublicationPage = ({
         </AsyncWrapper>
         <AsyncWrapper isLoading={isInitialLoadingOffers} error={offersError}>
           <section aria-labelledby="comment-section" className="w-full">
-            <Typography as="h3">Offres ({offersCount})</Typography>
-            <div className="mt-6 border bg-white shadow-md sm:overflow-hidden sm:rounded-lg">
-              <div className="px-4 py-6 sm:px-6">
+            <Typography as="h3">Commentaires ({offersCount})</Typography>
+            <div className="mt-6">
+              <div className="mx-auto w-full max-w-2xl space-y-6 py-6">
+                <ServiceRequestOfferForm
+                  serviceRequestSlug={serviceRequestSlugQuery}
+                />
                 {!hasOffers && (
                   <EmptyState
                     icon={<FolderClock />}
-                    name="Aucune offre trouvée"
-                    description="Ici vous trouverez la liste des offres de service faits par des prestataires"
-                    primaryAction={
-                      <CanView allowedProfiles={['PROVIDER']} isPublic>
-                        <LoginRedirect reason="make-service-request-offer">
-                          <Button>Faire une offre</Button>
-                        </LoginRedirect>
-                      </CanView>
-                    }
+                    name="Aucun commentaire"
+                    description="Ici vous trouverez la liste des commentaires faits par les prestataires intéressés par la demande."
                   />
                 )}
                 {offersData?.serviceRequestOffers &&
                   offersData?.serviceRequestOffers?.length > 0 && (
-                    <ul role="list" className="space-y-8">
+                    <ul role="list" className="space-y-3 py-2">
                       {offersData?.serviceRequestOffers.map(offer => (
-                        <li key={offer.id}>
-                          <User profile={offer?.author?.profile} />
+                        <li
+                          key={offer.id}
+                          className="border bg-white px-6 py-4 shadow-sm sm:overflow-hidden sm:rounded-lg"
+                        >
+                          <User
+                            withProfileTypeInitial
+                            withOwnerBadge={
+                              offer?.author?.profile?.id === profile?.id
+                            }
+                            profile={offer?.author?.profile}
+                          />
                           <div className="ml-10 mt-1">
-                            <div className="mt-1 text-sm text-gray-700">
+                            <div className="mt-3 text-gray-600">
                               {htmlParse(offer?.text)}
                             </div>
-                            <Inline className="mt-2 space-x-2 text-sm">
-                              <span className="font-medium text-gray-500">
+                            <div className="mt-1 flex w-full items-end justify-end space-x-2 text-sm">
+                              <span className="text-xs text-gray-500">
+                                Envoyée le{' '}
                                 {dateToReadableString(offer?.createdAt)}
                               </span>
-                              {isAuthorMine && (
-                                <Button type="button" variant="ghost" size="sm">
-                                  Sélectionner
-                                </Button>
-                              )}
-                            </Inline>
+                            </div>
                           </div>
                         </li>
                       ))}

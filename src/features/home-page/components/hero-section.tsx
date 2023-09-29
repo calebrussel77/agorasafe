@@ -20,7 +20,9 @@ const images = [
 ];
 
 const HeroSection: FC<HeroSectionProps> = ({}) => {
-  const { opacities, sliderRef } = useFadeSliderImages({ images });
+  const { opacities, sliderRef } = useFadeSliderImages({
+    imagesCount: images?.length,
+  });
 
   return (
     <>

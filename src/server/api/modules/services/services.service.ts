@@ -1,3 +1,4 @@
+import { uniqWith } from '@/utils/arrays';
 import { formatPhoneNumber } from '@/utils/misc';
 
 import { throwBadRequestError } from '@/server/utils/error-handling';
@@ -5,6 +6,7 @@ import { throwBadRequestError } from '@/server/utils/error-handling';
 import { type GetAllQueryInput } from '../../validations/base.validations';
 import {
   createServiceRequest,
+  createServiceRequestOffer,
   getAllCategoryServices,
   getAllServiceRequests,
   getAllServicesWithCategory,
@@ -20,6 +22,7 @@ import {
 } from './services.utils';
 import type {
   CreateServiceRequestInput,
+  CreateServiceRequestOfferInput,
   GetAllServiceRequestsInput,
   GetAllServicesWithCategoryInput,
   GetServiceRequestInput,
@@ -49,6 +52,20 @@ export const getAllCategoryServicesService = async (
   };
 };
 
+export const createServiceRequestOfferService = async (
+  inputs: CreateServiceRequestOfferInput,
+  profileId: string
+) => {
+  const serviceRequestOffer = await createServiceRequestOffer({
+    inputs,
+    profileId,
+  });
+
+  return {
+    serviceRequestOffer,
+    success: true,
+  };
+};
 export const createServiceRequestService = async (
   inputs: CreateServiceRequestInput,
   profileId: string
@@ -122,9 +139,24 @@ export const getAllServiceRequestsService = async (
   inputs: GetAllServiceRequestsInput
 ) => {
   const serviceRequests = await getAllServiceRequests(inputs);
+  const _serviceRequests = serviceRequests.map(serviceRequest => ({
+    ...serviceRequest,
+    nbHoursFomattedText: getFormattedDuration(serviceRequest?.nbOfHours),
+    nbProviderNeededFormattedText: getFomattedProviderNeeded(
+      serviceRequest?.numberOfProviderNeeded
+    ),
+    offers: uniqWith(
+      serviceRequest.offers,
+      (a, b) => a.author.profile.slug === b.author.profile.slug
+    ),
+    estimatedPriceFormatted: getFormattedEstimatedPrice(
+      serviceRequest?.estimatedPrice,
+      'Prix non défini'
+    ),
+  }));
 
   return {
-    serviceRequests,
+    serviceRequests: _serviceRequests,
     success: true,
   };
 };

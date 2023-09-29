@@ -5,7 +5,7 @@ import {
 } from '@/features/home-page';
 import {
   DEFAULT_SERVICE_REQUESTS_LIMIT,
-  ServiceRequestsSection,
+  LatestServiceRequests,
 } from '@/features/service-requests';
 
 import { createServerSideProps } from '@/server/utils/server-side';
@@ -18,8 +18,8 @@ const HomePage: AppPageProps['Component'] = () => {
       {/* Hero section */}
       <HeroSection />
 
-      {/* Services request section */}
-      <ServiceRequestsSection />
+      {/* Latest Service requests section */}
+      <LatestServiceRequests />
 
       {/* Features section */}
       <FeaturesSection />

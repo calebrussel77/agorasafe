@@ -12,12 +12,11 @@ import { DEFAULT_SERVICE_REQUESTS_LIMIT } from '../constants';
 import { useGetAllServiceRequests } from '../services';
 import { ServiceRequestCard } from './service-request-card';
 
-export function ServiceRequestsSection() {
+export function LatestServiceRequests() {  
   const { data, error, refetch, isLoading } = useGetAllServiceRequests({
     limit: DEFAULT_SERVICE_REQUESTS_LIMIT,
   });
 
-  console.log({ data });
 
   return (
     <div className="bg-white py-24">

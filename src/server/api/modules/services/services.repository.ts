@@ -10,6 +10,7 @@ import { type GetAllQueryInput } from '../../validations/base.validations';
 import { simpleProfileSelect } from '../profiles';
 import type {
   CreateServiceRequestInput,
+  CreateServiceRequestOfferInput,
   GetAllServicesWithCategoryInput,
   GetServiceRequestInput,
   GetServiceRequestOffersInput,
@@ -51,6 +52,7 @@ export const getAllServiceRequests = ({
       location: { select: { lat: true, long: true, name: true } },
       nbOfHours: true,
       estimatedPrice: true,
+      numberOfProviderNeeded: true,
       willWantProposal: true,
       author: { select: { profile: { select: simpleProfileSelect } } },
       status: true,
@@ -210,6 +212,29 @@ export async function createServiceRequest({
   });
 }
 
+export async function createServiceRequestOffer({
+  inputs,
+  profileId,
+}: {
+  inputs: CreateServiceRequestOfferInput;
+  profileId: string;
+}) {
+  const { serviceRequestSlug, text } = inputs;
+
+  return prisma.serviceRequestOffer.create({
+    data: {
+      text,
+      author: {
+        connectOrCreate: {
+          where: { profileId },
+          create: { profile: { connect: { id: profileId } } },
+        },
+      },
+      serviceRequest: { connect: { slug: serviceRequestSlug } },
+    },
+  });
+}
+
 export const updateServiceRequest = ({
   inputs,
 }: {
@@ -294,6 +319,7 @@ export function getServiceRequestOffers({
   const skip = page ? (page - 1) * limit : undefined;
 
   return prisma.serviceRequestOffer.findMany({
+    // orderBy: { createdAt: 'desc' },
     where: {
       serviceRequestId,
       serviceRequest: serviceRequestSlug
