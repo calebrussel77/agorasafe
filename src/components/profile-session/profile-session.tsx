@@ -11,7 +11,7 @@ import { useToastOnPageReload } from '@/hooks/use-toast-on-page-reload';
 
 import { Avatar } from '../ui/avatar';
 import { NoSSR } from '../ui/no-ssr';
-import { ToastAction, useToast } from '../ui/toast';
+import { ToastAction, toast } from '../ui/toast';
 
 const shouldDisplayProfileDialog = ({
   status,
@@ -41,7 +41,6 @@ const ProfileSession = () => {
     resetProfile,
     profile,
   } = useCurrentUser();
-  const { toast } = useToast();
   const router = useRouter();
   const isOnboardingPages = router.pathname.startsWith('/onboarding');
 

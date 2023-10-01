@@ -1,11 +1,13 @@
-import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { startTransition, useEffect } from 'react';
 
-const showToastStrorageKey = 'showToastOnReload';
+const showToastStrorageKey = 'showToastOnRefresh';
 
 // Custom hook for displaying a toast message after a page reload
 const useToastOnPageReload = (toastFn: () => void) => {
-  // Check if there's a flag in localStorage indicating the toast should be shown
+  const router = useRouter();
 
+  // Check if there's a flag in localStorage indicating the toast should be shown
   useEffect(() => {
     const shouldShowToast = localStorage.getItem(showToastStrorageKey);
 
@@ -23,8 +25,10 @@ const useToastOnPageReload = (toastFn: () => void) => {
     // Set the flag in localStorage to show the toast after the page reloads
     localStorage.setItem(showToastStrorageKey, 'true');
 
-    // Reload the page
-    window.location.reload();
+    // Refresh the page
+    startTransition(() => {
+      router.refresh();
+    });
   };
 
   return { reloadWithToast };
