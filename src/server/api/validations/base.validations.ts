@@ -20,5 +20,15 @@ export const getAllQuerySchema = paginationSchema.extend({
 
 export type GetAllQueryInput = z.infer<typeof getAllQuerySchema>;
 
+export const getByIdOrSlugQuerySchema = z
+  .object({
+    id: z.string().trim(),
+    slug: z.string().trim(),
+  })
+  .partial()
+  .refine(data => data.id || data.slug, "L'id ou le slug est requis");
+  
+export type GetByIdOrSlugQueryInput = z.infer<typeof getByIdOrSlugQuerySchema>;
+
 export const getByIdQuerySchema = z.object({ id: z.number() });
 export type GetByIdQueryInput = z.infer<typeof getByIdQuerySchema>;

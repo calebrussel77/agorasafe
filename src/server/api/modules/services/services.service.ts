@@ -1,16 +1,24 @@
 import { uniqWith } from '@/utils/arrays';
 import { formatPhoneNumber } from '@/utils/misc';
 
+import {
+  throwForbiddenError,
+  throwNotFoundError,
+} from '@/server/utils/error-handling';
+
 import { type GetAllQueryInput } from '../../validations/base.validations';
 import {
   createServiceRequest,
   createServiceRequestComment,
+  createServiceRequestReservation,
   getAllCategoryServices,
   getAllServiceRequests,
   getAllServicesWithCategory,
   getServiceRequestComments,
   getServiceRequestWithDetails,
+  getServiceRequestWithReservedProviders,
   updateServiceRequest,
+  updateServiceRequestReservation,
 } from './services.repository';
 import {
   getFomattedProviderNeeded,
@@ -25,6 +33,7 @@ import type {
   GetAllServicesWithCategoryInput,
   GetServiceRequestCommentsInput,
   GetServiceRequestInput,
+  ToggleServiceRequestReservationInput,
   UpdateServiceRequestInput,
 } from './services.validations';
 
@@ -83,6 +92,97 @@ export const updateServiceRequestService = async (
 
   return {
     updatedServiceRequest,
+    success: true,
+  };
+};
+
+export const toggleServiceRequestReservationService = async (
+  inputs: ToggleServiceRequestReservationInput
+) => {
+  const { customerProfileId, providerProfileId, serviceRequestId } = inputs;
+
+  const serviceRequest = await getServiceRequestWithReservedProviders({
+    inputs: { id: serviceRequestId },
+  });
+
+  if (!serviceRequest) {
+    throwNotFoundError('Demande de service non trouvée !');
+  }
+
+  // const activeReservedProvidersCount = serviceRequest?.providersReserved.filter(
+  //   el => el.isActive && el.removedAt === null
+  // )?.length;
+  // if (
+  //   serviceRequest?.numberOfProviderNeeded === activeReservedProvidersCount
+  // ) {
+  //   throwForbiddenError(
+  //     'Vous ne pouvez plus rajouter un prestataire à votre liste de reservation !'
+  //   );
+  // }
+
+  const isProviderIsInReservations = serviceRequest.providersReserved.some(
+    el => el.providerProfileId === providerProfileId
+  );
+  const isProviderIsInReservationsAndIsActive =
+    serviceRequest.providersReserved.some(
+      el =>
+        el.providerProfileId === providerProfileId &&
+        el.isActive &&
+        el.removedAt === null
+    );
+
+  if (!isProviderIsInReservations) {
+    const serviceRequestReservation = await createServiceRequestReservation({
+      inputs: {
+        customerProfileId,
+        providerProfileId,
+        serviceRequestId,
+      },
+    });
+    return {
+      serviceRequestReservation,
+      message:
+        'Le prestataire a bien été ajouté à votre liste de reservation pour la demande !',
+      success: true,
+    };
+  }
+
+  if (isProviderIsInReservationsAndIsActive) {
+    const serviceRequestReservation = await updateServiceRequestReservation({
+      inputs: {
+        customerProfileId,
+        providerProfileId,
+        serviceRequestId,
+      },
+      data: {
+        removedAt: new Date(),
+        isActive: false,
+      },
+    });
+    return {
+      serviceRequestReservation,
+      message:
+        'Le prestataire a bien été rétiré de votre liste de reservation pour la demande !',
+      success: true,
+    };
+  }
+
+  const serviceRequestReservation = await updateServiceRequestReservation({
+    inputs: {
+      customerProfileId,
+      providerProfileId,
+      serviceRequestId,
+    },
+    data: {
+      removedAt: null,
+      isActive: true,
+    },
+  });
+
+  return {
+    serviceRequestReservation,
+    message:
+      'Le prestataire a bien été rajouté à votre liste de reservation pour la demande !',
     success: true,
   };
 };

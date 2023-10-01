@@ -5,6 +5,7 @@ import {
   createTRPCRouter,
   customerProcedure,
   profileProcedure,
+  providerProcedure,
   publicProcedure,
 } from '@/server/api/trpc';
 
@@ -22,6 +23,8 @@ import {
   getServiceRequestCommentsSchema,
   getServiceRequestController,
   getServiceRequestSchema,
+  toggleServiceRequestReservationController,
+  toggleServiceRequestReservationSchema,
   updateServiceRequestController,
   updateServiceRequestSchema,
 } from '../modules/services';
@@ -49,6 +52,10 @@ export const servicesRouter = createTRPCRouter({
   updateServiceRequest: profileProcedure
     .input(updateServiceRequestSchema)
     .mutation(({ input }) => updateServiceRequestController(input)),
+
+  toggleServiceRequestReservation: customerProcedure
+    .input(toggleServiceRequestReservationSchema)
+    .mutation(({ input }) => toggleServiceRequestReservationController(input)),
 
   getServiceRequest: publicProcedure
     .input(getServiceRequestSchema)

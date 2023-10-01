@@ -57,13 +57,14 @@ const ServiceRequestCommentForm = ({
     >
       <Field
         // hint="En quoi votre offre pourrait-elle être meilleure par rapport aux autres ?"
-        label="Votre commentaire"
+        // label="Votre commentaire"
         required
       >
         <Textarea
           {...register('text')}
-          rows={6}
-          cols={6}
+          rows={3}
+          cols={3}
+          className="bg-white"
           placeholder="Votre commentaire..."
         />
       </Field>

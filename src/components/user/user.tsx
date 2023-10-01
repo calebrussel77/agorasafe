@@ -93,7 +93,7 @@ const User: FC<UserProps> = ({
                 >
                   {profile?.name}
                 </Typography>
-                {withOwnerBadge && <Badge content="Auteur" />}
+                {withOwnerBadge === true && <Badge content="Auteur" />}
                 {withBadges && (
                   <UserBadge
                     type={profile?.type as never}

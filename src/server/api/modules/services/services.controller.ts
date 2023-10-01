@@ -8,6 +8,7 @@ import {
   getAllServicesService,
   getServiceRequestCommentsService,
   getServiceRequestService,
+  toggleServiceRequestReservationService,
   updateServiceRequestService,
 } from './services.service';
 import type {
@@ -17,6 +18,7 @@ import type {
   GetAllServicesWithCategoryInput,
   GetServiceRequestCommentsInput,
   GetServiceRequestInput,
+  ToggleServiceRequestReservationInput,
   UpdateServiceRequestInput,
 } from './services.validations';
 
@@ -50,6 +52,17 @@ export const createServiceRequestCommentController = async (
     throwDbError(error);
   }
 };
+
+export const toggleServiceRequestReservationController = async (
+  inputs: ToggleServiceRequestReservationInput
+) => {
+  try {
+    return await toggleServiceRequestReservationService(inputs);
+  } catch (error) {
+    throwDbError(error);
+  }
+};
+
 export const createServiceRequestController = async (
   inputs: CreateServiceRequestInput,
   profileId: string

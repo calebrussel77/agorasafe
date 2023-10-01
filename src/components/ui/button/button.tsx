@@ -1,6 +1,8 @@
 import { Slot } from '@radix-ui/react-slot';
 import { type VariantProps, cva } from 'class-variance-authority';
+import Link, { LinkProps } from 'next/link';
 import * as React from 'react';
+import { type Url } from 'url';
 
 import { cn } from '@/lib/utils';
 
@@ -16,7 +18,7 @@ const buttonVariants = cva(
           'bg-destructive text-destructive-foreground hover:bg-destructive/90',
         outline: 'border border-input hover:bg-gray-100',
         secondary:
-          'bg-secondary text-secondary-foreground hover:bg-secondary/80',
+          'bg-brand-50 text-secondary-foreground hover:bg-brand-100 border border-brand-100',
         ghost: 'hover:bg-gray-100 hover:text-gray-900',
         link: 'underline-offset-4 hover:underline text-primary',
       },
@@ -39,6 +41,7 @@ export interface ButtonProps
     VariantProps<typeof buttonVariants> {
   asChild?: boolean;
   isLoading?: boolean;
+  href?: LinkProps['href'];
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
@@ -50,6 +53,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       isLoading,
       children,
       disabled,
+      href,
       asChild = false,
       ...props
     },
@@ -57,7 +61,8 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ) => {
     const Comp = asChild ? Slot : 'button';
     const isDisabled = disabled || isLoading;
-    return (
+
+    const btn = (
       <Comp
         className={cn(buttonVariants({ variant, size, className }))}
         ref={ref}
@@ -74,6 +79,12 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         )}
       </Comp>
     );
+
+    if (href) {
+      return <Link href={href}>{btn}</Link>;
+    }
+
+    return btn;
   }
 );
 Button.displayName = 'Button';
