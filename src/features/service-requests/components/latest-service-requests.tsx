@@ -38,7 +38,7 @@ export function LatestServiceRequests() {
               icon={<LucideDoorClosed />}
               className="my-3"
               name="Aucune demande publiée"
-              description="Soyez le premier à créer et publier votre demande service."
+              description="Soyez le premier à créer et publier votre demande de service."
               primaryAction={
                 <CanView allowedProfiles={['CUSTOMER']} isPublic>
                   <AskServiceModal>

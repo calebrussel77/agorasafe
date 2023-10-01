@@ -176,7 +176,7 @@ const ProfileDetailsPage = ({
                     )}
                   </Inline>
                 </div>
-                <div className="mt-6 flex flex-row items-center space-x-4 sm:justify-stretch">
+                <div className="mt-6 flex w-full flex-row items-center space-x-4 sm:w-auto sm:justify-stretch">
                   {isMyProfile && (
                     <Button
                       href="/dashboard/settings"

@@ -1,7 +1,7 @@
 import { faker } from '@faker-js/faker';
 import { PrismaClient } from '@prisma/client';
 
-import { serviceCategories, services } from '../src/data';
+import { engagementSkills, serviceCategories, services } from '../src/data';
 import { formatYearMonthDay } from '../src/lib/date-fns';
 import { slugit } from '../src/utils/strings';
 
@@ -156,6 +156,7 @@ const groupedServices = serviceCategories.map(category => {
 
 const createUserWithAdminRoleAndProfiles = async () => {
   const { id: locationId } = await createLocation();
+  const { id: locationId2 } = await createLocation();
 
   await prisma.user.create({
     data: {
@@ -172,27 +173,43 @@ const createUserWithAdminRoleAndProfiles = async () => {
         createMany: {
           data: [
             {
-              name: 'Admin Prestataire',
-              phone: faker.phone.number('+2376########'),
-              bio: faker.lorem.paragraph(2),
+              name: 'Cesar Kamdem J.',
+              websiteUrl: faker.internet.url(),
+              aboutMe: faker.lorem.paragraph(4),
+              facebookUrl: `https://facebook.com/${faker.internet.userName()}`,
+              linkedinUrl: `https://linkedin.com/${faker.internet.userName()}`,
+              XUrl: `https://x.com/${faker.internet.userName()}`,
               avatar: faker.image.avatar(),
-              slug: 'admin-provider-20029',
+              bio: 'Software developer React js & Nodejs/Express,Typescript who always want to improve !',
+              phone: faker.phone.number('+23769#######'),
+              slug: 'cesar-kamdem-20029',
               type: 'PROVIDER',
               locationId,
             },
             {
-              name: 'Admin Client',
+              name: 'Jules Masango K.',
+              websiteUrl: faker.internet.url(),
               bio: faker.lorem.paragraph(2),
+              aboutMe: faker.lorem.paragraph(4),
+              facebookUrl: `https://facebook.com/${faker.internet.userName()}`,
+              linkedinUrl: `https://linkedin.com/${faker.internet.userName()}`,
+              XUrl: `https://x.com/${faker.internet.userName()}`,
               avatar: faker.image.avatar(),
-              phone: faker.phone.number('+2376########'),
-              slug: 'admin-customer-68939',
+              phone: faker.phone.number('+23765#######'),
+              slug: 'jules-masango-keneth-20030',
               type: 'CUSTOMER',
-              locationId,
+              locationId: locationId2,
             },
           ],
         },
       },
     },
+  });
+};
+
+const createEngamentSkills = async () => {
+  await prisma.skill.createMany({
+    data: engagementSkills?.map(skill => ({ name: skill.name })),
   });
 };
 
@@ -217,20 +234,20 @@ const destroyData = async () => {
   try {
     console.log('🌱 Cleaned up the database...');
 
-    // console.log('🧹 Deleting profiles...');
-    // await prisma.profile.deleteMany();
+    console.log('🧹 Deleting profiles...');
+    await prisma.profile.deleteMany();
 
-    // console.log('🧹 Deleting locations...');
-    // await prisma.location.deleteMany();
+    console.log('🧹 Deleting locations...');
+    await prisma.location.deleteMany();
 
-    // console.log('🧹 Deleting accounts...');
-    // await prisma.account.deleteMany();
+    console.log('🧹 Deleting accounts...');
+    await prisma.account.deleteMany();
 
-    // console.log('🧹 Deleting users...');
-    // await prisma.user.deleteMany();
+    console.log('🧹 Deleting users...');
+    await prisma.user.deleteMany();
 
-    // console.log('🧹 Deleting sessions...');
-    // await prisma.session.deleteMany();
+    console.log('🧹 Deleting sessions...');
+    await prisma.session.deleteMany();
 
     console.log('🧹 Deleting services...');
     await prisma.service.deleteMany();
@@ -238,8 +255,8 @@ const destroyData = async () => {
     console.log('🧹 Deleting service categories...');
     await prisma.categoryService.deleteMany();
 
-    // console.log('🧹 Deleting service requests...');
-    // await prisma.serviceRequest.deleteMany();
+    console.log('🧹 Deleting service requests...');
+    await prisma.serviceRequest.deleteMany();
 
     console.log(`🌱 Database has been cleaned up`);
     process.exit();
@@ -253,8 +270,11 @@ const importData = async () => {
   try {
     console.log('🌱 Seeding...');
 
-    console.log(`🧹 Creating categories with services...`);
-    await createCategoriesWithServices();
+    // console.log(`🧹 Creating categories with services...`);
+    // await createCategoriesWithServices();
+
+    console.log(`🧹 Creating engagement skills...`);
+    await createEngamentSkills();
 
     // console.log(
     //   `🧹 Creating user "Caleb Admin" with "ADMIN" role and 02 profiles...`
@@ -262,7 +282,6 @@ const importData = async () => {
     // await createUserWithAdminRoleAndProfiles();
 
     console.log(`🌱 Database has been seeded`);
-
     process.exit();
   } catch (error) {
     console.log(error);

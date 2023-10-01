@@ -51,14 +51,14 @@ export const getProfileDetailsService = async (
   const profile = await getAllProfileDetails({ inputs });
 
   if (!profile) {
-    throwNotFoundError('Profil non trouvé !');
+    throwNotFoundError('Utilisateur non trouvé !');
   }
 
-  const customerJobPostedCount = profile?.customerInfo?._count?.serviceRequests;
+  const customerJobPostedCount = profile?.customerInfo?._count?.serviceRequests || 0;
   const customerJobProvidersReservedCount =
-    profile?.customerInfo?._count?.providersReserved;
+    profile?.customerInfo?._count?.providersReserved || 0;
   const providerJobsReservedCount =
-    profile?.providerInfo?._count?.ServiceRequestReservations;
+    profile?.providerInfo?._count?.ServiceRequestReservations || 0;
 
   return {
     profile: {

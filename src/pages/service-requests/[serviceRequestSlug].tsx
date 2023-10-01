@@ -238,13 +238,14 @@ const ServiceRequestPublicationPage = ({
                   />
                 </Inline>
               </div>
-              <div className="flex flex-row-reverse items-center gap-2 sm:flex-row">
+              <div className="w-full flex items-center gap-2 sm:flex-row">
                 <CanView allowedProfiles={['PROVIDER']}>
-                  <Button size="sm">Envoyer un message</Button>
+                  <Button size="sm" className="w-full sm:w-auto">Envoyer un message</Button>
                 </CanView>
                 {isAuthorMine && (
                   <Button
                     size="sm"
+                    className="w-full sm:w-auto"
                     onClick={() =>
                       mutate({
                         serviceRequestSlug: serviceRequestSlugQuery,
