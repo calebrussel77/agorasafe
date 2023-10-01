@@ -10,9 +10,11 @@ import {
   throwBadRequestError,
   throwNotFoundError,
 } from '../../../utils/error-handling';
+import { GetByIdOrSlugQueryInput } from '../../validations/base.validations';
 import { getUserById, updateUserById } from '../users';
 import {
   createProfileByUserId,
+  getAllProfileDetails,
   getProfileBySlug,
   getProfilesWithLocationByUserId,
 } from './profiles.repository';
@@ -43,6 +45,32 @@ export const getProfilesByUserIdService = async (
   };
 };
 
+export const getProfileDetailsService = async (
+  inputs: GetByIdOrSlugQueryInput
+) => {
+  const profile = await getAllProfileDetails({ inputs });
+
+  if (!profile) {
+    throwNotFoundError('Profil non trouvé !');
+  }
+
+  const customerJobPostedCount = profile?.customerInfo?._count?.serviceRequests;
+  const customerJobProvidersReservedCount =
+    profile?.customerInfo?._count?.providersReserved;
+  const providerJobsReservedCount =
+    profile?.providerInfo?._count?.ServiceRequestReservations;
+
+  return {
+    profile: {
+      ...profile,
+      customerJobPostedCount,
+      customerJobProvidersReservedCount,
+      providerJobsReservedCount,
+    },
+    success: true,
+  };
+};
+
 export const createProfileService = async (inputs: CreateProfileValidation) => {
   const { name, profileType, userId, location, phone, avatar } = inputs;
 
@@ -61,8 +89,6 @@ export const createProfileService = async (inputs: CreateProfileValidation) => {
   }
 
   const slug = await getDynamicDbSlug(name, getProfileBySlug);
-  
-  console.log({ avatar }, 'Server');
 
   const [_, profile] = await prisma.$transaction([
     //Update the user infos by phone and location created

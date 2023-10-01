@@ -1,9 +1,7 @@
 import {
   Children,
   Fragment,
-  type ReactElement,
   type ReactNode,
-  forwardRef,
 } from 'react';
 
 import { cn } from '@/lib/utils';
@@ -35,42 +33,31 @@ import { cn } from '@/lib/utils';
 */
 
 type InlineProps = {
-  divider?: string | ReactElement<unknown>;
+  divider?: ReactNode;
   className?: string;
   children?: ReactNode;
 };
-const Inline = forwardRef<HTMLDivElement, InlineProps>(
-  (
-    {
-      divider = (
-        <span aria-hidden="true" className="text-gray-500">
-          ∙
-        </span>
-      ),
-      className,
-      children,
-    },
-    ref
-  ) => {
-    const dividerComponent =
-      typeof divider === 'string' ? <span>{divider}</span> : divider;
 
-    return (
-      <div className={cn('flex items-center gap-1', className)} ref={ref}>
-        {Children.map(children, (child, index) => {
-          return (
-            <Fragment>
-              {divider && index > 0 ? dividerComponent : null}
-              <span className="line-clamp-1 whitespace-nowrap flex-nowrap">
-                {child}
-              </span>
-            </Fragment>
-          );
-        })}
-      </div>
-    );
-  }
-);
+const Inline = ({ divider = '·', className, children }: InlineProps) => {
+  const nonNullishChildren = Children.toArray(children).filter(Boolean);
+
+  return (
+    <div className={cn('flex items-center gap-1', className)}>
+      {nonNullishChildren.map((child, index) => (
+        <Fragment key={index}>
+          {index > 0 ? <span>{divider}</span> : null}
+          {typeof child === 'string' ? (
+            <span className="line-clamp-1 flex-nowrap whitespace-nowrap">
+              {child}
+            </span>
+          ) : (
+            child
+          )}
+        </Fragment>
+      ))}
+    </div>
+  );
+};
 
 Inline.displayName = 'Inline';
 

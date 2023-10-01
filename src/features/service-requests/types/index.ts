@@ -45,5 +45,12 @@ export type GetAllServiceRequestsOptions =
 export type GetAllServiceRequestsInput =
   RouterInputs['services']['getAllServiceRequests'];
 
+  export type ToggleServiceRequestReservationOutput =
+  RouterOutputs['services']['toggleServiceRequestReservation'];
+export type ToggleServiceRequestReservationOptions =
+  ReactQueryOptions['services']['toggleServiceRequestReservation'];
+export type ToggleServiceRequestReservationInput =
+  RouterInputs['services']['toggleServiceRequestReservation'];
+
 export type CreateServiceRequestCommentOptions =
   ReactQueryOptions['services']['createServiceRequestComment'];

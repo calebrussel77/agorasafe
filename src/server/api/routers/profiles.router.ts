@@ -1,10 +1,16 @@
-import { createTRPCRouter, protectedProcedure } from '@/server/api/trpc';
+import {
+  createTRPCRouter,
+  protectedProcedure,
+  publicProcedure,
+} from '@/server/api/trpc';
 
 import {
   createProfileController,
   createProfileValidationSchema,
+  getProfileDetailsController,
   getProfilesByUserIdController,
 } from '../modules/profiles';
+import { getByIdOrSlugQuerySchema } from '../validations/base.validations';
 
 export const profilesRouter = createTRPCRouter({
   getUserProfiles: protectedProcedure.query(({ ctx: { session } }) =>
@@ -13,6 +19,10 @@ export const profilesRouter = createTRPCRouter({
       name: session.user.name,
     })
   ),
+  getProfileDetails: publicProcedure
+    .input(getByIdOrSlugQuerySchema)
+    .query(({ input }) => getProfileDetailsController(input)),
+
   createProfile: protectedProcedure
     .input(createProfileValidationSchema)
     .mutation(({ input, ctx: { session } }) =>

@@ -10,7 +10,7 @@ interface FooterProps {
 const Footer: FC<FooterProps> = () => {
   return (
     <footer className="mt-6 w-full">
-      <div className="mx-auto max-w-7xl border-t border-gray-200 py-10">
+      <div className="mx-auto max-w-7xl py-10">
         <LogoIcon className="mx-auto h-5 w-auto md:h-6" />
         <p className="mt-5 text-center text-sm leading-6 text-slate-500">
           &copy; {new Date().getFullYear()} Agorasafe. Tous droits réservés.

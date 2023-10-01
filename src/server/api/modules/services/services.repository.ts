@@ -6,7 +6,10 @@ import { prisma } from '@/server/db';
 import { getDynamicDbSlug } from '@/server/utils/db-slug';
 import { DEFAULT_PAGE_SIZE } from '@/server/utils/pagination';
 
-import { type GetAllQueryInput } from '../../validations/base.validations';
+import {
+  type GetAllQueryInput,
+  GetByIdOrSlugQueryInput,
+} from '../../validations/base.validations';
 import { simpleProfileSelect } from '../profiles';
 import type {
   CreateServiceRequestCommentInput,
@@ -14,6 +17,7 @@ import type {
   GetAllServicesWithCategoryInput,
   GetServiceRequestCommentsInput,
   GetServiceRequestInput,
+  ToggleServiceRequestReservationInput,
   UpdateServiceRequestInput,
 } from './services.validations';
 import { type GetAllServiceRequestsInput } from './services.validations';
@@ -29,15 +33,32 @@ export const getAllServiceRequests = ({
   limit,
   page,
   query,
+  providersReserved = 'All',
   orderBy = 'desc',
   status = 'OPEN',
 }: GetAllServiceRequestsInput) => {
   const skip = page ? (page - 1) * limit : undefined;
 
   let OR: Prisma.ServiceRequestWhereInput[] | undefined = undefined;
+  let selectCount:
+    | Prisma.ServiceRequestCountOutputTypeSelect
+    | null
+    | undefined = { providersReserved: true };
 
   if (query)
     OR = [{ title: { contains: query } }, { description: { contains: query } }];
+
+  if (providersReserved === 'Active') {
+    selectCount = {
+      providersReserved: { where: { removedAt: null, isActive: true } },
+    };
+  }
+
+  if (providersReserved === 'Inactive') {
+    selectCount = {
+      providersReserved: { where: { isActive: false } },
+    };
+  }
 
   return prisma.serviceRequest.findMany({
     where: { status, OR },
@@ -67,7 +88,7 @@ export const getAllServiceRequests = ({
           },
         },
       },
-      _count: { select: { choosedProviders: true, comments: true } },
+      _count: { select: { ...selectCount, comments: true } },
     },
     skip,
     take: limit,
@@ -282,10 +303,46 @@ export const updateServiceRequest = ({
 };
 
 export const getServiceRequestWithDetails = ({
-  inputs: { id, slug },
+  inputs: { id, slug, providersReserved = 'All' },
 }: {
   inputs: GetServiceRequestInput;
 }) => {
+  const defaultProvidersReservedSelect: Prisma.ServiceRequest$providersReservedArgs['select'] =
+    {
+      isActive: true,
+      removedAt: true,
+      provider: {
+        select: { profile: { select: simpleProfileSelect }, profession: true },
+      },
+      providerProfileId: true,
+      customerProfileId: true,
+    };
+
+  let selectCount:
+    | Prisma.ServiceRequestCountOutputTypeSelect
+    | null
+    | undefined = { providersReserved: true };
+
+  let providersReservedWhere:
+    | Prisma.ServiceRequestReservationWhereInput
+    | undefined = undefined;
+
+  if (providersReserved === 'Active') {
+    providersReservedWhere = { isActive: true, removedAt: null };
+    selectCount = {
+      providersReserved: { where: { removedAt: null, isActive: true } },
+    };
+  }
+
+  if (providersReserved === 'Inactive') {
+    providersReservedWhere = {
+      isActive: false,
+    };
+    selectCount = {
+      providersReserved: { where: { isActive: false } },
+    };
+  }
+
   return prisma.serviceRequest.findUnique({
     where: {
       id: id ?? undefined,
@@ -293,11 +350,13 @@ export const getServiceRequestWithDetails = ({
     },
     include: {
       location: true,
-      choosedProviders: {
-        select: { provider: { select: { profile: { select: { id: true } } } } },
+      providersReserved: {
+        where: providersReservedWhere,
+        select: defaultProvidersReservedSelect,
       },
       author: { select: { profile: { select: simpleProfileSelect } } },
       photos: true,
+      _count: { select: selectCount },
     },
   });
 };
@@ -331,5 +390,64 @@ export function getServiceRequestComments({
       createdAt: true,
       author: { select: simpleProfileSelect },
     },
+  });
+}
+
+export const getServiceRequestWithReservedProviders = ({
+  inputs,
+}: {
+  inputs: GetByIdOrSlugQueryInput;
+}) => {
+  const { id, slug } = inputs;
+
+  return prisma.serviceRequest.findUnique({
+    where: {
+      id: id ?? undefined,
+      slug: slug ?? undefined,
+    },
+    select: {
+      slug: true,
+      providersReserved: true,
+      numberOfProviderNeeded: true,
+    },
+  });
+};
+
+export function createServiceRequestReservation({
+  inputs,
+}: {
+  inputs: ToggleServiceRequestReservationInput;
+}) {
+  const { customerProfileId, providerProfileId, serviceRequestId } = inputs;
+
+  return prisma.serviceRequestReservation.create({
+    data: {
+      customerProfileId,
+      providerProfileId,
+      serviceRequestId,
+      removedAt: null,
+      isActive: true,
+    },
+  });
+}
+
+export function updateServiceRequestReservation({
+  inputs,
+  data,
+}: {
+  inputs: ToggleServiceRequestReservationInput;
+  data: Prisma.ServiceRequestReservationUpdateInput;
+}) {
+  const { customerProfileId, providerProfileId, serviceRequestId } = inputs;
+
+  return prisma.serviceRequestReservation.update({
+    where: {
+      providerProfileId_serviceRequestId_customerProfileId: {
+        customerProfileId,
+        providerProfileId,
+        serviceRequestId,
+      },
+    },
+    data,
   });
 }

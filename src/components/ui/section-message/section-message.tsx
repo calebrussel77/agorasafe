@@ -4,6 +4,7 @@ import {
   HelpCircle,
   InfoIcon,
   MailQuestion,
+  ShieldCheckIcon,
   X,
 } from 'lucide-react';
 import { CheckCircle2 } from 'lucide-react';
@@ -34,7 +35,7 @@ const sectionMessage = cva('w-full flex justify-center items-start gap-2', {
       ],
       warning: ['bg-yellow-600 text-white'],
       info: ['bg-brand-600 text-white'],
-      system: ['bg-primary-50 text-primary-800'],
+      system: ['bg-gradient-to-bl to-brand-600 from-purple-400 text-white'],
     },
     size: {
       small: ['text-sm', 'py-2.5', 'px-4'],
@@ -72,7 +73,7 @@ const IconAppareances = {
     color: 'text-white',
   },
   system: {
-    icon: CheckCircle2,
+    icon: ShieldCheckIcon,
     color: 'text-white',
   },
   warning: {

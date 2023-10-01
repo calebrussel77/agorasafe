@@ -290,7 +290,7 @@ const AvatarGroup = ({
       aria-label={name}
       className={cn(
         appearance === 'stack' &&
-          'isolate flex items-start -space-x-2 overflow-hidden p-0.5',
+          'isolate flex items-start -space-x-1.5 overflow-hidden p-0.5',
         appearance === 'grid' &&
           'isolate grid grid-cols-4 place-items-start gap-3'
       )}
@@ -303,6 +303,7 @@ const AvatarGroup = ({
             ...avatarData,
             alt: avatarData.name,
             size,
+            style: { zIndex: maxAvatar + 1 - idx },
             onClick: callback ? callback : undefined,
             className: 'relative inline-block rounded-full ring-2 ring-white',
           },

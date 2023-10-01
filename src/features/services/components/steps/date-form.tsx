@@ -6,7 +6,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { Field } from '@/components/ui/field';
 import { Form, useZodForm } from '@/components/ui/form';
 
-import { addDurationToDate } from '@/lib/date-fns';
+import { increaseDate } from '@/lib/date-fns';
 import { cn } from '@/lib/utils';
 
 import {
@@ -26,8 +26,8 @@ const DateForm = ({ nextStep, prevStep }: DateFormProps) => {
     usePublishServiceRequest();
   const serviceRequest = _serviceRequest?.[categorySlugQuery];
 
-  const defaultDate = addDurationToDate(new Date(), { days: 1 });
-  const defaultEndDate = addDurationToDate(new Date(), { months: 1 });
+  const defaultDate = increaseDate(new Date(), { days: 1 });
+  const defaultEndDate = increaseDate(new Date(), { months: 1 });
 
   const form = useZodForm({
     mode: 'onChange',

@@ -14,21 +14,39 @@ generator client {
 model Skill {
     id        String     @id @default(cuid())
     name      String     @unique
-    slug      String
     providers Provider[]
 
     createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+}
+
+model ShowCaseProject {
+    id          String  @id @default(cuid())
+    title       String
+    description String? @db.Text
+
+    photo   File   @relation(fields: [photoId], references: [id])
+    photoId String @unique
+
+    provider   Provider? @relation(fields: [providerId], references: [id], onDelete: Cascade)
+    providerId String?
+
+    @@index([providerId])
 }
 
 model Profile {
-    id     String      @id @default(cuid())
-    slug   String      @unique
-    name   String      @unique
-    avatar String?
-    bio    String?     @db.Text
-    type   ProfileType
-    phone  String?
+    id      String  @id @default(cuid())
+    slug    String  @unique
+    name    String  @unique
+    avatar  String?
+    bio     String? @db.Text
+    aboutMe String? @db.Text
+
+    websiteUrl  String?
+    facebookUrl String?
+    linkedinUrl String?
+    XUrl        String?
+    type        ProfileType
+    phone       String?
 
     user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
     userId String
@@ -52,33 +70,29 @@ model Profile {
 }
 
 model Provider {
-    id             String   @id @default(cuid())
-    websiteUrl     String?
-    profession     String?
-    isFaceToFace   Boolean? @default(true)
-    isRemote       Boolean? @default(true)
-    showCasePhotos File[] // Should be Max 03 photos
+    id         String  @id @default(cuid())
+    profession String?
+
+    isFaceToFace Boolean? @default(true)
+    isRemote     Boolean? @default(true)
+
+    showCaseProjects ShowCaseProject[] // Should be Max 03 projects
 
     skills Skill[]
 
     profile   Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
     profileId String  @unique
 
-    ServiceRequestParticipations ServiceRequestProvider[]
-
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+    ServiceRequestReservations ServiceRequestReservation[]
 }
 
 model Customer {
-    id              String           @id @default(cuid())
-    serviceRequests ServiceRequest[]
+    id                String                      @id @default(cuid())
+    serviceRequests   ServiceRequest[]
+    providersReserved ServiceRequestReservation[]
 
     profile   Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
     profileId String  @unique
-
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
 }
 
 model CategoryService {
@@ -119,13 +133,11 @@ model File {
     serviceRequest   ServiceRequest? @relation(fields: [serviceRequestId], references: [id], onDelete: Cascade)
     serviceRequestId String?
 
-    provider   Provider? @relation(fields: [providerId], references: [id], onDelete: Cascade)
-    providerId String?
+    showCaseProject ShowCaseProject?
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 
-    @@index([providerId])
     @@index([serviceRequestId])
 }
 
@@ -151,7 +163,7 @@ model ServiceRequest {
 
     comments Comment[]
 
-    choosedProviders ServiceRequestProvider[]
+    providersReserved ServiceRequestReservation[]
 
     author   Customer @relation(fields: [authorId], references: [id], onDelete: Cascade)
     authorId String
@@ -186,20 +198,25 @@ model Comment {
     @@index([authorId])
 }
 
-model ServiceRequestProvider {
-    id   String  @id @default(cuid())
-    note String? @db.Text
+model ServiceRequestReservation {
+    removeNote String? @db.Text
+    isActive   Boolean @default(true)
 
-    provider   Provider @relation(fields: [providerId], references: [id])
-    providerId String
+    provider          Provider @relation(fields: [providerProfileId], references: [profileId], onDelete: Cascade)
+    providerProfileId String
 
     serviceRequest   ServiceRequest @relation(fields: [serviceRequestId], references: [id], onDelete: Cascade)
     serviceRequestId String
 
+    customer          Customer @relation(fields: [customerProfileId], references: [profileId], onDelete: Cascade)
+    customerProfileId String
+
     removedAt DateTime?
     createdAt DateTime  @default(now())
 
-    @@index([providerId])
+    @@id([providerProfileId, serviceRequestId, customerProfileId])
+    @@index([customerProfileId])
+    @@index([providerProfileId])
     @@index([serviceRequestId])
 }
 

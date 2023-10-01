@@ -13,6 +13,7 @@ import type {
   GetServiceRequestInput,
   GetServiceRequestOptions,
   PublishServiceRequestOptions,
+  ToggleServiceRequestReservationOptions,
 } from '../types';
 
 export const useGetAllServices = (
@@ -39,6 +40,24 @@ export const useCreateServiceRequest = ({
   ...restOptions
 }: PublishServiceRequestOptions = {}) => {
   const data = api.services.publishServiceRequest.useMutation({
+    onSuccess(data, variables, ctx) {
+      onSuccess?.(data, variables, ctx);
+    },
+    onError(err, variables, context) {
+      onError?.(err, variables, context);
+    },
+    ...restOptions,
+  });
+
+  return data;
+};
+
+export const useToggleServiceRequestReservation = ({
+  onSuccess,
+  onError,
+  ...restOptions
+}: ToggleServiceRequestReservationOptions = {}) => {
+  const data = api.services.toggleServiceRequestReservation.useMutation({
     onSuccess(data, variables, ctx) {
       onSuccess?.(data, variables, ctx);
     },

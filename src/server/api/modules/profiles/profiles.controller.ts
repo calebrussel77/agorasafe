@@ -1,6 +1,8 @@
 import { throwDbError } from '../../../utils/error-handling';
+import { GetByIdOrSlugQueryInput } from '../../validations/base.validations';
 import {
   createProfileService,
+  getProfileDetailsService,
   getProfilesByUserIdService,
 } from './profiles.service';
 import {
@@ -13,6 +15,16 @@ export const createProfileController = async (
 ) => {
   try {
     return await createProfileService(inputs);
+  } catch (error) {
+    throwDbError(error);
+  }
+};
+
+export const getProfileDetailsController = async (
+  inputs: GetByIdOrSlugQueryInput
+) => {
+  try {
+    return await getProfileDetailsService(inputs);
   } catch (error) {
     throwDbError(error);
   }
