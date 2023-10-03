@@ -33,7 +33,7 @@ const Navbar: FC<NavbarProps> = ({
   const { profile, isAuth } = useCurrentUser();
   const { isDropdownMenuOpen, onToggleDropdownMenu } = useDropdownMenu();
 
-  const { data, isLoading, error } = useGetProfileConfig({
+  const { data, isInitialLoading, error } = useGetProfileConfig({
     enabled: isDropdownMenuOpen,
   });
 
@@ -83,7 +83,7 @@ const Navbar: FC<NavbarProps> = ({
             currentProfile={profile as never}
             userProfileConfig={data as never}
             error={error as never}
-            isLoading={isLoading}
+            isLoading={isInitialLoading}
           />
         </CanView>
         {!isAuth && (

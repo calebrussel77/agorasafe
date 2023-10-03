@@ -54,7 +54,11 @@ model Profile {
     location   Location? @relation(fields: [locationId], references: [id], onDelete: Cascade)
     locationId String
 
-    comments Comment[]
+    comments       Comment[]
+    directMessages DirectMessage[]
+
+    conversationsInitiated Conversation[] @relation("ProfileOne")
+    conversationsReceived  Conversation[] @relation("ProfileTwo")
 
     providerInfo Provider?
 
@@ -178,6 +182,45 @@ model ServiceRequest {
     @@index([serviceId])
     @@index([authorId])
     @@index([locationId])
+}
+
+//For one to one conversations
+model DirectMessage {
+    id        String    @id @default(cuid())
+    content   String    @db.Text
+    fileUrl   String?   @db.Text
+    deletedAt DateTime?
+
+    profile   Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+    profileId String
+
+    conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+    conversationId String
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@index([profileId])
+    @@index([conversationId])
+}
+
+model Conversation {
+    id String @id @default(cuid())
+
+    profileOne   Profile @relation("ProfileOne", fields: [profileOneId], references: [id], onDelete: Cascade)
+    profileOneId String
+
+    profileTwo   Profile @relation("ProfileTwo", fields: [profileTwoId], references: [id], onDelete: Cascade)
+    profileTwoId String
+
+    directMessages DirectMessage[]
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@unique([profileOneId, profileTwoId])
+    @@index([profileOneId])
+    @@index([profileTwoId])
 }
 
 model Comment {

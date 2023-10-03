@@ -1,14 +1,16 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
-const useHeaderHeight = (defaultHeight = 120) => {
-  const headerHeight = useRef<number | undefined>(defaultHeight);
+const useHeaderHeight = () => {
+  const [headerHeight, setHeaderHeight] = useState<number | null>(null);
 
   useEffect(() => {
     const headerElement = document?.querySelector('header');
-    headerHeight.current = headerElement?.clientHeight;
-  });
+    if (headerElement && headerElement?.clientHeight) {
+      setHeaderHeight(headerElement?.clientHeight);
+    }
+  }, [headerHeight]);
 
-  return { height: headerHeight.current };
+  return { height: headerHeight };
 };
 
 export { useHeaderHeight };

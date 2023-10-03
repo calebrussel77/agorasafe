@@ -88,17 +88,17 @@ const ServiceRequestCard: FC<ServiceRequestCardProps> = ({
           </div>
         </div>
         <div className="group relative">
-          <Typography
-            as="h3"
-            truncate
-            lines={2}
-            className="mt-3 group-hover:text-gray-600"
-          >
-            <Link href={`/service-requests/${serviceRequest?.slug}`}>
+          <Link href={`/service-requests/${serviceRequest?.slug}`}>
+            <Typography
+              as="h3"
+              truncate
+              lines={2}
+              className="mt-3 group-hover:text-gray-600"
+            >
               <span className="absolute inset-0" />
               {serviceRequest?.title}
-            </Link>
-          </Typography>
+            </Typography>
+          </Link>
           <Inline>
             <GroupItem
               isHoverDisabled

@@ -27,7 +27,7 @@ const MobileNavbar: FC<MobileNavbarProps> = ({ navigations }) => {
   const { profile, resetProfile } = useCurrentUser();
   const {
     data: userProfileConfig,
-    isFetching,
+    isInitialLoading,
     error,
     refetch,
   } = useGetProfileConfig({ enabled: !!profile?.id });
@@ -44,7 +44,7 @@ const MobileNavbar: FC<MobileNavbarProps> = ({ navigations }) => {
         <div className="-my-6 divide-y divide-gray-500/10">
           <div className="py-6">
             <AsyncWrapper
-              isLoading={isFetching}
+              isLoading={isInitialLoading}
               error={error}
               onRetryError={() => void refetch()}
             >

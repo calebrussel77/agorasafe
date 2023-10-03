@@ -1,8 +1,7 @@
 import { Slot } from '@radix-ui/react-slot';
 import { type VariantProps, cva } from 'class-variance-authority';
-import Link, { LinkProps } from 'next/link';
+import Link, { type LinkProps } from 'next/link';
 import * as React from 'react';
-import { type Url } from 'url';
 
 import { cn } from '@/lib/utils';
 

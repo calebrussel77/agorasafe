@@ -204,14 +204,13 @@ const ServiceRequestPublicationPage = ({
               />
             )}
             <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
-              <div>
-                <Typography variant="small">
-                  Publiée le{' '}
-                  {data?.serviceRequest?.createdAt &&
-                    dateToReadableString(data?.serviceRequest?.createdAt)}
-                </Typography>
-                <div className="mt-1 flex items-center gap-2">
-                  <Typography as="h2">{data?.serviceRequest?.title}</Typography>
+              <div className="flex-1">
+                <div className="flex items-center gap-3">
+                  <Typography variant="small">
+                    Publiée le{' '}
+                    {data?.serviceRequest?.createdAt &&
+                      dateToReadableString(data?.serviceRequest?.createdAt)}
+                  </Typography>
                   <Badge
                     content={mapServiceRequestStatusToString(
                       data?.serviceRequest?.status
@@ -219,6 +218,9 @@ const ServiceRequestPublicationPage = ({
                     variant={isStatusOpen ? 'primary' : 'danger'}
                   />
                 </div>
+                <Typography as="h2" className="mt-1">
+                  {data?.serviceRequest?.title}
+                </Typography>
                 <Inline>
                   <GroupItem
                     isHoverDisabled
@@ -238,9 +240,11 @@ const ServiceRequestPublicationPage = ({
                   />
                 </Inline>
               </div>
-              <div className="w-full flex items-center gap-2 sm:flex-row">
+              <div className="ml-2 flex w-full items-center gap-2 sm:w-auto sm:flex-row">
                 <CanView allowedProfiles={['PROVIDER']}>
-                  <Button size="sm" className="w-full sm:w-auto">Envoyer un message</Button>
+                  <Button size="sm" className="w-full sm:w-auto">
+                    Envoyer un message
+                  </Button>
                 </CanView>
                 {isAuthorMine && (
                   <Button
@@ -333,7 +337,7 @@ const ServiceRequestPublicationPage = ({
               {data?.serviceRequest?.description}
             </Truncate>
             <div className="mt-6">
-              <Typography variant="subtle">Données personnelles</Typography>
+              <Typography variant="subtle">A propos du demandeur</Typography>
               <div className="mt-3 flex w-full max-w-xl flex-wrap items-center justify-between gap-y-3">
                 <User profile={data?.serviceRequest?.author?.profile} />
                 {(isAuthorMine || isReserved) && (

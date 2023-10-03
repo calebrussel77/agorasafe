@@ -43,7 +43,14 @@ export const getAllProfileDetails = ({
           _count: { select: { ServiceRequestReservations: true } },
           skills: true,
           profession: true,
-          showCaseProjects: true,
+          showCaseProjects: {
+            select: {
+              id: true,
+              photo: { select: { name: true, url: true } },
+              title: true,
+              description: true,
+            },
+          },
           isFaceToFace: true,
           isRemote: true,
         },
