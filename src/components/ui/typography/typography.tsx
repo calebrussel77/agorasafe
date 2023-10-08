@@ -6,7 +6,6 @@ import { ActionTooltip } from '@/components/action-tooltip';
 
 import { cn } from '@/lib/utils';
 
-import { Tooltip } from '../tooltip';
 import { Truncate, type TruncateProps } from '../truncate';
 
 const VARIANTS = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'] as const;
@@ -46,7 +45,7 @@ type TypographyProps<
   as?: T;
   className?: string;
   children?: React.ReactNode;
-  onClick?: () => void;
+  onClick?: React.MouseEventHandler<T> | undefined;
 } & VariantProps<typeof typographyVariants> &
   ComponentWithProps<T>;
 
@@ -88,7 +87,7 @@ const Typography = React.forwardRef<
           lines,
           onTruncate,
           tokenize,
-          isTooltipDisabled = false,
+          isTooltipDisabled = true,
           ...otherProps
         } = truncateProps;
 

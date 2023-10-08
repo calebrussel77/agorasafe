@@ -3,11 +3,13 @@ import { User2Icon } from 'lucide-react';
 import Link from 'next/link';
 import React, { type FC } from 'react';
 
+import { NavigationDot } from '@/components/slide';
 import { AvatarGroup } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { GroupItem } from '@/components/ui/group-item';
 import { Image } from '@/components/ui/image';
 import { Inline } from '@/components/ui/inline';
+import { AbsolutePlacement } from '@/components/ui/layout';
 import { Typography } from '@/components/ui/typography';
 import { User } from '@/components/user';
 
@@ -16,7 +18,7 @@ import { isEmptyArray } from '@/utils/type-guards';
 import { dateToReadableString } from '@/lib/date-fns';
 import { cn } from '@/lib/utils';
 
-import { useFadeSliderImages } from '@/hooks/use-fade-slider-images';
+import { useSliderControlsImages } from '@/hooks/use-slider-controls-images';
 
 import { DEFAULT_SERVICE_REQUEST_COVER_IMAGE } from '../constants';
 import { type GetAllServiceRequestsOutput } from '../types';
@@ -39,33 +41,66 @@ const ServiceRequestCard: FC<ServiceRequestCardProps> = ({
       ]
     : serviceRequest?.photos;
 
-  const { opacities, sliderRef } = useFadeSliderImages({
-    imagesCount: photos?.length,
-  });
+  const { currentSlide, sliderRef, isLoaded, instanceRef } =
+    useSliderControlsImages();
 
   return (
     <article
       className={cn('flex flex-col items-start justify-between', className)}
     >
-      <div
-        ref={sliderRef}
-        className="relative aspect-[16/9] w-full rounded-2xl sm:aspect-[2/1] lg:aspect-[3/2]"
-      >
-        {photos.map((photo, idx) => (
-          <div
-            key={idx}
-            className="absolute inset-0 h-full w-full"
-            style={{ opacity: opacities[idx] }}
-          >
+      {photos?.length > 1 ? (
+        <div
+          ref={sliderRef}
+          className="keen-slider relative aspect-[16/9] w-full rounded-2xl sm:aspect-[2/1] lg:aspect-[3/2]"
+        >
+          {photos.map((photo, idx) => (
+            <div
+              key={idx}
+              className="keen-slider__slide absolute inset-0 h-full w-full"
+            >
+              <Image
+                src={photo?.url}
+                alt={photo?.name}
+                className="h-full w-full rounded-2xl bg-gray-100 object-cover"
+              />
+              <div className="absolute inset-0 rounded-2xl ring-1 ring-inset ring-gray-900/10" />
+            </div>
+          ))}
+          {isLoaded && instanceRef.current && (
+            <AbsolutePlacement
+              placement="bottom-center"
+              className="flex flex-nowrap items-center gap-3"
+            >
+              {[
+                ...Array(
+                  instanceRef?.current?.track?.details?.slides?.length
+                ).keys(),
+              ].map(idx => {
+                return (
+                  <NavigationDot
+                    key={idx}
+                    onClick={() => {
+                      instanceRef.current?.moveToIdx(idx);
+                    }}
+                    isActive={currentSlide === idx}
+                  />
+                );
+              })}
+            </AbsolutePlacement>
+          )}
+        </div>
+      ) : (
+        <div className="relative aspect-[16/9] w-full rounded-2xl sm:aspect-[2/1] lg:aspect-[3/2]">
+          <div className="absolute inset-0 h-full w-full">
             <Image
-              src={photo?.url}
-              alt={photo?.name}
+              src={photos[0]?.url as string}
+              alt={photos[0]?.name as string}
               className="h-full w-full rounded-2xl bg-gray-100 object-cover"
             />
             <div className="absolute inset-0 rounded-2xl ring-1 ring-inset ring-gray-900/10" />
           </div>
-        ))}
-      </div>
+        </div>
+      )}
       <div className="max-w-xl">
         <div className="mt-8 flex items-center gap-x-3 text-xs">
           <time

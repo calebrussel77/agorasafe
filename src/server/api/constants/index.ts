@@ -1,6 +1,6 @@
-export const DIRECT_MESSAGES_CHUNK = 5;
+export const DIRECT_MESSAGES_CHUNK = 10;
 
-export const CONVERSATIONS_CHUNK = 5;
+export const CONVERSATIONS_CHUNK = 10;
 
 export const socketEventsKey = {
   createDirectMessage: (conversationId: string) =>

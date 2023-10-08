@@ -3,7 +3,7 @@ import { useCallback, useMemo } from 'react';
 
 import { api } from '@/utils/api';
 
-import { GetConversationsInput } from '@/server/api/modules/conversations/conversations.validations';
+import { type GetConversationsInput } from '@/server/api/modules/conversations/conversations.validations';
 import { type GetDirectMessagesInput } from '@/server/api/modules/messages';
 
 export const useGetInfiniteDirectMessages = (

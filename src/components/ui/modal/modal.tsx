@@ -141,7 +141,7 @@ DialogTitle.displayName = DialogPrimitive.Title.displayName;
 const DialogDescription = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Description>,
   React.ComponentPropsWithoutRef<typeof DialogPrimitive.Description>
->(({ className, ...props }, ref) => (
+>(({ className,onClick, ...props }, ref) => (
   <DialogPrimitive.Description ref={ref} asChild>
     <Typography variant="small" className={cn(className)} {...props} />
   </DialogPrimitive.Description>

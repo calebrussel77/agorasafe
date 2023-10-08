@@ -55,8 +55,7 @@ const TestimonialSection: FC<TestimonialSectionProps> = ({}) => {
               </p>
             </blockquote>
             <figcaption className="mt-8 text-base">
-              <div className="font-semibold text-white">Caleb Russel</div>
-              <div className="mt-1 text-gray-300">Promoteur Agorasafe</div>
+              <div className="font-semibold text-white">L'équipe Agorasafe</div>
             </figcaption>
           </figure>
         </div>

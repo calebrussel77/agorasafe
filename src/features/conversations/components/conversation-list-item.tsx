@@ -20,11 +20,6 @@ interface ConversationListItemProps {
   connectedProfile: SimpleProfile;
 }
 
-const roleIconMap = {
-  MEMBER: null,
-  ADMIN: <ShieldAlert className="ml-2 h-4 w-4 text-rose-500" />,
-};
-
 export const ConversationListItem = ({
   isLastMessageDeleted,
   lastMessage,

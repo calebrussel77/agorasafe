@@ -21,7 +21,7 @@ interface TruncateProps
     shouldTruncate: boolean;
   }) => JSX.Element | ReactElement;
   shouldDefaultTruncate?: boolean;
-  onClick?: () => void;
+  onClick?: React.MouseEventHandler<unknown> | undefined;
 }
 
 interface DefaultEllipsisProps {

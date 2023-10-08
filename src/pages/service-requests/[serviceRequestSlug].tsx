@@ -245,7 +245,6 @@ const ServiceRequestPublicationPage = ({
                   <Button
                     size="sm"
                     href={`/dashboard/inbox?profileId=${data?.serviceRequest?.author?.profile?.id}`}
-                    asLink={`/dashboard/inbox`}
                     className="w-full sm:w-auto"
                   >
                     Envoyer un message

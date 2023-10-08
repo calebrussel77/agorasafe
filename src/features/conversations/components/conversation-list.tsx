@@ -75,7 +75,9 @@ const ConversationList = ({ profile, session }: ConversationListProps) => {
               ? 'Vous:'
               : `${otherProfile?.name}:`;
 
-          const lastMessageContent = !isLastMessageDeleted
+          const lastMessageContent = !lastMessage?.content
+            ? '...'
+            : !isLastMessageDeleted
             ? `${lastMessageUser} ${lastMessage?.content}`
             : lastMessage?.content;
 
