@@ -1,72 +1,132 @@
+import { SOCKET_API_BASE_URL } from '@/constants';
 import { MainLayout } from '@/layouts';
-import { MessagesSquare } from 'lucide-react';
 import { type InferGetServerSidePropsType } from 'next';
+import { useRouter } from 'next/router';
 import { type ReactElement } from 'react';
+import { z } from 'zod';
 
 import { EmptyState } from '@/components/ui/empty-state';
-import { ScrollArea } from '@/components/ui/scroll-area';
+import { Icons } from '@/components/ui/icons';
+import { User } from '@/components/user';
 
 import {
-  ContentTitle,
-  ConversationSidebar,
-  MainContent,
-  Sidebar,
-} from '@/features/user-dashboard';
+  ConversationChatFooter,
+  ConversationChatHeader,
+  ConversationChatMessages,
+  ConversationList,
+  ConversationsWrapper,
+} from '@/features/conversations';
+import { MainContent, Sidebar } from '@/features/user-dashboard';
 
+import { cn } from '@/lib/utils';
+
+import { getOrCreateConversation } from '@/server/api/modules/conversations';
 import { createServerSideProps } from '@/server/utils/server-side';
-
-import { useHeaderHeight } from '@/hooks/use-header-height';
 
 type InboxPageProps = InferGetServerSidePropsType<typeof getServerSideProps>;
 
-const InboxPage = ({ profile, session }: InboxPageProps) => {
-  const { height } = useHeaderHeight();
+const InboxPage = ({
+  profile,
+  otherProfile,
+  session,
+  conversationId,
+}: InboxPageProps) => {
+  const router = useRouter();
+  const profileId = router?.query?.profileId as string;
+  const canDisplayConversationDetails =
+    profileId && otherProfile && conversationId;
 
   return (
     <>
-      <MainContent className="my-0">
-        <div
-          style={{
-            height: `calc(100vh - ${height}px)`,
-          }}
-          className="flex w-full overflow-hidden"
-        >
-          <ConversationSidebar>
-            <ContentTitle className="mt-3 border-transparent">
-              Conversations
-            </ContentTitle>
-          </ConversationSidebar>
-          <div className="flex h-full flex-1 items-center justify-center border px-3">
-            <EmptyState
-              icon={<MessagesSquare />}
-              name="Aucune conversation selectionnée"
-              description="Veuillez selectionner une conversation dans votre liste"
+      <div
+        className={cn(
+          'flex h-full w-full flex-1 flex-col',
+          !profileId && 'items-center justify-center'
+        )}
+      >
+        {canDisplayConversationDetails && (
+          <>
+            <ConversationChatHeader user={<User profile={otherProfile} />} />
+            <ConversationChatMessages
+              session={session}
+              socketUrl={`${SOCKET_API_BASE_URL}/direct-messages`}
+              name={otherProfile?.name}
+              profile={profile}
+              conversationId={conversationId}
             />
-          </div>
-        </div>
-      </MainContent>
+            <ConversationChatFooter
+              name={otherProfile?.name}
+              socketUrl={`${SOCKET_API_BASE_URL}/direct-messages`}
+              query={{ conversationId }}
+            />
+          </>
+        )}
+        {!profileId && (
+          <EmptyState
+            className="px-3"
+            icon={<Icons.message />}
+            name="Aucune conversation selectionnée"
+            description="Veuillez selectionner une conversation pour commencer."
+          />
+        )}
+      </div>
     </>
   );
 };
 
 InboxPage.getLayout = function getLayout(page: ReactElement<InboxPageProps>) {
   const profile = page?.props?.profile;
+  const session = page?.props?.session;
   const pageTitle = `Messagerie personnelle - ${profile?.name}`;
+
   return (
     <MainLayout title={pageTitle} footer={null}>
       <Sidebar />
-      {page}
+      <MainContent className="my-0">
+        <ConversationsWrapper
+          conversationList={
+            <ConversationList session={session} profile={profile} />
+          }
+          conversationDetails={page}
+        />
+      </MainContent>
     </MainLayout>
   );
 };
 
+const querySchema = z.object({
+  profileId: z.string().optional(),
+});
+
 export const getServerSideProps = createServerSideProps({
   shouldUseSSG: true,
   shouldUseSession: true,
-  resolver: ({ ctx, profile, session }) => {
-    if (!session || !profile) return { notFound: true };
+  resolver: async ({ ctx, profile, session, ssg }) => {
+    if (!session || !profile)
+      return { redirect: { destination: '/', permanent: false } };
 
-    return { props: { profile, session } };
+    const result = querySchema.safeParse(ctx.query);
+    let otherProfile = null;
+    let conversationId = null;
+
+    if (result?.success && result.data.profileId) {
+      const profileTwoId = result.data.profileId;
+
+      const conversation = await getOrCreateConversation({
+        inputs: { profileOneId: profile.id, profileTwoId },
+      });
+
+      if (!conversation) {
+        return { redirect: { destination: '/', permanent: false } };
+      }
+
+      const { profileOne, profileTwo, id } = conversation;
+
+      otherProfile = profileOne?.id === profile?.id ? profileTwo : profileOne;
+      conversationId = id;
+    }
+
+    return { props: { profile, session, otherProfile, conversationId } };
   },
 });
 

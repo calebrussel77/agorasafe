@@ -13,8 +13,7 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default: 'bg-primary text-primary-foreground hover:bg-primary/90',
-        destructive:
-          'bg-destructive text-destructive-foreground hover:bg-destructive/90',
+        destructive: 'bg-red-600 text-white hover:bg-red-700',
         outline: 'border border-input hover:bg-gray-100',
         secondary:
           'bg-brand-50 text-secondary-foreground hover:bg-brand-100 border border-brand-100',
@@ -41,6 +40,7 @@ export interface ButtonProps
   asChild?: boolean;
   isLoading?: boolean;
   href?: LinkProps['href'];
+  asLink?: LinkProps['as'];
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
@@ -52,6 +52,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       isLoading,
       children,
       disabled,
+      asLink,
       href,
       asChild = false,
       ...props
@@ -80,7 +81,11 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     );
 
     if (href) {
-      return <Link href={href}>{btn}</Link>;
+      return (
+        <Link href={href} as={asLink}>
+          {btn}
+        </Link>
+      );
     }
 
     return btn;

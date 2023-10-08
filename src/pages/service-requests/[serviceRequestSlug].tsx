@@ -242,7 +242,12 @@ const ServiceRequestPublicationPage = ({
               </div>
               <div className="ml-2 flex w-full items-center gap-2 sm:w-auto sm:flex-row">
                 <CanView allowedProfiles={['PROVIDER']}>
-                  <Button size="sm" className="w-full sm:w-auto">
+                  <Button
+                    size="sm"
+                    href={`/dashboard/inbox?profileId=${data?.serviceRequest?.author?.profile?.id}`}
+                    asLink={`/dashboard/inbox`}
+                    className="w-full sm:w-auto"
+                  >
                     Envoyer un message
                   </Button>
                 </CanView>

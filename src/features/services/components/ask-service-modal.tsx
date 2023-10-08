@@ -18,8 +18,7 @@ import { FadeAnimation } from '@/components/ui/fade-animation';
 import { GroupItem } from '@/components/ui/group-item';
 import { Modal, useModal } from '@/components/ui/modal';
 
-import { generateUrlWithSearchParams } from '@/utils/routing';
-
+import { QS } from '@/lib/qs';
 import { cn } from '@/lib/utils';
 
 import { useGetAllServiceCategories, useGetAllServices } from '../services';
@@ -115,11 +114,7 @@ const AskServiceModal: FC<AskServiceModalProps> = ({ children }) => {
         </>
       }
     >
-      <div
-        className={cn(
-          'relative mx-2 mb-6 h-full flex-1 overflow-x-hidden px-2 pt-2'
-        )}
-      >
+      <div className={cn('relative mb-6 h-full flex-1 overflow-x-hidden pt-2')}>
         {!query && (
           <AsyncWrapper isLoading={isInitialLoading} error={error}>
             {data?.categories?.length === 0 && (
@@ -181,14 +176,11 @@ const AskServiceModal: FC<AskServiceModalProps> = ({ children }) => {
                         serviceSlug: service?.slug as string,
                       })
                     }
-                    href={generateUrlWithSearchParams(
-                      '/publish-service-request',
-                      {
-                        category: service?.categoryService?.slug as string,
-                        title: query,
-                        mode: 'normal',
-                      }
-                    )}
+                    href={`/publish-service-request?${QS.stringify({
+                      category: service?.categoryService?.slug as string,
+                      title: query,
+                      mode: 'normal',
+                    })}`}
                     className="block w-full"
                   >
                     <AskServiceItem name={service?.name} />
@@ -200,14 +192,14 @@ const AskServiceModal: FC<AskServiceModalProps> = ({ children }) => {
                 >
                   <GroupItem
                     classNames={{
-                      root: 'py-4 bg-gray-100 rounded-md mt-6 group cursor-pointer',
+                      root: 'py-4 mx-1 bg-gray-100 rounded-md mt-6 group cursor-pointer',
                       name: 'font-normal text-base text-gray-600',
                       description: 'font-semibold text-xl text-gray-900',
                     }}
                     name="Vous ne trouvez pas votre bonheur ?"
                     description="Créer une demande personalisée"
                     iconBefore={
-                      <PencilIcon className="h-8 w-8 text-brand-600" />
+                      <PencilIcon className="ml-2 h-8 w-8 text-brand-600" />
                     }
                     iconAfter={
                       <ChevronRight className="h-5 w-5 text-gray-600 opacity-0 group-hover:opacity-100" />
@@ -252,11 +244,11 @@ const CustomServiceRequestCategoriesModal = ({
             <AskServiceItem
               onClick={() =>
                 void router?.push(
-                  generateUrlWithSearchParams('/publish-service-request', {
+                  `/publish-service-request?${QS.stringify({
                     category: category?.slug as string,
                     title: query,
                     mode: 'custom',
-                  })
+                  })}`
                 )
               }
               key={category.id}

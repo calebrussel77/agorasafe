@@ -36,24 +36,6 @@ const getAbsoluteUrl = (baseURL: string) => {
 export const getAbsoluteHrefUrl = (baseUrl: string) =>
   getAbsoluteUrl(baseUrl).href;
 
-export function generateUrlWithSearchParams(
-  baseURL: string,
-  params: Record<string, string | number | boolean | null | undefined>
-): string {
-  const searchParams = new URLSearchParams();
-
-  Object.entries(params).forEach(([key, value]) => {
-    if (value != null) {
-      searchParams.append(key, value.toString());
-    }
-  });
-
-  const url = getAbsoluteUrl(baseURL);
-  url.search = searchParams.toString();
-
-  return url.href;
-}
-
 /**
  * @example
  * ```ts

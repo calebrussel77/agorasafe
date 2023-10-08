@@ -15,4 +15,4 @@ const ProfileStoreProvider = ({
   return <Provider value={initializeProfileStore(props)}>{children}</Provider>;
 };
 
-export default ProfileStoreProvider;
+export { ProfileStoreProvider };

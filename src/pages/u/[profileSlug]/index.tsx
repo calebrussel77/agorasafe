@@ -27,6 +27,7 @@ import { Typography } from '@/components/ui/typography';
 import { UserAvatar } from '@/components/user-avatar';
 import { UserBadge } from '@/components/user-badge';
 
+import { LoginRedirect } from '@/features/auth';
 import { useGetProfileDetails } from '@/features/profiles';
 
 import { getIsFaceToFaceLabel, getIsRemoteLabel } from '@/utils/profile';
@@ -186,13 +187,17 @@ const ProfileDetailsPage = ({
                     </Button>
                   )}
                   {!isMyProfile && (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="w-full sm:w-auto"
-                    >
-                      Envoyer un message
-                    </Button>
+                    <LoginRedirect reason="send-message">
+                      <Button
+                        href={`/dashboard/inbox?profileId=${data?.profile?.id}`}
+                        // asLink={`/dashboard/inbox`}
+                        variant="outline"
+                        size="sm"
+                        className="w-full sm:w-auto"
+                      >
+                        Envoyer un message
+                      </Button>
+                    </LoginRedirect>
                   )}
                   <DropdownMenu>
                     <DropdownMenu.Trigger asChild>

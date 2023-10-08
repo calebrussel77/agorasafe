@@ -4,7 +4,7 @@ import { parseNumericString } from '@/utils/query-string-helpers';
 
 const limit = z.preprocess(
   parseNumericString,
-  z.number().min(1).max(200).default(20)
+  z.number().min(1).max(150).default(20)
 );
 const page = z.preprocess(parseNumericString, z.number().min(0).default(1));
 
@@ -27,7 +27,7 @@ export const getByIdOrSlugQuerySchema = z
   })
   .partial()
   .refine(data => data.id || data.slug, "L'id ou le slug est requis");
-  
+
 export type GetByIdOrSlugQueryInput = z.infer<typeof getByIdOrSlugQuerySchema>;
 
 export const getByIdQuerySchema = z.object({ id: z.number() });

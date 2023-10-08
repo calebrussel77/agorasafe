@@ -209,7 +209,9 @@ const Modal = React.forwardRef<
               )}
             </DialogHeader>
           )}
-          <div className={cn('px-6 py-3', classNames?.main)}>{children}</div>
+          {children && (
+            <div className={cn('px-6 py-3', classNames?.main)}>{children}</div>
+          )}
 
           {footer && (
             <DialogFooter className={classNames?.footer}>{footer}</DialogFooter>

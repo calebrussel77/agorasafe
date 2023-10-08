@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 const useHeaderHeight = () => {
   const [headerHeight, setHeaderHeight] = useState<number | null>(null);

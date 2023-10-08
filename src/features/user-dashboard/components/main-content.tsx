@@ -7,7 +7,7 @@ const MainContent = ({
   return (
     <div
       className={cn(
-        'my-6 flex flex-col justify-center lg:ml-[350px]',
+        'my-6 flex flex-col justify-center lg:ml-[320px]',
         className
       )}
     >
