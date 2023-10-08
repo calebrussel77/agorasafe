@@ -13,6 +13,10 @@ const getWebsiteUrl = () => {
   return 'https://agorasafe.vercel.app';
 };
 
+export const SOCKET_API_BASE_URL = '/api/socket';
+
+export const SOCKET_IO_PATH = `${SOCKET_API_BASE_URL}/io`;
+
 export const isDev = process.env.NODE_ENV === 'development';
 
 export const isProd = process.env.NODE_ENV === 'production';

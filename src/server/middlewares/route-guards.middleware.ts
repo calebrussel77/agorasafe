@@ -17,6 +17,14 @@ addRouteGuard({
 });
 
 addRouteGuard({
+  matcher: ['/dashboard/:path*'],
+  redirect: '/',
+  canAccess: ({ user, currentProfile }) => {
+    return !!user && !!currentProfile;
+  },
+});
+
+addRouteGuard({
   matcher: ['/testing/:path*'],
   canAccess: () => !isProd,
 });
@@ -36,7 +44,7 @@ addRouteGuard({
     '/',
   ],
   redirect: `/onboarding/choose-profile-type`,
-  canAccess: ({ user, currentProfile }) => {
+  canAccess: ({ user, currentProfile, request }) => {
     if (user && user.hasBeenOnboarded === false && !currentProfile) {
       return false;
     }

@@ -27,6 +27,7 @@ import { Typography } from '@/components/ui/typography';
 import { UserAvatar } from '@/components/user-avatar';
 import { UserBadge } from '@/components/user-badge';
 
+import { LoginRedirect } from '@/features/auth';
 import { useGetProfileDetails } from '@/features/profiles';
 
 import { getIsFaceToFaceLabel, getIsRemoteLabel } from '@/utils/profile';
@@ -54,22 +55,21 @@ const ProjectShowCaseItem = ({
   description: string | null;
 }) => {
   return (
-    <div className="w-[250px] space-y-3">
+    <div className="w-[280px] space-y-3">
       <span data-state="closed">
         <div className="relative overflow-hidden rounded-md">
           <Image
             alt={title}
             fill={false}
-            width="250"
+            width="280"
             height="300"
-            data-nimg="1"
             className="h-auto w-auto object-cover transition-all hover:scale-105"
             src={imageUrl}
           />
         </div>
       </span>
       <div className="space-y-1 text-sm">
-        <Typography as="h3" truncate className="font-medium leading-none">
+        <Typography as="h3" truncate lines={2} className="font-semibold">
           {title}
         </Typography>
         <Typography
@@ -187,13 +187,17 @@ const ProfileDetailsPage = ({
                     </Button>
                   )}
                   {!isMyProfile && (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="w-full sm:w-auto"
-                    >
-                      Envoyer un message
-                    </Button>
+                    <LoginRedirect reason="send-message">
+                      <Button
+                        href={`/dashboard/inbox?profileId=${data?.profile?.id}`}
+                        // asLink={`/dashboard/inbox`}
+                        variant="outline"
+                        size="sm"
+                        className="w-full sm:w-auto"
+                      >
+                        Envoyer un message
+                      </Button>
+                    </LoginRedirect>
                   )}
                   <DropdownMenu>
                     <DropdownMenu.Trigger asChild>
@@ -328,7 +332,7 @@ const ProfileDetailsPage = ({
                 {data?.profile?.providerInfo?.showCaseProjects?.map(project => (
                   <ProjectShowCaseItem
                     key={project?.id}
-                    imageUrl={project?.photoId}
+                    imageUrl={project?.photo?.url}
                     description={project?.description}
                     title={project?.title}
                   />
@@ -356,7 +360,8 @@ const ProfileDetailsPage = ({
                 <Badge
                   key={skill?.id}
                   size="lg"
-                  className="py-1.5"
+                  variant="primary"
+                  className="w-full max-w-md py-1.5"
                   content={skill?.name}
                 />
               ))}

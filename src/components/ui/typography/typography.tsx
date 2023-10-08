@@ -2,9 +2,10 @@ import { type ComponentWithProps } from '@/types';
 import { type VariantProps, cva } from 'class-variance-authority';
 import * as React from 'react';
 
+import { ActionTooltip } from '@/components/action-tooltip';
+
 import { cn } from '@/lib/utils';
 
-import { Tooltip } from '../tooltip';
 import { Truncate, type TruncateProps } from '../truncate';
 
 const VARIANTS = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'] as const;
@@ -44,6 +45,7 @@ type TypographyProps<
   as?: T;
   className?: string;
   children?: React.ReactNode;
+  onClick?: React.MouseEventHandler<T> | undefined;
 } & VariantProps<typeof typographyVariants> &
   ComponentWithProps<T>;
 
@@ -52,7 +54,15 @@ const Typography = React.forwardRef<
   TypographyProps<any> & SizeVariant
 >(
   (
-    { className, variant, truncate = false, children, as: As = 'p', ...rest },
+    {
+      className,
+      onClick,
+      variant,
+      truncate = false,
+      children,
+      as: As = 'p',
+      ...rest
+    },
     ref
   ) => {
     const [hasTooltip, setHasTooltip] = React.useState(false);
@@ -77,7 +87,7 @@ const Typography = React.forwardRef<
           lines,
           onTruncate,
           tokenize,
-          isTooltipDisabled = false,
+          isTooltipDisabled = true,
           ...otherProps
         } = truncateProps;
 
@@ -101,6 +111,7 @@ const Typography = React.forwardRef<
               lines,
               onTruncate: onTruncateHandler,
               tokenize,
+              onClick,
             }}
           >
             {children}
@@ -108,20 +119,11 @@ const Typography = React.forwardRef<
         );
 
         return !isTooltipDisabled && hasTooltip ? (
-          <Tooltip>
-            <Tooltip.Trigger asChild>
-              <Component ref={ref} className="cursor-default" {...otherProps}>
-                {truncatedContent}
-              </Component>
-            </Tooltip.Trigger>
-            <Tooltip.Content
-              side="bottom"
-              hasArrow
-              className="text-xs leading-6"
-            >
-              {children}
-            </Tooltip.Content>
-          </Tooltip>
+          <ActionTooltip label={children}>
+            <Component ref={ref} className="cursor-default" {...otherProps}>
+              {truncatedContent}
+            </Component>
+          </ActionTooltip>
         ) : (
           <Component ref={ref} {...otherProps}>
             {truncatedContent}

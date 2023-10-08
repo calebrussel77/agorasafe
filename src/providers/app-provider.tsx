@@ -1,5 +1,6 @@
 import { type ProfileStore } from '@/stores/profile-store';
-import ProfileStoreProvider from '@/stores/profile-store/profile-store-provider';
+import { ProfileStoreProvider } from '@/stores/profile-store';
+import { SocketStoreProvider } from '@/stores/socket-store';
 import { SessionProvider } from 'next-auth/react';
 import { type FC, type PropsWithChildren } from 'react';
 
@@ -25,13 +26,15 @@ const AppProvider: FC<PropsWithChildren<AppPagePropsWithChildren>> = ({
       refetchWhenOffline={false}
       refetchInterval={5 * 60}
     >
-      <ProfileStoreProvider
-        {...((initialProfileState as ProfileStore) ?? undefined)}
-      >
-        {children}
-        <ProfileSession />
-        <Toaster />
-      </ProfileStoreProvider>
+      <SocketStoreProvider>
+        <ProfileStoreProvider
+          {...((initialProfileState as ProfileStore) ?? undefined)}
+        >
+          <ProfileSession />
+          {children}
+          <Toaster />
+        </ProfileStoreProvider>
+      </SocketStoreProvider>
     </SessionProvider>
   );
 };

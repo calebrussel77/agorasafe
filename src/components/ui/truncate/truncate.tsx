@@ -21,6 +21,7 @@ interface TruncateProps
     shouldTruncate: boolean;
   }) => JSX.Element | ReactElement;
   shouldDefaultTruncate?: boolean;
+  onClick?: React.MouseEventHandler<unknown> | undefined;
 }
 
 interface DefaultEllipsisProps {
@@ -60,6 +61,7 @@ const Truncate: FC<TruncateProps> = ({
   renderEllipsis,
   shouldDefaultTruncate = true,
   onTruncate,
+  onClick,
   tokenize = 'words',
 }) => {
   const [shouldTruncate, setShouldTruncate] = useState(shouldDefaultTruncate);
@@ -96,13 +98,16 @@ const Truncate: FC<TruncateProps> = ({
             ) : undefined
           }
         >
-          <span className={cn('block w-auto', className)}>{children}</span>
+          <span onClick={onClick} className={cn('block w-auto', className)}>
+            {children}
+          </span>
         </TruncateMarkup>
       ) : (
         <FadeAnimation
           className={className}
           from={{ y: 10, opacity: 0 }}
           isVisible={!shouldTruncate}
+          onClick={onClick}
           animateEnter
         >
           {children}

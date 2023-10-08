@@ -19,7 +19,6 @@ const config = {
       'pbs.twimg.com',
       'picsum.photos',
       'cloudflare-ipfs.com',
-      'api.anence.com',
       'naver.github.io',
       'avatars.githubusercontent.com',
       'uploadthing.com',
@@ -27,6 +26,8 @@ const config = {
       'images.unsplash.com',
       'tailwindui.com',
       'utfs.io',
+      'localhost',
+      'loremflickr.com',
     ],
   },
 

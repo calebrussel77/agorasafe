@@ -2,13 +2,13 @@ import React, { type FC, type ReactNode } from 'react';
 
 import { Footer } from '@/components/footer';
 import { Header } from '@/components/header';
-import { PageTransition } from '@/components/page-transition';
 import { Seo, type SeoProps } from '@/components/ui/seo';
 
 import { cn } from '@/lib/utils';
 
-interface MainProps extends Omit<SeoProps, 'children'> {
+interface MainProps extends Omit<SeoProps, 'children' | 'description'> {
   className?: string;
+  description?: string;
   children?: ReactNode;
   header?: ReactNode | JSX.Element;
   footer?: ReactNode | JSX.Element;
@@ -25,7 +25,7 @@ const MainLayout: FC<MainProps> = ({
 }) => {
   return (
     <>
-      <Seo title={title} description={description} {...rest} />
+      <Seo title={title} description={description ?? undefined} {...rest} />
       <div className={cn('flex h-full min-h-screen flex-col', className)}>
         {header}
         <main className="mb-auto flex h-full flex-1 flex-col">{children}</main>

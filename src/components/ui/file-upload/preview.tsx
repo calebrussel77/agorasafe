@@ -33,7 +33,7 @@ export const Preview: React.FC<PreviewProps> = ({
       data-testid={name}
       title="Cliquer pour supprimer"
       className={cn(
-        'flex w-full max-w-sm cursor-pointer items-center gap-1 overflow-hidden rounded-full border border-gray-300 bg-white p-1.5 text-sm text-gray-600 shadow transition duration-200 hover:bg-gray-100',
+        'inline-flex max-w-sm cursor-pointer items-center gap-1 overflow-hidden rounded-full border border-gray-300 bg-white p-1.5 text-sm text-gray-600 shadow transition duration-200 hover:bg-gray-100',
         className
       )}
       onClick={onRemove}

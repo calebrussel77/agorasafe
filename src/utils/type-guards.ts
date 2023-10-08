@@ -71,7 +71,7 @@ export function isArray(value: unknown): value is any[] {
   return Array.isArray(value);
 }
 
-export function isString(value: unknown) {
+export function isString(value: unknown): value is string {
   return typeof value === 'string';
 }
 

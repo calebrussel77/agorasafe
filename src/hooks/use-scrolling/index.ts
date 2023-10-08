@@ -27,9 +27,6 @@ export const useScrolling = () => {
   // set up event listeners
   useEffect(() => {
     const container = document.querySelector('#dialog__content');
-
-    console.log(container);
-
     const scrollListener = () => {
       if (container) {
         container.addEventListener('scroll', handleScroll);

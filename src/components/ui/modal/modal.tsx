@@ -141,7 +141,7 @@ DialogTitle.displayName = DialogPrimitive.Title.displayName;
 const DialogDescription = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Description>,
   React.ComponentPropsWithoutRef<typeof DialogPrimitive.Description>
->(({ className, ...props }, ref) => (
+>(({ className,onClick, ...props }, ref) => (
   <DialogPrimitive.Description ref={ref} asChild>
     <Typography variant="small" className={cn(className)} {...props} />
   </DialogPrimitive.Description>
@@ -209,7 +209,9 @@ const Modal = React.forwardRef<
               )}
             </DialogHeader>
           )}
-          <div className={cn('px-6 py-3', classNames?.main)}>{children}</div>
+          {children && (
+            <div className={cn('px-6 py-3', classNames?.main)}>{children}</div>
+          )}
 
           {footer && (
             <DialogFooter className={classNames?.footer}>{footer}</DialogFooter>

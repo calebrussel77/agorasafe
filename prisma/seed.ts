@@ -133,6 +133,18 @@ const prisma = new PrismaClient({ log: ['warn', 'error'] });
 // 		await prisma.$disconnect()
 // 	})
 
+const createPhoto = async () => {
+  return prisma.file.create({
+    data: {
+      name: faker.person.firstName(),
+      url: faker.image.urlLoremFlickr({
+        category: 'food',
+        height: 500,
+        width: 500,
+      }),
+    },
+  });
+};
 const createLocation = async () => {
   return prisma.location.create({
     data: {
@@ -155,15 +167,22 @@ const groupedServices = serviceCategories.map(category => {
 });
 
 const createUserWithAdminRoleAndProfiles = async () => {
+  console.log('🧹👮 Creation of the user locations...');
   const { id: locationId } = await createLocation();
   const { id: locationId2 } = await createLocation();
 
-  await prisma.user.create({
+  console.log('🧹👮 Creation of the user service requests photos...');
+  const { id: photoId } = await createPhoto();
+  const { id: photoId2 } = await createPhoto();
+
+  console.log('🧹👮 Creation of the user with profiles...');
+  const { profiles } = await prisma.user.create({
     data: {
-      email: 'calebrussel77@gmail.com',
-      firstName: 'Caleb',
-      fullName: 'Caleb Admin',
-      lastName: 'Admin',
+      // email: 'calebrussel77@gmail.com',
+      email: 'fake.email@gmail.fr',
+      firstName: faker.person.firstName(),
+      fullName: faker.person.fullName(),
+      lastName: faker.person.lastName(),
       birthdate: formatYearMonthDay(faker.date.birthdate({ mode: 'year' })),
       sex: 'MALE',
       hasBeenOnboarded: true,
@@ -180,7 +199,7 @@ const createUserWithAdminRoleAndProfiles = async () => {
               linkedinUrl: `https://linkedin.com/${faker.internet.userName()}`,
               XUrl: `https://x.com/${faker.internet.userName()}`,
               avatar: faker.image.avatar(),
-              bio: 'Software developer React js & Nodejs/Express,Typescript who always want to improve !',
+              bio: faker.person.bio(),
               phone: faker.phone.number('+23769#######'),
               slug: 'cesar-kamdem-20029',
               type: 'PROVIDER',
@@ -189,7 +208,7 @@ const createUserWithAdminRoleAndProfiles = async () => {
             {
               name: 'Jules Masango K.',
               websiteUrl: faker.internet.url(),
-              bio: faker.lorem.paragraph(2),
+              bio: faker.person.bio(),
               aboutMe: faker.lorem.paragraph(4),
               facebookUrl: `https://facebook.com/${faker.internet.userName()}`,
               linkedinUrl: `https://linkedin.com/${faker.internet.userName()}`,
@@ -204,7 +223,123 @@ const createUserWithAdminRoleAndProfiles = async () => {
         },
       },
     },
+    select: { profiles: true },
   });
+
+  for (const profile of profiles) {
+    if (profile?.type === 'CUSTOMER') {
+      console.log(
+        '🧹👮 Updating the CUSTOMER profile with details and create 02 service requests...'
+      );
+      await prisma.profile.update({
+        where: { id: profile.id },
+        data: {
+          customerInfo: {
+            create: {
+              serviceRequests: {
+                create: [
+                  {
+                    date: faker.date.past(),
+                    title: faker.lorem.lines(5),
+                    description: faker.lorem.paragraph(4),
+                    estimatedPrice: +faker.commerce.price(),
+                    numberOfProviderNeeded: faker.number.int({
+                      min: 1,
+                      max: 5,
+                    }),
+                    nbOfHours: faker.number.int({ min: 1, max: 5 }),
+                    phoneToContact: faker.phone.number('+23769#######'),
+                    service: {
+                      connect: {
+                        name: faker.helpers.shuffle(services)[0]?.name,
+                      },
+                    },
+                    slug: slugit(faker.lorem.lines(2)),
+                    startHour: 8,
+                    location: {
+                      connectOrCreate: {
+                        where: { name: faker.location.streetAddress() },
+                        create: {
+                          lat: faker.location.latitude().toFixed(),
+                          long: faker.location.longitude().toFixed(),
+                          name: faker.location.streetAddress(),
+                        },
+                      },
+                    },
+                  },
+                  {
+                    date: faker.date.past(),
+                    title: faker.lorem.lines(2),
+                    description: faker.lorem.paragraph(4),
+                    estimatedPrice: +faker.commerce.price(),
+                    numberOfProviderNeeded: faker.number.int({
+                      min: 1,
+                      max: 5,
+                    }),
+                    nbOfHours: faker.number.int({ min: 1, max: 5 }),
+                    phoneToContact: faker.phone.number('+23765#######'),
+                    service: {
+                      connect: {
+                        name: faker.helpers.shuffle(services)[0]?.name,
+                      },
+                    },
+                    slug: slugit(faker.lorem.lines(2)),
+                    startHour: 15,
+                    location: {
+                      connectOrCreate: {
+                        where: { name: faker.location.streetAddress() },
+                        create: {
+                          lat: faker.location.latitude().toFixed(),
+                          long: faker.location.longitude().toFixed(),
+                          name: faker.location.streetAddress(),
+                        },
+                      },
+                    },
+                  },
+                ],
+              },
+            },
+          },
+        },
+      });
+    } else {
+      console.log('🧹👮 Updating the PROVIDER profile with details...');
+      await prisma.profile.update({
+        where: { id: profile.id },
+        data: {
+          providerInfo: {
+            create: {
+              isFaceToFace: true,
+              profession: faker.person.jobTitle(),
+              isRemote: false,
+              skills: {
+                connect: [
+                  { name: faker.helpers.shuffle(engagementSkills)[3]?.name },
+                  { name: faker.helpers.shuffle(engagementSkills)[6]?.name },
+                ],
+              },
+              showCaseProjects: {
+                createMany: {
+                  data: [
+                    {
+                      photoId: photoId,
+                      title: faker.lorem.sentence(),
+                      description: faker.lorem.sentence(3),
+                    },
+                    {
+                      photoId: photoId2,
+                      title: faker.lorem.sentence(),
+                      description: faker.lorem.sentence(4),
+                    },
+                  ],
+                },
+              },
+            },
+          },
+        },
+      });
+    }
+  }
 };
 
 const createEngamentSkills = async () => {
@@ -270,14 +405,14 @@ const importData = async () => {
   try {
     console.log('🌱 Seeding...');
 
-    // console.log(`🧹 Creating categories with services...`);
-    // await createCategoriesWithServices();
+    console.log(`🧹 Creating categories with services...`);
+    await createCategoriesWithServices();
 
-    console.log(`🧹 Creating engagement skills...`);
-    await createEngamentSkills();
+    // console.log(`🧹 Creating engagement skills...`);
+    // await createEngamentSkills();
 
     // console.log(
-    //   `🧹 Creating user "Caleb Admin" with "ADMIN" role and 02 profiles...`
+    //   `🧹 Creating 01 user with 02 complete profiles with details...`
     // );
     // await createUserWithAdminRoleAndProfiles();
 

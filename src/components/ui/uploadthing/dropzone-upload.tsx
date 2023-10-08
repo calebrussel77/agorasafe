@@ -8,8 +8,10 @@ import { cn } from '@/lib/utils';
 
 import { checkIsImageFile } from '../file-upload';
 import { Preview as DefaultPreview } from '../file-upload/preview';
+import { HelperMessage } from '../helper-message';
 import { Image } from '../image';
 import { Spinner } from '../spinner';
+import { VariantMessage } from '../variant-message';
 
 type ValidFileTypes = 'image' | 'video' | 'audio' | 'blob' | 'pdf' | 'text';
 
@@ -31,6 +33,8 @@ interface DropzoneUploadProps {
   maxFiles?: number;
   multiple?: boolean;
   fileTypes?: ValidFileTypes[];
+  error?: string;
+  hint?: string;
 }
 
 export const DropzoneUpload = ({
@@ -40,6 +44,8 @@ export const DropzoneUpload = ({
   value,
   multiple,
   maxSize,
+  error,
+  hint,
   isLoading,
   onChange,
   preview: Preview = DefaultPreview,
@@ -83,18 +89,22 @@ export const DropzoneUpload = ({
 
   if (isImageCanBeDisplay) {
     return (
-      <Image
-        src={imageUrl}
-        isLoading={isLoading}
-        onRemove={() => handleRemove(value[0] as FileWithPreview)}
-        alt="image-preview"
-        className={cn(
-          'default__transition group relative flex h-[200px] w-full border border-dashed border-gray-400 transition duration-200 hover:bg-gray-200 disabled:cursor-not-allowed disabled:bg-gray-300',
-          isLoading &&
-            'pointer-events-none cursor-not-allowed hover:bg-inherit',
-          className
-        )}
-      />
+      <>
+        <Image
+          src={imageUrl}
+          style={!!error ? { borderColor: 'red' } : {}}
+          isLoading={isLoading}
+          onRemove={() => handleRemove(value[0] as FileWithPreview)}
+          alt="image-preview"
+          className={cn(
+            'default__transition group relative flex h-[200px] w-full border border-dashed border-gray-400 transition duration-200 hover:bg-gray-200 disabled:cursor-not-allowed disabled:bg-gray-300',
+            isLoading &&
+              'pointer-events-none cursor-not-allowed hover:bg-inherit',
+            className
+          )}
+        />
+        {hint && <HelperMessage className="mt-0.5">{hint}</HelperMessage>}
+      </>
     );
   }
 
@@ -103,6 +113,7 @@ export const DropzoneUpload = ({
       <div
         {...getRootProps()}
         data-testid={dataTestId}
+        style={!!error ? { borderColor: 'red' } : {}}
         className={cn(
           'default__transition group relative flex h-[200px] w-full flex-col items-center justify-center gap-3 border border-dashed border-gray-400 bg-gray-50 p-2 text-center transition duration-200 hover:bg-gray-200 disabled:cursor-not-allowed disabled:bg-gray-300',
           isLoading &&
@@ -119,6 +130,11 @@ export const DropzoneUpload = ({
         {label}
         <input {...getInputProps()} />
       </div>
+      {error && (
+        <VariantMessage className="mt-2" variant="danger">
+          {error}
+        </VariantMessage>
+      )}
       {Preview && value && (
         <div className="mt-2.5">
           {value?.map(file => (
@@ -130,6 +146,7 @@ export const DropzoneUpload = ({
           ))}
         </div>
       )}
+      {hint && <HelperMessage className="mt-0.5">{hint}</HelperMessage>}
     </div>
   );
 };
