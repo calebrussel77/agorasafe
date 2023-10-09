@@ -45,6 +45,7 @@ const SocketStoreProvider = ({ children }: React.PropsWithChildren) => {
     const socketInstance = ClientIO(WEBSITE_URL, {
       path: SOCKET_IO_PATH,
       addTrailingSlash: false,
+      // transports: ['websocket', 'polling', 'flashsocket'],
     });
 
     socketInstance.on('connect', () => {

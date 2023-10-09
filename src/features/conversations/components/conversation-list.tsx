@@ -5,6 +5,8 @@ import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 import { useInView } from 'react-intersection-observer';
 
+import { EmptyState } from '@/components/ui/empty-state';
+import { Icons } from '@/components/ui/icons';
 import { CenterContent } from '@/components/ui/layout';
 
 import { formatDateDistance } from '@/lib/date-fns';
@@ -107,6 +109,14 @@ const ConversationList = ({ profile, session }: ConversationListProps) => {
               <Loader2 className="my-4 h-7 w-7 animate-spin text-zinc-500" />
             )}
           </CenterContent>
+        )}
+        {conversations?.length === 0 && (
+          <EmptyState
+            className="mt-6 px-3"
+            icon={<Icons.message />}
+            name="Vous n'avez pas de conversations"
+            description="Commencez à discuter avec des personnes."
+          />
         )}
       </div>
     </div>

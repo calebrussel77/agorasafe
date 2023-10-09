@@ -50,7 +50,6 @@ const FullPageError: FC<{ error: { message: string } }> = ({ error }) => {
 
                 <div className="mt-6">
                   <Link
-                    passHref
                     href="#"
                     className="text-primary-500 hover:text-primary-500 text-base font-medium"
                   >
