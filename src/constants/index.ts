@@ -10,7 +10,7 @@ const getWebsiteUrl = () => {
 
   if (isWindowDefined()) return window.location.origin;
 
-  return 'https://agorasafe.vercel.app';
+  return 'https://agorasafe.up.railway.app';
 };
 
 export const SOCKET_API_BASE_URL = '/api/socket';
