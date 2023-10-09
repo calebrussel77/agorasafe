@@ -114,7 +114,7 @@ export function LatestServiceRequests() {
                 {data?.serviceRequests?.map(serviceRequest => (
                   <div
                     key={serviceRequest?.id}
-                    className="keen-slider__slide w-full"
+                    className="keen-slider__slide w-full p-2"
                   >
                     <ServiceRequestCard serviceRequest={serviceRequest} />
                   </div>
