@@ -4,7 +4,7 @@ import {
   TestimonialSection,
 } from '@/features/home-page';
 import {
-  DEFAULT_SERVICE_REQUESTS_LIMIT,
+  LATEST_SERVICE_REQUESTS_COUNT,
   LatestServiceRequests,
 } from '@/features/service-requests';
 
@@ -34,7 +34,7 @@ export const getServerSideProps = createServerSideProps({
   shouldUseSSG: true,
   resolver: async ({ ctx, ssg }) => {
     await ssg?.services.getAllServiceRequests.prefetch({
-      limit: DEFAULT_SERVICE_REQUESTS_LIMIT,
+      limit: LATEST_SERVICE_REQUESTS_COUNT,
     });
     return { props: {} };
   },

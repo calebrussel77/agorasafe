@@ -17,7 +17,7 @@ import { cn } from '@/lib/utils';
 
 import { useSliderControlsImages } from '@/hooks/use-slider-controls-images';
 
-import { DEFAULT_SERVICE_REQUESTS_LIMIT } from '../constants';
+import { LATEST_SERVICE_REQUESTS_COUNT } from '../constants';
 import { useGetAllServiceRequests } from '../services';
 import { ServiceRequestCard } from './service-request-card';
 
@@ -38,7 +38,7 @@ export function LatestServiceRequests() {
     });
 
   const { data, error, refetch, isLoading } = useGetAllServiceRequests({
-    limit: DEFAULT_SERVICE_REQUESTS_LIMIT,
+    limit: LATEST_SERVICE_REQUESTS_COUNT,
   });
 
   return (
