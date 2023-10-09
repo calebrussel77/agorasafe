@@ -61,6 +61,8 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ) => {
     const Comp = asChild ? Slot : 'button';
     const isDisabled = disabled || isLoading;
+    const isGhostOrOutlineVariant =
+      variant === 'ghost' || variant === 'outline';
 
     const btn = (
       <Comp
@@ -69,14 +71,10 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         disabled={isDisabled}
         {...props}
       >
-        {isLoading ? (
-          <>
-            <DotsLoader />
-            Chargement...
-          </>
-        ) : (
-          children
+        {isLoading && (
+          <DotsLoader color={isGhostOrOutlineVariant ? 'primary' : 'white'} />
         )}
+        {children}
       </Comp>
     );
 
