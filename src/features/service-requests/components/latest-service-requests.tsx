@@ -60,8 +60,8 @@ export function LatestServiceRequests() {
           {data?.serviceRequests && data?.serviceRequests?.length === 0 && (
             <EmptyState
               icon={<LucideDoorClosed />}
-              className="my-3"
-              name="Aucune demande publiée"
+              className="my-6"
+              name="Aucune demande publiée actuellement"
               description="Soyez le premier à créer et publier votre demande de service."
               primaryAction={
                 <CanView allowedProfiles={['CUSTOMER']} isPublic>
@@ -74,60 +74,62 @@ export function LatestServiceRequests() {
               }
             />
           )}
-          <div className="mx-auto mt-8 max-w-2xl lg:mx-0 lg:max-w-none">
-            {isLoaded && instanceRef.current && (
-              <div className="flex items-center justify-end">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={(e: any) =>
-                    // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-                    e.stopPropagation() || instanceRef.current?.prev()
-                  }
-                  disabled={currentSlide === 0}
-                >
-                  <ArrowLeftCircle
-                    className={cn(
-                      'default__transition h-6 w-6 text-gray-700',
-                      currentSlide === 0 && 'h-5 w-5'
-                    )}
-                  />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={(e: any) =>
-                    // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-                    e.stopPropagation() || instanceRef.current?.next()
-                  }
-                  disabled={
-                    currentSlide ===
-                    instanceRef.current?.track?.details?.slides?.length - 1
-                  }
-                >
-                  <ArrowRightCircle className="h-6 w-6 text-gray-700" />
-                </Button>
-              </div>
-            )}
-            <div ref={sliderRef} className="keen-slider mt-2 w-full">
-              {data?.serviceRequests?.map(serviceRequest => (
-                <div
-                  key={serviceRequest?.id}
-                  className="keen-slider__slide w-full"
-                >
-                  <ServiceRequestCard serviceRequest={serviceRequest} />
+          {data?.serviceRequests && data?.serviceRequests?.length > 0 && (
+            <div className="mx-auto mt-8 max-w-2xl lg:mx-0 lg:max-w-none">
+              {isLoaded && instanceRef.current && (
+                <div className="flex items-center justify-end">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={(e: any) =>
+                      // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+                      e.stopPropagation() || instanceRef.current?.prev()
+                    }
+                    disabled={currentSlide === 0}
+                  >
+                    <ArrowLeftCircle
+                      className={cn(
+                        'default__transition h-6 w-6 text-gray-700',
+                        currentSlide === 0 && 'h-5 w-5'
+                      )}
+                    />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={(e: any) =>
+                      // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+                      e.stopPropagation() || instanceRef.current?.next()
+                    }
+                    disabled={
+                      currentSlide ===
+                      instanceRef.current?.track?.details?.slides?.length - 1
+                    }
+                  >
+                    <ArrowRightCircle className="h-6 w-6 text-gray-700" />
+                  </Button>
                 </div>
-              ))}
+              )}
+              <div ref={sliderRef} className="keen-slider mt-2 w-full">
+                {data?.serviceRequests?.map(serviceRequest => (
+                  <div
+                    key={serviceRequest?.id}
+                    className="keen-slider__slide w-full"
+                  >
+                    <ServiceRequestCard serviceRequest={serviceRequest} />
+                  </div>
+                ))}
+              </div>
+              <Button
+                size="sm"
+                href="/explore"
+                className="mx-auto mt-12 flex justify-center"
+              >
+                <span>Voir toutes les demandes</span>
+                <ArrowRight className="h-5 w-5" />
+              </Button>
             </div>
-            <Button
-              size="sm"
-              href="/explore"
-              className="mx-auto mt-12 flex justify-center"
-            >
-              <span>Voir toutes les demandes</span>
-              <ArrowRight className="h-5 w-5" />
-            </Button>
-          </div>
+          )}
         </AsyncWrapper>
       </div>
     </div>

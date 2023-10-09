@@ -9,8 +9,8 @@ import {
 } from 'date-fns';
 import { fr } from 'date-fns/locale';
 
-import { invariant } from '@/utils/misc';
-import { isString } from '@/utils/type-guards';
+import { invariant } from '../utils/misc';
+import { isString } from '../utils/type-guards';
 
 export const formatYearMonthDay = (
   date: Date | number | string,
