@@ -28,6 +28,8 @@ const config = {
   },
   images: {
     domains: [
+      `${process.env.NEXT_PUBLIC_APP_URL}`,
+      'agorasafe-production.up.railway.app',
       'res.cloudinary.com',
       'lh3.googleusercontent.com',
       'pbs.twimg.com',
