@@ -1,4 +1,7 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+// @ts-nocheck
 import { withSentryConfig } from '@sentry/nextjs';
+import dns from 'dns';
 
 /**
  * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially useful
@@ -7,7 +10,18 @@ import { withSentryConfig } from '@sentry/nextjs';
 await import('./src/env.mjs');
 
 /** @type {import("next").NextConfig} */
+
+dns.setDefaultResultOrder('ipv4first');
+
 const config = {
+  webpack: config => {
+    config.externals.push({
+      'utf-8-validate': 'commonjs utf-8-validate',
+      bufferutil: 'commonjs bufferutil',
+    });
+
+    return config;
+  },
   reactStrictMode: true,
   experimental: {
     esmExternals: false, // THIS IS THE FLAG THAT MATTERS

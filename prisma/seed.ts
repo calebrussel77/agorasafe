@@ -145,6 +145,7 @@ const createPhoto = async () => {
     },
   });
 };
+
 const createLocation = async () => {
   return prisma.location.create({
     data: {
@@ -387,6 +388,9 @@ const destroyData = async () => {
     console.log('🧹 Deleting services...');
     await prisma.service.deleteMany();
 
+    console.log('🧹 Deleting skills...');
+    await prisma.skill.deleteMany();
+
     console.log('🧹 Deleting service categories...');
     await prisma.categoryService.deleteMany();
 
@@ -394,6 +398,7 @@ const destroyData = async () => {
     await prisma.serviceRequest.deleteMany();
 
     console.log(`🌱 Database has been cleaned up`);
+
     process.exit();
   } catch (error) {
     console.log(error);
@@ -408,13 +413,13 @@ const importData = async () => {
     console.log(`🧹 Creating categories with services...`);
     await createCategoriesWithServices();
 
-    // console.log(`🧹 Creating engagement skills...`);
-    // await createEngamentSkills();
+    console.log(`🧹 Creating engagement skills...`);
+    await createEngamentSkills();
 
-    // console.log(
-    //   `🧹 Creating 01 user with 02 complete profiles with details...`
-    // );
-    // await createUserWithAdminRoleAndProfiles();
+    console.log(
+      `🧹 Creating 01 user with 02 complete profiles with details...`
+    );
+    await createUserWithAdminRoleAndProfiles();
 
     console.log(`🌱 Database has been seeded`);
     process.exit();
