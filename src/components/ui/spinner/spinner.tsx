@@ -5,12 +5,12 @@ import { cn } from '@/lib/utils';
 const SpinnerClasses = {
   default: 'border-l-white',
   primary: 'border-l-brand-500',
-  secondary: 'border-l-purple-500',
+  ghost: 'border-l-gray-600',
 };
 
 const Spinner = forwardRef<
   HTMLDivElement,
-  { className?: string; variant?: 'default' | 'primary' | 'secondary' }
+  { className?: string; variant?: keyof typeof SpinnerClasses }
 >(({ className, variant = 'default', ...rest }, ref) => {
   const classNameVariants = SpinnerClasses[variant];
 

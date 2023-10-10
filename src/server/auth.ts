@@ -71,14 +71,6 @@ export const authOptions: NextAuthOptions = {
       } else {
         if (user) {
           try {
-            console.log('JWT CALLBACK CALLED', {
-              token,
-              user,
-              trigger,
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-              session,
-            });
-
             const _user = await getUserByEmail(user?.email as string);
 
             if (!_user) throwNotFoundError();

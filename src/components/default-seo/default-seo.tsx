@@ -1,7 +1,7 @@
 import { APP_NAME, WEBSITE_URL } from '@/constants';
 import { DefaultSeo as DefaultNextSeo, type DefaultSeoProps } from 'next-seo';
 
-import { APP_IMAGE_PREVIEW } from '@/lib/next-seo-config';
+import { DEFAULT_APP_IMAGE_PREVIEW } from '@/lib/next-seo-config';
 
 const DefaultSeo = (props: DefaultSeoProps) => {
   return (
@@ -20,7 +20,7 @@ const DefaultSeo = (props: DefaultSeoProps) => {
           url: `${WEBSITE_URL}/`,
           images: [
             {
-              url: APP_IMAGE_PREVIEW,
+              url: DEFAULT_APP_IMAGE_PREVIEW,
               width: 1200,
               height: 630,
               alt: 'Agorasafe.com',

@@ -37,7 +37,7 @@ export function Toaster() {
             key={id}
             {...props}
           >
-            {icon && <ToastIcon icon={icon} variant={variant} />}
+            <ToastIcon icon={icon} variant={variant} />
             <div
               className={cn(
                 'ml-3 flex w-0 flex-1 flex-col space-y-2',

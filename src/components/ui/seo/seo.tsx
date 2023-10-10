@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation';
 import { truncateOnWord } from '@/utils/text';
 
 import {
-  APP_IMAGE_PREVIEW,
+  DEFAULT_APP_IMAGE_PREVIEW,
   buildCanonical,
   seoConfig,
 } from '@/lib/next-seo-config';
@@ -96,7 +96,7 @@ const Seo = (props: SeoProps): JSX.Element => {
   const {
     title,
     description,
-    image = APP_IMAGE_PREVIEW,
+    image = DEFAULT_APP_IMAGE_PREVIEW,
     siteName,
     canonical = defaultUrl,
     nextSeoProps = {},
