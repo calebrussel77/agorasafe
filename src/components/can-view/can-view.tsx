@@ -57,13 +57,13 @@ const CanView = ({
   renderNoAccess = () => null,
   children,
 }: PropsWithChildren<CanViewProps>) => {
-  const { profile: currentProfile, session, isAuth, status } = useCurrentUser();
+  const { profile: currentProfile, session, status } = useCurrentUser();
   const profileTypes = currentProfile?.type ? [currentProfile?.type] : [];
 
   if (status === 'loading') return <></>;
 
   //For some actions who need to be also public
-  if (isPublic && !isAuth) return children;
+  if (isPublic && status === 'unauthenticated') return children;
 
   const hasPermission = getCanViewCheck({
     profileTypes,
@@ -80,10 +80,10 @@ const useHasPermission = ({
   isPublic = false,
   allowedProfiles = [],
 }: Pick<CanViewProps, 'accessCheck' | 'allowedProfiles' | 'isPublic'>) => {
-  const { profile: currentProfile, session, isAuth } = useCurrentUser();
+  const { profile: currentProfile, session, status } = useCurrentUser();
   const profileTypes = currentProfile?.type ? [currentProfile?.type] : [];
 
-  if (isPublic && !isAuth) return true;
+  if (isPublic && status === 'unauthenticated') return true;
 
   const hasPermission = getCanViewCheck({
     profileTypes,

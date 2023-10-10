@@ -30,7 +30,7 @@ const Navbar: FC<NavbarProps> = ({
   children,
   navigations,
 }) => {
-  const { profile, isAuth } = useCurrentUser();
+  const { profile, status } = useCurrentUser();
   const { isDropdownMenuOpen, onToggleDropdownMenu } = useDropdownMenu();
 
   const { data, isInitialLoading, error } = useGetProfileConfig({
@@ -86,7 +86,7 @@ const Navbar: FC<NavbarProps> = ({
             isLoading={isInitialLoading}
           />
         </CanView>
-        {!isAuth && (
+        {status === 'unauthenticated' && (
           <Link
             href="/auth/login"
             className="ml-4 hidden text-sm font-semibold leading-6 lg:flex"
