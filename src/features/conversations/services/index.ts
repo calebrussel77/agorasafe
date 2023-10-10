@@ -70,9 +70,6 @@ export const useGetInfiniteConversations = (
       ...options,
     }
   );
-
-  console.log({ data });
-
   const conversations = useMemo(
     () => data?.pages.flatMap(x => x.conversations) ?? [],
     [data]

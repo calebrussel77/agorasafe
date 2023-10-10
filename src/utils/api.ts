@@ -56,8 +56,6 @@ const handleUnauthorizedErrorsOnClient = (error: unknown) => {
 
 const url = `${WEBSITE_URL}/api/trpc`;
 
-console.log(url);
-
 /** A set of type-safe react-query hooks for your tRPC API. */
 export const api = createTRPCNext<AppRouter>({
   config() {
