@@ -4,6 +4,7 @@ import {
   ExternalLink,
   Facebook,
   MoreHorizontalIcon,
+  Share2Icon,
   Twitter,
 } from 'lucide-react';
 import { ShieldCheck } from 'lucide-react';
@@ -14,10 +15,10 @@ import { useEffect } from 'react';
 import { useCopyToClipboard } from 'react-use';
 import { z } from 'zod';
 
+import { ShareButton } from '@/components/share-button/share-button';
 import { AsyncWrapper } from '@/components/ui/async-wrapper';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { DropdownMenu } from '@/components/ui/dropdown-menu';
 import { Image } from '@/components/ui/image';
 import { Inline } from '@/components/ui/inline';
 import { Seo } from '@/components/ui/seo';
@@ -92,22 +93,11 @@ const ProfileDetailsPage = ({
   const { data, isInitialLoading, error } = useGetProfileDetails({
     slug: profileSlugQuery,
   });
-  const [state, copyToClipboard] = useCopyToClipboard();
-
   const profileName = data?.profile?.name || '';
   const isDeleted = !!data?.profile?.deletedAt;
   const isAdmin = data?.profile?.user?.role === 'ADMIN';
   const isCustomer = data?.profile?.type === 'CUSTOMER';
   const isMyProfile = data?.profile?.id === profile?.id;
-  const pageLink = getAbsoluteHrefUrl(router.asPath);
-
-  useEffect(() => {
-    if (state.value)
-      toast({
-        variant: 'success',
-        title: 'Lien du profil copié avec succès',
-      });
-  }, [state]);
 
   if (isDeleted) return <NotFound />;
 
@@ -190,7 +180,6 @@ const ProfileDetailsPage = ({
                     <LoginRedirect reason="send-message">
                       <Button
                         href={`/dashboard/inbox?profileId=${data?.profile?.id}`}
-                        // asLink={`/dashboard/inbox`}
                         variant="outline"
                         size="sm"
                         className="w-full sm:w-auto"
@@ -199,25 +188,14 @@ const ProfileDetailsPage = ({
                       </Button>
                     </LoginRedirect>
                   )}
-                  <DropdownMenu>
-                    <DropdownMenu.Trigger asChild>
-                      <Button variant="outline" size="sm" className="w-auto">
-                        <MoreHorizontalIcon className="h-5 w-5" />
-                      </Button>
-                    </DropdownMenu.Trigger>
-                    <DropdownMenu.Content>
-                      <DropdownMenu.Item
-                        onClick={() => copyToClipboard(pageLink)}
-                      >
-                        Copier le lien
-                      </DropdownMenu.Item>
-                      <DropdownMenu.Item asChild>
-                        <a href={`https://wa.me/send?text=${pageLink}`}>
-                          Partager sur whatsapp
-                        </a>
-                      </DropdownMenu.Item>
-                    </DropdownMenu.Content>
-                  </DropdownMenu>
+                  <ShareButton
+                    url={`/u/${profileSlugQuery}`}
+                    title={profileName}
+                  >
+                    <Button variant="outline" size="sm">
+                      <Share2Icon className="h-5 w-5" />
+                    </Button>
+                  </ShareButton>
                 </div>
               </div>
             </div>

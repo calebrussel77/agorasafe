@@ -4,8 +4,15 @@
  *
  * We also create a few inference helpers for input and output types.
  */
+import { WEBSITE_URL } from '@/constants';
 import { initializeProfileStore } from '@/stores/profile-store';
-import { TRPCClientError, httpBatchLink, loggerLink } from '@trpc/client';
+import {
+  TRPCClientError,
+  httpBatchLink,
+  httpLink,
+  loggerLink,
+  splitLink,
+} from '@trpc/client';
 import { createTRPCNext } from '@trpc/next';
 import { type inferReactQueryProcedureOptions } from '@trpc/react-query';
 import { type inferRouterInputs, type inferRouterOutputs } from '@trpc/server';
@@ -17,11 +24,11 @@ import { getLoginLink } from '@/features/auth';
 
 import { type AppRouter } from '@/server/api/root';
 
-const getBaseUrl = () => {
-  if (typeof window !== 'undefined') return ''; // browser should use relative url
-  if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`; // SSR should use vercel url
-  return `http://localhost:${process.env.PORT ?? 3000}`; // dev SSR should use localhost
-};
+// const getBaseUrl = () => {
+//   if (typeof window !== 'undefined') return ''; // browser should use relative url
+//   if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`; // SSR should use vercel url
+//   return `http://localhost:${process.env.PORT ?? 3000}`; // dev SSR should use localhost
+// };
 
 const handleUnauthorizedErrorsOnClient = (error: unknown) => {
   if (typeof window === 'undefined') return false;
@@ -46,6 +53,10 @@ const handleUnauthorizedErrorsOnClient = (error: unknown) => {
 
   return true;
 };
+
+const url = `${WEBSITE_URL}/api/trpc`;
+
+console.log(url);
 
 /** A set of type-safe react-query hooks for your tRPC API. */
 export const api = createTRPCNext<AppRouter>({
@@ -90,9 +101,17 @@ export const api = createTRPCNext<AppRouter>({
             process.env.NODE_ENV === 'development' ||
             (opts.direction === 'down' && opts.result instanceof Error),
         }),
-        httpBatchLink({
-          url: `${getBaseUrl()}/api/trpc`,
+        splitLink({
+          condition: op => op.context.skipBatch === true,
+          // when condition is true, use normal request
+          true: httpLink({ url }),
+          // when condition is false, use batching
+          // false: httpBatchLink({ url, maxURLLength: 2083 }),
+          false: httpLink({ url }), // Let's disable batching for now
         }),
+        // httpBatchLink({
+        //   url: `${getBaseUrl()}/api/trpc`,
+        // }),
       ],
     };
   },

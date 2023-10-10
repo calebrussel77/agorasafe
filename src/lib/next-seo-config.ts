@@ -1,4 +1,4 @@
-import { APP_NAME } from '@/constants';
+import { APP_NAME, WEBSITE_URL } from '@/constants';
 import { type DefaultSeoProps, type NextSeoProps } from 'next-seo';
 import { type Router } from 'next/router';
 
@@ -43,4 +43,4 @@ export const seoConfig: {
   },
 } as const;
 
-export const APP_IMAGE_PREVIEW = `/preview-agorasafe.png`;
+export const DEFAULT_APP_IMAGE_PREVIEW = `${WEBSITE_URL}/preview-agorasafe.png`;

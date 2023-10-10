@@ -5,10 +5,10 @@ import * as React from 'react';
 
 import { cn } from '@/lib/utils';
 
-import { DotsLoader } from '../dots-loader';
+import { Spinner } from '../spinner';
 
 const buttonVariants = cva(
-  'inline-flex items-center gap-1 justify-center rounded-md font-medium transition duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background',
+  'inline-flex items-center gap-1.5 justify-center rounded-md font-medium transition duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background',
   {
     variants: {
       variant: {
@@ -71,10 +71,12 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         disabled={isDisabled}
         {...props}
       >
-        {isLoading && (
-          <DotsLoader color={isGhostOrOutlineVariant ? 'primary' : 'white'} />
-        )}
-        {children}
+        <React.Fragment>
+          {isLoading && (
+            <Spinner variant={isGhostOrOutlineVariant ? 'ghost' : 'default'} />
+          )}
+          {children}
+        </React.Fragment>
       </Comp>
     );
 

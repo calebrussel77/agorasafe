@@ -5,6 +5,7 @@ import {
   MoreHorizontalIcon,
   MoreVertical,
   PhoneCall,
+  Share2Icon,
   TimerIcon,
   User2Icon,
 } from 'lucide-react';
@@ -19,6 +20,7 @@ import { useCopyToClipboard } from 'react-use';
 import { z } from 'zod';
 
 import { CanView } from '@/components/can-view';
+import { ShareButton } from '@/components/share-button/share-button';
 import { AsyncWrapper } from '@/components/ui/async-wrapper';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -268,32 +270,14 @@ const ServiceRequestPublicationPage = ({
                       : 'Republier ma demande'}
                   </Button>
                 )}
-                <DropdownMenu>
-                  <DropdownMenu.Trigger asChild>
-                    <Button variant="outline" size="sm">
-                      <MoreHorizontalIcon className="h-5 w-5" />
-                    </Button>
-                  </DropdownMenu.Trigger>
-                  <DropdownMenu.Content>
-                    {isAuthorMine && (
-                      <DropdownMenu.Item
-                      // onClick={() => copyToClipboard(pageLink)}
-                      >
-                        Editer ma demande
-                      </DropdownMenu.Item>
-                    )}
-                    <DropdownMenu.Item
-                      onClick={() => copyToClipboard(pageLink)}
-                    >
-                      Copier le lien
-                    </DropdownMenu.Item>
-                    <DropdownMenu.Item asChild>
-                      <a href={`https://wa.me/send?text=${pageLink}`}>
-                        Partager sur whatsapp
-                      </a>
-                    </DropdownMenu.Item>
-                  </DropdownMenu.Content>
-                </DropdownMenu>
+                <ShareButton
+                  url={`/service-requests/${serviceRequestSlugQuery}`}
+                  title={data?.serviceRequest?.title}
+                >
+                  <Button variant="outline" size="sm">
+                    <Share2Icon className="h-5 w-5" />
+                  </Button>
+                </ShareButton>
               </div>
             </div>
             <div className="mt-3">
