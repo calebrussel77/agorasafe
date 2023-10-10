@@ -43,8 +43,6 @@ const SocketStoreProvider = ({ children }: React.PropsWithChildren) => {
   useEffect(() => {
     const socketInstance = io(WEBSITE_URL, {
       path: '/api/socket/io',
-      ackTimeout: 10000,
-      retries: 3,
       // addTrailingSlash: false,
       // transports: ['websocket'],
       // enable retries
