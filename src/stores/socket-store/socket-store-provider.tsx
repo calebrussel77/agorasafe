@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-import { SOCKET_IO_PATH, WEBSITE_URL } from '@/constants';
+import { WEBSITE_URL } from '@/constants';
 import { createContext, useContext, useEffect, useRef } from 'react';
-import { io as ClientIO } from 'socket.io-client';
+import { io } from 'socket.io-client';
 import type { Socket } from 'socket.io-client';
-import { StoreApi, createStore, useStore } from 'zustand';
+import { type StoreApi, createStore, useStore } from 'zustand';
 
 // define types for state values and actions separately
 export type PersistedState = {
@@ -41,14 +41,25 @@ const SocketStoreProvider = ({ children }: React.PropsWithChildren) => {
   }
 
   useEffect(() => {
-    // @ts-ignore
-    const socketInstance = ClientIO(WEBSITE_URL, {
-      path: SOCKET_IO_PATH,
-      addTrailingSlash: false,
-      // transports: ['websocket', 'polling', 'flashsocket'],
+    const socketInstance = io(WEBSITE_URL, {
+      path: '/api/socket/io',
+      ackTimeout: 10000,
+      retries: 3,
+      // addTrailingSlash: false,
+      // transports: ['websocket'],
+      // enable retries
+    });
+
+    socketInstance.on('error', err => {
+      console.error({ err });
+    });
+
+    socketInstance.on('connect_error', err => {
+      console.error('Failed to connect with websocket.', err);
     });
 
     socketInstance.on('connect', () => {
+      console.log('Connected on the client');
       storeRef.current?.setState({ isConnected: true });
     });
 

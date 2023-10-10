@@ -1,7 +1,5 @@
-import { SOCKET_IO_PATH, WEBSITE_URL } from '@/constants';
-import type { Server as NetServer } from 'http';
 import { type NextApiRequest } from 'next';
-import { Server as IOServer } from 'socket.io';
+import { Server } from 'socket.io';
 
 import type { NextApiResponseServerIo } from '@/types/socket-io';
 
@@ -11,11 +9,13 @@ export const config = {
   },
 };
 
-const ioHandler = (req: NextApiRequest, res: NextApiResponseServerIo) => {
-  if (!res.socket.server.io) {
-    const httpServer: NetServer = res.socket.server as never;
-    const io = new IOServer(httpServer, {
-      path: SOCKET_IO_PATH,
+const SocketHandler = (req: NextApiRequest, res: NextApiResponseServerIo) => {
+  if (res.socket.server.io) {
+    console.log('Socket is already running');
+  } else {
+    console.log('Socket is initializing');
+    const io = new Server(res.socket.server as never, {
+      path: '/api/socket/io',
       addTrailingSlash: false,
     });
     res.socket.server.io = io;
@@ -23,4 +23,4 @@ const ioHandler = (req: NextApiRequest, res: NextApiResponseServerIo) => {
   res.end();
 };
 
-export default ioHandler;
+export default SocketHandler;
