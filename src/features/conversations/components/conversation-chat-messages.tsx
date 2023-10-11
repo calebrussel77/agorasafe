@@ -4,6 +4,7 @@ import { type ElementRef, Fragment, useRef } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { FadeAnimation } from '@/components/ui/fade-animation';
+import { Spinner } from '@/components/ui/spinner';
 
 import {
   dateIsAfter,
@@ -63,7 +64,7 @@ const ConversationChatMessages = ({
   if (status === 'loading') {
     return (
       <div className="flex flex-1 flex-col items-center justify-center">
-        <Loader2 className="my-4 h-7 w-7 animate-spin text-zinc-500" />
+        <Spinner className="my-4" variant="ghost" />
         <p className="text-xs text-zinc-500">Chargement des messages...</p>
       </div>
     );
