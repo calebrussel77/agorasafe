@@ -1,12 +1,11 @@
 import NextLink, { type LinkProps as NextLinkProps } from 'next/link';
+import { useRouter } from 'next/router';
 import { type FC, type ReactNode } from 'react';
 import { format } from 'url';
 
 import { isPathMatchRoute } from '@/utils/routing';
 
 import { cn } from '@/lib/utils';
-
-import { usePathWithSearchParams } from '@/hooks/use-path-with-search-params';
 
 interface ActiveLinkProps extends NextLinkProps {
   children: ReactNode;
@@ -21,8 +20,8 @@ const ActiveLink: FC<ActiveLinkProps> = ({
   className,
   ...rest
 }) => {
-  const path = usePathWithSearchParams();
-  const isMatch = isPathMatchRoute(format(href), path);
+  const { asPath } = useRouter();
+  const isMatch = isPathMatchRoute(format(href), asPath);
 
   return (
     <NextLink

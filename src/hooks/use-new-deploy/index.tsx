@@ -9,6 +9,7 @@ const useNewDeploy = () => {
   const { hasNewDeploy } = useHasNewDeploy({
     interval: 15_000,
   });
+
   const { toast } = useToast();
   const router = useRouter();
 
