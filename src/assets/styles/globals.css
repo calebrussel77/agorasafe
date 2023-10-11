@@ -20,6 +20,11 @@
 @tailwind components;
 @tailwind utilities;
 
+/* To well position an image grid gallery */
+.pswp img {
+  object-fit: cover !important;
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;

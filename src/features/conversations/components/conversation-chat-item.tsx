@@ -280,6 +280,7 @@ export const ConversationChatItem = ({
                   <Button
                     variant="outline"
                     size="sm"
+                    disabled={isLoadingDelete}
                     onClick={() => void onOpenChange(false)}
                   >
                     Annuler

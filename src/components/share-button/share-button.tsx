@@ -88,7 +88,7 @@ export function ShareButton({
 
   return (
     <DropdownMenu>
-      <DropdownMenu.Trigger>{children}</DropdownMenu.Trigger>
+      <DropdownMenu.Trigger asChild>{children}</DropdownMenu.Trigger>
       <DropdownMenu.Content className="min-w-[270px]">
         <Typography as="h3" className="ml-2 mt-2">
           Partager

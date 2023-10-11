@@ -29,8 +29,8 @@ const ImageGridGalleryClient: FC<ImageGridGalleryClientProps> = ({
         className={cn(
           'relative h-64 w-full overflow-hidden rounded-lg bg-gray-100',
           imagesCount === 1 && 'grid grid-cols-1',
-          imagesCount === 2 && 'grid grid-cols-2 gap-4',
-          imagesCount === 3 && 'grid grid-flow-col grid-rows-4 gap-4',
+          imagesCount === 2 && 'grid grid-cols-2 gap-1.5',
+          imagesCount === 3 && 'grid grid-flow-col grid-rows-4 gap-1.5',
           className || classNames?.root
         )}
       >
@@ -50,7 +50,7 @@ const ImageGridGalleryClient: FC<ImageGridGalleryClientProps> = ({
                 alt={photo?.name}
                 isHoverable
                 className={cn(
-                  'max-h-full w-full cursor-pointer rounded-lg object-cover shadow-sm',
+                  'max-h-full w-full cursor-pointer overflow-hidden rounded-lg object-cover shadow-sm',
                   imagesCount === 3 && idx === 0 && 'row-span-4',
                   imagesCount === 3 && idx > 0 && 'col-span-2 row-span-2',
                   classNames?.image
