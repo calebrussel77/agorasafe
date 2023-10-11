@@ -11,7 +11,7 @@ export const useSliderControlsImages = (
   }
 ) => {
   const [currentSlide, setCurrentSlide] = useState<number>(0);
-  const [isLoaded, setisLoaded] = useState<boolean>(false);
+  const [hasLoaded, setHasLoaded] = useState<boolean>(false);
 
   const [sliderRef, instanceRef] = useKeenSlider<HTMLDivElement>(
     {
@@ -21,7 +21,7 @@ export const useSliderControlsImages = (
         setCurrentSlide(slider.track.details.rel);
       },
       created() {
-        setisLoaded(true);
+        setHasLoaded(true);
       },
       ...rest,
     },
@@ -56,8 +56,8 @@ export const useSliderControlsImages = (
             slider.on('updated', nextTimeout);
           },
         ]
-      : undefined
+      : []
   );
 
-  return { sliderRef, isLoaded, currentSlide, instanceRef };
+  return { sliderRef, hasLoaded, currentSlide, instanceRef };
 };

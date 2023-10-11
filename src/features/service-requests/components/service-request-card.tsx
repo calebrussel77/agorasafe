@@ -41,7 +41,7 @@ const ServiceRequestCard: FC<ServiceRequestCardProps> = ({
       ]
     : serviceRequest?.photos;
 
-  const { currentSlide, sliderRef, isLoaded, instanceRef } =
+  const { currentSlide, sliderRef, hasLoaded, instanceRef } =
     useSliderControlsImages();
 
   return (
@@ -68,7 +68,7 @@ const ServiceRequestCard: FC<ServiceRequestCardProps> = ({
               />
             </div>
           ))}
-          {isLoaded && instanceRef.current && (
+          {hasLoaded && instanceRef?.current && (
             <AbsolutePlacement
               placement="bottom-center"
               className="flex flex-nowrap items-center gap-3"
@@ -82,7 +82,7 @@ const ServiceRequestCard: FC<ServiceRequestCardProps> = ({
                   <NavigationDot
                     key={idx}
                     onClick={() => {
-                      instanceRef.current?.moveToIdx(idx);
+                      instanceRef?.current?.moveToIdx(idx);
                     }}
                     isActive={currentSlide === idx}
                   />

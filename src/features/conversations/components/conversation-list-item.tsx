@@ -39,10 +39,7 @@ export const ConversationListItem = ({
   return (
     <div className="group flex w-full items-center p-4 transition hover:bg-black/5">
       <div className="group flex w-full items-start gap-x-2">
-        <div
-          onClick={onProfileClick}
-          className="cursor-pointer transition hover:drop-shadow-md"
-        >
+        <div className="cursor-pointer transition hover:drop-shadow-md">
           <UserAvatar
             src={profile.avatar as string}
             alt={profile?.name}
@@ -54,12 +51,11 @@ export const ConversationListItem = ({
             <div className="flex flex-1 items-center gap-x-1">
               <Typography
                 truncate
-                onClick={onProfileClick}
                 className="cursor-pointer font-semibold hover:underline"
               >
                 {profile.name}
               </Typography>
-              <ActionTooltip label={session?.user?.role}>
+              <ActionTooltip label={profile?.type}>
                 <UserBadge type={profile?.type} withProfileTypeInitial />
               </ActionTooltip>
             </div>
@@ -69,7 +65,7 @@ export const ConversationListItem = ({
             truncate
             className={cn(
               'text-sm text-zinc-500',
-              isLastMessageDeleted && 'mt-1 text-xs italic text-zinc-500'
+              isLastMessageDeleted && 'mt-1 italic text-zinc-500'
             )}
           >
             {lastMessage}

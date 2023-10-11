@@ -22,7 +22,7 @@ import { useGetAllServiceRequests } from '../services';
 import { ServiceRequestCard } from './service-request-card';
 
 export function LatestServiceRequests() {
-  const { currentSlide, sliderRef, isLoaded, instanceRef } =
+  const { currentSlide, sliderRef, hasLoaded, instanceRef } =
     useSliderControlsImages({
       autoSlide: false,
       loop: false,
@@ -76,14 +76,14 @@ export function LatestServiceRequests() {
           )}
           {data?.serviceRequests && data?.serviceRequests?.length > 0 && (
             <div className="mx-auto mt-8 max-w-2xl lg:mx-0 lg:max-w-none">
-              {isLoaded && instanceRef.current && (
+              {hasLoaded && instanceRef?.current && (
                 <div className="flex items-center justify-end">
                   <Button
                     variant="ghost"
                     size="sm"
                     onClick={(e: any) =>
                       // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-                      e.stopPropagation() || instanceRef.current?.prev()
+                      e.stopPropagation() || instanceRef?.current?.prev()
                     }
                     disabled={currentSlide === 0}
                   >
@@ -99,7 +99,7 @@ export function LatestServiceRequests() {
                     size="sm"
                     onClick={(e: any) =>
                       // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-                      e.stopPropagation() || instanceRef.current?.next()
+                      e.stopPropagation() || instanceRef?.current?.next()
                     }
                     disabled={
                       currentSlide === data?.serviceRequests?.length - 1

@@ -195,15 +195,14 @@ export const ConversationChatItem = ({
           {!isEditing && (
             <p
               className={cn(
-                'text-sm text-zinc-600 dark:text-zinc-300',
-                isDeleted &&
-                  'mt-1 text-xs italic text-zinc-500 dark:text-zinc-400',
+                'text-sm text-zinc-600',
+                isDeleted && 'mt-1 italic text-zinc-500',
                 fileUrl && 'mt-2'
               )}
             >
               {content}
               {isUpdated && !isDeleted && (
-                <span className="mx-2 text-[10px] text-zinc-500 dark:text-zinc-400">
+                <span className="mx-2 text-[10px] text-zinc-500">
                   (Modifié)
                 </span>
               )}
@@ -256,47 +255,48 @@ export const ConversationChatItem = ({
               />
             </ActionTooltip>
           )}
-          <ActionTooltip label="Supprimer">
-            <Modal
-              onOpenChange={onOpenChange}
-              open={isOpen}
-              shouldHideCloseButton
-              classNames={{
-                header: 'border-b-transparent',
-              }}
-              trigger={
+
+          <Modal
+            onOpenChange={onOpenChange}
+            open={isOpen}
+            shouldHideCloseButton
+            classNames={{
+              header: 'border-b-transparent',
+            }}
+            trigger={
+              <ActionTooltip label="Supprimer">
                 <Trash className="ml-auto h-4 w-4 cursor-pointer text-zinc-500 transition hover:text-zinc-600 dark:hover:text-zinc-300" />
-              }
-              triggerProps={{ asChild: true }}
-              name="Supprimer le message"
-              description={
-                <p>
-                  Êtes-vous sûr de vouloir supprimer le message "
-                  <span className="font-semibold">{content}</span>" ?
-                </p>
-              }
-              footer={
-                <>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    disabled={isLoadingDelete}
-                    onClick={() => void onOpenChange(false)}
-                  >
-                    Annuler
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="destructive"
-                    isLoading={isLoadingDelete}
-                    onClick={() => void onDelete()}
-                  >
-                    Supprimer
-                  </Button>
-                </>
-              }
-            />
-          </ActionTooltip>
+              </ActionTooltip>
+            }
+            triggerProps={{ asChild: true }}
+            name="Supprimer le message"
+            description={
+              <p>
+                Êtes-vous sûr de vouloir supprimer le message "
+                <span className="font-semibold">{content}</span>" ?
+              </p>
+            }
+            footer={
+              <>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={isLoadingDelete}
+                  onClick={() => void onOpenChange(false)}
+                >
+                  Annuler
+                </Button>
+                <Button
+                  size="sm"
+                  variant="destructive"
+                  isLoading={isLoadingDelete}
+                  onClick={() => void onDelete()}
+                >
+                  Supprimer
+                </Button>
+              </>
+            }
+          />
         </div>
       )}
     </div>

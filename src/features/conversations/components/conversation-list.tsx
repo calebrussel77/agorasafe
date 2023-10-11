@@ -8,6 +8,7 @@ import { useInView } from 'react-intersection-observer';
 import { EmptyState } from '@/components/ui/empty-state';
 import { Icons } from '@/components/ui/icons';
 import { CenterContent } from '@/components/ui/layout';
+import { Spinner } from '@/components/ui/spinner';
 
 import { formatDateDistance } from '@/lib/date-fns';
 import { cn } from '@/lib/utils';
@@ -46,7 +47,7 @@ const ConversationList = ({ profile, session }: ConversationListProps) => {
   if (status === 'loading') {
     return (
       <div className="flex flex-1 flex-col items-center justify-center">
-        <Loader2 className="my-4 h-7 w-7 animate-spin text-zinc-500" />
+        <Spinner className="my-4" variant="ghost" />
         <p className="text-xs text-zinc-500">Chargement des conversations...</p>
       </div>
     );
