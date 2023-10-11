@@ -1,18 +1,9 @@
 import { NotFound } from '@/layouts/not-found';
 import { ProfileType } from '@prisma/client';
-import {
-  ExternalLink,
-  Facebook,
-  MoreHorizontalIcon,
-  Share2Icon,
-  Twitter,
-} from 'lucide-react';
+import { ExternalLink, Facebook, Share2Icon, Twitter } from 'lucide-react';
 import { ShieldCheck } from 'lucide-react';
 import { Linkedin } from 'lucide-react';
 import { type InferGetServerSidePropsType } from 'next';
-import { useRouter } from 'next/router';
-import { useEffect } from 'react';
-import { useCopyToClipboard } from 'react-use';
 import { z } from 'zod';
 
 import { ShareButton } from '@/components/share-button/share-button';
@@ -23,7 +14,6 @@ import { Image } from '@/components/ui/image';
 import { Inline } from '@/components/ui/inline';
 import { Seo } from '@/components/ui/seo';
 import { Separator } from '@/components/ui/separator';
-import { toast } from '@/components/ui/toast';
 import { Typography } from '@/components/ui/typography';
 import { UserAvatar } from '@/components/user-avatar';
 import { UserBadge } from '@/components/user-badge';
@@ -32,7 +22,6 @@ import { LoginRedirect } from '@/features/auth';
 import { useGetProfileDetails } from '@/features/profiles';
 
 import { getIsFaceToFaceLabel, getIsRemoteLabel } from '@/utils/profile';
-import { getAbsoluteHrefUrl } from '@/utils/routing';
 
 import { formatDateDistance } from '@/lib/date-fns';
 import { cn } from '@/lib/utils';
@@ -89,7 +78,6 @@ const ProfileDetailsPage = ({
   profileSlugQuery,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const { profile } = useCurrentUser();
-  const router = useRouter();
   const { data, isInitialLoading, error } = useGetProfileDetails({
     slug: profileSlugQuery,
   });
@@ -173,7 +161,7 @@ const ProfileDetailsPage = ({
                       size="sm"
                       className="w-full sm:w-auto"
                     >
-                      Modifier
+                      Modifier le profil
                     </Button>
                   )}
                   {!isMyProfile && (

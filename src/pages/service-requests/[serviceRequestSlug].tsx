@@ -2,8 +2,6 @@ import {
   Banknote,
   FolderClock,
   MapPin,
-  MoreHorizontalIcon,
-  MoreVertical,
   PhoneCall,
   Share2Icon,
   TimerIcon,
@@ -14,9 +12,7 @@ import { EyeOffIcon } from 'lucide-react';
 import { MoveLeft } from 'lucide-react';
 import { Trash2Icon } from 'lucide-react';
 import { type InferGetServerSidePropsType } from 'next';
-import { useRouter } from 'next/router';
-import { useEffect } from 'react';
-import { useCopyToClipboard } from 'react-use';
+import { useRouter } from 'next/navigation';
 import { z } from 'zod';
 
 import { CanView } from '@/components/can-view';
@@ -24,7 +20,6 @@ import { ShareButton } from '@/components/share-button/share-button';
 import { AsyncWrapper } from '@/components/ui/async-wrapper';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { DropdownMenu } from '@/components/ui/dropdown-menu';
 import { EmptyState } from '@/components/ui/empty-state';
 import { GroupItem } from '@/components/ui/group-item';
 import { IconContainer } from '@/components/ui/icon-container';
@@ -55,13 +50,12 @@ import {
 
 import { api } from '@/utils/api';
 import { formatPhoneNumber } from '@/utils/misc';
-import { getAbsoluteHrefUrl } from '@/utils/routing';
 import { isEmptyArray } from '@/utils/type-guards';
 
 import { dateToReadableString, formatDateRelative } from '@/lib/date-fns';
 import { htmlParse } from '@/lib/html-react-parser';
 
-import { SimpleProfile } from '@/server/api/modules/profiles';
+import { type SimpleProfile } from '@/server/api/modules/profiles';
 import { createServerSideProps } from '@/server/utils/server-side';
 
 const meta = {
@@ -75,7 +69,6 @@ const ServiceRequestPublicationPage = ({
   serviceRequestSlugQuery,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const router = useRouter();
-  const [state, copyToClipboard] = useCopyToClipboard();
   const queryUtils = api.useContext();
 
   const {
@@ -132,7 +125,6 @@ const ServiceRequestPublicationPage = ({
   const providersReserved = data?.serviceRequest?.providersReserved || [];
 
   const isStatusOpen = data?.serviceRequest?.status === 'OPEN';
-  const pageLink = getAbsoluteHrefUrl(router.asPath);
   const isReserved = providersReserved?.some(
     providerReserved => providerReserved?.providerProfileId === profile?.id
   );
@@ -142,13 +134,6 @@ const ServiceRequestPublicationPage = ({
     ? DEFAULT_SERVICE_REQUEST_COVER_IMAGE
     : data?.serviceRequest?.photos?.[0]?.url;
 
-  useEffect(() => {
-    if (state.value)
-      toast({
-        variant: 'success',
-        title: 'Lien copié avec succès',
-      });
-  }, [state]);
 
   return (
     <>
@@ -168,7 +153,7 @@ const ServiceRequestPublicationPage = ({
             className="w-full"
           >
             <button
-              onClick={router.back}
+              onClick={() => router.back()}
               className="mb-3 flex items-center gap-2"
             >
               <MoveLeft className="h-5 w-5" />
