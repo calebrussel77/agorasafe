@@ -1,4 +1,4 @@
-import { useRouter } from 'next/router';
+import { useSearchParams } from 'next/navigation';
 import { Controller } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -51,10 +51,10 @@ type BasicInfoFormData = z.infer<typeof basicInfoFormSchema>;
 type BasicInfoFormProps = { nextStep: () => void };
 
 const BasicInfoForm = ({ nextStep }: BasicInfoFormProps) => {
-  const router = useRouter();
-  const categorySlugQuery = router?.query?.category as string;
-  const titleQuery = router?.query?.title as string;
-  const modeQuery = router?.query?.mode as 'normal' | 'custom';
+  const searchParams = useSearchParams();
+  const categorySlugQuery = searchParams.get('category') || '';
+  const titleQuery = searchParams.get('title') || '';
+  const modeQuery = searchParams.get('mode') as 'normal' | 'custom';
 
   const { updateServiceRequest, serviceRequest: _serviceRequest } =
     usePublishServiceRequest();

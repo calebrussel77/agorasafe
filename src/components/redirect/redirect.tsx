@@ -1,4 +1,4 @@
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import { type FC, useEffect } from 'react';
 
 import { FullSpinner } from '../ui/spinner';
@@ -17,7 +17,7 @@ const Redirect: FC<RedirectProps> = ({ to }) => {
   const router = useRouter();
 
   useEffect(() => {
-    if (to && router.isReady) {
+    if (to && router) {
       void router.replace(to);
     }
   }, [router, to]);

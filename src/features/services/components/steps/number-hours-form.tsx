@@ -1,4 +1,4 @@
-import { useRouter } from 'next/router';
+import { useSearchParams } from 'next/navigation';
 import { Controller } from 'react-hook-form';
 
 import { Button } from '@/components/ui/button';
@@ -25,8 +25,8 @@ type NumberHours = Pick<PublishServiceRequestFormStore, 'nbOfHours'>;
 type NumberHoursFormProps = { nextStep: () => void; prevStep: () => void };
 
 const NumberHoursForm = ({ nextStep, prevStep }: NumberHoursFormProps) => {
-  const router = useRouter();
-  const categorySlugQuery = router?.query?.category as string;
+  const searchParams = useSearchParams();
+  const categorySlugQuery = searchParams.get('category') || '';
 
   const { updateServiceRequest, serviceRequest: _serviceRequest } =
     usePublishServiceRequest();

@@ -86,7 +86,7 @@ const DialogHeader = ({
 }) => (
   <div
     className={cn(
-      'sticky inset-x-0 -top-1 z-10 flex w-full flex-row items-start justify-between bg-background bg-white px-6 py-4',
+      'sticky inset-x-0 -top-1 z-10 flex w-full flex-row items-start justify-between bg-background bg-white px-3 md:px-6 py-4',
       'border-b',
       className
     )}
@@ -113,7 +113,7 @@ const DialogFooter = ({
   return (
     <div
       className={cn(
-        'inset-x- sticky bottom-0 z-10 flex flex-col-reverse bg-background bg-white px-6 py-3 sm:flex-row sm:justify-end sm:space-x-2',
+        'inset-x- sticky bottom-0 z-10 flex flex-col-reverse bg-background bg-white px-3 md:px-6 py-3 sm:flex-row sm:justify-end sm:space-x-2',
         'border-t',
         className
       )}

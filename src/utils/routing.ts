@@ -1,11 +1,11 @@
 import { WEBSITE_URL } from '@/constants';
-import type { NextRouter } from 'next/router';
+import type { useRouter } from 'next/navigation';
 
 const replaceStrategies = ['push', 'replace'] as const;
 type ReplaceStrategy = (typeof replaceStrategies)[number];
 
 interface HandleRouteBackParams {
-  router: NextRouter;
+  router: ReturnType<typeof useRouter>;
   to?: string;
   replaceStrategy?: ReplaceStrategy;
 }

@@ -1,7 +1,8 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { SOCKET_API_BASE_URL } from '@/constants';
 import { MainLayout } from '@/layouts';
 import { type InferGetServerSidePropsType } from 'next';
-import { useRouter } from 'next/router';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { type ReactElement } from 'react';
 import { z } from 'zod';
 
@@ -31,8 +32,8 @@ const InboxPage = ({
   session,
   conversationId,
 }: InboxPageProps) => {
-  const router = useRouter();
-  const profileId = router?.query?.profileId as string;
+  const query = useSearchParams();
+  const profileId = query.get('profileId') as string;
   const canDisplayConversationDetails =
     profileId && otherProfile && conversationId;
 

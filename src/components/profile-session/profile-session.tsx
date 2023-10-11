@@ -1,5 +1,5 @@
 import { initializeProfileStore } from '@/stores/profile-store';
-import { useRouter } from 'next/router';
+import { usePathname } from 'next/navigation';
 import React, { useState } from 'react';
 
 import { ChooseProfileModale } from '@/features/profiles';
@@ -20,8 +20,8 @@ const ProfileSession = () => {
     resetProfile,
     profile,
   } = useCurrentUser();
-  const router = useRouter();
-  const isOnboardingPages = router.pathname.startsWith('/onboarding');
+  const pathname = usePathname();
+  const isOnboardingPages = pathname.startsWith('/onboarding');
   const [shouldDisplayModal, setShouldDisplayModal] = useState(false);
 
   const { reloadWithToast } = useToastOnPageReload(() =>

@@ -1,7 +1,7 @@
 import { ArrowLeft, ChevronRight, PencilIcon } from 'lucide-react';
 import { Search } from 'lucide-react';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import React, {
   type FC,
   type ReactElement,
@@ -79,7 +79,7 @@ const AskServiceModal: FC<AskServiceModalProps> = ({ children }) => {
   return (
     <Modal
       {...{ onOpenChange, open: isOpen }}
-      classNames={{ root: 'px-4 sm:max-w-[625px]' }}
+      classNames={{ root: 'px-3 sm:max-w-[625px]' }}
       trigger={<span>{children}</span>}
       triggerProps={{ asChild: true }}
       name={
@@ -229,7 +229,7 @@ const CustomServiceRequestCategoriesModal = ({
   return (
     <Modal
       triggerProps={{ asChild: true }}
-      classNames={{ root: 'px-4 sm:max-w-[625px]' }}
+      classNames={{ root: 'px-3 sm:max-w-[625px]' }}
       name="Pour quelle catégorie ?"
       trigger={children}
     >

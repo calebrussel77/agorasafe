@@ -1,5 +1,6 @@
 import ProgressBar from '@badrap/bar-of-progress';
-import { Router } from 'next/router';
+
+// import { Router } from 'next/navigation';
 
 export const displayProgressBarOnRouteChange = () => {
   const progress = new ProgressBar({
@@ -16,10 +17,10 @@ export const displayProgressBarOnRouteChange = () => {
     progress.finish();
   }
 
-  Router.events.on('routeChangeStart', progress.start);
-  Router.events.on('routeChangeComplete', () => {
-    progress.finish();
-    window.scrollTo(0, 0);
-    Router.events.on('routeChangeError', progress.finish);
-  });
+  // Router.events.on('routeChangeStart', progress.start);
+  // Router.events.on('routeChangeComplete', () => {
+  //   progress.finish();
+  //   window.scrollTo(0, 0);
+  //   Router.events.on('routeChangeError', progress.finish);
+  // });
 };

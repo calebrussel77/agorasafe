@@ -1,6 +1,5 @@
 import { APP_NAME, WEBSITE_URL } from '@/constants';
 import { type DefaultSeoProps, type NextSeoProps } from 'next-seo';
-import { type Router } from 'next/router';
 
 export type HeadSeoProps = {
   title: string;
@@ -22,7 +21,7 @@ export const buildCanonical = ({
   path,
 }: {
   origin: Location['origin'];
-  path: Router['asPath'];
+  path: string;
 }) => {
   return `${origin}${path === '/' ? '' : path}`.split('?')[0];
 };

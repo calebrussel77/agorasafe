@@ -1,5 +1,5 @@
 import { Menu } from 'lucide-react';
-import { useRouter } from 'next/router';
+import { usePathname } from 'next/navigation';
 import { type ReactNode, useRef } from 'react';
 
 import { cn } from '@/lib/utils';
@@ -29,11 +29,11 @@ const classNameList = [
 
 const Header = ({ children }: { children?: ReactNode }) => {
   const headerRef = useRef<HTMLElement>(null);
-  const router = useRouter();
+  const pathname = usePathname();
 
   // Correspond of the first title of the home page
   const targetedSelector = '#home__changer';
-  const isHomePage = router?.pathname === '/';
+  const isHomePage = pathname === '/';
 
   const { isAppear } = useAppearOnTarget({
     elementRef: headerRef,

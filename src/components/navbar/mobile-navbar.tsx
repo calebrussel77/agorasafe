@@ -57,17 +57,18 @@ const MobileNavbar: FC<MobileNavbarProps> = ({ navigations }) => {
                   <Separator />
                   {userProfileConfig?.canAddNewProfile && (
                     <>
-                      <Link
+                      <Button
                         href={userProfileConfig?.addNewProfileHref}
-                        className="w-full px-2"
+                        size="sm"
+                        className="my-1 w-full px-2"
+                        variant="ghost"
                       >
-                        <Button className="w-full">
-                          <UserPlus2 className="mr-2 h-5 w-5" />
-                          <span className="line-clamp-1">
-                            {userProfileConfig?.addNewProfileMessage}
-                          </span>
-                        </Button>
-                      </Link>
+                        <UserPlus2 className="mr-2 h-5 w-5" />
+                        <span className="line-clamp-1">
+                          {userProfileConfig?.addNewProfileMessage}
+                        </span>
+                      </Button>
+
                       <Separator />
                     </>
                   )}

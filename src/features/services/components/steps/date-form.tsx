@@ -1,4 +1,4 @@
-import { useRouter } from 'next/router';
+import { useSearchParams } from 'next/navigation';
 import { Controller } from 'react-hook-form';
 
 import { Button } from '@/components/ui/button';
@@ -19,8 +19,8 @@ type DateFormType = Pick<PublishServiceRequestFormStore, 'date'>;
 type DateFormProps = { nextStep: () => void; prevStep: () => void };
 
 const DateForm = ({ nextStep, prevStep }: DateFormProps) => {
-  const router = useRouter();
-  const categorySlugQuery = router?.query?.category as string;
+  const searchParams = useSearchParams();
+  const categorySlugQuery = searchParams.get('category') || '';
 
   const { updateServiceRequest, serviceRequest: _serviceRequest } =
     usePublishServiceRequest();

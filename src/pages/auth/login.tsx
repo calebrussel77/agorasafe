@@ -1,6 +1,6 @@
 import { MoveLeft } from 'lucide-react';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
+import { useRouter, useSearchParams } from 'next/navigation';
 import React, { useState } from 'react';
 
 import { GoogleSolidIcon } from '@/components/icons/google-solid-icon';
@@ -23,9 +23,10 @@ import { useRedirectUrl } from '@/hooks/use-redirect-url';
 const LoginPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
-  const { error } = router.query as { error: string };
+  const searchParams = useSearchParams();
+  const error = searchParams.get('error');
 
-  const { redirectUrl, redirectReason } = useRedirectUrl(router);
+  const { redirectUrl, redirectReason } = useRedirectUrl();
   const { onGooleSignIn } = useAuth();
 
   const onRegisterWithGoogle = async () => {
