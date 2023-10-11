@@ -1,7 +1,7 @@
 import { APP_PROFILES_INFO } from '@/constants';
 import { ProfileType } from '@prisma/client';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
+import { useRouter, useSearchParams } from 'next/navigation';
 import React from 'react';
 import { Controller } from 'react-hook-form';
 
@@ -18,7 +18,7 @@ import { cn } from '@/lib/utils';
 
 const ChooseProfileTypeForm = () => {
   const form = useZodForm({});
-  const router = useRouter();
+  const searchParams = useSearchParams();
 
   const {
     control,
@@ -73,10 +73,9 @@ const ChooseProfileTypeForm = () => {
       )}
       <Link
         href={{
-          pathname: '/onboarding/add-new-profile',
+          pathname: `/onboarding/add-new-profile?${searchParams.toString()}`,
           query: {
-            ...router.query,
-            profile_type: watchProfileType,
+            profileType: watchProfileType,
           },
         }}
       >

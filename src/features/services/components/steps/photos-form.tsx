@@ -1,5 +1,5 @@
 import { Camera } from 'lucide-react';
-import { useRouter } from 'next/router';
+import { useSearchParams } from 'next/navigation';
 import { useTransition } from 'react';
 import { Controller, useFieldArray } from 'react-hook-form';
 import { z } from 'zod';
@@ -30,8 +30,8 @@ type PhotosFormProps = {
 };
 
 const PhotosForm = ({ prevStep, onSubmit, isLoading }: PhotosFormProps) => {
-  const router = useRouter();
-  const categorySlugQuery = router?.query?.category as string;
+  const searchParams = useSearchParams();
+  const categorySlugQuery = searchParams.get('category') || '';
 
   const [isPending, startTransition] = useTransition();
 

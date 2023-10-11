@@ -1,13 +1,13 @@
 import { ProfileType } from '@prisma/client';
 import { CheckCircle, MoveLeft } from 'lucide-react';
 import { type InferGetServerSidePropsType } from 'next';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import { z } from 'zod';
 
 import { Card } from '@/components/ui/card';
 import { CenterContent } from '@/components/ui/layout';
 import { Seo } from '@/components/ui/seo';
-import { ToastAction, toast } from '@/components/ui/toast';
+import { toast } from '@/components/ui/toast';
 
 import {
   type CreateNewProfileInput,
@@ -16,8 +16,6 @@ import {
 } from '@/features/profiles';
 
 import { getProfileTypeName } from '@/utils/profile';
-
-import { htmlParse } from '@/lib/html-react-parser';
 
 import { createServerSideProps } from '@/server/utils/server-side';
 
@@ -49,7 +47,7 @@ export default function AddNewProfilePage({
         title: `Profil ${getProfileTypeName(data?.profile?.type)} créé`,
         description: `Le profil ${data?.profile?.name} a été crée avec succès.`,
       });
-      await router.push(redirectUrl);
+      router.push(redirectUrl);
     },
   });
 
@@ -77,7 +75,7 @@ export default function AddNewProfilePage({
       <CenterContent className="container min-h-screen w-full max-w-2xl">
         <div>
           <button
-            onClick={router.back}
+            onClick={() => router.back()}
             className="mb-6 flex items-center gap-2"
           >
             <MoveLeft className="h-5 w-5" />

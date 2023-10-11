@@ -73,7 +73,12 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       >
         <React.Fragment>
           {isLoading && (
-            <Spinner variant={isGhostOrOutlineVariant ? 'ghost' : 'default'} />
+            <Spinner
+              className={cn(
+                size === 'sm' || size === 'xs' ? 'h-6 w-6' : 'h-7 w-7'
+              )}
+              variant={isGhostOrOutlineVariant ? 'ghost' : 'default'}
+            />
           )}
           {children}
         </React.Fragment>

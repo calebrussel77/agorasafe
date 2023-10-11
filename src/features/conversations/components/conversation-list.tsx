@@ -1,7 +1,7 @@
 import { Loader2, ServerCrash } from 'lucide-react';
 import { type Session } from 'next-auth';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect } from 'react';
 import { useInView } from 'react-intersection-observer';
 
@@ -23,8 +23,8 @@ type ConversationListProps = React.PropsWithChildren<{
 }>;
 
 const ConversationList = ({ profile, session }: ConversationListProps) => {
-  const router = useRouter();
-  const profileId = router?.query?.profileId as string;
+  const searchParams = useSearchParams();
+  const profileId = searchParams.get('profileId');
   const { ref, inView: isInView } = useInView();
 
   const {

@@ -1,5 +1,5 @@
 import { TRPCError } from '@trpc/server';
-import { useRouter } from 'next/router';
+import { usePathname, useRouter } from 'next/navigation';
 
 import { cn } from '@/lib/utils';
 
@@ -27,7 +27,7 @@ export function SectionError({
   classNames,
   hasActions = true,
 }: TFullPageError) {
-  const router = useRouter();
+  const pathname = usePathname();
   const shouldRetry = !!onRetry;
   const errorMessage = `${error ? error.message : ''}`;
   const errorCode = error && error instanceof TRPCError ? error['code'] : null;
@@ -64,7 +64,7 @@ export function SectionError({
           >
             {shouldRetry ? 'Réessayer' : 'Recharger la page'}
           </Button>
-          {router.pathname !== '/' && (
+          {pathname !== '/' && (
             <Button
               onClick={() => window.location.replace('/')}
               variant="link"

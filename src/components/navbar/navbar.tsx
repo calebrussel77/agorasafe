@@ -86,7 +86,7 @@ const Navbar: FC<NavbarProps> = ({
             isLoading={isInitialLoading}
           />
         </CanView>
-        {status === 'unauthenticated' && (
+        {status === 'unauthenticated' && !profile && (
           <Link
             href="/auth/login"
             className="ml-4 hidden text-sm font-semibold leading-6 lg:flex"

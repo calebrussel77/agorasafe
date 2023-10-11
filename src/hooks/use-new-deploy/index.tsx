@@ -1,5 +1,5 @@
 import { useHasNewDeploy } from 'next-deploy-notifications';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 
 import { Button } from '@/components/ui/button';
@@ -10,7 +10,7 @@ const useNewDeploy = () => {
     interval: 15_000,
   });
   const { toast } = useToast();
-  const { reload } = useRouter();
+  const router = useRouter();
 
   useEffect(() => {
     if (hasNewDeploy) {
@@ -18,7 +18,12 @@ const useNewDeploy = () => {
         variant: 'info',
         title: "Une nouvelle version de l'application est disponible.",
         actions: (
-          <Button size="sm" onClick={reload} className="whitespace-nowrap">
+          <Button
+            size="sm"
+            // eslint-disable-next-line @typescript-eslint/unbound-method
+            onClick={router.refresh}
+            className="whitespace-nowrap"
+          >
             Recharger votre page
           </Button>
         ),

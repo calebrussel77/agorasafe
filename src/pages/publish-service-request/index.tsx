@@ -1,5 +1,5 @@
 import { type InferGetServerSidePropsType } from 'next';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import { z } from 'zod';
 
 import { Header } from '@/components/header';

@@ -1,8 +1,8 @@
-import Router from 'next/router';
+// import Router from 'next/navigation';
 import { useEffect } from 'react';
 
 type Props = {
-  unsavedChanges?: boolean; 
+  unsavedChanges?: boolean;
   message?: string;
   eval?: () => boolean;
 };
@@ -23,13 +23,13 @@ export function useCatchNavigation({ unsavedChanges = false }: Props) {
     function handleBrowsingAway() {
       if (!unsavedChanges) return;
       if (window.confirm(warningMessage)) return;
-      Router.events.emit('routeChangeError');
+      // Router.events.emit('routeChangeError');
 
       // Push state, because browser back action changes link and changes history state
       // but we stay on the same page
-      if (Router.asPath !== window.location.pathname) {
-        window.history.pushState('', '', Router.asPath);
-      }
+      // if (Router.asPath !== window.location.pathname) {
+      //   window.history.pushState('', '', Router.asPath);
+      // }
 
       // Throw to prevent navigation
       throw 'routeChange aborted.';
@@ -39,15 +39,15 @@ export function useCatchNavigation({ unsavedChanges = false }: Props) {
     // @see https://developer.mozilla.org/en-US/docs/Web/API/Window/beforeunload_event#usage_notes
     if (unsavedChanges) {
       window.addEventListener('beforeunload', handleWindowClose);
-      Router.events.on('routeChangeStart', handleBrowsingAway);
+      // Router.events.on('routeChangeStart', handleBrowsingAway);
     } else {
       window.removeEventListener('beforeunload', handleWindowClose);
-      Router.events.off('routeChangeStart', handleBrowsingAway);
+      // Router.events.off('routeChangeStart', handleBrowsingAway);
     }
 
     return () => {
       window.removeEventListener('beforeunload', handleWindowClose);
-      Router.events.off('routeChangeStart', handleBrowsingAway);
+      // Router.events.off('routeChangeStart', handleBrowsingAway);
     };
   }, [unsavedChanges]);
 }
