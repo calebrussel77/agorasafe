@@ -82,14 +82,17 @@ const User: FC<UserProps> = ({
             >
               <div
                 className={cn(
-                  'flex items-center gap-x-1 font-semibold leading-none tracking-tight'
+                  'flex items-center gap-x-1 leading-none tracking-tight'
                 )}
               >
                 <Typography
                   as="h3"
                   variant="h4"
                   truncate
-                  className={cn('line-clamp-1 text-base', classNames?.name)}
+                  className={cn(
+                    'line-clamp-1 text-base font-semibold',
+                    classNames?.name
+                  )}
                 >
                   {profile?.name}
                 </Typography>

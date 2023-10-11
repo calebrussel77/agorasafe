@@ -134,7 +134,6 @@ const ServiceRequestPublicationPage = ({
     ? DEFAULT_SERVICE_REQUEST_COVER_IMAGE
     : data?.serviceRequest?.photos?.[0]?.url;
 
-
   return (
     <>
       <Seo

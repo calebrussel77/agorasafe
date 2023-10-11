@@ -46,7 +46,10 @@ const ServiceRequestCard: FC<ServiceRequestCardProps> = ({
 
   return (
     <article
-      className={cn('flex flex-col items-start justify-between', className)}
+      className={cn(
+        'flex flex-col items-start justify-between overflow-hidden p-2',
+        className
+      )}
     >
       {photos?.length > 1 ? (
         <div
@@ -63,7 +66,6 @@ const ServiceRequestCard: FC<ServiceRequestCardProps> = ({
                 alt={photo?.name}
                 className="h-full w-full rounded-2xl bg-gray-100 object-cover"
               />
-              <div className="absolute inset-0 rounded-2xl ring-1 ring-inset ring-gray-900/10" />
             </div>
           ))}
           {isLoaded && instanceRef.current && (
@@ -148,7 +150,8 @@ const ServiceRequestCard: FC<ServiceRequestCardProps> = ({
               isHoverDisabled
               classNames={{
                 root: 'gap-x-1.5',
-                name: 'text-sm text-muted-foreground font-normal',
+                name: 'text-sm whitespace-nowrap text-muted-foreground font-normal',
+                wrapper: 'flex-nowrap',
               }}
               iconBefore={<User2Icon className="h-4 w-4" />}
               name={serviceRequest?.nbProviderNeededFormattedText}

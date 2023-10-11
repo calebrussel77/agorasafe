@@ -83,7 +83,7 @@ const UserProfileDropdown: FC<UserProfileDropdownProps> = ({
               />
             }
           >
-            <DropdownMenu.Label>
+            <div className="px-2 py-3">
               {isLoading ? (
                 <div className="flex items-center gap-2 px-2">
                   <Skeleton className="h-8 w-8 rounded-full" />
@@ -95,7 +95,7 @@ const UserProfileDropdown: FC<UserProfileDropdownProps> = ({
               ) : (
                 <User profile={currentProfile} canLinkToProfile={false} />
               )}
-            </DropdownMenu.Label>
+            </div>
             <DropdownMenu.Separator />
             {isLoading ? (
               <div className="my-6 grid gap-3">
@@ -164,7 +164,9 @@ const UserProfileDropdown: FC<UserProfileDropdownProps> = ({
                     <DropdownMenu.Item
                       key={link.id}
                       disabled={link.disabled}
-                      className={isMatch ? 'bg-zinc-100 text-primary' : ''}
+                      className={
+                        isMatch ? 'mb-2 bg-zinc-100 text-primary' : 'mb-2'
+                      }
                     >
                       <Link
                         href={url}

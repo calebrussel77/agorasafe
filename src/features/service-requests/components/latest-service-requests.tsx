@@ -27,11 +27,11 @@ export function LatestServiceRequests() {
       autoSlide: false,
       loop: false,
       breakpoints: {
+        '(min-width: 768px)': {
+          slides: { perView: 2, spacing: 15 },
+        },
         '(min-width: 1024px)': {
           slides: { perView: 3, spacing: 15 },
-        },
-        '(min-width: 7680px)': {
-          slides: { perView: 2, spacing: 15 },
         },
       },
       slides: { perView: 1 },
@@ -102,8 +102,7 @@ export function LatestServiceRequests() {
                       e.stopPropagation() || instanceRef.current?.next()
                     }
                     disabled={
-                      currentSlide ===
-                      instanceRef.current?.track?.details?.slides?.length - 1
+                      currentSlide === data?.serviceRequests?.length - 1
                     }
                   >
                     <ArrowRightCircle className="h-6 w-6 text-gray-700" />
@@ -114,7 +113,7 @@ export function LatestServiceRequests() {
                 {data?.serviceRequests?.map(serviceRequest => (
                   <div
                     key={serviceRequest?.id}
-                    className="keen-slider__slide w-full p-2"
+                    className="keen-slider__slide w-full"
                   >
                     <ServiceRequestCard serviceRequest={serviceRequest} />
                   </div>
