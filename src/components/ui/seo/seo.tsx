@@ -1,7 +1,7 @@
 import { WEBSITE_URL } from '@/constants';
 import type { NextSeoProps } from 'next-seo';
 import { NextSeo } from 'next-seo';
-import { usePathname } from 'next/navigation';
+import { useRouter } from 'next/router';
 
 import { truncateOnWord } from '@/utils/text';
 
@@ -10,8 +10,6 @@ import {
   buildCanonical,
   seoConfig,
 } from '@/lib/next-seo-config';
-
-import { usePathWithSearchParams } from '@/hooks/use-path-with-search-params';
 
 export type SeoProps = {
   title: string;
@@ -90,10 +88,13 @@ const buildSeoMeta = (pageProps: {
 };
 
 const Seo = (props: SeoProps): JSX.Element => {
-  const path = usePathWithSearchParams();
+  const router = useRouter();
   // The below code sets the defaultUrl for our canonical tags
   // Get the router's path
-  const defaultUrl = buildCanonical({ path, origin: WEBSITE_URL });
+  const defaultUrl = buildCanonical({
+    path: router?.asPath,
+    origin: WEBSITE_URL,
+  });
 
   const {
     title,

@@ -1,4 +1,4 @@
-import { useRouter } from 'next/navigation';
+import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 
 const useToastOnPageChange = (desiredUrl: string, toastFn: () => void) => {
@@ -15,13 +15,13 @@ const useToastOnPageChange = (desiredUrl: string, toastFn: () => void) => {
     };
 
     // Add the route change listener
-    // router.events.on('routeChangeComplete', handleRouteChange);
+    router.events.on('routeChangeComplete', handleRouteChange);
 
     // Clean up the listener when the component unmounts
     return () => {
-      // router.events.off('routeChangeComplete', handleRouteChange);
+      router.events.off('routeChangeComplete', handleRouteChange);
     };
-  }, [desiredUrl, toastFn]);
+  }, [desiredUrl, router.events, toastFn]);
 };
 
 export { useToastOnPageChange };

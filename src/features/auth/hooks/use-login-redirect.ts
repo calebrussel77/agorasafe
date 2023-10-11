@@ -1,7 +1,6 @@
-import { useRouter } from 'next/navigation';
+import { useRouter } from 'next/router';
 
 import { useCurrentUser } from '@/hooks/use-current-user';
-import { usePathWithSearchParams } from '@/hooks/use-path-with-search-params';
 
 import { type LoginRedirectReason, getLoginLink } from '../utils';
 
@@ -15,14 +14,13 @@ export function useLoginRedirect({
   redirectUrl,
 }: UseLoginRedirectProps) {
   const router = useRouter();
-  const path = usePathWithSearchParams();
   const { isAuthWithProfile } = useCurrentUser();
 
   const requireLogin = (fn: () => void, overrides?: UseLoginRedirectProps) => {
     if (!isAuthWithProfile) {
       void router.push(
         getLoginLink({
-          redirectUrl: overrides?.redirectUrl ?? redirectUrl ?? path,
+          redirectUrl: overrides?.redirectUrl ?? redirectUrl ?? router.asPath,
           reason: overrides?.reason ?? reason,
         })
       );
