@@ -30,14 +30,14 @@ const HomePage: AppPageProps['Component'] = () => {
   );
 };
 
-export const getServerSideProps = createServerSideProps({
-  shouldUseSSG: true,
-  resolver: async ({ ctx, ssg }) => {
-    await ssg?.services.getAllServiceRequests.prefetch({
-      limit: LATEST_SERVICE_REQUESTS_COUNT,
-    });
-    return { props: {} };
-  },
-});
+// export const getServerSideProps = createServerSideProps({
+//   shouldUseSSG: true,
+//   resolver: async ({ ctx, ssg }) => {
+//     await ssg?.services.getAllServiceRequests.prefetch({
+//       limit: LATEST_SERVICE_REQUESTS_COUNT,
+//     });
+//     return { props: {} };
+//   },
+// });
 
 export default HomePage;

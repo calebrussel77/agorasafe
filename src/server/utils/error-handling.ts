@@ -40,6 +40,8 @@ const prismaErrorToTrpcCode: Record<string, TRPC_ERROR_CODE_KEY> = {
 
 export function throwDbError(error: unknown): never {
   // Always log to console
+  console.log(error, 'FROM throwDbError');
+
   if (error instanceof TRPCError) {
     throw error;
   } else if (error instanceof Prisma.PrismaClientKnownRequestError)

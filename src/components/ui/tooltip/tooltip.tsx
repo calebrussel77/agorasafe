@@ -9,6 +9,8 @@ const TooltipComponent = TooltipPrimitive.Root;
 
 const TooltipTrigger = TooltipPrimitive.Trigger;
 
+const TooltipPortal = TooltipPrimitive.Portal;
+
 const TooltipContent = React.forwardRef<
   React.ElementRef<typeof TooltipPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Content> & {
@@ -63,5 +65,6 @@ const TooltipRoot: React.FC<
 // Nested exports
 export const Tooltip = Object.assign(TooltipRoot, {
   Trigger: TooltipTrigger,
+  Portal: TooltipPortal,
   Content: TooltipContent,
 });

@@ -1,5 +1,3 @@
-import Link from 'next/link';
-
 import { Button } from '@/components/ui/button';
 import { CenterContent } from '@/components/ui/layout';
 import { Seo } from '@/components/ui/seo';
@@ -21,8 +19,8 @@ export function NotFound() {
           La page que vous recherchez n'existe pas ! Elle a peut être été
           déplacée.
         </Typography>
-        <Button asChild className="mt-10">
-          <Link href="/">Revenir à l'accueil</Link>
+        <Button href="/" className="mt-10">
+          Revenir à l'accueil
         </Button>
       </CenterContent>
     </>
