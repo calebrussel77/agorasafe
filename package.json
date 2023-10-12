@@ -4,12 +4,10 @@
   "author": "calebrussel77@gmail.com",
   "private": true,
   "scripts": {
-    "build": "npm run migrate:deploy && next build",
+    "build": "next build",
     "start": "next start --port ${PORT-3000}",
     "dev": "next dev",
     "studio": "npx prisma studio",
-    "migrate:dev": "npx prisma migrate dev",
-    "migrate:deploy": "npx prisma migrate deploy",
     "migrate:status": "npx prisma migrate status",
     "seed:import": "ts-node prisma/seed.ts",
     "seed:destroy": "ts-node prisma/seed.ts -d",
