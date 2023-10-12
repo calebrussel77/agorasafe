@@ -75,7 +75,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
           {isLoading && (
             <Spinner
               className={cn(
-                size === 'sm' || size === 'xs' ? 'h-6 w-6' : 'h-7 w-7'
+                size === 'lg' ? 'h-7 w-7' : 'h-6 w-6'
               )}
               variant={isGhostOrOutlineVariant ? 'ghost' : 'default'}
             />

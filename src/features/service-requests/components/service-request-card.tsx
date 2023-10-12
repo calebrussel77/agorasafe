@@ -46,10 +46,7 @@ const ServiceRequestCard: FC<ServiceRequestCardProps> = ({
 
   return (
     <article
-      className={cn(
-        'flex flex-col items-start justify-between overflow-hidden p-2',
-        className
-      )}
+      className={cn('flex flex-col items-start justify-between p-2', className)}
     >
       {photos?.length > 1 ? (
         <div

@@ -10,6 +10,8 @@ import {
   useState,
 } from 'react';
 
+import { ActionTooltip } from '@/components/action-tooltip';
+
 import { cn } from '@/lib/utils';
 
 import { MoreIndicator } from '../avatar/more-indicator';
@@ -297,6 +299,7 @@ const AvatarGroup = ({
     >
       {data?.slice(0, maxAvatar)?.map((avatarData, idx) => {
         const callback = avatarData.onClick || onAvatarClick;
+        // const href = avatarData?.href
         const finalAvatar = getOverrides(overrides).Avatar.render(
           avatar,
           {
@@ -305,18 +308,20 @@ const AvatarGroup = ({
             size,
             style: { zIndex: maxAvatar + 1 - idx },
             onClick: callback ? callback : undefined,
-            className: 'relative inline-block rounded-full ring-2 ring-white',
+            className:
+              'relative inline-block rounded-full ring-2 ring-offset-2 ring-gray-100',
           },
           idx
         );
 
         return !isTooltipDisabled && !avatarData.disabled ? (
-          <Tooltip key={composeUniqueKey(avatarData, idx)}>
-            <Tooltip.Trigger>{finalAvatar}</Tooltip.Trigger>
-            <Tooltip.Content className="text-xs">
-              {avatarData.name}
-            </Tooltip.Content>
-          </Tooltip>
+          <ActionTooltip
+            label={avatarData.name || 'sssss'}
+            asChild={false}
+            key={composeUniqueKey(avatarData, idx)}
+          >
+            {finalAvatar}
+          </ActionTooltip>
         ) : (
           finalAvatar
         );
