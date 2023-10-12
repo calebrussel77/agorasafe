@@ -5,9 +5,10 @@
   "private": true,
   "scripts": {
     "build": "next build",
+    "start": "next start --port ${PORT-3000}",
     "dev": "next dev",
     "studio": "npx prisma studio",
-    "migrate:dev": "npx prisma migrate dev",
+    "migrate:status": "npx prisma migrate status",
     "seed:import": "ts-node prisma/seed.ts",
     "seed:destroy": "ts-node prisma/seed.ts -d",
     "postinstall": "prisma generate",
@@ -17,8 +18,7 @@
     "test": "jest --watchAll",
     "pre-commit": "lint-staged",
     "prettier": "prettier --ignore-path .gitignore --write --ignore-unknown \"**/*.{ts,tsx,css,scss}\"",
-    "test:ci": "jest --coverage --silent --ci",
-    "start": "next start"
+    "test:ci": "jest --coverage --silent --ci"
   },
   "dependencies": {
     "@badrap/bar-of-progress": "^0.2.2",
