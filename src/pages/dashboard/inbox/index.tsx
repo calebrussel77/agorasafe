@@ -3,7 +3,7 @@ import { SOCKET_API_BASE_URL } from '@/constants';
 import { MainLayout } from '@/layouts';
 import { type InferGetServerSidePropsType } from 'next';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { type ReactElement } from 'react';
+import { ElementRef, type ReactElement, useRef } from 'react';
 import { z } from 'zod';
 
 import { EmptyState } from '@/components/ui/empty-state';
@@ -36,6 +36,7 @@ const InboxPage = ({
   const profileId = query.get('profileId') as string;
   const canDisplayConversationDetails =
     profileId && otherProfile && conversationId;
+  const bottomRef = useRef<ElementRef<'div'>>(null);
 
   return (
     <>
@@ -54,9 +55,11 @@ const InboxPage = ({
               name={otherProfile?.name}
               profile={profile}
               conversationId={conversationId}
+              bottomRef={bottomRef}
             />
             <ConversationChatFooter
               name={otherProfile?.name}
+              bottomRef={bottomRef}
               socketUrl={`${SOCKET_API_BASE_URL}/direct-messages`}
               query={{ conversationId }}
             />

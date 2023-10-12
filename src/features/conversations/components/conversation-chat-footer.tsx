@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { File, Plus, SendHorizonal } from 'lucide-react';
-import React from 'react';
+import React, { RefObject } from 'react';
 import { Controller } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -31,19 +31,21 @@ type ConversationFooterProps = React.PropsWithChildren<{
   name: string;
   socketUrl: string;
   query: Record<string, string>;
+  bottomRef: RefObject<HTMLDivElement>
 }>;
 
 const ConversationFileUploadForm = ({
   socketUrl,
-  onAfterSubmit,
+  onAfterSubmitFileUpload,
   query,
-}: Omit<ConversationFooterProps, 'name'> & { onAfterSubmit: () => void }) => {
+}: Omit<ConversationFooterProps, 'name' | 'bottomRef'> & { onAfterSubmitFileUpload: () => void }) => {
   const form = useZodForm({
     schema: imageUploadFormSchema,
     defaultValues: {
       fileUrl: [],
     },
   });
+
 
   const { control, formState } = form;
 
@@ -74,7 +76,7 @@ const ConversationFileUploadForm = ({
         fileUrl: files && files[0]?.url,
       });
       form.reset();
-      onAfterSubmit();
+      onAfterSubmitFileUpload();
     } catch (e) {
       toast({
         variant: 'danger',
@@ -135,10 +137,12 @@ const ConversationFileUploadForm = ({
     </Form>
   );
 };
+
 const ConversationChatFooter = ({
   socketUrl,
   query,
   name,
+  bottomRef
 }: ConversationFooterProps) => {
   const { open: isOpen, onOpenChange } = useModal();
   const form = useZodForm({
@@ -148,12 +152,26 @@ const ConversationChatFooter = ({
   const watchedContent = form.watch('content');
   const isLoading = form.formState.isSubmitting;
 
+  const onScrollDown = () => {
+    setTimeout(() => {
+      bottomRef.current?.scrollIntoView({
+        behavior: 'smooth',
+      });
+    }, 100);
+  }
+
+  const onAfterSubmitFileUpload = () => {
+    onOpenChange(false)
+    onScrollDown()
+  }
+
   //TODO: Refactor this service api request to the service folder
   const onHandleSumit = async (formData: unknown) => {
     try {
       const url = QS.stringifyUrl(socketUrl, query);
       await axios.post(url, formData);
       form.reset();
+      onScrollDown()
     } catch (e) {
       console.error(e);
       toast({
@@ -180,7 +198,7 @@ const ConversationChatFooter = ({
           </Popover.Trigger>
           <Popover.Content side="top" className="mb-3 lg:min-w-[400px]">
             <ConversationFileUploadForm
-              onAfterSubmit={() => onOpenChange(false)}
+              onAfterSubmitFileUpload={onAfterSubmitFileUpload}
               socketUrl={socketUrl}
               query={query}
             />
