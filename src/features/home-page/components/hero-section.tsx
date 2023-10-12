@@ -1,3 +1,5 @@
+'use client'
+
 import React, { type FC } from 'react';
 
 import { Button } from '@/components/ui/button';
@@ -7,7 +9,6 @@ import { Typography } from '@/components/ui/typography';
 import { FormSubscriptionModal } from '@/features/app-subscription';
 
 import { useFadeSliderImages } from '@/hooks/use-fade-slider-images';
-
 interface HeroSectionProps {
   className?: string;
 }
