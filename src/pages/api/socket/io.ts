@@ -10,9 +10,7 @@ export const config = {
 };
 
 const SocketHandler = (req: NextApiRequest, res: NextApiResponseServerIo) => {
-  if (res.socket.server.io) {
-    console.log('Socket is already running');
-  } else {
+  if (!res?.socket?.server?.io) {
     console.log('Socket is initializing');
     const io = new Server(res.socket.server as never, {
       path: '/api/socket/io',

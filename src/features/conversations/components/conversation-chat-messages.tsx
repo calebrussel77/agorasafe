@@ -1,6 +1,6 @@
 import { Loader2, ServerCrash } from 'lucide-react';
 import { type Session } from 'next-auth';
-import { type ElementRef, Fragment, useRef } from 'react';
+import { type ElementRef, Fragment, useRef, RefObject } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { FadeAnimation } from '@/components/ui/fade-animation';
@@ -27,6 +27,7 @@ type ConversationChatMessagesProps = React.PropsWithChildren<{
   socketUrl: string;
   conversationId: string;
   session: Session;
+  bottomRef: RefObject<HTMLDivElement>
 }>;
 
 const ConversationChatMessages = ({
@@ -34,13 +35,13 @@ const ConversationChatMessages = ({
   profile,
   conversationId,
   session,
+  bottomRef,
   socketUrl,
 }: ConversationChatMessagesProps) => {
   const updateEventKey = socketEventsKey['updateDirectMessage'](conversationId);
   const createEventKey = socketEventsKey['createDirectMessage'](conversationId);
 
   const chatRef = useRef<ElementRef<'div'>>(null);
-  const bottomRef = useRef<ElementRef<'div'>>(null);
 
   const {
     directMessages,

@@ -31,7 +31,7 @@ export const useConversationChatSocket = ({
     }
 
     //TODO: Give the possibility to update the last message in the conversations list after update or create
-    
+
     socket.on(updateEventKey, async (message: MessageWithWithProfile) => {
       await queryUtils.messages.getDirectMessages.cancel();
       await queryUtils.conversations.getConversations.cancel();
@@ -48,7 +48,7 @@ export const useConversationChatSocket = ({
             return {
               ...page,
               conversations: page.conversations.map(el => {
-                if (el?.id === message.conversationId) {
+                if (el?.directMessages[0]?.id === message?.id) {
                   return { ...el, directMessages: [message] };
                 }
                 return el;
