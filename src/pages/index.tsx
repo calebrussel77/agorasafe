@@ -4,11 +4,8 @@ import {
   TestimonialSection,
 } from '@/features/home-page';
 import {
-  LATEST_SERVICE_REQUESTS_COUNT,
   LatestServiceRequests,
 } from '@/features/service-requests';
-
-import { createServerSideProps } from '@/server/utils/server-side';
 
 import { type AppPageProps } from './_app';
 

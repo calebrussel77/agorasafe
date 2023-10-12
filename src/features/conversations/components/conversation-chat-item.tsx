@@ -134,7 +134,7 @@ export const ConversationChatItem = ({
   const isAdmin = session?.user?.role === 'ADMIN';
   const isOwner = connectedProfile?.id === profile?.id;
   const canDeleteMessage = !isDeleted && (isAdmin || isOwner);
-  const canEditMessage = !isDeleted && isOwner && fileUrl;
+  const canEditMessage = !isDeleted && isOwner;
   const Icon = fileUrl ? getFileIcon(fileUrl) : LinkIcon;
   const imageUrl = fileUrl && getImageUrl(fileUrl);
 
@@ -264,8 +264,8 @@ export const ConversationChatItem = ({
               header: 'border-b-transparent',
             }}
             trigger={
-              <ActionTooltip label="Supprimer">
-                <Trash className="ml-auto h-4 w-4 cursor-pointer text-zinc-500 transition hover:text-zinc-600 dark:hover:text-zinc-300" />
+              <ActionTooltip label="Supprimer" asChild={false}>
+                <Trash onClick={() => onOpenChange(true)} className="ml-auto h-4 w-4 cursor-pointer text-zinc-500 transition hover:text-zinc-600 dark:hover:text-zinc-300" />
               </ActionTooltip>
             }
             triggerProps={{ asChild: true }}

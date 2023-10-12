@@ -30,11 +30,37 @@ export const useConversationChatSocket = ({
       return;
     }
 
-  //TODO: Give the possibility to update the last message in the conversations list after update or create
-
+    //TODO: Give the possibility to update the last message in the conversations list after update or create
+    
     socket.on(updateEventKey, async (message: MessageWithWithProfile) => {
       await queryUtils.messages.getDirectMessages.cancel();
+      await queryUtils.conversations.getConversations.cancel();
 
+      //Update the last message on the list of conversations
+      queryUtils.conversations.getConversations.setInfiniteData(
+        { profileId: message.profileId },
+        oldData => {
+          if (!oldData || !oldData.pages || oldData.pages.length === 0) {
+            return oldData;
+          }
+
+          const newData = oldData.pages.map(page => {
+            return {
+              ...page,
+              conversations: page.conversations.map(el => {
+                if (el?.id === message.conversationId) {
+                  return { ...el, directMessages: [message] };
+                }
+                return el;
+              }),
+            };
+          });
+
+          return { ...oldData, pages: newData };
+        }
+      );
+
+      //Update the message on the conversation
       queryUtils.messages.getDirectMessages.setInfiniteData(
         { conversationId },
         oldData => {
@@ -64,6 +90,31 @@ export const useConversationChatSocket = ({
 
     socket.on(createEventKey, async (message: MessageWithWithProfile) => {
       await queryUtils.messages.getDirectMessages.cancel();
+      await queryUtils.conversations.getConversations.cancel();
+
+      //Update the last message on the list of conversations
+      queryUtils.conversations.getConversations.setInfiniteData(
+        { profileId: message.profileId },
+        oldData => {
+          if (!oldData || !oldData.pages || oldData.pages.length === 0) {
+            return oldData;
+          }
+
+          const newData = oldData.pages.map(page => {
+            return {
+              ...page,
+              conversations: page.conversations.map(el => {
+                if (el?.id === message.conversationId) {
+                  return { ...el, directMessages: [message] };
+                }
+                return el;
+              }),
+            };
+          });
+
+          return { ...oldData, pages: newData };
+        }
+      );
 
       queryUtils.messages.getDirectMessages.setInfiniteData(
         { conversationId },
@@ -101,6 +152,7 @@ export const useConversationChatSocket = ({
   }, [
     conversationId,
     createEventKey,
+    queryUtils.conversations.getConversations,
     queryUtils.messages.getDirectMessages,
     socket,
     updateEventKey,
