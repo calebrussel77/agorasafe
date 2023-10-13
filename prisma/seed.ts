@@ -373,6 +373,9 @@ const destroyData = async () => {
     console.log('🧹 Deleting profiles...');
     await prisma.profile.deleteMany();
 
+    console.log('🧹 Deleting service request reservations...');
+    await prisma.serviceRequestReservation.deleteMany();
+
     console.log('🧹 Deleting locations...');
     await prisma.location.deleteMany();
 

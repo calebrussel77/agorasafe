@@ -116,6 +116,7 @@ const ServiceRequestPublicationPage = ({
   } = useServiceRequestComments({
     serviceRequestSlug: serviceRequestSlugQuery,
   });
+
   const isAuthorMine =
     profile?.id === data?.serviceRequest?.author?.profile?.id;
   const authorName = data?.serviceRequest?.author?.profile?.name;
@@ -346,9 +347,8 @@ const ServiceRequestPublicationPage = ({
               <Separator className="my-4 w-full " />
               <div className="mt-6 flex flex-wrap items-center gap-3">
                 {providersReserved.map(element => {
-                  const { profile } = element?.provider as unknown as {
-                    profile: SimpleProfile;
-                  }; //TODO: Need to find why ts complaints about this. it doesn't infer correctly
+                  const profile = element?.provider?.profile               
+                  if(!profile) return null;
 
                   return (
                     <div

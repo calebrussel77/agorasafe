@@ -40,7 +40,7 @@ export const getAllProfileDetails = ({
       },
       providerInfo: {
         select: {
-          _count: { select: { ServiceRequestReservations: true } },
+          _count: { select: { serviceRequestReservations: true } },
           skills: true,
           profession: true,
           showCaseProjects: {
