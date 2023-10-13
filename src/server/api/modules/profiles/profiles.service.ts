@@ -54,11 +54,12 @@ export const getProfileDetailsService = async (
     throwNotFoundError('Utilisateur non trouvé !');
   }
 
-  const customerJobPostedCount = profile?.customerInfo?._count?.serviceRequests || 0;
+  const customerJobPostedCount =
+    profile?.customerInfo?._count?.serviceRequests || 0;
   const customerJobProvidersReservedCount =
     profile?.customerInfo?._count?.providersReserved || 0;
   const providerJobsReservedCount =
-    profile?.providerInfo?._count?.ServiceRequestReservations || 0;
+    profile?.providerInfo?._count?.serviceRequestReservations || 0;
 
   return {
     profile: {

@@ -157,7 +157,7 @@ const ConversationChatFooter = ({
       bottomRef.current?.scrollIntoView({
         behavior: 'smooth',
       });
-    }, 100);
+    }, 150);
   }
 
   const onAfterSubmitFileUpload = () => {

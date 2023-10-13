@@ -8,7 +8,7 @@ import { DEFAULT_PAGE_SIZE } from '@/server/utils/pagination';
 
 import {
   type GetAllQueryInput,
-  GetByIdOrSlugQueryInput,
+  type GetByIdOrSlugQueryInput,
 } from '../../validations/base.validations';
 import { simpleProfileSelect } from '../profiles';
 import type {
@@ -307,17 +307,6 @@ export const getServiceRequestWithDetails = ({
 }: {
   inputs: GetServiceRequestInput;
 }) => {
-  const defaultProvidersReservedSelect: Prisma.ServiceRequest$providersReservedArgs['select'] =
-    {
-      isActive: true,
-      removedAt: true,
-      provider: {
-        select: { profile: { select: simpleProfileSelect }, profession: true },
-      },
-      providerProfileId: true,
-      customerProfileId: true,
-    };
-
   let selectCount:
     | Prisma.ServiceRequestCountOutputTypeSelect
     | null
@@ -328,7 +317,10 @@ export const getServiceRequestWithDetails = ({
     | undefined = undefined;
 
   if (providersReserved === 'Active') {
-    providersReservedWhere = { isActive: true, removedAt: null };
+    providersReservedWhere = {
+      isActive: true,
+      removedAt: null,
+    };
     selectCount = {
       providersReserved: { where: { removedAt: null, isActive: true } },
     };
@@ -352,7 +344,18 @@ export const getServiceRequestWithDetails = ({
       location: true,
       providersReserved: {
         where: providersReservedWhere,
-        select: defaultProvidersReservedSelect,
+        select: {
+          isActive: true,
+          removedAt: true,
+          provider: {
+            select: {
+              profile: { select: simpleProfileSelect },
+              profession: true,
+            },
+          },
+          providerProfileId: true,
+          customerProfileId: true,
+        },
       },
       author: { select: { profile: { select: simpleProfileSelect } } },
       photos: true,

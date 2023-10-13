@@ -87,13 +87,13 @@ model Provider {
     profile   Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
     profileId String  @unique
 
-    ServiceRequestReservations ServiceRequestReservation[]
+    serviceRequestReservations ServiceRequestReservation[] @relation("ServiceRequestReservationRelation")
 }
 
 model Customer {
     id                String                      @id @default(cuid())
     serviceRequests   ServiceRequest[]
-    providersReserved ServiceRequestReservation[]
+    providersReserved ServiceRequestReservation[] @relation("ServiceRequestReservationRelation")
 
     profile   Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
     profileId String  @unique
@@ -167,7 +167,7 @@ model ServiceRequest {
 
     comments Comment[]
 
-    providersReserved ServiceRequestReservation[]
+    providersReserved ServiceRequestReservation[] @relation("ServiceRequestReservationRelation")
 
     author   Customer @relation(fields: [authorId], references: [id], onDelete: Cascade)
     authorId String
@@ -187,7 +187,7 @@ model ServiceRequest {
 //For one to one conversations
 model DirectMessage {
     id        String    @id @default(cuid())
-    content   String?    @db.Text
+    content   String?   @db.Text
     fileUrl   String?   @db.Text
     deletedAt DateTime?
 
@@ -242,20 +242,19 @@ model Comment {
 }
 
 model ServiceRequestReservation {
-    removeNote String? @db.Text
-    isActive   Boolean @default(true)
-
-    provider          Provider @relation(fields: [providerProfileId], references: [profileId], onDelete: Cascade)
+    provider          Provider? @relation("ServiceRequestReservationRelation", fields: [providerProfileId], references: [profileId], onDelete: Cascade)
     providerProfileId String
 
-    serviceRequest   ServiceRequest @relation(fields: [serviceRequestId], references: [id], onDelete: Cascade)
-    serviceRequestId String
-
-    customer          Customer @relation(fields: [customerProfileId], references: [profileId], onDelete: Cascade)
+    customer          Customer? @relation("ServiceRequestReservationRelation", fields: [customerProfileId], references: [profileId], onDelete: Cascade)
     customerProfileId String
 
-    removedAt DateTime?
-    createdAt DateTime  @default(now())
+    serviceRequest   ServiceRequest? @relation("ServiceRequestReservationRelation", fields: [serviceRequestId], references: [id], onDelete: Cascade)
+    serviceRequestId String
+
+    removedAt  DateTime?
+    removeNote String?   @db.Text
+    isActive   Boolean   @default(true)
+    createdAt  DateTime  @default(now())
 
     @@id([providerProfileId, serviceRequestId, customerProfileId])
     @@index([customerProfileId])
