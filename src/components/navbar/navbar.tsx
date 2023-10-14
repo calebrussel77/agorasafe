@@ -12,6 +12,7 @@ import { cn } from '@/lib/utils';
 
 import { useCurrentUser } from '@/hooks/use-current-user';
 
+import { Anchor } from '../anchor';
 import { CanView } from '../can-view';
 import { LogoSymbolIcon } from '../icons/logo-icon';
 import { Button } from '../ui/button';
@@ -46,14 +47,14 @@ const Navbar: FC<NavbarProps> = ({
       aria-label="Global"
     >
       <div className="flex items-center gap-3 xl:flex-1">
-        <Link href="/" className="-m-1.5 p-1.5">
-          <span className="sr-only">Your Company</span>
+        <span className="sr-only">Your Company</span>
+        <Anchor href="/" className="-m-1.5 p-1.5">
           <LogoSymbolIcon className="h-7 w-auto md:h-8" />
-        </Link>
+        </Anchor>
       </div>
       <div className="ml-4 hidden lg:flex lg:items-center lg:gap-x-12">
         {navigations.map(item => (
-          <Link
+          <Anchor
             key={item.name}
             href={item.href}
             className={cn(
@@ -64,7 +65,7 @@ const Navbar: FC<NavbarProps> = ({
             )}
           >
             {item.name}
-          </Link>
+          </Anchor>
         ))}
       </div>
       <div className="flex items-center lg:flex-1 lg:justify-end">
@@ -87,12 +88,14 @@ const Navbar: FC<NavbarProps> = ({
           />
         </CanView>
         {status === 'unauthenticated' && !profile && (
-          <Link
+          <Anchor
             href="/auth/login"
             className="ml-4 hidden text-sm font-semibold leading-6 lg:flex"
           >
-            Se connecter <span aria-hidden="true">&rarr;</span>
-          </Link>
+            <>
+              Se connecter <span aria-hidden="true">&rarr;</span>
+            </>
+          </Anchor>
         )}
       </div>
       <div className="flex lg:hidden">{children}</div>

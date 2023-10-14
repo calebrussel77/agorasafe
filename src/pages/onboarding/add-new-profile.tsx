@@ -1,7 +1,6 @@
 import { ProfileType } from '@prisma/client';
 import { CheckCircle, MoveLeft } from 'lucide-react';
-import { type InferGetServerSidePropsType } from 'next';
-import { useRouter } from 'next/navigation';
+import { useRouter } from 'next/router';
 import { z } from 'zod';
 
 import { Card } from '@/components/ui/card';
@@ -29,10 +28,10 @@ const meta = {
   ou des demandes de service, etc.`,
 };
 
+type PageProps = Prettify<InferNextProps<typeof getServerSideProps>>;
+
 const redirectUrl = '/';
-export default function AddNewProfilePage({
-  profileTypeQuery,
-}: InferGetServerSidePropsType<typeof getServerSideProps>) {
+export default function AddNewProfilePage({ profileTypeQuery }: PageProps) {
   const router = useRouter();
   const { updateUser, session } = useCurrentUser();
   const { mutate, error, isLoading } = useCreateProfile({
@@ -47,7 +46,7 @@ export default function AddNewProfilePage({
         title: `Profil ${getProfileTypeName(data?.profile?.type)} créé`,
         description: `Le profil ${data?.profile?.name} a été crée avec succès.`,
       });
-      router.push(redirectUrl);
+      void router.push(redirectUrl);
     },
   });
 

@@ -3,6 +3,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import React, { type FC } from 'react';
 
+import { Anchor } from '@/components/anchor';
 import { AutoAnimate } from '@/components/ui/auto-animate';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { DropdownMenu } from '@/components/ui/dropdown-menu';
@@ -110,7 +111,7 @@ const UserProfileDropdown: FC<UserProfileDropdownProps> = ({
               <>
                 {userProfileConfig?.canAddNewProfile && (
                   <>
-                    <Link
+                    <Anchor
                       // onClick={resetProfile}
                       href={userProfileConfig?.addNewProfileHref}
                       className="w-full"
@@ -129,7 +130,7 @@ const UserProfileDropdown: FC<UserProfileDropdownProps> = ({
                           {userProfileConfig?.addNewProfileMessage}
                         </span>
                       </DropdownMenu.Item>
-                    </Link>
+                    </Anchor>
                     <DropdownMenu.Separator />
                   </>
                 )}
@@ -168,29 +169,31 @@ const UserProfileDropdown: FC<UserProfileDropdownProps> = ({
                         isMatch ? 'mb-2 bg-zinc-100 text-primary' : 'mb-2'
                       }
                     >
-                      <Link
+                      <Anchor
                         href={url}
                         className="mt-1 flex w-full items-center justify-start gap-x-1 text-left"
                       >
-                        <Image
-                          src={link.iconUrl}
-                          alt={link.title}
-                          width={20}
-                          height={20}
-                          className="mr-2 flex-shrink-0"
-                        />
-                        <div className="flex flex-col items-start justify-start">
-                          <Typography as="h3" variant="paragraph">
-                            {link.title}
-                          </Typography>
-                          <Typography
-                            variant="small"
-                            className="text-muted-foreground"
-                          >
-                            {link.description}
-                          </Typography>
-                        </div>
-                      </Link>
+                        <>
+                          <Image
+                            src={link.iconUrl}
+                            alt={link.title}
+                            width={20}
+                            height={20}
+                            className="mr-2 flex-shrink-0"
+                          />
+                          <div className="flex flex-col items-start justify-start">
+                            <Typography as="h3" variant="paragraph">
+                              {link.title}
+                            </Typography>
+                            <Typography
+                              variant="small"
+                              className="text-muted-foreground"
+                            >
+                              {link.description}
+                            </Typography>
+                          </div>
+                        </>
+                      </Anchor>
                     </DropdownMenu.Item>
                   );
                 })}

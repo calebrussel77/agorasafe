@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils';
 
 import { type SimpleProfile } from '@/server/api/modules/profiles';
 
+import { Anchor } from '../anchor';
 import { type AvatarProps } from '../ui/avatar';
 import { Badge } from '../ui/badge';
 import { GroupItem, type GroupItemProps } from '../ui/group-item';
@@ -133,7 +134,7 @@ const UserProfileLink = ({
   profile,
   canLinkToProfile,
 }: {
-  children: React.ReactNode;
+  children: JSX.Element;
   profile?: UserProps['profile'];
   canLinkToProfile?: boolean;
 }) => {
@@ -143,12 +144,12 @@ const UserProfileLink = ({
   const href = `/u/${profile.slug}`;
 
   return (
-    <Link
+    <Anchor
       href={href}
       onClick={(e: React.MouseEvent<HTMLAnchorElement>) => e.stopPropagation()}
     >
       {children}
-    </Link>
+    </Anchor>
   );
 };
 

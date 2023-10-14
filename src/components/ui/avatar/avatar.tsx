@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import * as AvatarPrimitive from '@radix-ui/react-avatar';
-import NextImage from 'next/image';
+import NextImage from 'next/future/image';
 import * as React from 'react';
 
 import { blurDataURL } from '@/utils/image';

@@ -1,4 +1,4 @@
-import { useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/router';
 
 import { Button } from '@/components/ui/button';
 import { Field } from '@/components/ui/field';
@@ -18,8 +18,8 @@ const ProviderNumberForm = ({
   nextStep,
   prevStep,
 }: ProviderNumberFormProps) => {
-  const searchParams = useSearchParams();
-  const categorySlugQuery = searchParams.get('category') || '';
+  const { query } = useRouter();
+  const categorySlugQuery = query.category as string;
 
   const { updateServiceRequest, serviceRequest: _serviceRequest } =
     usePublishServiceRequest();

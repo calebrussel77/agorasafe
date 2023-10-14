@@ -1,6 +1,8 @@
 import Link from 'next/link';
 import React, { type FC, type ReactNode, memo } from 'react';
 
+import { Anchor } from '@/components/anchor';
+
 import { cn } from '@/lib/utils';
 
 type MessageActionProps = {
@@ -39,7 +41,7 @@ const MessageAction = memo(function MessageAction({
   isPrimary = false,
 }: MessageActionProps) {
   return href ? (
-    <Link href={href}>
+    <Anchor href={href}>
       <ButtonAction
         onClick={onClick}
         isPrimary={isPrimary}
@@ -47,7 +49,7 @@ const MessageAction = memo(function MessageAction({
       >
         {children}
       </ButtonAction>
-    </Link>
+    </Anchor>
   ) : onClick ? (
     <ButtonAction onClick={onClick} isPrimary={isPrimary} className={className}>
       {children}

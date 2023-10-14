@@ -1,6 +1,6 @@
-import Link from 'next/link';
 import { type FC } from 'react';
 
+import { Anchor } from '@/components/anchor';
 import { Accordion } from '@/components/ui/accordion';
 
 import { Image } from '../image';
@@ -13,14 +13,14 @@ const FullPageError: FC<{ error: { message: string } }> = ({ error }) => {
           <main className="flex flex-grow flex-col bg-white">
             <div className="mx-auto flex w-full max-w-7xl flex-grow flex-col px-6 lg:px-8">
               <div className="flex-shrink-0 pt-10 sm:pt-16">
-                <Link href="/" className="inline-flex">
-                  <span className="sr-only">Agorasafe</span>
+                <span className="sr-only">Agorasafe</span>
+                <Anchor href="/" className="inline-flex">
                   <Image
                     className="h-10 w-auto"
                     src="/images/finexs-logo.png"
                     alt="Finexs tombola logo symbol"
                   />
-                </Link>
+                </Anchor>
               </div>
               <div className="my-auto flex-shrink-0 py-16 sm:py-32">
                 <p className="text-primary-500 text-base font-semibold">501</p>
@@ -49,13 +49,15 @@ const FullPageError: FC<{ error: { message: string } }> = ({ error }) => {
                 </Accordion>
 
                 <div className="mt-6">
-                  <Link
+                  <Anchor
                     href="#"
                     className="text-primary-500 hover:text-primary-500 text-base font-medium"
                   >
-                    Retour en arrière
-                    <span aria-hidden="true"> &rarr;</span>
-                  </Link>
+                    <>
+                      Retour en arrière
+                      <span aria-hidden="true"> &rarr;</span>
+                    </>
+                  </Anchor>
                 </div>
               </div>
             </div>
@@ -63,32 +65,32 @@ const FullPageError: FC<{ error: { message: string } }> = ({ error }) => {
           <footer className="flex-shrink-0 bg-gray-50">
             <div className="mx-auto w-full max-w-7xl px-6 py-16 lg:px-8">
               <nav className="flex space-x-4">
-                <Link
+                <Anchor
                   href="#"
                   className="text-sm font-medium text-gray-500 hover:text-gray-500"
                 >
                   Contact Support
-                </Link>
+                </Anchor>
                 <span
                   className="inline-block border-l border-gray-300"
                   aria-hidden="true"
                 />
-                <Link
+                <Anchor
                   href="#"
                   className="text-sm font-medium text-gray-500 hover:text-gray-500"
                 >
                   Status
-                </Link>
+                </Anchor>
                 <span
                   className="inline-block border-l border-gray-300"
                   aria-hidden="true"
                 />
-                <Link
+                <Anchor
                   href="#"
                   className="text-sm font-medium text-gray-500 hover:text-gray-500"
                 >
                   Twitter
-                </Link>
+                </Anchor>
               </nav>
             </div>
           </footer>

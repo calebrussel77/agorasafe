@@ -1,16 +1,13 @@
 import { MainLayout } from '@/layouts';
-import { type InferGetServerSidePropsType } from 'next';
 import { type ReactElement } from 'react';
 
 import { ContentTitle, MainContent, Sidebar } from '@/features/user-dashboard';
 
 import { createServerSideProps } from '@/server/utils/server-side';
 
-type MyRequestsPageProps = InferGetServerSidePropsType<
-  typeof getServerSideProps
->;
+type PageProps = Prettify<InferNextProps<typeof getServerSideProps>>;
 
-const MyRequestsPage = ({ profile, session }: MyRequestsPageProps) => {
+const MyRequestsPage = ({ profile, session }: PageProps) => {
   return (
     <>
       <MainContent>
@@ -26,9 +23,7 @@ const MyRequestsPage = ({ profile, session }: MyRequestsPageProps) => {
   );
 };
 
-MyRequestsPage.getLayout = function getLayout(
-  page: ReactElement<MyRequestsPageProps>
-) {
+MyRequestsPage.getLayout = function getLayout(page: ReactElement<PageProps>) {
   const profile = page?.props?.profile;
   const pageTitle = `Mes demandes - ${profile?.name}`;
   return (

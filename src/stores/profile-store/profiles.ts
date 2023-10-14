@@ -23,7 +23,7 @@ export const initialState: PersistedState = {
   profile: null,
 };
 
-export const CookieStorage = {
+export const CookieStorage: StateStorage = {
   getItem: name => {
     return Cookies.get(name) ?? null;
   },
@@ -38,7 +38,7 @@ export const CookieStorage = {
   removeItem: name => {
     return Cookies.remove(name, { path: '/' });
   },
-} satisfies StateStorage;
+};
 
 export type ProfileStore = PersistedState & Actions;
 

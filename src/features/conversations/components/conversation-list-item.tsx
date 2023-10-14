@@ -1,6 +1,6 @@
 import { ShieldAlert } from 'lucide-react';
 import { type Session } from 'next-auth';
-import { useRouter } from 'next/navigation';
+import { useRouter } from 'next/router';
 
 import { ActionTooltip } from '@/components/action-tooltip';
 import { Typography } from '@/components/ui/typography';

@@ -1,5 +1,5 @@
 import { REDIRECT_QUERY_KEY } from '@/constants';
-import { useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/router';
 
 import {
   type LoginRedirectReason,
@@ -7,11 +7,11 @@ import {
 } from '@/features/auth';
 
 export const useRedirectUrl = (defaultRedirectUrl = '/') => {
-  const searchParams = useSearchParams();
+  const { query } = useRouter();
   const redirectUrl =
-    searchParams.get(REDIRECT_QUERY_KEY) || defaultRedirectUrl;
+    (query[REDIRECT_QUERY_KEY] as string) || defaultRedirectUrl;
+  const reason = query?.reason as LoginRedirectReason;
 
-  const reason = searchParams.get('reason') as LoginRedirectReason;
   const redirectReason = reason ? loginRedirectReasons[reason] : null;
 
   return {

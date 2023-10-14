@@ -1,8 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { SOCKET_API_BASE_URL } from '@/constants';
 import { MainLayout } from '@/layouts';
-import { type InferGetServerSidePropsType } from 'next';
-import { useRouter, useSearchParams } from 'next/navigation';
 import { ElementRef, type ReactElement, useRef } from 'react';
 import { z } from 'zod';
 
@@ -24,16 +22,15 @@ import { cn } from '@/lib/utils';
 import { getOrCreateConversation } from '@/server/api/modules/conversations';
 import { createServerSideProps } from '@/server/utils/server-side';
 
-type InboxPageProps = InferGetServerSidePropsType<typeof getServerSideProps>;
+type PageProps = Prettify<InferNextProps<typeof getServerSideProps>>;
 
 const InboxPage = ({
   profile,
   otherProfile,
   session,
   conversationId,
-}: InboxPageProps) => {
-  const query = useSearchParams();
-  const profileId = query.get('profileId') as string;
+  profileId,
+}: PageProps) => {
   const canDisplayConversationDetails =
     profileId && otherProfile && conversationId;
   const bottomRef = useRef<ElementRef<'div'>>(null);
@@ -78,7 +75,7 @@ const InboxPage = ({
   );
 };
 
-InboxPage.getLayout = function getLayout(page: ReactElement<InboxPageProps>) {
+InboxPage.getLayout = function getLayout(page: ReactElement<PageProps>) {
   const profile = page?.props?.profile;
   const session = page?.props?.session;
   const pageTitle = `Messagerie personnelle - ${profile?.name}`;
@@ -105,16 +102,17 @@ const querySchema = z.object({
 export const getServerSideProps = createServerSideProps({
   shouldUseSSG: true,
   shouldUseSession: true,
-  resolver: async ({ ctx, profile, session, ssg }) => {
+  resolver: async ({ ctx, profile, session }) => {
     if (!session || !profile)
       return { redirect: { destination: '/', permanent: false } };
 
     const result = querySchema.safeParse(ctx.query);
     let otherProfile = null;
     let conversationId = null;
+    let profileTwoId = null;
 
     if (result?.success && result.data.profileId) {
-      const profileTwoId = result.data.profileId;
+      profileTwoId = result.data.profileId;
 
       const conversation = await getOrCreateConversation({
         inputs: { profileOneId: profile.id, profileTwoId },
@@ -130,7 +128,15 @@ export const getServerSideProps = createServerSideProps({
       conversationId = id;
     }
 
-    return { props: { profile, session, otherProfile, conversationId } };
+    return {
+      props: {
+        profile,
+        session,
+        otherProfile,
+        conversationId,
+        profileId: profileTwoId,
+      },
+    };
   },
 });
 

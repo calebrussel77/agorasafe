@@ -1,9 +1,8 @@
 import { NotFound } from '@/layouts/not-found';
-import { ProfileType } from '@prisma/client';
+import { type ProfileType } from '@prisma/client';
 import { ExternalLink, Facebook, Share2Icon, Twitter } from 'lucide-react';
 import { ShieldCheck } from 'lucide-react';
 import { Linkedin } from 'lucide-react';
-import { type InferGetServerSidePropsType } from 'next';
 import { z } from 'zod';
 
 import { ShareButton } from '@/components/share-button/share-button';
@@ -74,9 +73,35 @@ const ProjectShowCaseItem = ({
     </div>
   );
 };
-const ProfileDetailsPage = ({
-  profileSlugQuery,
-}: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+
+const querySchema = z.object({
+  profileSlug: z.string(),
+});
+
+export const getServerSideProps = createServerSideProps({
+  shouldUseSSG: true,
+  resolver: async ({ ctx, ssg }) => {
+    const result = querySchema.safeParse(ctx.query);
+
+    if (!result.success) return { notFound: true };
+
+    const profileSlugQuery = result.data.profileSlug;
+
+    if (ssg) {
+      await ssg?.profiles.getProfileDetails.prefetch({
+        slug: profileSlugQuery,
+      });
+    }
+
+    return {
+      props: { profileSlugQuery },
+    };
+  },
+});
+
+type PageProps = Prettify<InferNextProps<typeof getServerSideProps>>;
+
+export default function ProfileDetailsPage({ profileSlugQuery }: PageProps) {
   const { profile } = useCurrentUser();
   const { data, isInitialLoading, error } = useGetProfileDetails({
     slug: profileSlugQuery,
@@ -366,27 +391,4 @@ const ProfileDetailsPage = ({
       </AsyncWrapper>
     </>
   );
-};
-
-const querySchema = z.object({
-  profileSlug: z.string(),
-});
-
-export const getServerSideProps = createServerSideProps({
-  shouldUseSSG: true,
-  resolver: async ({ ctx, ssg }) => {
-    const result = querySchema.safeParse(ctx.query);
-
-    if (!result.success) return { notFound: true };
-
-    const profileSlugQuery = result.data.profileSlug;
-
-    await ssg?.profiles.getProfileDetails.prefetch({
-      slug: profileSlugQuery,
-    });
-
-    return { props: { profileSlugQuery } };
-  },
-});
-
-export default ProfileDetailsPage;
+}

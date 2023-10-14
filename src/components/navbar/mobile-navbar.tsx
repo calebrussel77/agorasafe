@@ -1,7 +1,6 @@
 import { LogOut, RefreshCcw } from 'lucide-react';
 import { UserPlus2 } from 'lucide-react';
 import Image from 'next/image';
-import Link from 'next/link';
 import React, { type FC } from 'react';
 
 import { useAuth } from '@/features/auth';
@@ -10,6 +9,7 @@ import { useGetProfileConfig } from '@/features/profile-config';
 import { useCurrentUser } from '@/hooks/use-current-user';
 
 import { ActiveLink } from '../active-link';
+import { Anchor } from '../anchor';
 import { LogoIcon } from '../icons/logo-icon';
 import { AsyncWrapper } from '../ui/async-wrapper';
 import { Button } from '../ui/button';
@@ -105,24 +105,26 @@ const MobileNavbar: FC<MobileNavbarProps> = ({ navigations }) => {
                           activeClassName="bg-zinc-100 text-primary"
                           className="-mx-3 flex items-center px-3 py-2"
                         >
-                          <Image
-                            src={link.iconUrl}
-                            alt={link.title}
-                            width={20}
-                            height={20}
-                            className="mr-2 flex-shrink-0"
-                          />
-                          <div className="flex w-full flex-col items-start justify-start text-left">
-                            <Typography as="h3" variant="paragraph">
-                              {link.title}
-                            </Typography>
-                            <Typography
-                              variant="small"
-                              className="text-muted-foreground"
-                            >
-                              {link.description}
-                            </Typography>
-                          </div>
+                          <>
+                            <Image
+                              src={link.iconUrl}
+                              alt={link.title}
+                              width={20}
+                              height={20}
+                              className="mr-2 flex-shrink-0"
+                            />
+                            <div className="flex w-full flex-col items-start justify-start text-left">
+                              <Typography as="h3" variant="paragraph">
+                                {link.title}
+                              </Typography>
+                              <Typography
+                                variant="small"
+                                className="text-muted-foreground"
+                              >
+                                {link.description}
+                              </Typography>
+                            </div>
+                          </>
                         </ActiveLink>
                       );
                     })}
@@ -176,9 +178,9 @@ const MobileNavbar: FC<MobileNavbarProps> = ({ navigations }) => {
                   ))}
                 </section>
                 <Separator />
-                <Link href="/auth/login" className="mt-6 inline-block px-6">
+                <Anchor href="/auth/login" className="mt-6 inline-block px-6">
                   <Button>Se connecter</Button>
-                </Link>
+                </Anchor>
               </>
             )}
           </div>

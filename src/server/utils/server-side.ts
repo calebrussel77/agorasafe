@@ -14,75 +14,81 @@ import { appRouter } from '../api/root';
 import { createInnerTRPCContext } from '../api/trpc';
 import { getServerAuthSession } from '../auth';
 
-export const getServerProxySSGHelpers = async (
+export const getServerProxySSGHelpers = (
   ctx: GetServerSidePropsContext,
   session: Session | null,
   profile: SimpleProfile | null
-  // eslint-disable-next-line @typescript-eslint/require-await
 ) => {
+  const router = appRouter;
+  const innerTRPCContext = createInnerTRPCContext({ session, profile });
+  const transformer = superjson;
+
   const ssg = createServerSideHelpers({
-    router: appRouter,
-    ctx: createInnerTRPCContext({ session, profile }),
-    transformer: superjson,
+    router,
+    ctx: innerTRPCContext,
+    transformer,
   });
+
   return ssg;
 };
 
-export function createServerSideProps<P>({
+export const createServerSideProps = <P>({
   resolver,
   shouldUseSSG,
   shouldUseSession = false,
   prefetch = 'once',
-}: CreateServerSidePropsProps<P>) {
+}: CreateServerSidePropsProps<P>) => {
   return async (context: GetServerSidePropsContext) => {
-    const isClient = context.req.url?.startsWith('/_next/data') ?? false;
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const session: Session | null =
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      (context.req as any)['session'] ??
-      (shouldUseSession ? await getServerAuthSession(context) : null);
+    try {
+      const isClient = context.req.url?.startsWith('/_next/data') ?? false;
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      const session: Session | null =
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        (context.req as any)['session'] ??
+        (shouldUseSession ? await getServerAuthSession(context) : null);
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const initialState: ProfileStore =
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      (context.req as any)['initialState'] ??
-      getInitialState(context.req.headers);
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      const initialState: ProfileStore =
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        (context.req as any)['initialState'] ??
+        getInitialState(context.req.headers);
 
-    const ssg =
-      shouldUseSSG && (prefetch === 'always' || !isClient)
-        ? await getServerProxySSGHelpers(
-            context,
-            session,
-            initialState?.profile
-          )
-        : undefined;
+      const ssg =
+        shouldUseSSG && (prefetch === 'always' || !isClient)
+          ? getServerProxySSGHelpers(context, session, initialState?.profile)
+          : undefined;
 
-    const result = (await resolver({
-      ctx: context,
-      isClient,
-      ssg,
-      session,
-      profile: initialState?.profile,
-    })) as GetPropsFnResult<P> | undefined;
-
-    const returnedProps = result?.props as GetPropsFnResult<P>['props'];
-
-    if (result) {
-      if (result.redirect) return { redirect: result.redirect };
-      if (result.notFound) return { notFound: result.notFound };
-    }
-
-    return {
-      props: {
+      const result = (await resolver({
+        ctx: context,
+        isClient,
+        ssg,
         session,
         profile: initialState?.profile,
-        ...returnedProps,
-        ...(ssg ? { trpcState: ssg.dehydrate() } : {}),
-      },
-    };
-  };
-}
+      })) as GetPropsFnResult<P> | undefined;
 
+      let props: GetPropsFnResult<P>['props'] | undefined;
+
+      if (result) {
+        if (result.redirect) return { redirect: result.redirect };
+        if (result.notFound) return { notFound: result.notFound };
+
+        props = result.props;
+      }
+
+      return {
+        props: {
+          session,
+          profile: initialState?.profile,
+          ...(props as unknown as P),
+          ...(ssg ? { trpcState: ssg.dehydrate() } : {}),
+        },
+      };
+    } catch (ex) {
+      // good place to handle global errors
+      console.error(`[GETSERVERSIDE-ERROR] :`, ex);
+    }
+  };
+};
 type GetPropsFnResult<P> = {
   props: P;
   redirect: Redirect;
@@ -104,7 +110,7 @@ type CreateServerSidePropsProps<P> = {
 type CustomGetServerSidePropsContext = {
   ctx: GetServerSidePropsContext;
   isClient: boolean;
-  ssg?: AsyncReturnType<typeof getServerProxySSGHelpers>;
+  ssg?: ReturnType<typeof getServerProxySSGHelpers>;
   session?: Session | null;
   profile?: SimpleProfile | null;
 };

@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { File, Plus, SendHorizonal } from 'lucide-react';
-import React, { RefObject } from 'react';
+import React, { type RefObject } from 'react';
 import { Controller } from 'react-hook-form';
 import { z } from 'zod';
 

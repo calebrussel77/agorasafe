@@ -78,7 +78,6 @@ const CreateProfileForm = ({
 
   const { locationSearch, setLocationSearch, data, isFetching } =
     useLocationSearch();
-  const [isPending, startTransition] = useTransition();
 
   const watchLocation = watch('location');
   const watchPhone = watch('phone');
@@ -92,20 +91,17 @@ const CreateProfileForm = ({
     !watchPhone ||
     watchPhone.length <= 3;
 
-  const onHandleSubmit = (formData: CreateNewProfileInput) => {
-    startTransition(async () => {
-      const files = formData?.avatar
-        ? await startUpload([formData?.avatar as File])
-        : undefined;
+  const onHandleSubmit = async (formData: CreateNewProfileInput) => {
+    const files = formData?.avatar
+      ? await startUpload([formData?.avatar as File])
+      : undefined;
 
-      const formattedAvatar =
-        isArray(files) && files ? files[0]?.url : undefined;
+    const formattedAvatar = isArray(files) && files ? files[0]?.url : undefined;
 
-      onSubmit({
-        ...formData,
-        phone: `+${formData.phone}`,
-        avatar: formattedAvatar,
-      });
+    onSubmit({
+      ...formData,
+      phone: `+${formData.phone}`,
+      avatar: formattedAvatar,
     });
   };
 
@@ -267,7 +263,7 @@ const CreateProfileForm = ({
         <Button
           aria-label="Créer un nouveau profil"
           disabled={isDisabled}
-          isLoading={isLoading || isPending || isUploading}
+          isLoading={isLoading || isUploading}
           className="mt-6 flex w-full items-center justify-center font-semibold"
         >
           Créer le profil

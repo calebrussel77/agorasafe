@@ -1,5 +1,6 @@
-import Link from 'next/link';
 import React, { type FC, type MouseEventHandler } from 'react';
+
+import { Anchor } from '@/components/anchor';
 
 import { Avatar, type AvatarProps } from './avatar';
 
@@ -23,16 +24,17 @@ const AvatarGroupItem: FC<AvatarGroupItemProps> = ({
 
   if (href) {
     return (
-      <Link
+      <Anchor
         href={href}
         onClick={callback as MouseEventHandler<HTMLAnchorElement> | undefined}
-        passHref
         className="flex items-center gap-3 rounded-md px-2 py-1.5 text-sm font-medium hover:bg-gray-100"
         {...props}
       >
-        {AvatarIcon}
-        <span>{avatar.name}</span>
-      </Link>
+        <>
+          {AvatarIcon}
+          <span>{avatar.name}</span>
+        </>
+      </Anchor>
     );
   }
 

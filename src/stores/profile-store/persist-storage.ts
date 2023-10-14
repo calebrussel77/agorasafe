@@ -12,7 +12,7 @@ export const createPersistStorage = (getStorage: () => StateStorage) => {
 
   const persistStorage: PersistStorage<PersistedState> = {
     getItem: name => {
-      const value: string = storage.getItem(name) ?? initialStateJSON;
+      const value = (storage.getItem(name) as string) ?? initialStateJSON;
 
       return deSerialize<StorageValue<PersistedState>>(
         value ?? initialStateJSON
