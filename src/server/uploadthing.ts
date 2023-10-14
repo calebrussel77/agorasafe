@@ -62,6 +62,8 @@ export const ourFileRouter = {
       console.log('Upload complete for userId:', metadata.userId);
       console.log('file', file);
     }),
-} satisfies FileRouter;
+} as FileRouter;
+
+// satisfies FileRouter;
 
 export type OurFileRouter = typeof ourFileRouter;
