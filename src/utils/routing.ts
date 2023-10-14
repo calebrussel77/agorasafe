@@ -1,5 +1,5 @@
 import { WEBSITE_URL } from '@/constants';
-import type { useRouter } from 'next/navigation';
+import type { useRouter } from 'next/router';
 
 const replaceStrategies = ['push', 'replace'] as const;
 type ReplaceStrategy = (typeof replaceStrategies)[number];

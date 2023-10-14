@@ -5,10 +5,9 @@
   "private": true,
   "scripts": {
     "build": "next build",
-    "start": "next start --port ${PORT-3000}",
+    "start": "next start",
     "dev": "next dev",
     "studio": "npx prisma studio",
-    "migrate:status": "npx prisma migrate status",
     "seed:import": "ts-node prisma/seed.ts",
     "seed:destroy": "ts-node prisma/seed.ts -d",
     "postinstall": "prisma generate",
@@ -70,7 +69,7 @@
     "keen-slider": "^6.8.5",
     "lucide-react": "^0.263.1",
     "msw": "^1.2.2",
-    "next": "^13.4.12",
+    "next": "^12.3.4",
     "next-auth": "^4.22.1",
     "next-deploy-notifications": "^0.1.6",
     "next-seo": "^6.0.0",
@@ -126,7 +125,7 @@
     "@typescript-eslint/parser": "^5.59.11",
     "autoprefixer": "^10.4.14",
     "eslint": "^8.40.0",
-    "eslint-config-next": "^13.4.12",
+    "eslint-config-next": "^12.3.4",
     "eslint-plugin-jest": "^27.2.1",
     "eslint-plugin-jest-dom": "^5.0.1",
     "eslint-plugin-react": "^7.32.2",
@@ -143,7 +142,7 @@
     "tailwindcss": "^3.3.3",
     "ts-jest": "^29.1.0",
     "ts-node": "^10.9.1",
-    "typescript": "5.0"
+    "typescript": "^5.0"
   },
   "lint-staged": {
     "*.{ts|tsx}": [

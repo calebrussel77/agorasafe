@@ -7,7 +7,7 @@ import {
   Trash,
 } from 'lucide-react';
 import { type Session } from 'next-auth';
-import { useRouter } from 'next/navigation';
+import { useRouter } from 'next/router';
 import qs from 'query-string';
 import { useEffect, useState } from 'react';
 import { useKeyPressEvent } from 'react-use';

@@ -1,5 +1,5 @@
 import { initializeProfileStore } from '@/stores/profile-store';
-import { usePathname } from 'next/navigation';
+import { useRouter } from 'next/router';
 import React, { useState } from 'react';
 
 import { ChooseProfileModale } from '@/features/profiles';
@@ -20,7 +20,7 @@ const ProfileSession = () => {
     resetProfile,
     profile,
   } = useCurrentUser();
-  const pathname = usePathname();
+  const { pathname } = useRouter();
   const isOnboardingPages = pathname.startsWith('/onboarding');
   const [shouldDisplayModal, setShouldDisplayModal] = useState(false);
 

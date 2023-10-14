@@ -1,6 +1,5 @@
 import { Camera } from 'lucide-react';
-import { useSearchParams } from 'next/navigation';
-import { useTransition } from 'react';
+import { useRouter } from 'next/router';
 import { Controller, useFieldArray } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -30,10 +29,8 @@ type PhotosFormProps = {
 };
 
 const PhotosForm = ({ prevStep, onSubmit, isLoading }: PhotosFormProps) => {
-  const searchParams = useSearchParams();
-  const categorySlugQuery = searchParams.get('category') || '';
-
-  const [isPending, startTransition] = useTransition();
+  const { query } = useRouter();
+  const categorySlugQuery = query.category as string;
 
   const { serviceRequest: _serviceRequest } = usePublishServiceRequest();
 
@@ -60,33 +57,31 @@ const PhotosForm = ({ prevStep, onSubmit, isLoading }: PhotosFormProps) => {
     },
   });
 
-  const onHandleSubmit = (formData: PhotosFormData) => {
+  const onHandleSubmit = async (formData: PhotosFormData) => {
     if (!serviceRequest) return;
 
     const photos = formData.photos
       ?.filter(file => isArrayOfFile(file))
       .flatMap(el => el) as File[]; //Get array of file required to uploadThing
 
-    startTransition(async () => {
-      const files = !isEmptyArray(photos) ? await startUpload(photos) : [];
-      const formattedPhotos =
-        files?.map(file => ({
-          key: file?.key,
-          name: file.name,
-          url: file.url,
-        })) ?? [];
+    const files = !isEmptyArray(photos) ? await startUpload(photos) : [];
+    const formattedPhotos =
+      files?.map(file => ({
+        key: file?.key,
+        name: file.name,
+        url: file.url,
+      })) ?? [];
 
-      onSubmit({
-        ...serviceRequest,
-        location: serviceRequest?.location ?? undefined,
-        photos: formattedPhotos,
-      });
+    onSubmit({
+      ...serviceRequest,
+      location: serviceRequest?.location ?? undefined,
+      photos: formattedPhotos,
     });
   };
 
   return (
     <>
-      {(isPending || isLoading || isUploading) && (
+      {(isLoading || isUploading) && (
         <FullSpinner loadingText="Publication de votre demande..." />
       )}
       <Form form={form} onSubmit={onHandleSubmit}>
@@ -118,16 +113,10 @@ const PhotosForm = ({ prevStep, onSubmit, isLoading }: PhotosFormProps) => {
           </HelperMessage>
         </div>
         <FixedFooterForm>
-          <Button
-            type="button"
-            disabled={isPending}
-            onClick={prevStep}
-            variant="ghost"
-            size="lg"
-          >
+          <Button type="button" onClick={prevStep} variant="ghost" size="lg">
             Retour
           </Button>
-          <Button size="lg" isLoading={isPending}>
+          <Button size="lg" disabled={isLoading || isUploading}>
             Publier ma demande
           </Button>
         </FixedFooterForm>

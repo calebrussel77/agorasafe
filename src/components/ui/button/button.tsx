@@ -3,6 +3,8 @@ import { type VariantProps, cva } from 'class-variance-authority';
 import Link, { type LinkProps } from 'next/link';
 import * as React from 'react';
 
+import { Anchor } from '@/components/anchor';
+
 import { cn } from '@/lib/utils';
 
 import { Spinner } from '../spinner';
@@ -74,9 +76,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         <React.Fragment>
           {isLoading && (
             <Spinner
-              className={cn(
-                size === 'lg' ? 'h-7 w-7' : 'h-6 w-6'
-              )}
+              className={cn(size === 'lg' ? 'h-7 w-7' : 'h-6 w-6')}
               variant={isGhostOrOutlineVariant ? 'ghost' : 'default'}
             />
           )}
@@ -87,9 +87,9 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 
     if (href) {
       return (
-        <Link href={href} as={asLink}>
+        <Anchor href={href} as={asLink}>
           {btn}
-        </Link>
+        </Anchor>
       );
     }
 

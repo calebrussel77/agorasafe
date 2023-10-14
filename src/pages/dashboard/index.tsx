@@ -1,16 +1,13 @@
 import { MainLayout } from '@/layouts';
-import { type InferGetServerSidePropsType } from 'next';
 import { type ReactElement } from 'react';
 
 import { ContentTitle, MainContent, Sidebar } from '@/features/user-dashboard';
 
 import { createServerSideProps } from '@/server/utils/server-side';
 
-type DashboardPageProps = InferGetServerSidePropsType<
-  typeof getServerSideProps
->;
+type PageProps = Prettify<InferNextProps<typeof getServerSideProps>>;
 
-const DashboardPage = ({ profile, session }: DashboardPageProps) => {
+const DashboardPage = ({ profile, session }: PageProps) => {
   return (
     <>
       <MainContent>
@@ -26,9 +23,7 @@ const DashboardPage = ({ profile, session }: DashboardPageProps) => {
   );
 };
 
-DashboardPage.getLayout = function getLayout(
-  page: ReactElement<DashboardPageProps>
-) {
+DashboardPage.getLayout = function getLayout(page: ReactElement<PageProps>) {
   const profile = page?.props?.profile;
   const pageTitle = `Tableau de bord - ${profile?.name}`;
   return (

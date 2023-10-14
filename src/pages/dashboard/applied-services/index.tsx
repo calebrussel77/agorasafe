@@ -1,19 +1,13 @@
 import { MainLayout } from '@/layouts';
-import { type InferGetServerSidePropsType } from 'next';
 import { type ReactElement } from 'react';
 
 import { ContentTitle, MainContent, Sidebar } from '@/features/user-dashboard';
 
 import { createServerSideProps } from '@/server/utils/server-side';
 
-type AppliedServicesPageProps = InferGetServerSidePropsType<
-  typeof getServerSideProps
->;
+type PageProps = Prettify<InferNextProps<typeof getServerSideProps>>;
 
-const AppliedServicesPage = ({
-  profile,
-  session,
-}: AppliedServicesPageProps) => {
+const AppliedServicesPage = ({ profile, session }: PageProps) => {
   return (
     <>
       <MainContent>
@@ -30,7 +24,7 @@ const AppliedServicesPage = ({
 };
 
 AppliedServicesPage.getLayout = function getLayout(
-  page: ReactElement<AppliedServicesPageProps>
+  page: ReactElement<PageProps>
 ) {
   const profile = page?.props?.profile;
   const pageTitle = `Services postulés - ${profile?.name}`;

@@ -10,7 +10,7 @@ import {
   throwBadRequestError,
   throwNotFoundError,
 } from '../../../utils/error-handling';
-import { GetByIdOrSlugQueryInput } from '../../validations/base.validations';
+import { type GetByIdOrSlugQueryInput } from '../../validations/base.validations';
 import { getUserById, updateUserById } from '../users';
 import {
   createProfileByUserId,

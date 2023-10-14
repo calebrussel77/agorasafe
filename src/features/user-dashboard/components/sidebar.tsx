@@ -3,6 +3,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useRef } from 'react';
 
+import { Anchor } from '@/components/anchor';
 import { AutoAnimate } from '@/components/ui/auto-animate';
 import { buttonVariants } from '@/components/ui/button';
 import { ErrorWrapper, SectionError } from '@/components/ui/error';
@@ -71,7 +72,7 @@ const Sidebar = () => {
                     const isMatch = isPathMatchRoute(url);
 
                     return (
-                      <Link href={url} key={link.id} className="w-full">
+                      <Anchor href={url} key={link.id} className="w-full">
                         <GroupItem
                           iconBefore={
                             <Image
@@ -97,7 +98,7 @@ const Sidebar = () => {
                           }
                           className={isMatch ? 'bg-zinc-100 text-primary' : ''}
                         />
-                      </Link>
+                      </Anchor>
                     );
                   })}
                 </div>

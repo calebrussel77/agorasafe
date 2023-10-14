@@ -1,5 +1,5 @@
 import { TRPCError } from '@trpc/server';
-import { usePathname, useRouter } from 'next/navigation';
+import { useRouter } from 'next/router';
 
 import { cn } from '@/lib/utils';
 
@@ -27,7 +27,7 @@ export function SectionError({
   classNames,
   hasActions = true,
 }: TFullPageError) {
-  const pathname = usePathname();
+  const { pathname } = useRouter().query;
   const shouldRetry = !!onRetry;
   const errorMessage = `${error ? error.message : ''}`;
   const errorCode = error && error instanceof TRPCError ? error['code'] : null;

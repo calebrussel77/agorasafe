@@ -11,8 +11,7 @@ import { Calendar } from 'lucide-react';
 import { EyeOffIcon } from 'lucide-react';
 import { MoveLeft } from 'lucide-react';
 import { Trash2Icon } from 'lucide-react';
-import { type InferGetServerSidePropsType } from 'next';
-import { useRouter } from 'next/navigation';
+import { useRouter } from 'next/router';
 import { z } from 'zod';
 
 import { CanView } from '@/components/can-view';
@@ -55,7 +54,6 @@ import { isEmptyArray } from '@/utils/type-guards';
 import { dateToReadableString, formatDateRelative } from '@/lib/date-fns';
 import { htmlParse } from '@/lib/html-react-parser';
 
-import { type SimpleProfile } from '@/server/api/modules/profiles';
 import { createServerSideProps } from '@/server/utils/server-side';
 
 const meta = {
@@ -64,10 +62,12 @@ const meta = {
     `${serviceRequestDeescription}`,
 };
 
+type PageProps = Prettify<InferNextProps<typeof getServerSideProps>>;
+
 const ServiceRequestPublicationPage = ({
   profile,
   serviceRequestSlugQuery,
-}: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+}: PageProps) => {
   const router = useRouter();
   const queryUtils = api.useContext();
 
@@ -347,8 +347,8 @@ const ServiceRequestPublicationPage = ({
               <Separator className="my-4 w-full " />
               <div className="mt-6 flex flex-wrap items-center gap-3">
                 {providersReserved.map(element => {
-                  const profile = element?.provider?.profile               
-                  if(!profile) return null;
+                  const profile = element?.provider?.profile;
+                  if (!profile) return null;
 
                   return (
                     <div
@@ -507,13 +507,15 @@ export const getServerSideProps = createServerSideProps({
     const { serviceRequestSlug: serviceRequestSlugQuery } = result.data;
 
     //Prefetch queries so it is already on the client side cache
-    await ssg?.services.getServiceRequest.prefetch({
-      slug: serviceRequestSlugQuery,
-      providersReserved: 'Active',
-    });
-    await ssg?.services.getServiceRequestComments.prefetch({
-      serviceRequestSlug: serviceRequestSlugQuery,
-    });
+    if (ssg) {
+      await ssg?.services.getServiceRequest.prefetch({
+        slug: serviceRequestSlugQuery,
+        providersReserved: 'Active',
+      });
+      await ssg?.services.getServiceRequestComments.prefetch({
+        serviceRequestSlug: serviceRequestSlugQuery,
+      });
+    }
 
     return { props: { serviceRequestSlugQuery, profile } };
   },

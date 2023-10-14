@@ -1,5 +1,5 @@
 import { Camera, X } from 'lucide-react';
-import NextImage from 'next/image';
+import NextImage from 'next/future/image';
 import React, { type ComponentProps, forwardRef } from 'react';
 
 import { blurDataURL } from '@/utils/image';
@@ -40,7 +40,7 @@ const Image = forwardRef<
 
     return (
       <>
-        <div className={cn('relative overflow-hidden', className)}>
+        <div ref={ref} className={cn('relative overflow-hidden', className)}>
           {isHoverable && (
             <div
               onClick={onClick}
@@ -62,7 +62,6 @@ const Image = forwardRef<
             </div>
           )}
           <NextImage
-            ref={ref}
             blurDataURL={blurDataURL()}
             fill={fill}
             onClick={onClick}

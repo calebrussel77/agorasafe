@@ -1,4 +1,4 @@
-import { useRouter } from 'next/navigation';
+import { useRouter } from 'next/router';
 import { startTransition, useEffect } from 'react';
 
 const showToastStrorageKey = 'showToastOnRefresh';
@@ -27,7 +27,7 @@ const useToastOnPageReload = (toastFn: () => void) => {
 
     // Refresh the page
     startTransition(() => {
-      router.refresh();
+      router.reload();
     });
   };
 

@@ -1,8 +1,9 @@
 import { MoveLeft } from 'lucide-react';
 import Link from 'next/link';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/router';
 import React, { useState } from 'react';
 
+import { Anchor } from '@/components/anchor';
 import { GoogleSolidIcon } from '@/components/icons/google-solid-icon';
 import { LogoSymbolIcon } from '@/components/icons/logo-icon';
 import { Button, buttonVariants } from '@/components/ui/button';
@@ -23,8 +24,7 @@ import { useRedirectUrl } from '@/hooks/use-redirect-url';
 const LoginPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const error = searchParams.get('error');
+  const error = router.query?.error as string | undefined;
 
   const { redirectUrl, redirectReason } = useRedirectUrl();
   const { onGooleSignIn } = useAuth();
@@ -103,19 +103,19 @@ const LoginPage = () => {
             </Button>
             <p className="px-8 text-center text-sm text-muted-foreground">
               En continuant, vous acceptez nos{' '}
-              <Link
+              <Anchor
                 href="/terms"
                 className="underline underline-offset-4 hover:text-primary"
               >
                 conditions générales d’utilisation
-              </Link>{' '}
+              </Anchor>{' '}
               et{' '}
-              <Link
+              <Anchor
                 href="/privacy"
                 className="underline underline-offset-4 hover:text-primary"
               >
                 politique de confidentialité
-              </Link>
+              </Anchor>
               .
             </p>
           </div>

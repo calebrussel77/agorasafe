@@ -1,5 +1,4 @@
-import { type InferGetServerSidePropsType } from 'next';
-import { useRouter } from 'next/navigation';
+import { useRouter } from 'next/router';
 import { z } from 'zod';
 
 import { Header } from '@/components/header';
@@ -40,9 +39,9 @@ const meta = {
     ou des demandes de service, etc.`,
 };
 
-const PublishPage = ({
-  modeQuery,
-}: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+type PageProps = Prettify<InferNextProps<typeof getServerSideProps>>;
+
+const PublishPage = ({ modeQuery }: PageProps) => {
   const { step: currentStep, nextStep, prevStep } = useStepper();
   const router = useRouter();
   const { toast } = useToast();

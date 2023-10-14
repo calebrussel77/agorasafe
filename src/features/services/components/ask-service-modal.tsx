@@ -1,7 +1,7 @@
 import { ArrowLeft, ChevronRight, PencilIcon } from 'lucide-react';
 import { Search } from 'lucide-react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter } from 'next/router';
 import React, {
   type FC,
   type ReactElement,
@@ -28,6 +28,7 @@ import {
   type ServiceCategoryItem,
 } from '../types';
 import { AskServiceItem } from './ask-service-item';
+import { Anchor } from '@/components/anchor';
 
 interface AskServiceModalProps {
   className?: string;
@@ -167,7 +168,7 @@ const AskServiceModal: FC<AskServiceModalProps> = ({ children }) => {
             {dataServices?.services && dataServices?.services?.length > 0 && (
               <>
                 {dataServices?.services?.map(service => (
-                  <Link
+                  <Anchor
                     key={service?.id}
                     onClick={() =>
                       void onSelectService({
@@ -184,7 +185,7 @@ const AskServiceModal: FC<AskServiceModalProps> = ({ children }) => {
                     className="block w-full"
                   >
                     <AskServiceItem name={service?.name} />
-                  </Link>
+                  </Anchor>
                 ))}
                 <CustomServiceRequestCategoriesModal
                   query={query}

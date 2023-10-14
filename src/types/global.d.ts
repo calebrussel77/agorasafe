@@ -13,3 +13,11 @@ type DeepPartial<T> = T extends object
 type DeepNonNullable<T> = {
   [P in keyof T]-?: NonNullable<T[P]>;
 } & NonNullable<T>;
+
+type Prettify<T> = {
+  [K in keyof T]: T[K];
+} & unknown;
+
+type InferNextProps<T extends (args: any) => any> = Awaited<
+  Extract<Awaited<ReturnType<T>>, { props: any }>['props']
+>;

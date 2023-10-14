@@ -3,6 +3,7 @@ import { User2Icon } from 'lucide-react';
 import Link from 'next/link';
 import React, { type FC } from 'react';
 
+import { Anchor } from '@/components/anchor';
 import { NavigationDot } from '@/components/slide';
 import { AvatarGroup } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
@@ -108,11 +109,11 @@ const ServiceRequestCard: FC<ServiceRequestCardProps> = ({
           >
             Publiée {dateToReadableString(serviceRequest?.createdAt)}
           </time>
-          <Link
+          <Anchor
             href={`/service-requests?category=${serviceRequest?.service?.categoryService?.slug}`}
           >
             <Badge content={serviceRequest?.service?.categoryService?.name} />
-          </Link>
+          </Anchor>
           <div
             aria-label="Prix estimé de la prestation"
             title="Prix estimé de la prestation"
@@ -122,7 +123,7 @@ const ServiceRequestCard: FC<ServiceRequestCardProps> = ({
           </div>
         </div>
         <div className="group relative">
-          <Link href={`/service-requests/${serviceRequest?.slug}`}>
+          <Anchor href={`/service-requests/${serviceRequest?.slug}`}>
             <Typography
               as="h3"
               truncate
@@ -132,7 +133,7 @@ const ServiceRequestCard: FC<ServiceRequestCardProps> = ({
               <span className="absolute inset-0" />
               {serviceRequest?.title}
             </Typography>
-          </Link>
+          </Anchor>
           <Inline>
             <GroupItem
               isHoverDisabled

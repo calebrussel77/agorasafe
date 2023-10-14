@@ -1,5 +1,5 @@
 import { useHasNewDeploy } from 'next-deploy-notifications';
-import { useRouter } from 'next/navigation';
+import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 
 import { Button } from '@/components/ui/button';
@@ -21,8 +21,7 @@ const useNewDeploy = () => {
         actions: (
           <Button
             size="sm"
-            // eslint-disable-next-line @typescript-eslint/unbound-method
-            onClick={router.refresh}
+            onClick={router.reload}
             className="whitespace-nowrap"
           >
             Recharger votre page
