@@ -179,8 +179,8 @@ const createUserWithAdminRoleAndProfiles = async () => {
   console.log('🧹👮 Creation of the user with profiles...');
   const { profiles } = await prisma.user.create({
     data: {
-      // email: 'calebrussel77@gmail.com',
-      email: 'fake.email@gmail.fr',
+      email: 'calebrussel77@gmail.com',
+      // email: 'fake.email@gmail.fr',
       firstName: faker.person.firstName(),
       fullName: faker.person.fullName(),
       lastName: faker.person.lastName(),
@@ -370,9 +370,6 @@ const destroyData = async () => {
   try {
     console.log('🌱 Cleaned up the database...');
 
-    console.log('🧹 Deleting profiles...');
-    await prisma.profile.deleteMany();
-
     console.log('🧹 Deleting service request reservations...');
     await prisma.serviceRequestReservation.deleteMany();
 
@@ -400,6 +397,9 @@ const destroyData = async () => {
     console.log('🧹 Deleting service requests...');
     await prisma.serviceRequest.deleteMany();
 
+    console.log('🧹 Deleting profiles...');
+    await prisma.profile.deleteMany();
+
     console.log(`🌱 Database has been cleaned up`);
 
     process.exit();
@@ -419,10 +419,10 @@ const importData = async () => {
     console.log(`🧹 Creating engagement skills...`);
     await createEngamentSkills();
 
-    console.log(
-      `🧹 Creating 01 user with 02 complete profiles with details...`
-    );
-    await createUserWithAdminRoleAndProfiles();
+    // console.log(
+    //   `🧹 Creating 01 user with 02 complete profiles with details...`
+    // );
+    // await createUserWithAdminRoleAndProfiles();
 
     console.log(`🌱 Database has been seeded`);
     process.exit();

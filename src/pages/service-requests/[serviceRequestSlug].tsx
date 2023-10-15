@@ -1,11 +1,16 @@
+import { NotFound } from '@/layouts/not-found';
 import {
   Banknote,
   FolderClock,
   MapPin,
   PhoneCall,
+  PlusIcon,
   Share2Icon,
   TimerIcon,
+  TrashIcon,
   User2Icon,
+  UserMinus,
+  UserPlus,
 } from 'lucide-react';
 import { Calendar } from 'lucide-react';
 import { EyeOffIcon } from 'lucide-react';
@@ -14,6 +19,7 @@ import { Trash2Icon } from 'lucide-react';
 import { useRouter } from 'next/router';
 import { z } from 'zod';
 
+import { ActionTooltip } from '@/components/action-tooltip';
 import { CanView } from '@/components/can-view';
 import { ShareButton } from '@/components/share-button/share-button';
 import { AsyncWrapper } from '@/components/ui/async-wrapper';
@@ -28,6 +34,7 @@ import { CenterContent } from '@/components/ui/layout';
 import { SectionMessage } from '@/components/ui/section-message';
 import { Seo } from '@/components/ui/seo';
 import { Separator } from '@/components/ui/separator';
+import { FullSpinner } from '@/components/ui/spinner';
 import { toast } from '@/components/ui/toast';
 import { Truncate } from '@/components/ui/truncate';
 import { Typography } from '@/components/ui/typography';
@@ -55,6 +62,8 @@ import { dateToReadableString, formatDateRelative } from '@/lib/date-fns';
 import { htmlParse } from '@/lib/html-react-parser';
 
 import { createServerSideProps } from '@/server/utils/server-side';
+
+import { useCurrentUser } from '@/hooks/use-current-user';
 
 type PageProps = Prettify<InferNextProps<typeof getServerSideProps>>;
 
@@ -143,6 +152,10 @@ const ServiceRequestPublicationPage = ({
     />
   );
 
+  if (isInitialLoading || isInitialLoadingComments) return <FullSpinner />;
+
+  if (!data?.serviceRequest) return <NotFound />;
+
   return (
     <>
       {meta}
@@ -163,13 +176,13 @@ const ServiceRequestPublicationPage = ({
               className="h-64 w-full bg-gray-100 md:h-80"
               images={
                 isEmptyArray(images)
-                  ? images
-                  : [
+                  ? [
                       {
                         name: 'Image artistique de fond',
                         url: DEFAULT_SERVICE_REQUEST_COVER_IMAGE,
                       },
                     ]
+                  : (images as never)
               }
             />
 
@@ -212,7 +225,7 @@ const ServiceRequestPublicationPage = ({
                   <GroupItem
                     isHoverDisabled
                     classNames={{
-                      name: 'text-sm text-muted-foreground font-normal',
+                      name: 'text-sm text-muted-foreground font-normal whitespace-nowrap truncate',
                     }}
                     iconBefore={<MapPin className="h-5 w-5" />}
                     name={data?.serviceRequest?.location?.name}
@@ -220,7 +233,7 @@ const ServiceRequestPublicationPage = ({
                   <GroupItem
                     isHoverDisabled
                     classNames={{
-                      name: 'text-sm text-muted-foreground font-normal',
+                      name: 'text-sm text-muted-foreground font-normal whitespace-nowrap truncate',
                     }}
                     iconBefore={<User2Icon className="h-5 w-5" />}
                     name={data?.serviceRequest?.nbProviderNeededFormattedText}
@@ -300,7 +313,7 @@ const ServiceRequestPublicationPage = ({
                   </IconContainer>
                 }
                 name={
-                  <Typography className="font-semibold">
+                  <Typography className="whitespace-nowrap font-semibold">
                     {data?.serviceRequest?.nbHoursFomattedText}
                   </Typography>
                 }
@@ -356,22 +369,22 @@ const ServiceRequestPublicationPage = ({
                       className="group relative flex w-full max-w-[250px] flex-col items-center justify-center rounded-md bg-gray-100 p-3"
                     >
                       {isStatusOpen && isAuthorMine && (
-                        <button
-                          disabled={isLoadingToggleReservation}
-                          onClick={() =>
-                            mutateToggleReservation({
-                              customerProfileId:
-                                serviceRequestAuthorId as string,
-                              serviceRequestId: data?.serviceRequest
-                                ?.id as string,
-                              providerProfileId: profile?.id,
-                            })
-                          }
-                          title="Annuler la réservation"
-                          className="absolute right-2 top-2 rounded-full p-1 text-gray-600 hover:bg-gray-200"
-                        >
-                          <Trash2Icon className="h-5 w-5" />
-                        </button>
+                        <ActionTooltip label="Annuler la réservation">
+                          <button
+                            disabled={isLoadingToggleReservation}
+                            onClick={() =>
+                              mutateToggleReservation({
+                                customerProfileId:
+                                  serviceRequestAuthorId as string,
+                                serviceRequestId: data?.serviceRequest?.id,
+                                providerProfileId: profile?.id,
+                              })
+                            }
+                            className="absolute right-2 top-2 rounded-full p-1 text-gray-600 hover:bg-gray-200"
+                          >
+                            <UserMinus className="h-5 w-5" />
+                          </button>
+                        </ActionTooltip>
                       )}
                       <UserAvatar
                         src={profile?.avatar as string}
@@ -446,26 +459,31 @@ const ServiceRequestPublicationPage = ({
                                 profile={comment?.author}
                               />
                               {canViewReservedBtn && (
-                                <Button
-                                  title={btnMessage}
-                                  variant={isReserved ? 'outline' : 'secondary'}
-                                  disabled={isLoadingToggleReservation}
-                                  onClick={() =>
-                                    mutateToggleReservation({
-                                      customerProfileId:
-                                        serviceRequestAuthorId as string,
-                                      serviceRequestId: data?.serviceRequest
-                                        ?.id as string,
-                                      providerProfileId: comment?.author?.id,
-                                    })
-                                  }
-                                  size="sm"
-                                  className="max-w-[150px] px-2"
-                                >
-                                  <span className="line-clamp-1">
-                                    {btnMessage}
-                                  </span>
-                                </Button>
+                                <ActionTooltip label={btnMessage}>
+                                  <Button
+                                    variant={
+                                      isReserved ? 'outline' : 'secondary'
+                                    }
+                                    disabled={isLoadingToggleReservation}
+                                    onClick={() =>
+                                      mutateToggleReservation({
+                                        customerProfileId:
+                                          serviceRequestAuthorId as string,
+                                        serviceRequestId:
+                                          data?.serviceRequest?.id,
+                                        providerProfileId: comment?.author?.id,
+                                      })
+                                    }
+                                    size="sm"
+                                    className="ml-2 px-1.5"
+                                  >
+                                    {!isReserved ? (
+                                      <UserPlus className="h-4 w-4" />
+                                    ) : (
+                                      <UserMinus className="h-4 w-4" />
+                                    )}
+                                  </Button>
+                                </ActionTooltip>
                               )}
                             </div>
                             <div className="ml-10 mt-1">
@@ -512,6 +530,7 @@ export const getServerSideProps = createServerSideProps({
         slug: serviceRequestSlugQuery,
         providersReserved: 'Active',
       });
+
       await ssg?.services.getServiceRequestComments.prefetch({
         serviceRequestSlug: serviceRequestSlugQuery,
       });

@@ -9,6 +9,8 @@ import {
 import { type Session } from 'next-auth';
 import superjson from 'superjson';
 
+import { sentryCaptureException } from '@/lib/sentry';
+
 import { type SimpleProfile } from '../api/modules/profiles';
 import { appRouter } from '../api/root';
 import { createInnerTRPCContext } from '../api/trpc';
@@ -47,11 +49,7 @@ export const createServerSideProps = <P>({
         (context.req as any)['session'] ??
         (shouldUseSession ? await getServerAuthSession(context) : null);
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      const initialState: ProfileStore =
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-        (context.req as any)['initialState'] ??
-        getInitialState(context.req.headers);
+      const initialState = getInitialState(context.req.headers);
 
       const ssg =
         shouldUseSSG && (prefetch === 'always' || !isClient)
@@ -83,12 +81,14 @@ export const createServerSideProps = <P>({
           ...(ssg ? { trpcState: ssg.dehydrate() } : {}),
         },
       };
-    } catch (ex) {
+    } catch (error) {
       // good place to handle global errors
-      console.error(`[GETSERVERSIDE-ERROR] :`, ex);
+      sentryCaptureException(error);
+      return { notFound: true };
     }
   };
 };
+
 type GetPropsFnResult<P> = {
   props: P;
   redirect: Redirect;

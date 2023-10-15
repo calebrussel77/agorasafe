@@ -17,7 +17,10 @@ import { noop } from '@/utils/misc';
 import { cn } from '@/lib/utils';
 
 const ChooseProfileTypeForm = () => {
-  const form = useZodForm({});
+  const form = useZodForm({
+    defaultValues: { profile_type: ProfileType.PROVIDER },
+  });
+
   const { query } = useRouter();
 
   const {
@@ -26,12 +29,12 @@ const ChooseProfileTypeForm = () => {
     formState: { errors },
   } = form;
 
-  const watchProfileType = watch('profileType') as ProfileType;
+  const watchProfileType = watch('profile_type') as ProfileType;
 
   return (
     <Form onSubmit={noop} form={form}>
       <Controller
-        name="profileType"
+        name="profile_type"
         control={control}
         defaultValue={ProfileType.PROVIDER}
         render={({ field }) => (
@@ -71,19 +74,19 @@ const ChooseProfileTypeForm = () => {
           }
         </VariantMessage>
       )}
-  
-        <Button
-           href={{
-            pathname: `/onboarding/add-new-profile`,
-            query: {
-              ...query,
-              profileType: watchProfileType,
-            },
-          }}
-           className="flex w-full items-center justify-center font-semibold">
-          <span>Continuer</span>
-        </Button>
-  
+
+      <Button
+        href={{
+          pathname: `/onboarding/add-new-profile`,
+          query: {
+            ...query,
+            profile_type: watchProfileType,
+          },
+        }}
+        className="flex w-full items-center justify-center font-semibold"
+      >
+        <span>Continuer</span>
+      </Button>
     </Form>
   );
 };

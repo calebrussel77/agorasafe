@@ -198,6 +198,10 @@ export const getServiceRequestService = async (
     inputs,
   });
 
+  if (!serviceRequestDetails) {
+    throwNotFoundError('Demande de service non trouvée !');
+  }
+
   return {
     serviceRequest: {
       ...serviceRequestDetails,
@@ -230,6 +234,10 @@ export const getServiceRequestCommentsService = async (
   const serviceRequestComments = await getServiceRequestComments({
     inputs,
   });
+
+  if (!serviceRequestComments) {
+    throwNotFoundError('Commentaires de la demande non trouvés !');
+  }
 
   return {
     serviceRequestComments,

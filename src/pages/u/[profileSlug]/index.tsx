@@ -13,6 +13,7 @@ import { Image } from '@/components/ui/image';
 import { Inline } from '@/components/ui/inline';
 import { Seo } from '@/components/ui/seo';
 import { Separator } from '@/components/ui/separator';
+import { FullSpinner } from '@/components/ui/spinner';
 import { Typography } from '@/components/ui/typography';
 import { UserAvatar } from '@/components/user-avatar';
 import { UserBadge } from '@/components/user-badge';
@@ -112,7 +113,9 @@ export default function ProfileDetailsPage({ profileSlugQuery }: PageProps) {
   const isCustomer = data?.profile?.type === 'CUSTOMER';
   const isMyProfile = data?.profile?.id === profile?.id;
 
-  if (isDeleted) return <NotFound />;
+  if (isInitialLoading) return <FullSpinner />;
+
+  if (isDeleted || !data?.profile) return <NotFound />;
 
   return (
     <>
@@ -134,7 +137,7 @@ export default function ProfileDetailsPage({ profileSlugQuery }: PageProps) {
             <div className="-mt-12 sm:-mt-16 sm:flex sm:items-end sm:space-x-5">
               <div className="flex">
                 <UserAvatar
-                  type={data?.profile?.type as ProfileType}
+                  type={data?.profile?.type}
                   className="h-24 w-24 rounded-full bg-gray-200 object-cover !ring-4 ring-card sm:h-32 sm:w-32"
                   src={data?.profile?.avatar as string}
                   alt={profileName}
@@ -155,10 +158,7 @@ export default function ProfileDetailsPage({ profileSlugQuery }: PageProps) {
                     >
                       {profileName}
                     </Typography>
-                    <UserBadge
-                      className="ml-2"
-                      type={data?.profile?.type as ProfileType}
-                    />
+                    <UserBadge className="ml-2" type={data?.profile?.type} />
                     {isAdmin && (
                       <ShieldCheck className="ml-1 h-4 w-4 flex-shrink-0 text-green-500" />
                     )}
