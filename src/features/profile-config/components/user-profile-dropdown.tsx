@@ -171,35 +171,33 @@ const UserProfileDropdown: FC<UserProfileDropdownProps> = ({
                     >
                       <Anchor
                         href={url}
-                        className="mt-1 flex w-full items-center justify-start gap-x-1 text-left"
+                        className="mt-1 flex w-full items-center justify-start gap-x-3 text-left"
                       >
-                        <>
-                          <Image
-                            src={link.iconUrl}
-                            alt={link.title}
-                            width={20}
-                            height={20}
-                            className="mr-2 flex-shrink-0"
-                          />
-                          <div className="flex flex-col items-start justify-start">
-                            <Typography as="h3" variant="paragraph">
-                              {link.title}
-                            </Typography>
-                            <Typography
-                              variant="small"
-                              className="text-muted-foreground"
-                            >
-                              {link.description}
-                            </Typography>
-                          </div>
-                        </>
+                        <Image
+                          src={link.iconUrl}
+                          alt={link.title}
+                          width={20}
+                          height={20}
+                          className="mr-2 flex-shrink-0"
+                        />
+                        <div className="flex flex-col items-start justify-start">
+                          <Typography as="h3" variant="paragraph">
+                            {link.title}
+                          </Typography>
+                          <Typography
+                            variant="small"
+                            className="text-muted-foreground"
+                          >
+                            {link.description}
+                          </Typography>
+                        </div>
                       </Anchor>
                     </DropdownMenu.Item>
                   );
                 })}
                 <DropdownMenu.Separator />
                 <DropdownMenu.Item
-                  onClick={() => void onSignOut()}
+                  onClick={onSignOut}
                   className="flex items-center justify-center text-center"
                 >
                   <LogOut className="mr-2 h-4 w-4" />

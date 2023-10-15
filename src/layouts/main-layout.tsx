@@ -8,7 +8,7 @@ import { cn } from '@/lib/utils';
 
 interface MainProps extends Omit<SeoProps, 'children' | 'description'> {
   className?: string;
-  description?: string;
+  description?: string | null;
   children?: ReactNode;
   header?: ReactNode | JSX.Element;
   footer?: ReactNode | JSX.Element;

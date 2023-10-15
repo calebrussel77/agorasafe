@@ -109,6 +109,10 @@ export const toggleServiceRequestReservationService = async (
     throwNotFoundError('Demande de service non trouvée !');
   }
 
+  if (serviceRequest.status === 'CLOSED') {
+    throwForbiddenError('Cette demande à été clôturée !');
+  }
+
   // const activeReservedProvidersCount = serviceRequest?.providersReserved.filter(
   //   el => el.isActive && el.removedAt === null
   // )?.length;
@@ -120,18 +124,18 @@ export const toggleServiceRequestReservationService = async (
   //   );
   // }
 
-  const isProviderIsInReservations = serviceRequest.providersReserved.some(
+  const isProviderInReservations = serviceRequest.providersReserved.some(
     el => el.providerProfileId === providerProfileId
   );
-  const isProviderIsInReservationsAndIsActive =
-    serviceRequest.providersReserved.some(
-      el =>
-        el.providerProfileId === providerProfileId &&
-        el.isActive &&
-        el.removedAt === null
-    );
 
-  if (!isProviderIsInReservations) {
+  const isProviderReservedAndActive = serviceRequest.providersReserved.some(
+    el =>
+      el.providerProfileId === providerProfileId &&
+      el.isActive &&
+      el.removedAt === null
+  );
+
+  if (!isProviderInReservations) {
     const serviceRequestReservation = await createServiceRequestReservation({
       inputs: {
         customerProfileId,
@@ -147,7 +151,7 @@ export const toggleServiceRequestReservationService = async (
     };
   }
 
-  if (isProviderIsInReservationsAndIsActive) {
+  if (isProviderReservedAndActive) {
     const serviceRequestReservation = await updateServiceRequestReservation({
       inputs: {
         customerProfileId,

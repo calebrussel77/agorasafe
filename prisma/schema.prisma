@@ -242,10 +242,10 @@ model Comment {
 }
 
 model ServiceRequestReservation {
-    provider          Provider? @relation("ServiceRequestReservationRelation", fields: [providerProfileId], references: [profileId], onDelete: Cascade)
+    provider          Provider @relation("ServiceRequestReservationRelation", fields: [providerProfileId], references: [profileId], onDelete: Cascade)
     providerProfileId String
 
-    customer          Customer? @relation("ServiceRequestReservationRelation", fields: [customerProfileId], references: [profileId], onDelete: Cascade)
+    customer          Customer @relation("ServiceRequestReservationRelation", fields: [customerProfileId], references: [profileId], onDelete: Cascade)
     customerProfileId String
 
     serviceRequest   ServiceRequest? @relation("ServiceRequestReservationRelation", fields: [serviceRequestId], references: [id], onDelete: Cascade)

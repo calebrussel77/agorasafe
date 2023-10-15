@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { SOCKET_API_BASE_URL } from '@/constants';
 import { MainLayout } from '@/layouts';
-import { ElementRef, type ReactElement, useRef } from 'react';
+import { type ElementRef, type ReactElement, useRef } from 'react';
 import { z } from 'zod';
 
 import { EmptyState } from '@/components/ui/empty-state';

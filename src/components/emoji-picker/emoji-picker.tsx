@@ -3,6 +3,8 @@ import Picker from '@emoji-mart/react';
 import { Smile } from 'lucide-react';
 import React, { type FC } from 'react';
 
+import { cn } from '@/lib/utils';
+
 import { Popover } from '../ui/popover';
 
 interface EmojiPickerProps {
@@ -18,7 +20,10 @@ const EmojiPicker: FC<EmojiPickerProps> = ({ className, onChange }) => {
       </Popover.Trigger>
       <Popover.Content
         side="top"
-        className="mb-3 bg-transparent p-0 shadow-none drop-shadow-none"
+        className={cn(
+          'mb-3 min-w-[352px] bg-white p-0 shadow-none drop-shadow-none',
+          className
+        )}
       >
         <Picker
           theme="light"

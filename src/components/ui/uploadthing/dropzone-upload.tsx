@@ -113,6 +113,7 @@ export const DropzoneUpload = ({
       <div
         {...getRootProps()}
         data-testid={dataTestId}
+        title="Cliquez pour sélectionner"
         style={!!error ? { borderColor: 'red' } : {}}
         className={cn(
           'default__transition group relative flex h-[200px] w-full flex-col items-center justify-center gap-3 border border-dashed border-gray-400 bg-gray-50 p-2 text-center transition duration-200 hover:bg-gray-200 disabled:cursor-not-allowed disabled:bg-gray-300',

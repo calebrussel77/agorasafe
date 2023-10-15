@@ -56,12 +56,6 @@ import { htmlParse } from '@/lib/html-react-parser';
 
 import { createServerSideProps } from '@/server/utils/server-side';
 
-const meta = {
-  title: (serviceRequestTitle: string) => `${serviceRequestTitle}`,
-  description: (serviceRequestDeescription: string) =>
-    `${serviceRequestDeescription}`,
-};
-
 type PageProps = Prettify<InferNextProps<typeof getServerSideProps>>;
 
 const ServiceRequestPublicationPage = ({
@@ -99,6 +93,7 @@ const ServiceRequestPublicationPage = ({
     slug: serviceRequestSlugQuery,
     providersReserved: 'Active',
   });
+
   const { isLoading: isLoadingUpdate, mutate } = useUpdateServiceRequest({
     onError(error) {
       toast({
@@ -135,17 +130,22 @@ const ServiceRequestPublicationPage = ({
     ? DEFAULT_SERVICE_REQUEST_COVER_IMAGE
     : data?.serviceRequest?.photos?.[0]?.url;
 
+  const images = data?.serviceRequest?.photos?.map(el => ({
+    name: el.name,
+    url: el.url,
+  }));
+
+  const meta = (
+    <Seo
+      title={`${authorName} - ${data?.serviceRequest?.title}`}
+      image={coverBg}
+      description={data?.serviceRequest?.description}
+    />
+  );
+
   return (
     <>
-      <Seo
-        title={
-          authorName
-            ? meta.title(`${authorName} - ${data?.serviceRequest?.title}`)
-            : ''
-        }
-        image={coverBg}
-        description={meta.description(data?.serviceRequest?.description || '')}
-      />
+      {meta}
       <CenterContent className="container mt-6 max-w-5xl space-y-10 px-4 lg:min-w-[600px]">
         <AsyncWrapper isLoading={isInitialLoading} error={error}>
           <section
@@ -159,19 +159,19 @@ const ServiceRequestPublicationPage = ({
               <MoveLeft className="h-5 w-5" />
               <span>Retour</span>
             </button>
-            {data?.serviceRequest?.photos &&
-            data?.serviceRequest?.photos?.length > 0 ? (
-              <ImageGridGallery
-                className="h-64 w-full bg-gray-100 md:h-80"
-                images={data?.serviceRequest?.photos}
-              />
-            ) : (
-              <Image
-                src={DEFAULT_SERVICE_REQUEST_COVER_IMAGE}
-                alt="Image artistique de fond"
-                className="h-64 w-full rounded-lg border bg-gray-50 object-top shadow-sm md:h-80"
-              />
-            )}
+            <ImageGridGallery
+              className="h-64 w-full bg-gray-100 md:h-80"
+              images={
+                isEmptyArray(images)
+                  ? images
+                  : [
+                      {
+                        name: 'Image artistique de fond',
+                        url: DEFAULT_SERVICE_REQUEST_COVER_IMAGE,
+                      },
+                    ]
+              }
+            />
 
             {isReserved && isStatusOpen && (
               <SectionMessage

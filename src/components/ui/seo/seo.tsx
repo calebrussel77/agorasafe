@@ -6,6 +6,7 @@ import { useRouter } from 'next/router';
 import { truncateOnWord } from '@/utils/text';
 
 import {
+  DEFAULT_APP_DESCRIPTION,
   DEFAULT_APP_IMAGE_PREVIEW,
   buildCanonical,
   seoConfig,
@@ -13,7 +14,7 @@ import {
 
 export type SeoProps = {
   title: string;
-  description?: string;
+  description?: string | null;
   image?: string;
   siteName?: string;
   url?: string;
@@ -105,10 +106,14 @@ const Seo = (props: SeoProps): JSX.Element => {
     nextSeoProps = {},
   } = props;
 
-  const truncatedDescription = truncateOnWord(description, 158);
+  const truncatedDescription = truncateOnWord(
+    description || DEFAULT_APP_DESCRIPTION,
+    158
+  );
+
   const seoObject = buildSeoMeta({
     title,
-    image: image ?? undefined,
+    image: image ?? DEFAULT_APP_IMAGE_PREVIEW,
     description: truncatedDescription,
     canonical,
     siteName,
