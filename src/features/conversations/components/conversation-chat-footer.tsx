@@ -6,7 +6,7 @@ import { z } from 'zod';
 
 import { EmojiPicker } from '@/components/emoji-picker';
 import { Form, useZodForm } from '@/components/ui/form';
-import { useModal } from '@/components/ui/modal';
+import { Modal, useModal } from '@/components/ui/modal';
 import { Popover } from '@/components/ui/popover';
 import { TextareaAutosize } from '@/components/ui/textarea-autosize';
 import { toast } from '@/components/ui/toast';
@@ -31,14 +31,16 @@ type ConversationFooterProps = React.PropsWithChildren<{
   name: string;
   socketUrl: string;
   query: Record<string, string>;
-  bottomRef: RefObject<HTMLDivElement>
+  bottomRef: RefObject<HTMLDivElement>;
 }>;
 
 const ConversationFileUploadForm = ({
   socketUrl,
   onAfterSubmitFileUpload,
   query,
-}: Omit<ConversationFooterProps, 'name' | 'bottomRef'> & { onAfterSubmitFileUpload: () => void }) => {
+}: Omit<ConversationFooterProps, 'name' | 'bottomRef'> & {
+  onAfterSubmitFileUpload: () => void;
+}) => {
   const form = useZodForm({
     schema: imageUploadFormSchema,
     defaultValues: {
@@ -46,10 +48,9 @@ const ConversationFileUploadForm = ({
     },
   });
 
-
   const { control, formState } = form;
 
-  const isLoading = form.formState.isSubmitting;
+  const isLoading = formState.isSubmitting;
   const watchedContent = form.watch('content');
 
   const { startUpload, isUploading } = useUpload({
@@ -63,7 +64,7 @@ const ConversationFileUploadForm = ({
     },
   });
 
-  const onHandleSubmit = async (formData: ImageUploadFormInput) => {
+  const onSubmit = async (formData: ImageUploadFormInput) => {
     try {
       const fileArray = formData.fileUrl;
       const files = isArrayOfFile(fileArray)
@@ -87,8 +88,15 @@ const ConversationFileUploadForm = ({
     }
   };
 
+  const onHandleKeyDown = (event: React.KeyboardEvent) => {
+    if (event.key == 'Enter' && event.shiftKey == false) {
+      event.preventDefault();
+      void form.handleSubmit(onSubmit)(event);
+    }
+  };
+
   return (
-    <Form form={form} onSubmit={onHandleSubmit}>
+    <Form form={form} onSubmit={onSubmit} onKeyDown={onHandleKeyDown}>
       <div>
         <Controller
           control={control}
@@ -102,9 +110,9 @@ const ConversationFileUploadForm = ({
                 error={fieldState?.error?.message}
                 fileTypes={['image', 'pdf', 'text']}
                 isLoading={isUploading || isLoading}
-                icon={<File className="h-10 w-10" />}
-                className="h-[300px] text-gray-600"
-                label="Ajouter un fichier"
+                icon={<File className="h-10 w-10 text-zinc-600" />}
+                className="h-[300px]"
+                label="Sélectionnez ou déposez votre fichier içi !"
                 value={fileValue}
                 onChange={onChange}
               />
@@ -142,7 +150,7 @@ const ConversationChatFooter = ({
   socketUrl,
   query,
   name,
-  bottomRef
+  bottomRef,
 }: ConversationFooterProps) => {
   const { open: isOpen, onOpenChange } = useModal();
   const form = useZodForm({
@@ -158,20 +166,20 @@ const ConversationChatFooter = ({
         behavior: 'smooth',
       });
     }, 150);
-  }
+  };
 
   const onAfterSubmitFileUpload = () => {
-    onOpenChange(false)
-    onScrollDown()
-  }
+    onOpenChange(false);
+    onScrollDown();
+  };
 
   //TODO: Refactor this service api request to the service folder
-  const onHandleSumit = async (formData: unknown) => {
+  const onSubmit = async (formData: unknown) => {
     try {
       const url = QS.stringifyUrl(socketUrl, query);
       await axios.post(url, formData);
       form.reset();
-      onScrollDown()
+      onScrollDown();
     } catch (e) {
       console.error(e);
       toast({
@@ -183,11 +191,21 @@ const ConversationChatFooter = ({
     }
   };
 
+  const onHandleKeyDown = (event: React.KeyboardEvent) => {
+    if (event.key === 'Enter' && event.shiftKey === false) {
+      event.preventDefault();
+      void form.handleSubmit(onSubmit)(event);
+    }
+  };
+
   return (
-    <Form form={form} onSubmit={onHandleSumit}>
+    <Form form={form} onSubmit={onSubmit} onKeyDown={onHandleKeyDown}>
       <div className="relative border-t border-gray-200 p-4 shadow-sm">
-        <Popover modal onOpenChange={onOpenChange} open={isOpen}>
-          <Popover.Trigger asChild>
+        <Modal
+          onOpenChange={onOpenChange}
+          open={isOpen}
+          classNames={{ root: 'sm:max-w-[525px]' }}
+          trigger={
             <button
               type="button"
               disabled={isLoading}
@@ -195,15 +213,16 @@ const ConversationChatFooter = ({
             >
               <Plus className="text-white" />
             </button>
-          </Popover.Trigger>
-          <Popover.Content side="top" className="mb-3 lg:min-w-[400px]">
-            <ConversationFileUploadForm
-              onAfterSubmitFileUpload={onAfterSubmitFileUpload}
-              socketUrl={socketUrl}
-              query={query}
-            />
-          </Popover.Content>
-        </Popover>
+          }
+          triggerProps={{ asChild: true }}
+          name="Ajouter un fichier"
+        >
+          <ConversationFileUploadForm
+            onAfterSubmitFileUpload={onAfterSubmitFileUpload}
+            socketUrl={socketUrl}
+            query={query}
+          />
+        </Modal>
 
         <TextareaAutosize
           {...form.register('content')}

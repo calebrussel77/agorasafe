@@ -61,7 +61,6 @@ const ProfileSession = () => {
     }
   }, [status]);
 
-  // reset profile store on sign out
   React.useEffect(() => {
     if (
       status === 'authenticated' &&

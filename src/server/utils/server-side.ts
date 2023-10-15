@@ -79,7 +79,7 @@ export const createServerSideProps = <P>({
         props: {
           session,
           profile: initialState?.profile,
-          ...(props as unknown as P),
+          ...((props as unknown as P) ?? ({} as unknown as P)),
           ...(ssg ? { trpcState: ssg.dehydrate() } : {}),
         },
       };

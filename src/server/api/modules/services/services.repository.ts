@@ -410,6 +410,7 @@ export const getServiceRequestWithReservedProviders = ({
     },
     select: {
       slug: true,
+      status: true,
       providersReserved: true,
       numberOfProviderNeeded: true,
     },
@@ -423,13 +424,27 @@ export function createServiceRequestReservation({
 }) {
   const { customerProfileId, providerProfileId, serviceRequestId } = inputs;
 
-  return prisma.serviceRequestReservation.create({
+  console.log({ inputs });
+
+  return prisma.serviceRequest.update({
+    where: { id: serviceRequestId },
     data: {
-      customerProfileId,
-      providerProfileId,
-      serviceRequestId,
-      removedAt: null,
-      isActive: true,
+      providersReserved: {
+        create: {
+          provider: {
+            connectOrCreate: {
+              where: { profileId: providerProfileId },
+              create: { profile: { connect: { id: providerProfileId } } },
+            },
+          },
+          customer: {
+            connectOrCreate: {
+              where: { profileId: customerProfileId },
+              create: { profile: { connect: { id: customerProfileId } } },
+            },
+          },
+        },
+      },
     },
   });
 }
@@ -439,18 +454,70 @@ export function updateServiceRequestReservation({
   data,
 }: {
   inputs: ToggleServiceRequestReservationInput;
-  data: Prisma.ServiceRequestReservationUpdateInput;
+  data: Prisma.ServiceRequestReservationUpdateWithoutServiceRequestInput;
 }) {
   const { customerProfileId, providerProfileId, serviceRequestId } = inputs;
 
-  return prisma.serviceRequestReservation.update({
-    where: {
-      providerProfileId_serviceRequestId_customerProfileId: {
-        customerProfileId,
-        providerProfileId,
-        serviceRequestId,
+  return prisma.serviceRequest.update({
+    where: { id: serviceRequestId },
+    data: {
+      providersReserved: {
+        update: {
+          where: {
+            providerProfileId_serviceRequestId_customerProfileId: {
+              providerProfileId,
+              serviceRequestId,
+              customerProfileId,
+            },
+          },
+          data,
+        },
       },
     },
-    data,
+  });
+}
+
+export function toggleServiceRequestReservation({
+  inputs,
+  isProviderReservedAndActive,
+}: {
+  inputs: ToggleServiceRequestReservationInput;
+  isProviderReservedAndActive?: boolean;
+}) {
+  const { customerProfileId, providerProfileId, serviceRequestId } = inputs;
+  let update = {
+    removedAt: null,
+    isActive: true,
+  } as { isActive: boolean; removedAt: Date | null };
+
+  if (isProviderReservedAndActive) {
+    update = {
+      removedAt: new Date(),
+      isActive: false,
+    };
+  }
+
+  return prisma.serviceRequest.update({
+    where: { id: serviceRequestId },
+    data: {
+      providersReserved: {
+        upsert: {
+          where: {
+            providerProfileId_serviceRequestId_customerProfileId: {
+              customerProfileId,
+              providerProfileId,
+              serviceRequestId,
+            },
+          },
+          create: {
+            customerProfileId,
+            providerProfileId,
+            removedAt: null,
+            isActive: true,
+          },
+          update,
+        },
+      },
+    },
   });
 }

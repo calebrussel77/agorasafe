@@ -35,10 +35,10 @@ const MobileNavbar: FC<MobileNavbarProps> = ({ navigations }) => {
   return (
     <>
       <div className="flex items-center justify-between p-6">
-        <a href="#" className="-m-1.5 p-1.5">
+        <Anchor href="#" className="-m-1.5 p-1.5">
           <span className="sr-only">Agorasafe</span>
           <LogoIcon className="h-5 w-auto" />
-        </a>
+        </Anchor>
       </div>
       <div className="mt-2 flow-root">
         <div className="-my-6 divide-y divide-gray-500/10">
@@ -103,28 +103,26 @@ const MobileNavbar: FC<MobileNavbarProps> = ({ navigations }) => {
                           key={link.id}
                           href={url}
                           activeClassName="bg-zinc-100 text-primary"
-                          className="-mx-3 flex items-center px-3 py-2"
+                          className="-mx-3 flex items-center gap-x-3 px-3 py-2"
                         >
-                          <>
-                            <Image
-                              src={link.iconUrl}
-                              alt={link.title}
-                              width={20}
-                              height={20}
-                              className="mr-2 flex-shrink-0"
-                            />
-                            <div className="flex w-full flex-col items-start justify-start text-left">
-                              <Typography as="h3" variant="paragraph">
-                                {link.title}
-                              </Typography>
-                              <Typography
-                                variant="small"
-                                className="text-muted-foreground"
-                              >
-                                {link.description}
-                              </Typography>
-                            </div>
-                          </>
+                          <Image
+                            src={link.iconUrl}
+                            alt={link.title}
+                            width={20}
+                            height={20}
+                            className="mr-2 flex-shrink-0"
+                          />
+                          <div className="flex w-full flex-col items-start justify-start text-left">
+                            <Typography as="h3" variant="paragraph">
+                              {link.title}
+                            </Typography>
+                            <Typography
+                              variant="small"
+                              className="text-muted-foreground"
+                            >
+                              {link.description}
+                            </Typography>
+                          </div>
                         </ActiveLink>
                       );
                     })}
@@ -135,13 +133,13 @@ const MobileNavbar: FC<MobileNavbarProps> = ({ navigations }) => {
                     className="my-3 space-y-1 px-6"
                   >
                     {navigations.map(item => (
-                      <a
+                      <Anchor
                         key={item.name}
                         href={item.href}
                         className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
                       >
                         {item.name}
-                      </a>
+                      </Anchor>
                     ))}
                   </section>
                   <Separator />
@@ -149,7 +147,7 @@ const MobileNavbar: FC<MobileNavbarProps> = ({ navigations }) => {
                     <Button
                       size="sm"
                       variant="ghost"
-                      onClick={() => void onSignOut()}
+                      onClick={onSignOut}
                       className="ml-auto flex items-center justify-center text-center"
                     >
                       <LogOut className="mr-1 h-4 w-4" />

@@ -43,3 +43,5 @@ export const seoConfig: {
 } as const;
 
 export const DEFAULT_APP_IMAGE_PREVIEW = `${WEBSITE_URL}/preview-agorasafe.png`;
+export const DEFAULT_APP_DESCRIPTION =
+  'Agorasafe est la plateforme idéale pour les prestataires de services amateurs qui souhaitent présenter leurs compétences et talents à un public plus large, tout en aidant les clients à trouver des services abordables qui répondent à leurs besoins.';

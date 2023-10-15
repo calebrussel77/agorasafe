@@ -1,16 +1,15 @@
+import { initializeProfileStore } from '@/stores/profile-store';
 import { signIn, signOut } from 'next-auth/react';
-
-import { wait } from '@/utils/misc';
 
 import { sentryCaptureException } from '@/lib/sentry';
 
 export const useAuth = () => {
-  const onSignOut = async (fn?: () => void) => {
-    await signOut({ callbackUrl: '/' });
-    //Due to next-auth sign out duration
-    wait(250)
-      .then(() => fn && fn())
-      .catch(e => console.log(e));
+  const onSignOut = () => {
+    signOut({ callbackUrl: '/' })
+      .then(() => {
+        initializeProfileStore().persist.clearStorage();
+      })
+      .catch(e => console.error(e));
   };
 
   const onGooleSignIn = async (opts?: {
