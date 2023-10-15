@@ -58,6 +58,7 @@ const ProfileSession = () => {
   React.useEffect(() => {
     if (status === 'unauthenticated') {
       initializeProfileStore().persist.clearStorage();
+      resetProfile();
     }
   }, [status]);
 
@@ -76,6 +77,10 @@ const ProfileSession = () => {
     session?.user?.hasBeenOnboarded,
     status,
   ]);
+
+  console.log({ status });
+
+  if (status === 'loading') return <></>;
 
   return (
     <NoSSR>

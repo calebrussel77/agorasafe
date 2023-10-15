@@ -52,6 +52,7 @@ function handleExitComplete() {
 const MyApp = (props: AppPageProps) => {
   // useNewDeploy();
   useNotificationNetwork();
+
   const {
     Component,
     pageProps: {
@@ -133,11 +134,6 @@ MyApp.getInitialProps = async (appContext: AppContext) => {
     if (session && appContext.ctx.req) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       (appContext.ctx.req as any)['session'] = session;
-    }
-
-    if (initialProfileState) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      (appContext.ctx.req as any)['initialState'] = initialProfileState;
     }
 
     return {

@@ -2,6 +2,8 @@ import React, { forwardRef } from 'react';
 
 import { cn } from '@/lib/utils';
 
+import { AbsolutePlacement } from '../layout';
+
 const SpinnerClasses = {
   default: 'border-l-white',
   primary: 'border-l-brand-500',
@@ -25,18 +27,17 @@ const Spinner = forwardRef<
 
 Spinner.displayName = 'Spinner';
 
-const FullSpinner = ({
-  loadingText = 'Chargement...',
-}: {
-  loadingText?: string;
-}) => {
+const FullSpinner = ({ loadingText }: { loadingText?: string }) => {
   return (
-    <div className="fixed inset-0 z-40 flex h-full w-full items-center justify-center bg-white bg-opacity-70 backdrop-blur-sm backdrop-filter transition-all duration-200 ease-in-out">
-      <div className="relative z-20 flex flex-col items-center justify-center gap-y-1">
+    <AbsolutePlacement
+      placement="center-center"
+      className="bg-white bg-opacity-70 backdrop-blur-sm backdrop-filter"
+    >
+      <div className="flex flex-col items-center justify-center gap-y-1">
         <Spinner variant="primary" className="h-16 w-16" />
         {loadingText}
       </div>
-    </div>
+    </AbsolutePlacement>
   );
 };
 
