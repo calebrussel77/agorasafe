@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import React, { type FC } from 'react';
 
@@ -6,9 +6,10 @@ import { Button } from '@/components/ui/button';
 import { Image } from '@/components/ui/image';
 import { Typography } from '@/components/ui/typography';
 
-import { FormSubscriptionModal } from '@/features/app-subscription';
+import { FormLaunchModal } from '@/features/app-launch';
 
 import { useFadeSliderImages } from '@/hooks/use-fade-slider-images';
+
 interface HeroSectionProps {
   className?: string;
 }
@@ -70,9 +71,9 @@ const HeroSection: FC<HeroSectionProps> = ({}) => {
                 qualifiés, transparente et fiable à travers le cameroun.
               </Typography>
               <div className="mt-8 flex flex-col items-center justify-center gap-y-3 md:flex-row md:gap-x-6 md:gap-y-0">
-                <FormSubscriptionModal>
+                <FormLaunchModal>
                   <Button>Commencez maintenant</Button>
-                </FormSubscriptionModal>
+                </FormLaunchModal>
                 <Button variant="link" className="text-white">
                   Live demo <span aria-hidden="true">→</span>
                 </Button>

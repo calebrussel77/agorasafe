@@ -1,15 +1,11 @@
-import {
-  Children,
-  Fragment,
-  type ReactNode,
-} from 'react';
+import { Children, Fragment, type ReactNode } from 'react';
 
 import { cn } from '@/lib/utils';
 
 /**
  * Example
  *  <Inline
-      divider={<span className="text-blue-600">·</span>}
+      divider={<span className="text-brand-600">·</span>}
       divider={<span aria-hidden="true">&middot;</span>}
       className="gap-1"
     >

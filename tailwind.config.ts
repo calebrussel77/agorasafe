@@ -1,3 +1,5 @@
+import headlessuiPlugin from '@headlessui/tailwindcss';
+import tailwindCssAnimatePlugin from 'tailwindcss-animate';
 import { type Config } from 'tailwindcss';
 
 export default {
@@ -91,7 +93,7 @@ export default {
       },
     },
   },
-  plugins: [require('tailwindcss-animate')],
+  plugins: [tailwindCssAnimatePlugin, headlessuiPlugin],
 } as Config;
 
 // satisfies Config;

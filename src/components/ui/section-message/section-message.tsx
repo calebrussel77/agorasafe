@@ -142,7 +142,7 @@ const SectionMessage = forwardRef<HTMLDivElement, SectionMessageProps>(
                       <div className="flex flex-wrap items-center gap-1">
                         <Inline
                           divider={
-                            <span className="text-blue-100">&middot;</span>
+                            <span className="text-brand-100">&middot;</span>
                           }
                           className="gap-1"
                         >

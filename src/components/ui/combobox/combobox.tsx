@@ -13,6 +13,8 @@ import { cn } from '@/lib/utils';
 
 import { useDebounce } from '@/hooks/use-debounce';
 
+import { Truncate } from '../truncate';
+
 //@TODO need to find a way to properly type this
 export type OptionItem = {
   label: string;
@@ -72,7 +74,7 @@ const ComboBox: React.FC<ComboBoxProps> = ({
   options,
   placeholder,
   renderItem,
-  debounce = 500,
+  debounce = 600,
   search,
   onSearchChange,
   placeholderSearch = 'Recherchez un element...',
@@ -110,7 +112,9 @@ const ComboBox: React.FC<ComboBoxProps> = ({
           aria-expanded={isOpen}
           className="w-full justify-between"
         >
-          {selectedValue}
+          {selectedValue && (
+            <Truncate className="flex-1 text-left">{selectedValue}</Truncate>
+          )}
           {iconAfter ? (
             wrappedIcon
           ) : (
@@ -130,11 +134,12 @@ const ComboBox: React.FC<ComboBoxProps> = ({
             className="h-9"
           />
 
-          {isLoading ? (
-            <Command.Loading>Chargement...</Command.Loading>
-          ) : (
+          {!isLoading && options?.length === 0 ? (
             <Command.Empty>{emptyState}</Command.Empty>
-          )}
+          ) : null}
+
+          {isLoading ? <Command.Loading>Chargement...</Command.Loading> : null}
+
           <Command.List>
             {options &&
               options?.map(option => (
@@ -149,9 +154,9 @@ const ComboBox: React.FC<ComboBoxProps> = ({
                   {renderItem ? renderItem(option) : option?.label}
                   <Check
                     className={cn(
-                      'ml-auto h-4 w-4',
+                      'ml-auto h-4 w-4 flex-shrink-0',
                       value?.value === option?.value
-                        ? 'text-primary opacity-100'
+                        ? 'text-brand-500 opacity-100'
                         : 'opacity-0'
                     )}
                   />

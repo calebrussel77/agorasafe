@@ -1,10 +1,9 @@
 import { APP_PROFILES_INFO } from '@/constants';
-import { useLocationSearch } from '@/services';
+import { useGeocodingSearch } from '@/services';
 import { phoneSchema } from '@/validations';
 import { ProfileType } from '@prisma/client';
 import { type TRPCClientErrorLike } from '@trpc/client';
 import { CameraIcon, MapPin } from 'lucide-react';
-import { useTransition } from 'react';
 import { Controller } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -76,8 +75,8 @@ const CreateProfileForm = ({
 
   const { control, watch } = form;
 
-  const { locationSearch, setLocationSearch, data, isFetching } =
-    useLocationSearch();
+  const { locationSearch, setLocationSearch, data, isInitialLoading } =
+    useGeocodingSearch();
 
   const watchLocation = watch('location');
   const watchPhone = watch('phone');
@@ -203,18 +202,17 @@ const CreateProfileForm = ({
               <ComboBox
                 onChange={onChange}
                 value={value as never}
-                isLoading={isFetching}
+                isLoading={isInitialLoading}
                 onSearchChange={setLocationSearch}
                 placeholder="Choisir ma localisation..."
                 placeholderSearch="Recherchez votre position..."
                 iconAfter={<MapPin className="h-5 w-5 opacity-50" />}
                 search={locationSearch}
                 options={data?.map(element => ({
-                  label: element.place_name,
-                  value: element.place_name,
-                  wikidata: element.properties.wikidata,
-                  lat: element.center[0],
-                  long: element.center[1],
+                  label: element.format?.label,
+                  value: element.format?.label,
+                  lat: element.format?.lat,
+                  long: element?.format?.long,
                 }))}
               />
             )}

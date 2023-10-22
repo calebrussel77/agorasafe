@@ -1,6 +1,5 @@
 import { useSocketStore } from '@/stores/socket-store';
 import { DirectMessage } from '@prisma/client';
-import { useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 
 import { api } from '@/utils/api';
@@ -29,8 +28,6 @@ export const useConversationChatSocket = ({
     if (!socket) {
       return;
     }
-
-    //TODO: Give the possibility to update the last message in the conversations list after update or create
 
     socket.on(updateEventKey, async (message: MessageWithWithProfile) => {
       await queryUtils.messages.getDirectMessages.cancel();

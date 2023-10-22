@@ -47,6 +47,11 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 
+# miscellaneous
+/pages/api/scripts*
+.react-email
+.contentlayer
+
 # vercel
 .vercel
 

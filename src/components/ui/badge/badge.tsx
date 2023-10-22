@@ -13,7 +13,7 @@ import { cn } from '@/lib/utils';
         </Badge>
  */
 const badgeVariants = cva(
-  'inline-flex items-center text-xs border rounded-full transition duration-300 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2',
+  'inline-flex items-center text-xs border transition duration-300 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2',
   {
     variants: {
       size: {
@@ -21,6 +21,11 @@ const badgeVariants = cva(
         sm: 'px-1.5 font-semibold',
         md: 'px-2 font-semibold',
         lg: 'px-2.5 font-semibold',
+      },
+      shape: {
+        rounded: 'rounded-md',
+        square: 'rounded-none',
+        circle: 'rounded-full',
       },
       variant: {
         default:
@@ -41,6 +46,7 @@ const badgeVariants = cva(
     },
     defaultVariants: {
       variant: 'default',
+      shape: 'circle',
     },
   }
 );
@@ -58,6 +64,7 @@ function Badge({
   content,
   variant,
   shouldDisableOutline,
+  shape,
   size = 'md',
   placement = 'bottom-right',
   ...props
@@ -71,6 +78,7 @@ function Badge({
             variant,
             placement: children ? placement : null,
             size,
+            shape,
             class:
               placement &&
               children &&

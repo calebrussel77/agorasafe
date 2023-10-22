@@ -1,15 +1,18 @@
 import { type ProfileStore } from '@/stores/profile-store';
 import { type Session } from 'next-auth';
+import { useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { ErrorWrapper, SectionError } from '@/components/ui/error';
 import { CenterContent } from '@/components/ui/layout';
 import { Modal } from '@/components/ui/modal';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Spinner } from '@/components/ui/spinner';
 import { Typography } from '@/components/ui/typography';
 import { UserAvatar } from '@/components/user-avatar';
 import { UserBadge } from '@/components/user-badge';
 
+import { api } from '@/utils/api';
 import { generateArray } from '@/utils/misc';
 
 import { type SimpleProfile } from '@/server/api/modules/profiles';
@@ -19,24 +22,31 @@ import { ProfileItemSkeleton } from './profile-item-skeleton';
 
 type ChooseProfileModaleProps = {
   session: Session | null;
-  reloadWithToast: () => void;
+  closeModale: () => void;
   updateProfile: ProfileStore['setProfile'];
 };
 
 const ChooseProfileModale = ({
   session,
-  reloadWithToast,
+  closeModale,
   updateProfile,
 }: ChooseProfileModaleProps) => {
+  const [isLoading, setIsLoading] = useState(false);
+
+  const queryUtils = api.useContext();
+
   // profiles query
   const { data, isInitialLoading, error, refetch } = useUserProfiles({
     enabled: !!session?.user,
     staleTime: 60 * 1000,
   });
 
-  const onProfileClick = (profile: SimpleProfile) => {
+  const onProfileClick = async (profile: SimpleProfile) => {
+    setIsLoading(true);
     updateProfile(profile);
-    reloadWithToast();
+    await queryUtils.invalidate();
+    setIsLoading(false);
+    closeModale();
   };
 
   return (
@@ -45,54 +55,64 @@ const ChooseProfileModale = ({
         <h1 className="text-center text-3xl font-semibold">
           Avec qui souhaitez-vous continuer ?
         </h1>
-        <ErrorWrapper
-          error={error}
-          errorComponent={
-            <SectionError error={error} onRetry={() => void refetch()} />
-          }
-        >
-          <p className="w-full max-w-md text-center text-muted-foreground">
-            {data?.message}
-          </p>
-          <div className="mt-10 flex w-full flex-wrap items-start justify-center gap-1 pb-8 sm:gap-4">
-            {isInitialLoading
-              ? generateArray(4).map(el => <ProfileItemSkeleton key={el} />)
-              : data?.profiles?.map(profile => (
-                  <button
-                    key={profile.id}
-                    onClick={() => void onProfileClick(profile)}
-                    className="group flex w-full max-w-[250px] flex-col items-center justify-center rounded-md p-3 hover:bg-gray-100"
-                  >
-                    <UserAvatar
-                      src={profile.avatar as string}
-                      alt={profile.name}
-                      type={profile.type}
-                      className="aspect-square h-20 w-20 shadow-md sm:h-24 sm:w-24"
-                    />
-                    <div className="mt-3 flex items-start gap-1.5">
-                      <Typography truncate as="h3">
-                        {profile.name}
-                      </Typography>
-                      <UserBadge className="line-clamp-1" type={profile.type} />
-                    </div>
-                    <Typography truncate variant="small" className="mt-1">
-                      {profile.location?.name}
-                    </Typography>
-                  </button>
-                ))}
+        {isLoading ? (
+          <div className="flex flex-col items-center justify-center py-10">
+            <Spinner variant="primary" size="lg" />
+            <p className="mt-2 text-center">Chargement du nouveau profil...</p>
           </div>
-          <Skeleton
-            isVisible={isInitialLoading}
-            className="aspect-square h-10 w-40"
+        ) : (
+          <ErrorWrapper
+            error={error}
+            errorComponent={
+              <SectionError error={error} onRetry={() => void refetch()} />
+            }
           >
-            <Button
-              aria-label="Naviguer vers la page de gestion des comptes"
-              variant="outline"
+            <p className="w-full max-w-md text-center text-muted-foreground">
+              {data?.message}
+            </p>
+            <div className="mt-10 flex w-full flex-wrap items-start justify-center gap-1 pb-8 sm:gap-4">
+              {isInitialLoading
+                ? generateArray(4).map(el => <ProfileItemSkeleton key={el} />)
+                : data?.profiles?.map(profile => (
+                    <button
+                      key={profile.id}
+                      onClick={() => void onProfileClick(profile)}
+                      className="group flex w-full max-w-[250px] flex-col items-center justify-center rounded-md p-3 hover:bg-gray-100"
+                    >
+                      <UserAvatar
+                        src={profile.avatar as string}
+                        alt={profile.name}
+                        type={profile.type}
+                        className="aspect-square h-20 w-20 shadow-md sm:h-24 sm:w-24"
+                      />
+                      <div className="mt-3 flex items-start gap-1.5">
+                        <Typography truncate as="h3">
+                          {profile.name}
+                        </Typography>
+                        <UserBadge
+                          className="line-clamp-1"
+                          type={profile.type}
+                        />
+                      </div>
+                      <Typography truncate variant="small" className="mt-1">
+                        {profile.location?.name}
+                      </Typography>
+                    </button>
+                  ))}
+            </div>
+            <Skeleton
+              isVisible={isInitialLoading}
+              className="aspect-square h-10 w-40"
             >
-              Gérer vos profils
-            </Button>
-          </Skeleton>
-        </ErrorWrapper>
+              <Button
+                aria-label="Naviguer vers la page de gestion des comptes"
+                variant="outline"
+              >
+                Gérer vos profils
+              </Button>
+            </Skeleton>
+          </ErrorWrapper>
+        )}
       </CenterContent>
     </Modal>
   );

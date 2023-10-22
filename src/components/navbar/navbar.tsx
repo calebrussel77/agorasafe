@@ -15,6 +15,7 @@ import { useCurrentUser } from '@/hooks/use-current-user';
 import { Anchor } from '../anchor';
 import { CanView } from '../can-view';
 import { LogoSymbolIcon } from '../icons/logo-icon';
+import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import { useDropdownMenu } from '../ui/dropdown-menu';
 
@@ -48,8 +49,15 @@ const Navbar: FC<NavbarProps> = ({
     >
       <div className="flex items-center gap-3 xl:flex-1">
         <span className="sr-only">Your Company</span>
-        <Anchor href="/" className="-m-1.5 p-1.5">
+        <Anchor href="/" className="-m-1.5 flex items-start gap-x-1.5 p-1.5">
           <LogoSymbolIcon className="h-7 w-auto md:h-8" />
+          <Badge
+            content="Alpha"
+            size="sm"
+            variant="danger"
+            shape="rounded"
+            title="Ce projet est encore en cours de developpement."
+          />
         </Anchor>
       </div>
       <div className="ml-4 hidden lg:flex lg:items-center lg:gap-x-12">

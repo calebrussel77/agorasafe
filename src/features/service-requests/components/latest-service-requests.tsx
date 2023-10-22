@@ -119,14 +119,16 @@ export function LatestServiceRequests() {
                   </div>
                 ))}
               </div>
-              <Button
-                size="sm"
-                href="/explore"
-                className="mx-auto mt-12 flex justify-center"
-              >
-                <span>Voir toutes les demandes</span>
-                <ArrowRight className="h-5 w-5" />
-              </Button>
+              {data?.totalCount > LATEST_SERVICE_REQUESTS_COUNT && (
+                <Button
+                  size="sm"
+                  href="/explore"
+                  className="mx-auto mt-12 flex justify-center"
+                >
+                  <span>Voir toutes les demandes</span>
+                  <ArrowRight className="h-5 w-5" />
+                </Button>
+              )}
             </div>
           )}
         </AsyncWrapper>

@@ -1,5 +1,5 @@
 import { Camera, X } from 'lucide-react';
-import NextImage from 'next/future/image';
+import NextImage, { type ImageProps } from 'next/future/image';
 import React, { type ComponentProps, forwardRef } from 'react';
 
 import { blurDataURL } from '@/utils/image';
@@ -12,12 +12,21 @@ import { useHover } from '@/hooks/use-react-aria-hover';
 import { Spinner } from '../spinner';
 import { ImageEmpty } from './image-empty';
 
+export type ImageShape = 'rounded' | 'circle' | 'square';
+
+export const imageShapeClasses: Record<ImageShape, string> = {
+  circle: 'rounded-full',
+  square: 'rounded-none',
+  rounded: 'rounded-md',
+};
+
 const Image = forwardRef<
   HTMLImageElement | null,
   ComponentProps<typeof NextImage> & {
     onRemove?: () => void;
     isLoading?: boolean;
     isHoverable?: boolean;
+    shape?: ImageShape;
   }
 >(
   (
@@ -26,6 +35,7 @@ const Image = forwardRef<
       className,
       isLoading,
       isHoverable = false,
+      shape = 'rounded',
       onRemove,
       alt,
       src,
@@ -37,10 +47,14 @@ const Image = forwardRef<
     const { isHovered, hoverProps } = useHover({ isDisabled: false });
     const hasCloseBtn = !!onRemove;
     const { handleImageOnLoad, isLoaded } = useImageOnLoad();
+    const shapeClassName = shape ? imageShapeClasses[shape] : undefined;
 
     return (
       <>
-        <div ref={ref} className={cn('relative overflow-hidden', className)}>
+        <div
+          ref={ref}
+          className={cn('relative overflow-hidden', shapeClassName, className)}
+        >
           {isHoverable && (
             <div
               onClick={onClick}
@@ -91,7 +105,12 @@ const Image = forwardRef<
         </div>
 
         {!isLoaded && !hasCloseBtn && (
-          <div className="absolute inset-0 flex h-full w-full items-center justify-center">
+          <div
+            className={cn(
+              'absolute inset-0 flex h-full w-full items-center justify-center bg-gray-50',
+              shapeClassName
+            )}
+          >
             <Camera className="h-10 w-10 flex-shrink-0 animate-pulse text-gray-400" />
           </div>
         )}
@@ -100,6 +119,6 @@ const Image = forwardRef<
   }
 );
 
-export { ImageEmpty, Image };
+export { ImageEmpty, Image, type ImageProps as AgoraImageProps };
 
 Image.displayName = 'Image';

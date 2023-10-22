@@ -1,13 +1,13 @@
 import { ChevronDown, LogOut, RefreshCcw, UserPlus2 } from 'lucide-react';
-import Image from 'next/image';
-import Link from 'next/link';
 import React, { type FC } from 'react';
 
 import { Anchor } from '@/components/anchor';
 import { AutoAnimate } from '@/components/ui/auto-animate';
+import { Avatar } from '@/components/ui/avatar';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { DropdownMenu } from '@/components/ui/dropdown-menu';
 import { ErrorWrapper, SectionError } from '@/components/ui/error';
+import { Image } from '@/components/ui/image';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Typography } from '@/components/ui/typography';
 import { User } from '@/components/user';
@@ -173,12 +173,11 @@ const UserProfileDropdown: FC<UserProfileDropdownProps> = ({
                         href={url}
                         className="mt-1 flex w-full items-center justify-start gap-x-3 text-left"
                       >
-                        <Image
+                        <Avatar
                           src={link.iconUrl}
                           alt={link.title}
-                          width={20}
-                          height={20}
-                          className="mr-2 flex-shrink-0"
+                          shape="square"
+                          className="mr-2 h-5 w-5 flex-shrink-0"
                         />
                         <div className="flex flex-col items-start justify-start">
                           <Typography as="h3" variant="paragraph">

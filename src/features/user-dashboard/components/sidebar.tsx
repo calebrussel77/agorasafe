@@ -1,13 +1,11 @@
-import { UserPlus2 } from 'lucide-react';
-import Image from 'next/image';
 import Link from 'next/link';
-import { useEffect, useRef } from 'react';
 
 import { Anchor } from '@/components/anchor';
 import { AutoAnimate } from '@/components/ui/auto-animate';
-import { buttonVariants } from '@/components/ui/button';
+import { Avatar } from '@/components/ui/avatar';
 import { ErrorWrapper, SectionError } from '@/components/ui/error';
 import { GroupItem } from '@/components/ui/group-item';
+import { Image } from '@/components/ui/image';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Typography } from '@/components/ui/typography';
 
@@ -75,12 +73,11 @@ const Sidebar = () => {
                       <Anchor href={url} key={link.id} className="w-full">
                         <GroupItem
                           iconBefore={
-                            <Image
+                            <Avatar
                               src={link.iconUrl}
                               alt={link.title}
-                              width={20}
-                              height={20}
-                              className="mr-2 flex-shrink-0"
+                              shape="square"
+                              className="mr-2 h-5 w-5 flex-shrink-0"
                             />
                           }
                           name={

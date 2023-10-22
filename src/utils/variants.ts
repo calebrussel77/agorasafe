@@ -9,7 +9,7 @@ export type Variant =
 export const VARIANTS_COLORS: Record<Variant, string> = {
   danger: 'text-red-500',
   focused: 'text-primary-500',
-  info: 'text-blue-600',
+  info: 'text-brand-600',
   success: 'text-green-500',
   warning: 'text-yellow-500',
   system: 'text-secondary-500',

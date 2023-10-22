@@ -5,8 +5,16 @@ export const randomBetween = (min: number, max: number) => {
 export const wait = (t: number) =>
   new Promise(resolve => setTimeout(resolve, t));
 
-export const makeRandomId = (): string =>
-  Math.random().toString(36).substring(2, 8);
+export const makeRandomId = (): string => {
+  let retVal = '';
+  const length = 8;
+  const charset =
+    'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  for (let i = 0, n = charset.length; i < length; ++i) {
+    retVal += charset.charAt(Math.floor(Math.random() * n));
+  }
+  return retVal;
+};
 
 export const isStringsArray = (arr: Array<unknown>) =>
   arr.every(i => typeof i === 'string');
