@@ -1,4 +1,4 @@
-import { useLocationSearch } from '@/services';
+import { useGeocodingSearch } from '@/services';
 import { MapPin } from 'lucide-react';
 import { useRouter } from 'next/router';
 import { Controller } from 'react-hook-form';
@@ -29,8 +29,8 @@ const AddressForm = ({ nextStep, prevStep }: AddressFormProps) => {
   const serviceRequest = _serviceRequest?.[categorySlugQuery];
   const { profile } = useCurrentUser();
 
-  const { locationSearch, setLocationSearch, data, isFetching } =
-    useLocationSearch();
+  const { locationSearch, setLocationSearch, data, isInitialLoading } =
+    useGeocodingSearch();
 
   const form = useZodForm({
     mode: 'onChange',
@@ -61,18 +61,17 @@ const AddressForm = ({ nextStep, prevStep }: AddressFormProps) => {
               <ComboBox
                 onChange={onChange}
                 value={value as never}
-                isLoading={isFetching}
+                isLoading={isInitialLoading}
                 onSearchChange={setLocationSearch}
                 placeholder="Choisir la localisation de la prestation..."
                 placeholderSearch="Recherchez la localisation..."
                 iconAfter={<MapPin className="h-5 w-5 opacity-50" />}
                 search={locationSearch}
                 options={data?.map(element => ({
-                  label: element.place_name,
-                  value: element.place_name,
-                  wikidata: element.properties.wikidata,
-                  lat: element.center[0],
-                  long: element.center[1],
+                  label: element.format?.label,
+                  value: element.format?.label,
+                  lat: element.format?.lat,
+                  long: element?.format?.long,
                 }))}
               />
             )}

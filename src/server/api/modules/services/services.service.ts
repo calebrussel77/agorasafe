@@ -248,7 +248,7 @@ export const getServiceRequestCommentsService = async (
 export const getAllServiceRequestsService = async (
   inputs: GetAllServiceRequestsInput
 ) => {
-  const serviceRequests = await getAllServiceRequests(inputs);
+  const [count, serviceRequests] = await getAllServiceRequests(inputs);
   const _serviceRequests = serviceRequests.map(serviceRequest => ({
     ...serviceRequest,
     nbHoursFomattedText: getFormattedDuration(serviceRequest?.nbOfHours),
@@ -267,6 +267,7 @@ export const getAllServiceRequestsService = async (
 
   return {
     serviceRequests: _serviceRequests,
+    totalCount: count,
     success: true,
   };
 };

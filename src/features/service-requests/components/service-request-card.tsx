@@ -41,6 +41,7 @@ const ServiceRequestCard: FC<ServiceRequestCardProps> = ({
         },
       ]
     : serviceRequest?.photos;
+  const photosCount = photos?.length || 1;
 
   const { currentSlide, sliderRef, hasLoaded, instanceRef } =
     useSliderControlsImages();
@@ -49,33 +50,23 @@ const ServiceRequestCard: FC<ServiceRequestCardProps> = ({
     <article
       className={cn('flex flex-col items-start justify-between p-2', className)}
     >
-      {photos?.length > 1 ? (
-        <div
-          ref={sliderRef}
-          className="keen-slider relative aspect-[16/9] w-full rounded-2xl sm:aspect-[2/1] lg:aspect-[3/2]"
-        >
+      {photosCount > 1 ? (
+        <div ref={sliderRef} className="keen-slider relative px-1">
           {photos.map((photo, idx) => (
-            <div
+            <Image
               key={idx}
-              className="keen-slider__slide absolute inset-0 h-full w-full"
-            >
-              <Image
-                src={photo?.url}
-                alt={photo?.name}
-                className="h-full w-full rounded-2xl bg-gray-100 object-cover"
-              />
-            </div>
+              src={photo?.url}
+              alt={photo?.name}
+              loading="eager"
+              className="keen-slider__slide aspect-[16/9] w-full bg-gray-50 object-cover sm:aspect-[2/1] lg:aspect-[3/2]"
+            />
           ))}
           {hasLoaded && instanceRef?.current && (
             <AbsolutePlacement
               placement="bottom-center"
               className="flex flex-nowrap items-center gap-3"
             >
-              {[
-                ...Array(
-                  instanceRef?.current?.track?.details?.slides?.length
-                ).keys(),
-              ].map(idx => {
+              {[...Array(photosCount).keys()].map(idx => {
                 return (
                   <NavigationDot
                     key={idx}
@@ -90,16 +81,11 @@ const ServiceRequestCard: FC<ServiceRequestCardProps> = ({
           )}
         </div>
       ) : (
-        <div className="relative aspect-[16/9] w-full rounded-2xl sm:aspect-[2/1] lg:aspect-[3/2]">
-          <div className="absolute inset-0 h-full w-full">
-            <Image
-              src={photos[0]?.url as string}
-              alt={photos[0]?.name as string}
-              className="h-full w-full rounded-2xl bg-gray-100 object-cover"
-            />
-            <div className="absolute inset-0 rounded-2xl ring-1 ring-inset ring-gray-900/10" />
-          </div>
-        </div>
+        <Image
+          src={photos[0]?.url as string}
+          alt={photos[0]?.name as string}
+          className="aspect-[16/9] w-full bg-gray-50 object-cover sm:aspect-[2/1] lg:aspect-[3/2]"
+        />
       )}
       <div className="max-w-xl">
         <div className="mt-8 flex items-center gap-x-3 text-xs">

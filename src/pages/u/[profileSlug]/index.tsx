@@ -31,7 +31,7 @@ import { createServerSideProps } from '@/server/utils/server-side';
 import { useCurrentUser } from '@/hooks/use-current-user';
 
 const meta = {
-  title: (str: string) => `${str} - Profil public`,
+  title: (str: string) => `${str} sur Agorasafe`,
   description: (str: string) => str,
 };
 

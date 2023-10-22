@@ -60,39 +60,44 @@ export const getAllServiceRequests = ({
     };
   }
 
-  return prisma.serviceRequest.findMany({
-    where: { status, OR },
-    orderBy: { createdAt: orderBy },
-    select: {
-      id: true,
-      slug: true,
-      createdAt: true,
-      date: true,
-      title: true,
-      description: true,
-      location: { select: { lat: true, long: true, name: true } },
-      nbOfHours: true,
-      estimatedPrice: true,
-      numberOfProviderNeeded: true,
-      willWantProposal: true,
-      author: { select: { profile: { select: simpleProfileSelect } } },
-      status: true,
-      service: {
-        select: { categoryService: { select: { name: true, slug: true } } },
-      },
-      photos: { select: { name: true, url: true } },
-      comments: {
-        select: {
-          author: {
-            select: { name: true, avatar: true, slug: true },
+  return prisma.$transaction([
+    prisma.serviceRequest.count({
+      where: { status },
+    }),
+    prisma.serviceRequest.findMany({
+      where: { status, OR },
+      orderBy: { createdAt: orderBy },
+      select: {
+        id: true,
+        slug: true,
+        createdAt: true,
+        date: true,
+        title: true,
+        description: true,
+        location: { select: { lat: true, long: true, name: true } },
+        nbOfHours: true,
+        estimatedPrice: true,
+        numberOfProviderNeeded: true,
+        willWantProposal: true,
+        author: { select: { profile: { select: simpleProfileSelect } } },
+        status: true,
+        service: {
+          select: { categoryService: { select: { name: true, slug: true } } },
+        },
+        photos: { select: { name: true, url: true } },
+        comments: {
+          select: {
+            author: {
+              select: { name: true, avatar: true, slug: true },
+            },
           },
         },
+        _count: { select: { ...selectCount, comments: true } },
       },
-      _count: { select: { ...selectCount, comments: true } },
-    },
-    skip,
-    take: limit,
-  });
+      skip,
+      take: limit,
+    }),
+  ]);
 };
 
 export function getAllServicesWithCategory({

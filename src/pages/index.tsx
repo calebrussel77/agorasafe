@@ -1,4 +1,13 @@
 import {
+  CallToAction,
+  Faqs,
+  Hero,
+  Pricing,
+  PrimaryFeatures,
+  SecondaryFeatures,
+  Testimonials,
+} from '@/features/app-launch';
+import {
   FeaturesSection,
   HeroSection,
   TestimonialSection,
@@ -15,17 +24,14 @@ import { type AppPageProps } from './_app';
 const HomePage: AppPageProps['Component'] = () => {
   return (
     <>
-      {/* Hero section */}
-      <HeroSection />
-
-      {/* Latest Service requests section */}
+      <Hero />
       <LatestServiceRequests />
-
-      {/* Features section */}
-      <FeaturesSection />
-
-      {/* Testimonial section */}
-      <TestimonialSection />
+      <PrimaryFeatures />
+      <SecondaryFeatures />
+      <CallToAction />
+      <Testimonials />
+      <Pricing />
+      <Faqs />
     </>
   );
 };

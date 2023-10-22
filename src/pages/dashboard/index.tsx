@@ -14,8 +14,7 @@ const DashboardPage = ({ profile, session }: PageProps) => {
         <ContentTitle>Tableau de bord</ContentTitle>
         <div className="mt-6">
           <p>
-            Je suis mes messages. Lorem ipsum dolor sit amet consectetur
-            adipisicing elit. Sit sapiente.
+            Cette page est encore en cours de developpement.
           </p>
         </div>
       </MainContent>

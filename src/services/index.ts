@@ -1,1 +1,1 @@
-export * from './mapbox-location-search';
+export * from './geocoding-search';

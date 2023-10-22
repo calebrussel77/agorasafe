@@ -4,22 +4,33 @@ import { cn } from '@/lib/utils';
 
 import { AbsolutePlacement } from '../layout';
 
-const SpinnerClasses = {
+const spinnerClasses = {
   default: 'border-l-white',
   primary: 'border-l-brand-500',
   ghost: 'border-l-gray-600',
 };
 
+const sizeClasses = {
+  sm: 'h-7 w-7',
+  md: 'h-9 w-9',
+  lg: 'h-12 w-12',
+};
+
 const Spinner = forwardRef<
   HTMLDivElement,
-  { className?: string; variant?: keyof typeof SpinnerClasses }
->(({ className, variant = 'default', ...rest }, ref) => {
-  const classNameVariants = SpinnerClasses[variant];
+  {
+    className?: string;
+    variant?: keyof typeof spinnerClasses;
+    size?: keyof typeof sizeClasses;
+  }
+>(({ className, variant = 'default', size = 'md', ...rest }, ref) => {
+  const variantClassNames = spinnerClasses[variant];
+  const sizeClassNames = sizeClasses[size];
 
   return (
     <div
       ref={ref}
-      className={cn('loader h-9 w-9', classNameVariants, className)}
+      className={cn('loader', variantClassNames, sizeClassNames, className)}
       {...rest}
     />
   );

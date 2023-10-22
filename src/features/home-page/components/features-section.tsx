@@ -1,12 +1,8 @@
 import { Boxes, CalendarDays } from 'lucide-react';
-import Image from 'next/image';
-import Link from 'next/link';
 import React, { type FC } from 'react';
 
-import { Button } from '@/components/ui/button';
+import { Image } from '@/components/ui/image';
 import { Typography } from '@/components/ui/typography';
-
-import { FormSubscriptionModal } from '@/features/app-subscription';
 
 const features = [
   {
@@ -115,6 +111,7 @@ const FeaturesSection: FC<FeaturesSectionProps> = ({}) => {
                   <Image
                     src="/images/femme-menage.jpg"
                     alt="product preview"
+                    fill={false}
                     width={1364}
                     height={866}
                     quality={100}

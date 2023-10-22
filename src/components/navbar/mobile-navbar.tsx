@@ -1,6 +1,5 @@
 import { LogOut, RefreshCcw } from 'lucide-react';
 import { UserPlus2 } from 'lucide-react';
-import Image from 'next/image';
 import React, { type FC } from 'react';
 
 import { useAuth } from '@/features/auth';
@@ -13,9 +12,11 @@ import { Anchor } from '../anchor';
 import { LogoIcon } from '../icons/logo-icon';
 import { AsyncWrapper } from '../ui/async-wrapper';
 import { Button } from '../ui/button';
+import { Image } from '../ui/image';
 import { Separator } from '../ui/separator';
 import { Typography } from '../ui/typography';
 import { User } from '../user';
+import { Avatar } from '../ui/avatar';
 
 interface MobileNavbarProps {
   className?: string;
@@ -105,12 +106,11 @@ const MobileNavbar: FC<MobileNavbarProps> = ({ navigations }) => {
                           activeClassName="bg-zinc-100 text-primary"
                           className="-mx-3 flex items-center gap-x-3 px-3 py-2"
                         >
-                          <Image
+                          <Avatar
                             src={link.iconUrl}
                             alt={link.title}
-                            width={20}
-                            height={20}
-                            className="mr-2 flex-shrink-0"
+                            shape="square"
+                            className="mr-2 h-5 w-5 flex-shrink-0"
                           />
                           <div className="flex w-full flex-col items-start justify-start text-left">
                             <Typography as="h3" variant="paragraph">

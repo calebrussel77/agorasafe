@@ -5,7 +5,6 @@ import React, { useState } from 'react';
 import { ChooseProfileModale } from '@/features/profiles';
 
 import { useCurrentUser } from '@/hooks/use-current-user';
-import { useToastOnPageReload } from '@/hooks/use-toast-on-page-reload';
 
 import { Avatar } from '../ui/avatar';
 import { NoSSR } from '../ui/no-ssr';
@@ -24,7 +23,31 @@ const ProfileSession = () => {
   const isOnboardingPages = pathname.startsWith('/onboarding');
   const [shouldDisplayModal, setShouldDisplayModal] = useState(false);
 
-  const { reloadWithToast } = useToastOnPageReload(() =>
+  // reset profile store on sign out
+  React.useEffect(() => {
+    if (status === 'unauthenticated') {
+      initializeProfileStore().persist.clearStorage();
+      resetProfile();
+    }
+  }, [resetProfile, status]);
+
+  React.useEffect(() => {
+    if (
+      status === 'authenticated' &&
+      session?.user?.hasBeenOnboarded === true &&
+      !hasCurrentProfile &&
+      !isOnboardingPages
+    ) {
+      setShouldDisplayModal(true);
+    }
+  }, [
+    hasCurrentProfile,
+    isOnboardingPages,
+    session?.user?.hasBeenOnboarded,
+    status,
+  ]);
+
+  const closeModale = () => {
     toast({
       delay: 3000,
       icon: (
@@ -51,41 +74,16 @@ const ProfileSession = () => {
           Annuler
         </ToastAction>
       ),
-    })
-  );
-
-  // reset profile store on sign out
-  React.useEffect(() => {
-    if (status === 'unauthenticated') {
-      initializeProfileStore().persist.clearStorage();
-      resetProfile();
-    }
-  }, [status]);
-
-  React.useEffect(() => {
-    if (
-      status === 'authenticated' &&
-      session?.user?.hasBeenOnboarded === true &&
-      !hasCurrentProfile &&
-      !isOnboardingPages
-    ) {
-      setShouldDisplayModal(true);
-    }
-  }, [
-    hasCurrentProfile,
-    isOnboardingPages,
-    session?.user?.hasBeenOnboarded,
-    status,
-  ]);
-
-  console.log({ status });
+    });
+    setShouldDisplayModal(false);
+  };
 
   if (status === 'loading') return <></>;
 
   return (
     <NoSSR>
       {shouldDisplayModal ? (
-        <ChooseProfileModale {...{ updateProfile, reloadWithToast, session }} />
+        <ChooseProfileModale {...{ updateProfile, closeModale, session }} />
       ) : null}
     </NoSSR>
   );

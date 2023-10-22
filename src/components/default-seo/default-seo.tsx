@@ -10,7 +10,7 @@ const DefaultSeo = (props: DefaultSeoProps) => {
   return (
     <>
       <DefaultNextSeo
-        defaultTitle="Agorasafe - Accédez à des services de qualité aux prix abordables au Cameroun."
+        defaultTitle="Agorasafe - Connectez vos besoins aux meilleurs talents de votre région"
         titleTemplate="%s | Agorasafe"
         languageAlternates={[
           { href: `${WEBSITE_URL}`, hrefLang: 'en' },
@@ -24,8 +24,8 @@ const DefaultSeo = (props: DefaultSeoProps) => {
           images: [
             {
               url: DEFAULT_APP_IMAGE_PREVIEW,
-              width: 1200,
-              height: 630,
+              width: 800,
+              height: 400,
               alt: 'Agorasafe.com',
               type: 'image/png',
             },

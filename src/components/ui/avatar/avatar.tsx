@@ -38,6 +38,8 @@ export type AvatarComponentOptions = {
   //if he avatar has border
   isBordered?: boolean;
 
+  fill?: boolean;
+
   fallBack?: React.ReactNode | JSX.Element;
 };
 
@@ -82,8 +84,10 @@ AvatarComponent.displayName = AvatarPrimitive.Root.displayName;
 
 const AvatarImage = React.forwardRef<
   React.ElementRef<typeof AvatarPrimitive.Image>,
-  React.ComponentPropsWithoutRef<typeof AvatarPrimitive.Image>
->(({ className, src, alt, ...props }, ref) => (
+  React.ComponentPropsWithoutRef<typeof AvatarPrimitive.Image> & {
+    fill?: boolean;
+  }
+>(({ className, src, alt, fill, ...props }, ref) => (
   <AvatarPrimitive.Image
     ref={ref}
     className={cn(
@@ -107,7 +111,7 @@ const AvatarImage = React.forwardRef<
     <NextImage
       alt={alt as string}
       src={src as string}
-      fill
+      fill={fill}
       blurDataURL={blurDataURL()}
       placeholder="blur"
     />
@@ -150,6 +154,7 @@ const Avatar = React.forwardRef<
       color,
       alt,
       src,
+      fill = true,
       ...props
     },
     ref
@@ -181,6 +186,7 @@ const Avatar = React.forwardRef<
         <AvatarImage
           alt={alt}
           src={src}
+          fill={fill}
           {...props}
           {...{ 'data-loaded': dataAttr(isLoaded), onLoad: handleImageOnLoad }}
         />
@@ -190,9 +196,10 @@ const Avatar = React.forwardRef<
           ) : (
             <NextImage
               priority
+              fill={fill}
               alt={alt || 'default avatar'}
               src={defaultAvatarIcon}
-              className='data-[loaded=true]:animate-pulse'
+              className="data-[loaded=true]:animate-pulse"
             />
           )}
         </AvatarFallback>

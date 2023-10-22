@@ -140,7 +140,7 @@ export const getServerSideProps = createServerSideProps({
       }
       return {
         redirect: {
-          destination: '/',
+          destination: '/dashboard',
           permanent: false,
         },
       };
