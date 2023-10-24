@@ -134,15 +134,34 @@ const MobileNavbar: FC<MobileNavbarProps> = ({ navigations }) => {
                     id="application-navigation-links"
                     className="my-3 space-y-1 px-6"
                   >
-                    {navigations.map(item => (
-                      <Anchor
-                        key={item.name}
-                        href={item.href}
-                        className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
-                      >
-                        {item.name}
-                      </Anchor>
-                    ))}
+                    {navigations.map(item => {
+                      if (item.name.toLowerCase() === 'feedback') {
+                        return (
+                          <FeedbackFormModal key={item?.name}>
+                            <span className="-mx-3 flex items-center rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50">
+                              {item.name}
+                              {item?.isNew && (
+                                <Badge
+                                  content="New"
+                                  size="xs"
+                                  className="ml-0.5"
+                                  variant="success"
+                                />
+                              )}
+                            </span>
+                          </FeedbackFormModal>
+                        );
+                      }
+                      return (
+                        <Anchor
+                          key={item.name}
+                          href={item.href}
+                          className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
+                        >
+                          {item.name}
+                        </Anchor>
+                      );
+                    })}
                   </section>
                   <Separator />
                   <section id="signout" className="my-3 px-6">

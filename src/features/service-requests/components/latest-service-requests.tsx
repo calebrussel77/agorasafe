@@ -60,9 +60,9 @@ export function LatestServiceRequests() {
           {data?.serviceRequests && data?.serviceRequests?.length === 0 && (
             <EmptyState
               icon={<LucideDoorClosed />}
-              className="my-6"
-              name="Aucune demande publiée actuellement"
-              description="Soyez le premier à créer et publier votre demande de service."
+              className="my-8"
+              description="Aucune demande publiée pour l'instant."
+              // description="Soyez le premier à créer et publier votre demande de service."
               primaryAction={
                 <CanView allowedProfiles={['CUSTOMER']} isPublic>
                   <AskServiceModal>

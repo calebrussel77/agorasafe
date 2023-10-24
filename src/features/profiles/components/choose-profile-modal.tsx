@@ -2,12 +2,14 @@ import { type ProfileStore } from '@/stores/profile-store';
 import { type Session } from 'next-auth';
 import { useState } from 'react';
 
+import { Avatar } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { ErrorWrapper, SectionError } from '@/components/ui/error';
 import { CenterContent } from '@/components/ui/layout';
 import { Modal } from '@/components/ui/modal';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Spinner } from '@/components/ui/spinner';
+import { toast } from '@/components/ui/toast';
 import { Typography } from '@/components/ui/typography';
 import { UserAvatar } from '@/components/user-avatar';
 import { UserBadge } from '@/components/user-badge';
@@ -45,6 +47,24 @@ const ChooseProfileModale = ({
     setIsLoading(true);
     updateProfile(profile);
     await queryUtils.invalidate();
+    toast({
+      delay: 3000,
+      icon: (
+        <Avatar
+          isBordered
+          className="h-10 w-10"
+          src={profile?.avatar as string}
+          alt={`Avatar de ${profile?.name}`}
+        />
+      ),
+      variant: 'success',
+      description: (
+        <p className="text-sm">
+          Vous interagissez maintenant en tant que{' '}
+          <span className="font-semibold">{profile?.name}</span>
+        </p>
+      ),
+    });
     setIsLoading(false);
     closeModale();
   };

@@ -72,14 +72,16 @@ const Navbar: FC<NavbarProps> = ({
                     'hover:bg-brand-50 hover:text-brand-600'
                   )}
                 >
-                  {item.name}
                   {item?.isNew && (
                     <Badge
                       content="New"
                       size="xs"
-                      className="ml-0.5"
+                      placement="top-right"
                       variant="success"
-                    />
+                      className="-right-6"
+                    >
+                      {item.name}
+                    </Badge>
                   )}
                 </span>
               </FeedbackFormModal>
@@ -132,9 +134,7 @@ const Navbar: FC<NavbarProps> = ({
             href="/auth/login"
             className="ml-4 hidden text-sm font-semibold leading-6 lg:flex"
           >
-            <>
-              Se connecter <span aria-hidden="true">&rarr;</span>
-            </>
+            Connexion
           </Anchor>
         )}
       </div>

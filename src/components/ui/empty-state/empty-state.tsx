@@ -79,7 +79,7 @@ function EmptyState({
     >
       {React.cloneElement(icon, {
         className: cn(
-          'flex-shrink-0 h-20 w-20 text-brand-600',
+          'flex-shrink-0 h-20 w-20 text-muted-foreground',
           classNames?.icon
         ),
       })}
@@ -89,7 +89,12 @@ function EmptyState({
         </Typography>
       )}
       {description && (
-        <Typography className={cn('text-center', classNames?.description)}>
+        <Typography
+          className={cn(
+            'text-center text-muted-foreground',
+            classNames?.description
+          )}
+        >
           {description}
         </Typography>
       )}

@@ -11,6 +11,7 @@ import { Anchor } from '../anchor';
 import { type AvatarProps } from '../ui/avatar';
 import { Badge } from '../ui/badge';
 import { GroupItem, type GroupItemProps } from '../ui/group-item';
+import { Rating } from '../ui/rating';
 import { Truncate } from '../ui/truncate';
 import { Typography } from '../ui/typography';
 import { UserAvatar } from '../user-avatar';
@@ -20,6 +21,7 @@ interface UserProps extends Partial<GroupItemProps> {
   shouldIncludeAvatar?: boolean;
   withBadges?: boolean;
   withLocation?: boolean;
+  withRating?: boolean;
   withOwnerBadge?: boolean;
   withName?: boolean;
   canLinkToProfile?: boolean;
@@ -33,6 +35,7 @@ const User: FC<UserProps> = ({
   canLinkToProfile = true,
   shouldIncludeAvatar = true,
   withProfileTypeInitial = false,
+  withRating = true,
   withOwnerBadge = false,
   withBadges = true,
   withLocation = true,
@@ -45,6 +48,7 @@ const User: FC<UserProps> = ({
 
   const isProfileDeleted = !!profile.deletedAt;
   const isAdmin = profile?.user?.role === 'ADMIN';
+  const isProvider = profile?.type === 'PROVIDER';
 
   return (
     <div>
@@ -112,17 +116,28 @@ const User: FC<UserProps> = ({
           )
         }
         description={
-          withLocation ? (
-            <div
-              className={cn(
-                'flex items-center gap-2 text-xs text-muted-foreground',
-                classNames?.description
-              )}
-            >
-              <MapPin className="h-4 w-4" />
-              <Truncate>{profile?.location?.name}</Truncate>
-            </div>
-          ) : null
+          <>
+            {withLocation ? (
+              <div
+                className={cn(
+                  'flex items-center gap-2 text-xs text-muted-foreground',
+                  isProvider && withRating && 'mb-1',
+                  classNames?.description
+                )}
+              >
+                {/* <MapPin className="h-4 w-4" /> */}
+                <Truncate>{profile?.location?.name}</Truncate>
+              </div>
+            ) : null}
+            {isProvider && withRating && (
+              <Rating
+                readonly
+                initialRating={4}
+                size="xs"
+                className="-mt-1.5"
+              />
+            )}
+          </>
         }
       />
     </div>

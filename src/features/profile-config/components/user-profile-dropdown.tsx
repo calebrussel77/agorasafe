@@ -65,6 +65,7 @@ const UserProfileDropdown: FC<UserProfileDropdownProps> = ({
             onClick={onToggle}
             profile={currentProfile}
             withLocation={false}
+            withRating={false}
             canLinkToProfile={false}
             classNames={{ name: 'text-base' }}
             withProfileTypeInitial

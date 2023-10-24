@@ -7,6 +7,7 @@ import { StarSolidIcon } from '@/components/icons/star-solid-icon';
 import { cn } from '@/lib/utils';
 
 const sizeClasses = {
+  xs: 'h-3 w-3',
   sm: 'h-4 w-4',
   md: 'h-5 w-5',
   lg: 'h-8 w-8',
@@ -36,7 +37,7 @@ const Rating: FC<RatingProps> = ({
   return (
     // @ts-ignore
     <StarRating
-      className={cn(classNames?.root, className)}
+      className={cn('inline-flex!', classNames?.root, className)}
       emptySymbol={
         <StarSolidIcon
           className={cn(
