@@ -27,11 +27,15 @@ const useUpload = <TEndpoint extends keyof OurFileRouter>({
     },
     onUploadError: e => {
       sentryCaptureException(e);
-      toast({
-        variant: 'danger',
-        title: 'Erreur de chargement du fichier',
-        description: e?.message,
-      });
+      console.error(`[UPLOAD-ERROR]`, e);
+      if (!onError) {
+        toast({
+          variant: 'danger',
+          title: 'Erreur de chargement du fichier',
+          description:
+            'Une erreur est survenue lors du chargement de votre fichier. Réessayez plus tard.',
+        });
+      }
       onError && onError(e);
     },
     onUploadBegin: filename => {

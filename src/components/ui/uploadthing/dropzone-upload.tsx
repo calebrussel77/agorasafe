@@ -89,7 +89,7 @@ export const DropzoneUpload = ({
 
   if (isImageCanBeDisplay) {
     return (
-      <>
+      <div>
         <Image
           src={imageUrl}
           style={!!error ? { borderColor: 'red' } : {}}
@@ -104,7 +104,7 @@ export const DropzoneUpload = ({
           )}
         />
         {hint && <HelperMessage className="mt-0.5">{hint}</HelperMessage>}
-      </>
+      </div>
     );
   }
 

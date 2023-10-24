@@ -1,7 +1,7 @@
-import Link from 'next/link';
 import React, { type FC, type ReactNode } from 'react';
 
 import { LoginRedirect } from '@/features/auth';
+import { FeedbackFormModal } from '@/features/feedbacks';
 import {
   UserProfileDropdown,
   useGetProfileConfig,
@@ -22,7 +22,7 @@ import { useDropdownMenu } from '../ui/dropdown-menu';
 interface NavbarProps {
   className?: string;
   isHeaderScrolled: boolean;
-  navigations: Array<{ name: string; href: string }>;
+  navigations: Array<{ name: string; href: string; isNew: boolean }>;
   children?: ReactNode;
 }
 
@@ -54,27 +54,59 @@ const Navbar: FC<NavbarProps> = ({
           <Badge
             content="Alpha"
             size="sm"
-            variant="danger"
+            variant="warning"
             shape="rounded"
             title="Ce projet est encore en cours de developpement."
           />
         </Anchor>
       </div>
       <div className="ml-4 hidden lg:flex lg:items-center lg:gap-x-12">
-        {navigations.map(item => (
-          <Anchor
-            key={item.name}
-            href={item.href}
-            className={cn(
-              'default__transition rounded-md px-2 py-1 text-sm font-semibold leading-6',
-              isHeaderScrolled
-                ? 'hover:bg-brand-50 hover:text-brand-600'
-                : 'hover:bg-gray-500'
-            )}
-          >
-            {item.name}
-          </Anchor>
-        ))}
+        {navigations.map(item => {
+          if (item.name.toLowerCase() === 'feedback') {
+            return (
+              <FeedbackFormModal key={item?.name}>
+                <span
+                  title="Faire un commentaire"
+                  className={cn(
+                    'default__transition flex items-center rounded-md px-2 py-1 text-sm font-semibold leading-6',
+                    'hover:bg-brand-50 hover:text-brand-600'
+                  )}
+                >
+                  {item.name}
+                  {item?.isNew && (
+                    <Badge
+                      content="New"
+                      size="xs"
+                      className="ml-0.5"
+                      variant="success"
+                    />
+                  )}
+                </span>
+              </FeedbackFormModal>
+            );
+          }
+
+          return (
+            <Anchor
+              key={item.name}
+              href={item.href}
+              className={cn(
+                'default__transition rounded-md px-2 py-1 text-sm font-semibold leading-6',
+                'flex items-center hover:bg-brand-50 hover:text-brand-600'
+              )}
+            >
+              {item.name}
+              {item?.isNew && (
+                <Badge
+                  content="New"
+                  size="xs"
+                  className="ml-0.5"
+                  variant="success"
+                />
+              )}
+            </Anchor>
+          );
+        })}
       </div>
       <div className="flex items-center lg:flex-1 lg:justify-end">
         <CanView allowedProfiles={['CUSTOMER']} isPublic>

@@ -1,6 +1,7 @@
 import { createTRPCRouter } from '@/server/api/trpc';
 
 import { conversationsRouter } from './routers/conversations.router';
+import { feedbacksRouter } from './routers/feedbacks.router';
 import { messagesRouter } from './routers/messages.router';
 import { profileConfigRouter } from './routers/profile-config.router';
 import { profilesRouter } from './routers/profiles.router';
@@ -17,6 +18,7 @@ export const appRouter = createTRPCRouter({
   services: servicesRouter,
   conversations: conversationsRouter,
   messages: messagesRouter,
+  feedbacks: feedbacksRouter,
 });
 
 // export type definition of API

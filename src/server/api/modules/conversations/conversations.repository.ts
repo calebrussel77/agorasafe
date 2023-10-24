@@ -1,10 +1,10 @@
-import { Prisma } from '@prisma/client';
+import { type Prisma } from '@prisma/client';
 
 import { prisma } from '@/server/db';
 
 import { CONVERSATIONS_CHUNK } from '../../constants';
 import { simpleProfileSelect } from '../profiles';
-import { GetConversationsInput } from './conversations.validations';
+import { type GetConversationsInput } from './conversations.validations';
 
 export async function getOrCreateConversation({
   inputs,

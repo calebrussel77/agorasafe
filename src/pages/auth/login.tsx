@@ -1,11 +1,11 @@
 import { MoveLeft } from 'lucide-react';
-import Link from 'next/link';
 import { useRouter } from 'next/router';
 import React, { useState } from 'react';
 
 import { Anchor } from '@/components/anchor';
 import { GoogleSolidIcon } from '@/components/icons/google-solid-icon';
 import { LogoSymbolIcon } from '@/components/icons/logo-icon';
+import { Badge } from '@/components/ui/badge';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Image } from '@/components/ui/image';
 import { SectionMessage } from '@/components/ui/section-message';
@@ -51,6 +51,19 @@ const LoginPage = () => {
       )}
       {!!error && <SignInError className="mb-0 rounded-none" error={error} />}
       <div className="container relative grid min-h-screen flex-col items-center justify-center lg:max-w-none lg:grid-cols-2 lg:px-0">
+        <Anchor
+          href="/"
+          className="absolute left-4 top-4 flex items-center gap-x-1 lg:hidden"
+        >
+          <LogoSymbolIcon className="h-7 w-auto md:h-8" />
+          <Badge
+            content="Alpha"
+            size="sm"
+            variant="warning"
+            shape="rounded"
+            title="Ce projet est encore en cours de developpement."
+          />
+        </Anchor>
         <button
           onClick={() => handleRouteBack({ router })}
           className={cn(
