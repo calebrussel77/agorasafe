@@ -33,7 +33,11 @@ const badgeVariants = cva(
         primary:
           'bg-primary hover:bg-primary/80 border-transparent text-primary-foreground',
         danger: 'bg-red-600 hover:bg-red-600/80 border-transparent text-white',
-        outline: 'text-foreground',
+        warning:
+          'bg-yellow-600 hover:bg-yellow-600/80 border-transparent text-white',
+        success:
+          'bg-green-600 hover:bg-green-600/80 border-transparent text-white',
+        outline: 'text-brand-500 border-brand-600 bg-white',
       },
       placement: {
         'top-left': 'top-0 -left-0 transform -translate-x-1/4 -translate-y-1/4',

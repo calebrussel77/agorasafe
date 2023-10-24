@@ -3,6 +3,7 @@ import { UserPlus2 } from 'lucide-react';
 import React, { type FC } from 'react';
 
 import { useAuth } from '@/features/auth';
+import { FeedbackFormModal } from '@/features/feedbacks';
 import { useGetProfileConfig } from '@/features/profile-config';
 
 import { useCurrentUser } from '@/hooks/use-current-user';
@@ -11,16 +12,16 @@ import { ActiveLink } from '../active-link';
 import { Anchor } from '../anchor';
 import { LogoIcon } from '../icons/logo-icon';
 import { AsyncWrapper } from '../ui/async-wrapper';
+import { Avatar } from '../ui/avatar';
+import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
-import { Image } from '../ui/image';
 import { Separator } from '../ui/separator';
 import { Typography } from '../ui/typography';
 import { User } from '../user';
-import { Avatar } from '../ui/avatar';
 
 interface MobileNavbarProps {
   className?: string;
-  navigations: Array<{ name: string; href: string }>;
+  navigations: Array<{ name: string; href: string; isNew: boolean }>;
 }
 
 const MobileNavbar: FC<MobileNavbarProps> = ({ navigations }) => {
@@ -36,9 +37,10 @@ const MobileNavbar: FC<MobileNavbarProps> = ({ navigations }) => {
   return (
     <>
       <div className="flex items-center justify-between p-6">
-        <Anchor href="#" className="-m-1.5 p-1.5">
+        <Anchor href="#" className="-m-1.5 flex items-center gap-x-1 p-1.5">
           <span className="sr-only">Agorasafe</span>
           <LogoIcon className="h-5 w-auto" />
+          <Badge content="Alpha" size="xs" variant="warning" />
         </Anchor>
       </div>
       <div className="mt-2 flow-root">
@@ -132,15 +134,34 @@ const MobileNavbar: FC<MobileNavbarProps> = ({ navigations }) => {
                     id="application-navigation-links"
                     className="my-3 space-y-1 px-6"
                   >
-                    {navigations.map(item => (
-                      <Anchor
-                        key={item.name}
-                        href={item.href}
-                        className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
-                      >
-                        {item.name}
-                      </Anchor>
-                    ))}
+                    {navigations.map(item => {
+                      if (item.name.toLowerCase() === 'feedback') {
+                        return (
+                          <FeedbackFormModal key={item?.name}>
+                            <span className="-mx-3 flex items-center rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50">
+                              {item.name}
+                              {item?.isNew && (
+                                <Badge
+                                  content="New"
+                                  size="xs"
+                                  className="ml-0.5"
+                                  variant="success"
+                                />
+                              )}
+                            </span>
+                          </FeedbackFormModal>
+                        );
+                      }
+                      return (
+                        <Anchor
+                          key={item.name}
+                          href={item.href}
+                          className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
+                        >
+                          {item.name}
+                        </Anchor>
+                      );
+                    })}
                   </section>
                   <Separator />
                   <section id="signout" className="my-3 px-6">
@@ -148,7 +169,7 @@ const MobileNavbar: FC<MobileNavbarProps> = ({ navigations }) => {
                       size="sm"
                       variant="ghost"
                       onClick={onSignOut}
-                      className="ml-auto flex items-center justify-center text-center"
+                      className="flex w-full items-center justify-center text-center"
                     >
                       <LogOut className="mr-1 h-4 w-4" />
                       Se déconnecter
@@ -165,20 +186,50 @@ const MobileNavbar: FC<MobileNavbarProps> = ({ navigations }) => {
                   id="application-navigation-links"
                   className="my-3 space-y-1 px-6"
                 >
-                  {navigations.map(item => (
-                    <a
-                      key={item.name}
-                      href={item.href}
-                      className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
-                    >
-                      {item.name}
-                    </a>
-                  ))}
+                  {navigations.map(item => {
+                    if (item.name.toLowerCase() === 'feedback') {
+                      return (
+                        <FeedbackFormModal key={item?.name}>
+                          <span className="-mx-3 flex items-center rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50">
+                            {item.name}
+                            {item?.isNew && (
+                              <Badge
+                                content="New"
+                                size="xs"
+                                className="ml-0.5"
+                                variant="success"
+                              />
+                            )}
+                          </span>
+                        </FeedbackFormModal>
+                      );
+                    }
+
+                    return (
+                      <Anchor
+                        key={item.name}
+                        href={item.href}
+                        className="-mx-3 flex items-center rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
+                      >
+                        {item.name}
+                        {item?.isNew && (
+                          <Badge
+                            content="New"
+                            size="xs"
+                            className="ml-0.5"
+                            variant="success"
+                          />
+                        )}
+                      </Anchor>
+                    );
+                  })}
                 </section>
                 <Separator />
-                <Anchor href="/auth/login" className="mt-6 inline-block px-6">
-                  <Button>Se connecter</Button>
-                </Anchor>
+                <div className="mt-6 px-4">
+                  <Button href="/auth/login" className="w-full">
+                    Se connecter
+                  </Button>
+                </div>
               </>
             )}
           </div>

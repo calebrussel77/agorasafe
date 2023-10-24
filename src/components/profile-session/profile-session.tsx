@@ -48,33 +48,6 @@ const ProfileSession = () => {
   ]);
 
   const closeModale = () => {
-    toast({
-      delay: 3000,
-      icon: (
-        <Avatar
-          isBordered
-          className="h-10 w-10"
-          src={profile?.avatar as string}
-          alt={`Avatar de ${profile?.name}`}
-        />
-      ),
-      variant: 'success',
-      description: (
-        <p className="text-sm">
-          Vous interagissez maintenant en tant que{' '}
-          <span className="font-semibold">{profile?.name}</span>
-        </p>
-      ),
-      actions: (
-        <ToastAction
-          onClick={resetProfile}
-          variant="ghost"
-          altText="Annuler l'action"
-        >
-          Annuler
-        </ToastAction>
-      ),
-    });
     setShouldDisplayModal(false);
   };
 
