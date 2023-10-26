@@ -431,7 +431,6 @@ const importData = async () => {
     process.exit(1);
   }
 };
-
 const load = async () => {
   try {
     //check the flag of the script and

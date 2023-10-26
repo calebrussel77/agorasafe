@@ -16,7 +16,6 @@ import { cn } from '@/lib/utils';
 
 import { MoreIndicator } from '../avatar/more-indicator';
 import { Popover } from '../popover';
-import { Tooltip } from '../tooltip/tooltip';
 import { Avatar, type AvatarProps, type AvatarSize } from './avatar';
 import {
   AvatarGroupItem,

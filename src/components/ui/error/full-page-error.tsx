@@ -1,6 +1,7 @@
 import { type FC } from 'react';
 
 import { Anchor } from '@/components/anchor';
+import { LogoIcon } from '@/components/icons/logo-icon';
 import { Accordion } from '@/components/ui/accordion';
 
 import { Image } from '../image';
@@ -15,11 +16,7 @@ const FullPageError: FC<{ error: { message: string } }> = ({ error }) => {
               <div className="flex-shrink-0 pt-10 sm:pt-16">
                 <span className="sr-only">Agorasafe</span>
                 <Anchor href="/" className="inline-flex">
-                  <Image
-                    className="h-10 w-auto"
-                    src="/images/finexs-logo.png"
-                    alt="Finexs tombola logo symbol"
-                  />
+                  <LogoIcon className="h-6 w-auto lg:h-8" />
                 </Anchor>
               </div>
               <div className="my-auto flex-shrink-0 py-16 sm:py-32">

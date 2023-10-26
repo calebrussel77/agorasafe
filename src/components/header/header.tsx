@@ -9,7 +9,7 @@ import { cn } from '@/lib/utils';
 const navigations = [
   { name: 'Explorer', href: '#', isNew: false },
   { name: 'Les mieux notés', href: '#', isNew: false },
-  { name: 'Devenir prestataire', href: '#', isNew: false },
+  // { name: 'Devenir prestataire', href: '#', isNew: false },
   { name: 'Feedback', href: '', isNew: true },
 ];
 

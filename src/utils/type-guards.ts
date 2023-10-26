@@ -67,6 +67,11 @@ export function isDecimal(value: number | string) {
   return Number(value) % 1 != 0;
 }
 
+/**
+ * Checks if a value is an array.
+ * @param value - The value to check.
+ * @returns True if the value is an array, false otherwise.
+ */
 export function isArray(value: unknown): value is any[] {
   return Array.isArray(value);
 }
@@ -88,6 +93,15 @@ export function isRegExpString(input: string): boolean {
   } catch (e) {
     return false; // If an error occurs, it's not a valid regex
   }
+}
+
+/**
+ * Checks if a value is nil (null or undefined).
+ * @param value - The value to check.
+ * @returns `true` if the value is nil, `false` otherwise.
+ */
+export function isNil(value: unknown): boolean {
+  return value === null || value === undefined;
 }
 
 export const isWindowDefined = () => {

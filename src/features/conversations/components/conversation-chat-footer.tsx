@@ -6,8 +6,7 @@ import { z } from 'zod';
 
 import { EmojiPicker } from '@/components/emoji-picker';
 import { Form, useZodForm } from '@/components/ui/form';
-import { Modal, useModal } from '@/components/ui/modal';
-import { Popover } from '@/components/ui/popover';
+import { closeModal, openConfirmModal } from '@/components/ui/modal';
 import { TextareaAutosize } from '@/components/ui/textarea-autosize';
 import { toast } from '@/components/ui/toast';
 import { DropzoneUpload, useUpload } from '@/components/ui/uploadthing';
@@ -33,6 +32,8 @@ type ConversationFooterProps = React.PropsWithChildren<{
   query: Record<string, string>;
   bottomRef: RefObject<HTMLDivElement>;
 }>;
+
+const modalId = 'conversation-file-upload';
 
 const ConversationFileUploadForm = ({
   socketUrl,
@@ -152,7 +153,6 @@ const ConversationChatFooter = ({
   name,
   bottomRef,
 }: ConversationFooterProps) => {
-  const { open: isOpen, onOpenChange } = useModal();
   const form = useZodForm({
     schema: chatFormSchema,
   });
@@ -169,8 +169,8 @@ const ConversationChatFooter = ({
   };
 
   const onAfterSubmitFileUpload = () => {
-    onOpenChange(false);
     onScrollDown();
+    closeModal(modalId);
   };
 
   //TODO: Refactor this service api request to the service folder
@@ -198,31 +198,32 @@ const ConversationChatFooter = ({
     }
   };
 
+  const onOpenConversationFileUploadModal = () => {
+    openConfirmModal({
+      modalId,
+      title: 'Ajouter un fichier',
+      withFooter: false,
+      children: (
+        <ConversationFileUploadForm
+          onAfterSubmitFileUpload={onAfterSubmitFileUpload}
+          socketUrl={socketUrl}
+          query={query}
+        />
+      ),
+    });
+  };
+
   return (
     <Form form={form} onSubmit={onSubmit} onKeyDown={onHandleKeyDown}>
       <div className="relative border-t border-gray-200 p-4 shadow-sm">
-        <Modal
-          onOpenChange={onOpenChange}
-          open={isOpen}
-          classNames={{ root: 'sm:max-w-[525px]' }}
-          trigger={
-            <button
-              type="button"
-              disabled={isLoading}
-              className="default__transition absolute bottom-7 left-8 flex h-[24px] w-[24px] items-center justify-center rounded-full bg-zinc-500/90 p-1 hover:bg-zinc-600"
-            >
-              <Plus className="text-white" />
-            </button>
-          }
-          triggerProps={{ asChild: true }}
-          name="Ajouter un fichier"
+        <button
+          type="button"
+          onClick={onOpenConversationFileUploadModal}
+          disabled={isLoading}
+          className="default__transition absolute bottom-7 left-8 flex h-[24px] w-[24px] items-center justify-center rounded-full bg-zinc-500/90 p-1 hover:bg-zinc-600"
         >
-          <ConversationFileUploadForm
-            onAfterSubmitFileUpload={onAfterSubmitFileUpload}
-            socketUrl={socketUrl}
-            query={query}
-          />
-        </Modal>
+          <Plus className="text-white" />
+        </button>
 
         <TextareaAutosize
           {...form.register('content')}

@@ -11,6 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Image } from '@/components/ui/image';
 import { Inline } from '@/components/ui/inline';
+import { Rating } from '@/components/ui/rating';
 import { Seo } from '@/components/ui/seo';
 import { Separator } from '@/components/ui/separator';
 import { FullSpinner } from '@/components/ui/spinner';
@@ -164,6 +165,9 @@ export default function ProfileDetailsPage({ profileSlugQuery }: PageProps) {
                     )}
                   </h1>
                   <Inline className="flex flex-wrap text-sm font-normal text-muted-foreground">
+                    {!isCustomer && (
+                      <Rating readonly initialRating={4} size="xs" />
+                    )}
                     <p>
                       Membre depuis{' '}
                       {formatDateDistance(data?.profile?.createdAt)}

@@ -26,6 +26,7 @@ const Image = forwardRef<
     onRemove?: () => void;
     isLoading?: boolean;
     isHoverable?: boolean;
+    hasOverLay?: boolean;
     shape?: ImageShape;
   }
 >(
@@ -35,6 +36,7 @@ const Image = forwardRef<
       className,
       isLoading,
       isHoverable = false,
+      hasOverLay = false,
       shape = 'rounded',
       onRemove,
       alt,
@@ -58,7 +60,17 @@ const Image = forwardRef<
           {isHoverable && (
             <div
               onClick={onClick}
-              className="default__transition absolute inset-0 z-20 flex items-center justify-center bg-gray-900/50 opacity-0 hover:opacity-100"
+              className={cn(
+                'default__transition absolute inset-0 z-20 flex items-center justify-center bg-gray-900/50 opacity-0 hover:opacity-100'
+              )}
+            />
+          )}
+          {hasOverLay && (
+            <div
+              onClick={onClick}
+              className={cn(
+                'default__transition absolute inset-0 z-20 flex items-center justify-center bg-gray-900/50'
+              )}
             />
           )}
 
@@ -94,6 +106,7 @@ const Image = forwardRef<
                 'transition-opacity',
                 '!duration-500',
                 'opacity-0',
+                'bg-gray-50',
                 'data-[loaded=true]:opacity-100',
               ],
               className

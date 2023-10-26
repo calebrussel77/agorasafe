@@ -11,18 +11,10 @@ await import('./src/env.mjs');
 /** @type {import("next").NextConfig} */
 
 const config = {
-  webpack: config => {
-    config.externals.push({
-      'utf-8-validate': 'commonjs utf-8-validate',
-      bufferutil: 'commonjs bufferutil',
-    });
-
-    return config;
-  },
-  // reactStrictMode: true,
-  experimental: {
-    esmExternals: false, // THIS IS THE FLAG THAT MATTERS
-  },
+  reactStrictMode: true,
+  // experimental: {
+  //   esmExternals: false, // THIS IS THE FLAG THAT MATTERS
+  // },
   images: {
     domains: [
       'agorasafe.up.railway.app',

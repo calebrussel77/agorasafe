@@ -4,10 +4,8 @@ import {
   FolderClock,
   MapPin,
   PhoneCall,
-  PlusIcon,
   Share2Icon,
   TimerIcon,
-  TrashIcon,
   User2Icon,
   UserMinus,
   UserPlus,
@@ -15,7 +13,6 @@ import {
 import { Calendar } from 'lucide-react';
 import { EyeOffIcon } from 'lucide-react';
 import { MoveLeft } from 'lucide-react';
-import { Trash2Icon } from 'lucide-react';
 import { useRouter } from 'next/router';
 import { z } from 'zod';
 
@@ -28,7 +25,7 @@ import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/ui/empty-state';
 import { GroupItem } from '@/components/ui/group-item';
 import { IconContainer } from '@/components/ui/icon-container';
-import { Image, ImageGridGallery } from '@/components/ui/image';
+import { ImageGridGallery } from '@/components/ui/image';
 import { Inline } from '@/components/ui/inline';
 import { CenterContent } from '@/components/ui/layout';
 import { SectionMessage } from '@/components/ui/section-message';
@@ -62,8 +59,6 @@ import { dateToReadableString, formatDateRelative } from '@/lib/date-fns';
 import { htmlParse } from '@/lib/html-react-parser';
 
 import { createServerSideProps } from '@/server/utils/server-side';
-
-import { useCurrentUser } from '@/hooks/use-current-user';
 
 type PageProps = Prettify<InferNextProps<typeof getServerSideProps>>;
 
@@ -166,11 +161,11 @@ const ServiceRequestPublicationPage = ({
             className="w-full"
           >
             <button
-              onClick={() => router.back()}
+              onClick={() => void router.push('/')}
               className="mb-3 flex items-center gap-2"
             >
               <MoveLeft className="h-5 w-5" />
-              <span>Retour</span>
+              <span>Accueil</span>
             </button>
             <ImageGridGallery
               className="h-64 w-full bg-gray-100 md:h-80"

@@ -82,7 +82,7 @@ const PhotosForm = ({ prevStep, onSubmit, isLoading }: PhotosFormProps) => {
   return (
     <>
       {(isLoading || isUploading) && (
-        <FullSpinner loadingText="Publication de votre demande..." />
+        <FullSpinner isFullPage loadingText="Publication de votre demande..." />
       )}
       <Form form={form} onSubmit={onHandleSubmit}>
         <div>

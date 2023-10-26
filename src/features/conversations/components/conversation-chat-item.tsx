@@ -15,13 +15,13 @@ import * as z from 'zod';
 
 import { ActionTooltip } from '@/components/action-tooltip';
 import { EmojiPicker } from '@/components/emoji-picker';
-import { Button } from '@/components/ui/button';
 import { Field } from '@/components/ui/field';
 import { getFileIcon, getImageUrl } from '@/components/ui/file-upload';
 import { Form, useZodForm } from '@/components/ui/form';
 import { Image } from '@/components/ui/image';
-import { Modal, useModal } from '@/components/ui/modal';
+import { closeModal, openConfirmModal } from '@/components/ui/modal';
 import { TextareaAutosize } from '@/components/ui/textarea-autosize';
+import { Typography } from '@/components/ui/typography';
 import { UserAvatar } from '@/components/user-avatar';
 
 import { cn } from '@/lib/utils';
@@ -53,6 +53,8 @@ const formSchema = z.object({
 
 type FormDataInputs = z.infer<typeof formSchema>;
 
+const modalId = 'delete-conversation-chat-item';
+
 export const ConversationChatItem = ({
   id,
   content,
@@ -70,7 +72,6 @@ export const ConversationChatItem = ({
   const [isLoadingDelete, setIsLoadingDelete] = useState(false);
   const router = useRouter();
   const handleKeyDown = () => setIsEditing(false);
-  const { onOpenChange, open: isOpen } = useModal();
 
   useKeyPressEvent('Escape', handleKeyDown);
 
@@ -113,21 +114,36 @@ export const ConversationChatItem = ({
         url: `${socketUrl}/${id}`,
         query: socketQuery,
       });
-
       await axios.delete(url);
-      onOpenChange(false);
+      closeModal(modalId);
     } catch (error) {
-      console.log(error);
+      console.error(error);
     } finally {
       setIsLoadingDelete(false);
     }
+  };
+
+  const onOpenDeleteModal = () => {
+    openConfirmModal({
+      title: 'Supprimer le message',
+      modalId,
+      children: (
+        <Typography>
+          Êtes-vous sûr de vouloir supprimer le message "
+          <span className="font-semibold">{content}</span>" ?
+        </Typography>
+      ),
+      className: 'max-w-xl',
+      confirmProps: { isLoading: isLoadingDelete },
+      onConfirm: onDelete,
+    });
   };
 
   useEffect(() => {
     form.reset({
       content: content,
     });
-  }, [content]);
+  }, [content, form]);
 
   const watchedContent = form.watch('content');
 
@@ -256,47 +272,12 @@ export const ConversationChatItem = ({
             </ActionTooltip>
           )}
 
-          <Modal
-            onOpenChange={onOpenChange}
-            open={isOpen}
-            shouldHideCloseButton
-            classNames={{
-              header: 'border-b-transparent',
-            }}
-            trigger={
-              <ActionTooltip label="Supprimer" asChild={false}>
-                <Trash onClick={() => onOpenChange(true)} className="ml-auto h-4 w-4 cursor-pointer text-zinc-500 transition hover:text-zinc-600 dark:hover:text-zinc-300" />
-              </ActionTooltip>
-            }
-            triggerProps={{ asChild: true }}
-            name="Supprimer le message"
-            description={
-              <p>
-                Êtes-vous sûr de vouloir supprimer le message "
-                <span className="font-semibold">{content}</span>" ?
-              </p>
-            }
-            footer={
-              <>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  disabled={isLoadingDelete}
-                  onClick={() => void onOpenChange(false)}
-                >
-                  Annuler
-                </Button>
-                <Button
-                  size="sm"
-                  variant="destructive"
-                  isLoading={isLoadingDelete}
-                  onClick={() => void onDelete()}
-                >
-                  Supprimer
-                </Button>
-              </>
-            }
-          />
+          <ActionTooltip label="Supprimer" asChild={false}>
+            <Trash
+              onClick={onOpenDeleteModal}
+              className="ml-auto h-4 w-4 cursor-pointer text-zinc-500 transition hover:text-zinc-600 dark:hover:text-zinc-300"
+            />
+          </ActionTooltip>
         </div>
       )}
     </div>

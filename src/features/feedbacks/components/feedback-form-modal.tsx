@@ -1,7 +1,11 @@
-import React, { type FC, type ReactNode } from 'react';
+import React, { type ReactNode } from 'react';
 
 import { Button } from '@/components/ui/button';
-import { Modal, useModal } from '@/components/ui/modal';
+import {
+  type ContextModalProps,
+  ModalFooter,
+  ModalHeader,
+} from '@/components/ui/modal';
 import { SectionMessage } from '@/components/ui/section-message';
 import { toast } from '@/components/ui/toast';
 import { useUpload } from '@/components/ui/uploadthing';
@@ -11,15 +15,9 @@ import { isArray } from '@/utils/type-guards';
 
 import { type FeedBackFormInput, FeedbackForm } from './feedback-form';
 
-interface FeedbackFormModalProps {
-  children: ReactNode;
-}
-
 const formId = 'feedback-form';
 
-const FeedbackFormModal: FC<FeedbackFormModalProps> = ({ children }) => {
-  const { onOpenChange, open: isOpen } = useModal();
-
+const FeedbackFormModal = ({ context: ctx, id }: ContextModalProps<object>) => {
   const createFeedbackMutation = api.feedbacks.create.useMutation({
     onSuccess() {
       toast({
@@ -50,13 +48,30 @@ const FeedbackFormModal: FC<FeedbackFormModalProps> = ({ children }) => {
   };
 
   return (
-    <Modal
-      onOpenChange={onOpenChange}
-      open={isOpen}
-      name="😊 Partagez votre avis sur Agorasafe"
-      description="Nous attachons une grande importance à votre opinion. Aidez-nous à améliorer Agorasafe en partageant vos commentaires. Votre avis compte !"
-      footer={
-        !createFeedbackMutation?.isSuccess && (
+    <>
+      <ModalHeader
+        title="😊 Partagez votre avis sur Agorasafe"
+        description="Nous attachons une grande importance à votre opinion. Aidez-nous à améliorer Agorasafe en partageant vos commentaires. Votre avis compte !"
+      />
+      <div className="p-6">
+        {createFeedbackMutation.error && (
+          <SectionMessage
+            description={createFeedbackMutation.error?.message}
+            appareance="danger"
+          />
+        )}
+        {createFeedbackMutation?.isSuccess ? (
+          <SectionMessage
+            description="Formulaire soumis avec succès ! Nous vous remercions de nous avoir partagé vos commentaires."
+            appareance="success"
+            hasCloseButton={false}
+          />
+        ) : (
+          <FeedbackForm id={formId} onSubmit={onSubmit} />
+        )}
+      </div>
+      <ModalFooter>
+        {!createFeedbackMutation?.isSuccess && (
           <Button
             type="submit"
             isLoading={createFeedbackMutation.isLoading || isUploading}
@@ -64,26 +79,9 @@ const FeedbackFormModal: FC<FeedbackFormModalProps> = ({ children }) => {
           >
             Envoyer
           </Button>
-        )
-      }
-      trigger={children}
-    >
-      {createFeedbackMutation.error && (
-        <SectionMessage
-          description={createFeedbackMutation.error?.message}
-          appareance="danger"
-        />
-      )}
-      {createFeedbackMutation?.isSuccess ? (
-        <SectionMessage
-          description="Formulaire soumis avec succès ! Nous vous remercions de nous avoir partagé vos commentaires."
-          appareance="success"
-          hasCloseButton={false}
-        />
-      ) : (
-        <FeedbackForm id={formId} onSubmit={onSubmit} />
-      )}
-    </Modal>
+        )}
+      </ModalFooter>
+    </>
   );
 };
 

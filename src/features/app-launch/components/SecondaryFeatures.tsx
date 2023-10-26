@@ -3,10 +3,11 @@ import clsx from 'clsx';
 import Image, { type ImageProps } from 'next/future/image';
 import { useId } from 'react';
 
+import { Container } from '@/components/ui/container';
+
 import screenshotConversations from '../images/screenshots/conversations.jpeg';
 import screenshotProfiles from '../images/screenshots/profiles.jpeg';
 import screenshotServiceRequest from '../images/screenshots/service-request.png';
-import { Container } from './Container';
 
 interface Feature {
   name: React.ReactNode;

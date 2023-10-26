@@ -1,9 +1,9 @@
+import { openContext } from '@/providers/custom-modal-provider';
 import { LogOut, RefreshCcw } from 'lucide-react';
 import { UserPlus2 } from 'lucide-react';
 import React, { type FC } from 'react';
 
 import { useAuth } from '@/features/auth';
-import { FeedbackFormModal } from '@/features/feedbacks';
 import { useGetProfileConfig } from '@/features/profile-config';
 
 import { useCurrentUser } from '@/hooks/use-current-user';
@@ -137,19 +137,21 @@ const MobileNavbar: FC<MobileNavbarProps> = ({ navigations }) => {
                     {navigations.map(item => {
                       if (item.name.toLowerCase() === 'feedback') {
                         return (
-                          <FeedbackFormModal key={item?.name}>
-                            <span className="-mx-3 flex items-center rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50">
-                              {item.name}
-                              {item?.isNew && (
-                                <Badge
-                                  content="New"
-                                  size="xs"
-                                  className="ml-0.5"
-                                  variant="success"
-                                />
-                              )}
-                            </span>
-                          </FeedbackFormModal>
+                          <button
+                            key={item?.name}
+                            onClick={() => openContext('feedbackForm', {})}
+                            className="-mx-3 flex items-center rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
+                          >
+                            {item.name}
+                            {item?.isNew && (
+                              <Badge
+                                content="New"
+                                size="xs"
+                                className="ml-0.5"
+                                variant="success"
+                              />
+                            )}
+                          </button>
                         );
                       }
                       return (
@@ -189,19 +191,21 @@ const MobileNavbar: FC<MobileNavbarProps> = ({ navigations }) => {
                   {navigations.map(item => {
                     if (item.name.toLowerCase() === 'feedback') {
                       return (
-                        <FeedbackFormModal key={item?.name}>
-                          <span className="-mx-3 flex items-center rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50">
-                            {item.name}
-                            {item?.isNew && (
-                              <Badge
-                                content="New"
-                                size="xs"
-                                className="ml-0.5"
-                                variant="success"
-                              />
-                            )}
-                          </span>
-                        </FeedbackFormModal>
+                        <button
+                          key={item?.name}
+                          onClick={() => openContext('feedbackForm', {})}
+                          className="-mx-3 flex items-center rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
+                        >
+                          {item.name}
+                          {item?.isNew && (
+                            <Badge
+                              content="New"
+                              size="xs"
+                              className="ml-0.5"
+                              variant="success"
+                            />
+                          )}
+                        </button>
                       );
                     }
 

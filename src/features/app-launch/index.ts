@@ -1,7 +1,6 @@
 export * from './components/form-launch';
 export * from './components/form-launch-modal';
 export * from './components/CallToAction';
-export * from './components/Container';
 export * from './components/Faqs';
 export * from './components/Fields';
 export * from './components/Footer';

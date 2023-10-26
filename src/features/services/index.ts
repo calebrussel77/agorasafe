@@ -7,7 +7,7 @@ export * from './components/steps/phone-form';
 export * from './components/steps/provider-number-form';
 export * from './components/steps/photos-form';
 
-export * from './components/ask-service-modal';
+export * from './components/create-service-request-modal';
 export * from './components/ask-service-item';
 
 export * from './stores';

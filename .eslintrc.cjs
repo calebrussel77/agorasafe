@@ -68,7 +68,7 @@ const config = {
         selector: 'variable',
         types: ['boolean'],
         format: ['PascalCase', 'UPPER_CASE'],
-        prefix: ['is', 'should', 'has', 'can', 'did', 'will'],
+        prefix: ['is', 'should', 'has', 'can', 'did', 'will', 'with'],
       },
       {
         selector: 'parameter',

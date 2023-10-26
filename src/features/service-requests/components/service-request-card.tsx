@@ -19,28 +19,56 @@ import { isEmptyArray } from '@/utils/type-guards';
 import { dateToReadableString } from '@/lib/date-fns';
 import { cn } from '@/lib/utils';
 
+import { type SimpleProfile } from '@/server/api/modules/profiles';
+
 import { useSliderControlsImages } from '@/hooks/use-slider-controls-images';
 
 import { DEFAULT_SERVICE_REQUEST_COVER_IMAGE } from '../constants';
-import { type GetAllServiceRequestsOutput } from '../types';
 
 interface ServiceRequestCardProps {
   className?: string;
-  serviceRequest: GetAllServiceRequestsOutput['serviceRequests'][number];
+  isFeatured?: boolean;
+  isNew?: boolean;
+  photos: Array<{ url: string; name: string }>;
+  createdAt: Date;
+  categoryName: string | undefined;
+  categoryHref: string;
+  title: string;
+  slug: string;
+  estimatedPriceText: string;
+  location: string;
+  nbOfProviderNeededText: string;
+  description: string | null;
+  author: SimpleProfile;
+  commentAuthors: Array<{ name: string; src: string | null; href: string }>;
 }
 
 const ServiceRequestCard: FC<ServiceRequestCardProps> = ({
-  serviceRequest,
+  photos: _photos,
+  description,
+  title,
+  categoryHref,
+  categoryName,
+  createdAt,
+  author,
   className,
+  nbOfProviderNeededText,
+  estimatedPriceText,
+  commentAuthors,
+  isFeatured,
+  isNew,
+  slug,
+  location,
 }) => {
-  const photos = isEmptyArray(serviceRequest?.photos)
+  const photos = isEmptyArray(_photos)
     ? [
         {
           url: DEFAULT_SERVICE_REQUEST_COVER_IMAGE,
           name: "Photo de couverture d'une demande de service",
         },
       ]
-    : serviceRequest?.photos;
+    : _photos;
+
   const photosCount = photos?.length || 1;
 
   const { currentSlide, sliderRef, hasLoaded, instanceRef } =
@@ -48,12 +76,15 @@ const ServiceRequestCard: FC<ServiceRequestCardProps> = ({
 
   return (
     <article
-      className={cn('flex flex-col items-start justify-between p-2', className)}
+      className={cn(
+        'relative flex flex-col items-start justify-between p-2',
+        className
+      )}
     >
       {photosCount > 1 ? (
         <div ref={sliderRef} className="keen-slider relative px-1">
           {photos.map((photo, idx) => (
-            <Image
+            <img
               key={idx}
               src={photo?.url}
               alt={photo?.name}
@@ -87,29 +118,29 @@ const ServiceRequestCard: FC<ServiceRequestCardProps> = ({
           className="aspect-[16/9] w-full bg-gray-50 object-cover sm:aspect-[2/1] lg:aspect-[3/2]"
         />
       )}
+      {isNew && (
+        <AbsolutePlacement placement="top-right" className="right-7 top-2">
+          <Badge content="Nouveauté" variant="success" shape="rounded" />
+        </AbsolutePlacement>
+      )}
       <div className="max-w-xl">
         <div className="mt-8 flex items-center gap-x-3 text-xs">
-          <time
-            dateTime={serviceRequest?.createdAt.toString()}
-            className="text-gray-500"
-          >
-            Publiée {dateToReadableString(serviceRequest?.createdAt)}
+          <time dateTime={createdAt.toString()} className="text-gray-500">
+            Publiée {dateToReadableString(createdAt)}
           </time>
-          <Anchor
-            href={`/service-requests?category=${serviceRequest?.service?.categoryService?.slug}`}
-          >
-            <Badge content={serviceRequest?.service?.categoryService?.name} />
+          <Anchor href={categoryHref}>
+            <Badge content={categoryName} />
           </Anchor>
           <div
             aria-label="Prix estimé de la prestation"
             title="Prix estimé de la prestation"
             className="flex flex-1 items-end justify-end pl-1 font-semibold text-brand-600"
           >
-            <span>{serviceRequest?.estimatedPriceFormatted}</span>
+            <span>{estimatedPriceText}</span>
           </div>
         </div>
         <div className="group relative">
-          <Anchor href={`/service-requests/${serviceRequest?.slug}`}>
+          <Anchor href={`/service-requests/${slug}`}>
             <Typography
               as="h3"
               truncate
@@ -117,7 +148,7 @@ const ServiceRequestCard: FC<ServiceRequestCardProps> = ({
               className="mt-3 group-hover:text-gray-600"
             >
               <span className="absolute inset-0" />
-              {serviceRequest?.title}
+              {title}
             </Typography>
           </Anchor>
           <Inline>
@@ -128,7 +159,7 @@ const ServiceRequestCard: FC<ServiceRequestCardProps> = ({
                 name: 'text-sm text-muted-foreground font-normal',
               }}
               iconBefore={<MapPin className="h-4 w-4" />}
-              name={serviceRequest?.location?.name}
+              name={location}
             />
             <GroupItem
               isHoverDisabled
@@ -138,7 +169,7 @@ const ServiceRequestCard: FC<ServiceRequestCardProps> = ({
                 wrapper: 'flex-nowrap',
               }}
               iconBefore={<User2Icon className="h-4 w-4" />}
-              name={serviceRequest?.nbProviderNeededFormattedText}
+              name={nbOfProviderNeededText}
             />
           </Inline>
           <Typography
@@ -146,26 +177,22 @@ const ServiceRequestCard: FC<ServiceRequestCardProps> = ({
             lines={3}
             className="mt-3 line-clamp-3 text-sm leading-6 text-gray-600"
           >
-            {serviceRequest?.description}
+            {description}
           </Typography>
         </div>
         <div className="relative mt-6 flex items-center justify-between gap-x-4">
           <User
-            profile={serviceRequest?.author?.profile}
+            profile={author}
             withProfileTypeInitial
             withLocation={false}
             classNames={{ name: 'text-sm' }}
             avatarProps={{ size: 'xs' }}
           />
-          {serviceRequest?.comments && serviceRequest?.comments?.length > 0 && (
+          {commentAuthors && commentAuthors?.length > 0 && (
             <AvatarGroup
               maxCount={3}
               size="xs"
-              data={serviceRequest?.comments?.map(comment => ({
-                name: comment.author.name,
-                src: comment.author.avatar as string,
-                href: `/u/${comment.author.slug}`,
-              }))}
+              data={commentAuthors as never}
             />
           )}
         </div>

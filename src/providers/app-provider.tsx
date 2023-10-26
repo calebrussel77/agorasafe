@@ -10,6 +10,9 @@ import { FullPageError } from '@/components/ui/error';
 import { Toaster } from '@/components/ui/toast';
 
 import { type AppPageProps } from '@/pages/_app';
+import { TestModal } from '@/pages/testing';
+
+import { CustomModalsProvider } from './custom-modal-provider';
 
 export type AppPagePropsWithChildren = {
   session?: AppPageProps['pageProps']['session'];
@@ -33,9 +36,11 @@ const AppProvider: FC<PropsWithChildren<AppPagePropsWithChildren>> = ({
           <ProfileStoreProvider
             {...((initialProfileState as ProfileStore) ?? undefined)}
           >
-            <ProfileSession />
-            {children}
-            <Toaster />
+            <CustomModalsProvider>
+              <ProfileSession />
+              {children}
+              <Toaster />
+            </CustomModalsProvider>
           </ProfileStoreProvider>
         </SocketStoreProvider>
       </SessionProvider>
