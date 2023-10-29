@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils';
 
 import { Button, type ButtonProps } from '../button';
 import { type ConfirmLabels } from './context';
-import { ModalFooter, ModalHeader } from './modal';
+import { ModalFooter, ModalHeader, ModalMain } from './modal';
 import { useModals } from './use-modals';
 
 export interface ConfirmModalProps {
@@ -65,7 +65,7 @@ export function ConfirmModal({
     <>
       {hasHeader && <ModalHeader title={title} description={description} />}
 
-      {children && <div className="p-6">{children}</div>}
+      {children && <ModalMain>{children}</ModalMain>}
 
       {withFooter && (
         <ModalFooter

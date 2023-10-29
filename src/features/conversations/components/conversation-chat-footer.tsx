@@ -15,6 +15,9 @@ import { isArrayOfFile } from '@/utils/type-guards';
 
 import { QS } from '@/lib/qs';
 
+import { useIsMobile } from '@/hooks/use-breakpoints';
+import { getHotkeyHandler } from '@/hooks/use-hot-keys';
+
 const chatFormSchema = z.object({
   content: z.string().min(1),
 });
@@ -90,14 +93,16 @@ const ConversationFileUploadForm = ({
   };
 
   const onHandleKeyDown = (event: React.KeyboardEvent) => {
-    if (event.key == 'Enter' && event.shiftKey == false) {
-      event.preventDefault();
-      void form.handleSubmit(onSubmit)(event);
-    }
+    event.preventDefault();
+    void form.handleSubmit(onSubmit)(event);
   };
 
   return (
-    <Form form={form} onSubmit={onSubmit} onKeyDown={onHandleKeyDown}>
+    <Form
+      form={form}
+      onSubmit={onSubmit}
+      onKeyDown={getHotkeyHandler([['Enter', onHandleKeyDown as never]])}
+    >
       <div>
         <Controller
           control={control}
@@ -112,7 +117,7 @@ const ConversationFileUploadForm = ({
                 fileTypes={['image', 'pdf', 'text']}
                 isLoading={isUploading || isLoading}
                 icon={<File className="h-10 w-10 text-zinc-600" />}
-                className="h-[300px]"
+                className="h-[650px] md:h-[300px]"
                 label="Sélectionnez ou déposez votre fichier içi !"
                 value={fileValue}
                 onChange={onChange}
@@ -159,8 +164,9 @@ const ConversationChatFooter = ({
 
   const watchedContent = form.watch('content');
   const isLoading = form.formState.isSubmitting;
+  const isMobile = useIsMobile();
 
-  const onScrollDown = () => {
+  const handleScrollDown = () => {
     setTimeout(() => {
       bottomRef.current?.scrollIntoView({
         behavior: 'smooth',
@@ -169,7 +175,7 @@ const ConversationChatFooter = ({
   };
 
   const onAfterSubmitFileUpload = () => {
-    onScrollDown();
+    handleScrollDown();
     closeModal(modalId);
   };
 
@@ -179,7 +185,7 @@ const ConversationChatFooter = ({
       const url = QS.stringifyUrl(socketUrl, query);
       await axios.post(url, formData);
       form.reset();
-      onScrollDown();
+      handleScrollDown();
     } catch (e) {
       console.error(e);
       toast({
@@ -191,11 +197,8 @@ const ConversationChatFooter = ({
     }
   };
 
-  const onHandleKeyDown = (event: React.KeyboardEvent) => {
-    if (event.key === 'Enter' && event.shiftKey === false) {
-      event.preventDefault();
-      void form.handleSubmit(onSubmit)(event);
-    }
+  const onHandleKeyDown = (event: React.KeyboardEvent<HTMLElement>) => {
+    void form.handleSubmit(onSubmit)(event);
   };
 
   const onOpenConversationFileUploadModal = () => {
@@ -203,6 +206,7 @@ const ConversationChatFooter = ({
       modalId,
       title: 'Ajouter un fichier',
       withFooter: false,
+      isFullScreen: isMobile,
       children: (
         <ConversationFileUploadForm
           onAfterSubmitFileUpload={onAfterSubmitFileUpload}
@@ -214,7 +218,11 @@ const ConversationChatFooter = ({
   };
 
   return (
-    <Form form={form} onSubmit={onSubmit} onKeyDown={onHandleKeyDown}>
+    <Form
+      form={form}
+      onSubmit={onSubmit}
+      onKeyDown={getHotkeyHandler([['Enter', onHandleKeyDown as never]])}
+    >
       <div className="relative border-t border-gray-200 p-4 shadow-sm">
         <button
           type="button"

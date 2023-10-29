@@ -5,6 +5,7 @@ import {
   type ContextModalProps,
   ModalFooter,
   ModalHeader,
+  ModalMain,
 } from '@/components/ui/modal';
 import { SectionMessage } from '@/components/ui/section-message';
 import { toast } from '@/components/ui/toast';
@@ -53,7 +54,7 @@ const FeedbackFormModal = ({ context: ctx, id }: ContextModalProps<object>) => {
         title="😊 Partagez votre avis sur Agorasafe"
         description="Nous attachons une grande importance à votre opinion. Aidez-nous à améliorer Agorasafe en partageant vos commentaires. Votre avis compte !"
       />
-      <div className="p-6">
+      <ModalMain>
         {createFeedbackMutation.error && (
           <SectionMessage
             description={createFeedbackMutation.error?.message}
@@ -69,7 +70,7 @@ const FeedbackFormModal = ({ context: ctx, id }: ContextModalProps<object>) => {
         ) : (
           <FeedbackForm id={formId} onSubmit={onSubmit} />
         )}
-      </div>
+      </ModalMain>
       <ModalFooter>
         {!createFeedbackMutation?.isSuccess && (
           <Button

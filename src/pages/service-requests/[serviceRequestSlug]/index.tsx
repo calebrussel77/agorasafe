@@ -154,7 +154,7 @@ const ServiceRequestPublicationPage = ({
   return (
     <>
       {meta}
-      <CenterContent className="container mt-6 max-w-5xl space-y-10 px-4 lg:min-w-[600px]">
+      <CenterContent className="mt-6 space-y-10">
         <AsyncWrapper isLoading={isInitialLoading} error={error}>
           <section
             aria-labelledby="service-request-main-infos"

@@ -52,26 +52,10 @@ export const TestModal = ({
 const TestPage = () => {
   const [isClicked, setIsClicked] = useState(false);
 
-  const openModal = () =>
-    modals.openConfirmModal({
-      title: isClicked ? 'Please confirm your action' : 'Changed the title',
-      children: (
-        <Typography>
-          <Button onClick={() => setIsClicked(!isClicked)}>Clicker là</Button>
-          This action is so important that you are required to confirm it with a
-          modal. Please click one of these buttons to proceed.
-          {isClicked ? 'Please confirm your action' : 'Changed the title'}
-        </Typography>
-      ),
-      labels: { confirm: 'Confirm', cancel: 'Cancel' },
-      onCancel: () => console.log('Cancel'),
-      onConfirm: () => console.log('Confirmed'),
-    });
-
   return (
     <>
       <Seo title={meta.title} description={meta.description} />
-      <CenterContent className="container w-full max-w-2xl">
+      <CenterContent>
         The test page bro
         <YourComponent />
         {/* <Button

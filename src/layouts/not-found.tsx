@@ -11,7 +11,7 @@ export function NotFound() {
         description="La page que vous recherchez n'existe page ! Elle a peut être été
           déplacée."
       />
-      <CenterContent className="mx-auto w-full max-w-2xl">
+      <CenterContent className="max-w-2xl">
         <Typography as="h1" className="text-brand-600">
           404
         </Typography>

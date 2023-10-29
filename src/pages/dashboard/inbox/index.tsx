@@ -37,40 +37,33 @@ const InboxPage = ({
 
   return (
     <>
-      <div
-        className={cn(
-          'flex h-full w-full flex-1 flex-col',
-          !profileId && 'items-center justify-center'
-        )}
-      >
-        {canDisplayConversationDetails && (
-          <>
-            <ConversationChatHeader user={<User profile={otherProfile} />} />
-            <ConversationChatMessages
-              session={session}
-              socketUrl={`${SOCKET_API_BASE_URL}/direct-messages`}
-              name={otherProfile?.name}
-              profile={profile}
-              conversationId={conversationId}
-              bottomRef={bottomRef}
-            />
-            <ConversationChatFooter
-              name={otherProfile?.name}
-              bottomRef={bottomRef}
-              socketUrl={`${SOCKET_API_BASE_URL}/direct-messages`}
-              query={{ conversationId }}
-            />
-          </>
-        )}
-        {!profileId && (
-          <EmptyState
-            className="px-3"
-            icon={<Icons.message />}
-            name="Aucune conversation selectionnée"
-            description="Veuillez selectionner une conversation pour commencer."
+      {canDisplayConversationDetails && (
+        <>
+          <ConversationChatHeader user={<User profile={otherProfile} />} />
+          <ConversationChatMessages
+            session={session}
+            socketUrl={`${SOCKET_API_BASE_URL}/direct-messages`}
+            name={otherProfile?.name}
+            profile={profile}
+            conversationId={conversationId}
+            bottomRef={bottomRef}
           />
-        )}
-      </div>
+          <ConversationChatFooter
+            name={otherProfile?.name}
+            bottomRef={bottomRef}
+            socketUrl={`${SOCKET_API_BASE_URL}/direct-messages`}
+            query={{ conversationId }}
+          />
+        </>
+      )}
+      {!profileId && (
+        <EmptyState
+          className="px-3"
+          icon={<Icons.message />}
+          name="Aucune conversation selectionnée"
+          description="Veuillez selectionner une conversation pour commencer."
+        />
+      )}
     </>
   );
 };
@@ -78,6 +71,7 @@ const InboxPage = ({
 InboxPage.getLayout = function getLayout(page: ReactElement<PageProps>) {
   const profile = page?.props?.profile;
   const session = page?.props?.session;
+  const profileId = page?.props?.profileId;
   const pageTitle = `Messagerie personnelle - ${profile?.name}`;
 
   return (
@@ -86,7 +80,11 @@ InboxPage.getLayout = function getLayout(page: ReactElement<PageProps>) {
       <MainContent className="my-0">
         <ConversationsWrapper
           conversationList={
-            <ConversationList session={session} profile={profile} />
+            <ConversationList
+              profileId={profileId}
+              session={session}
+              profile={profile}
+            />
           }
           conversationDetails={page}
         />

@@ -11,10 +11,16 @@ import { DebouncedInput } from '@/components/ui/debounced-input';
 import { EmptyState } from '@/components/ui/empty-state';
 import { FadeAnimation } from '@/components/ui/fade-animation';
 import { GroupItem } from '@/components/ui/group-item';
-import { type ContextModalProps, ModalHeader } from '@/components/ui/modal';
+import {
+  type ContextModalProps,
+  ModalHeader,
+  ModalMain,
+} from '@/components/ui/modal';
 
 import { QS } from '@/lib/qs';
 import { cn } from '@/lib/utils';
+
+import { useIsMobile } from '@/hooks/use-breakpoints';
 
 import { useGetAllServiceCategories, useGetAllServices } from '../services';
 import { usePublishServiceRequest } from '../stores';
@@ -28,6 +34,8 @@ const CreateServiceRequestModal = ({
   context: ctx,
   id,
 }: ContextModalProps<object>) => {
+  const isMobile = useIsMobile();
+
   const [selectedServiceCategory, onSelectedCategoryChange] = useState<
     ServiceCategoryItem | undefined
   >(undefined);
@@ -100,7 +108,7 @@ const CreateServiceRequestModal = ({
           </>
         }
       />
-      <div className={cn('relative h-full flex-1 overflow-hidden p-6')}>
+      <ModalMain className="relative overflow-hidden">
         {!query && (
           <AsyncWrapper isLoading={isInitialLoading} error={error}>
             <FadeAnimation
@@ -144,10 +152,14 @@ const CreateServiceRequestModal = ({
                 primaryAction={
                   <Button
                     onClick={() =>
-                      openContext('customServiceRequestCategories', {
-                        categories: dataServices?.services as never,
-                        query,
-                      })
+                      openContext(
+                        'customServiceRequestCategories',
+                        {
+                          categories: dataServices?.services as never,
+                          query,
+                        },
+                        { isFullScreen: isMobile }
+                      )
                     }
                   >
                     Faire une demande personnalisée
@@ -179,20 +191,25 @@ const CreateServiceRequestModal = ({
                 ))}
                 <GroupItem
                   onClick={() =>
-                    openContext('customServiceRequestCategories', {
-                      categories: dataServices?.services as never,
-                      query,
-                    })
+                    openContext(
+                      'customServiceRequestCategories',
+                      {
+                        categories: dataServices?.services as never,
+                        query,
+                      },
+                      { isFullScreen: isMobile }
+                    )
                   }
                   classNames={{
                     root: 'py-4 mx-1 bg-gray-100 rounded-md mt-6 group cursor-pointer',
                     name: 'font-normal text-base text-gray-600',
-                    description: 'font-semibold text-xl text-gray-900',
+                    description:
+                      'font-semibold text-lg sm:text-xl text-gray-900',
                   }}
                   name="Vous ne trouvez pas votre bonheur ?"
                   description="Créer une demande personalisée"
                   iconBefore={
-                    <PencilIcon className="ml-2 h-8 w-8 text-brand-600" />
+                    <PencilIcon className="ml-2 h-6 w-6 text-brand-600 sm:h-8 sm:w-8" />
                   }
                   iconAfter={
                     <ChevronRight className="h-5 w-5 text-gray-600 opacity-0 group-hover:opacity-100" />
@@ -202,7 +219,7 @@ const CreateServiceRequestModal = ({
             )}
           </FadeAnimation>
         </AsyncWrapper>
-      </div>
+      </ModalMain>
     </>
   );
 };
@@ -228,7 +245,7 @@ const CustomServiceRequestCategoriesModal = ({
           </button>
         }
       />
-      <div className="relative h-full flex-1 overflow-x-hidden p-6">
+      <ModalMain className="relative overflow-x-hidden">
         <FadeAnimation
           className={cn('grid grid-cols-1 gap-x-6 gap-y-3 sm:grid-cols-2')}
           from={{ x: -620, opacity: 0 }}
@@ -252,7 +269,7 @@ const CustomServiceRequestCategoriesModal = ({
             />
           ))}
         </FadeAnimation>
-      </div>
+      </ModalMain>
     </>
   );
 };

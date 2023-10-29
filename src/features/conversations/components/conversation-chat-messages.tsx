@@ -1,6 +1,6 @@
 import { Loader2, ServerCrash } from 'lucide-react';
 import { type Session } from 'next-auth';
-import { type ElementRef, Fragment, useRef, RefObject } from 'react';
+import { type ElementRef, Fragment, RefObject, useRef } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { FadeAnimation } from '@/components/ui/fade-animation';
@@ -27,7 +27,7 @@ type ConversationChatMessagesProps = React.PropsWithChildren<{
   socketUrl: string;
   conversationId: string;
   session: Session;
-  bottomRef: RefObject<HTMLDivElement>
+  bottomRef: RefObject<HTMLDivElement>;
 }>;
 
 const ConversationChatMessages = ({
@@ -133,7 +133,7 @@ const ConversationChatMessages = ({
                         content={message.content || ''}
                         fileUrl={message.fileUrl}
                         isDeleted={!!message.deletedAt}
-                        timestamp={formatDateRelative(message.createdAt)}
+                        timestamp={dateToReadableString(message.createdAt, 'p')}
                         isUpdated={dateIsAfter(
                           message.updatedAt,
                           message.createdAt

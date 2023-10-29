@@ -10,6 +10,7 @@ import { CreateServiceRequestModal } from '@/features/services';
 
 import { cn } from '@/lib/utils';
 
+import { useIsMobile } from '@/hooks/use-breakpoints';
 import { useCurrentUser } from '@/hooks/use-current-user';
 
 import { Anchor } from '../anchor';
@@ -34,15 +35,12 @@ const Navbar: FC<NavbarProps> = ({
 }) => {
   const { profile, status } = useCurrentUser();
   const { isDropdownMenuOpen, onToggleDropdownMenu } = useDropdownMenu();
-  const [isOpen, setIsOpen] = useState(false);
 
   const { data, isInitialLoading, error } = useGetProfileConfig({
     enabled: isDropdownMenuOpen,
   });
 
-  const openDialog = () => {
-    setIsOpen(true);
-  };
+  const isMobile = useIsMobile();
 
   return (
     <nav
@@ -69,7 +67,9 @@ const Navbar: FC<NavbarProps> = ({
               <button
                 title="Faire un commentaire"
                 key={item?.name}
-                onClick={() => openContext('feedbackForm', {})}
+                onClick={() =>
+                  openContext('feedbackForm', {}, { isFullScreen: isMobile })
+                }
                 className={cn(
                   'default__transition flex items-center rounded-md px-2 py-1 text-sm',
                   'hover:bg-brand-50 hover:text-brand-600'
@@ -116,7 +116,13 @@ const Navbar: FC<NavbarProps> = ({
         <CanView allowedProfiles={['CUSTOMER']} isPublic>
           <LoginRedirect reason="create-service-request">
             <Button
-              onClick={() => openContext('createServiceRequest', {})}
+              onClick={() =>
+                openContext(
+                  'createServiceRequest',
+                  {},
+                  { isFullScreen: isMobile }
+                )
+              }
               size="sm"
             >
               Demander un service

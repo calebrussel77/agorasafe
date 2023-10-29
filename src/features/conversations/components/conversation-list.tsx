@@ -1,10 +1,11 @@
 import { Loader2, ServerCrash } from 'lucide-react';
 import { type Session } from 'next-auth';
 import Link from 'next/link';
-import { useRouter} from 'next/router';
+import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 import { useInView } from 'react-intersection-observer';
 
+import { Anchor } from '@/components/anchor';
 import { EmptyState } from '@/components/ui/empty-state';
 import { Icons } from '@/components/ui/icons';
 import { CenterContent } from '@/components/ui/layout';
@@ -17,16 +18,18 @@ import { type SimpleProfile } from '@/server/api/modules/profiles';
 
 import { useGetInfiniteConversations } from '../services';
 import { ConversationListItem } from './conversation-list-item';
-import { Anchor } from '@/components/anchor';
 
 type ConversationListProps = React.PropsWithChildren<{
   profile: SimpleProfile;
   session: Session;
+  profileId: string | null;
 }>;
 
-const ConversationList = ({ profile, session }: ConversationListProps) => {
-  const { query } = useRouter();
-  const profileId = query.profileId as string;
+const ConversationList = ({
+  profile,
+  session,
+  profileId,
+}: ConversationListProps) => {
   const { ref, inView: isInView } = useInView();
 
   const {
@@ -107,9 +110,7 @@ const ConversationList = ({ profile, session }: ConversationListProps) => {
         })}
         {hasNextPage && !isLoading && !isRefetching && (
           <CenterContent ref={ref} className="mt-3">
-            {isInView && (
-              <Loader2 className="my-4 h-7 w-7 animate-spin text-zinc-500" />
-            )}
+            {isInView && <Spinner variant="ghost" />}
           </CenterContent>
         )}
         {conversations?.length === 0 && (

@@ -1,3 +1,4 @@
+import { useRouter } from 'next/router';
 import React, { type FC, type ReactNode } from 'react';
 
 import { ContentTitle } from '@/features/user-dashboard';
@@ -19,6 +20,8 @@ const ConversationsWrapper: FC<ConversationsWrapperProps> = ({
   conversationList,
 }) => {
   const { height } = useHeaderHeight();
+  const { query } = useRouter();
+  const profileId = query?.profileId as string;
 
   return (
     <div
@@ -27,13 +30,26 @@ const ConversationsWrapper: FC<ConversationsWrapperProps> = ({
       }}
       className="flex w-full overflow-hidden"
     >
-      <ConversationSidebar className={cn('flex h-full w-full flex-1 flex-col')}>
+      <ConversationSidebar
+        className={cn(
+          profileId
+            ? 'hidden lg:flex lg:h-full lg:w-full lg:flex-1 lg:flex-col'
+            : 'flex h-full w-full flex-1 flex-col'
+        )}
+      >
         <ContentTitle className="sticky inset-x-0 top-0 z-10 flex w-full items-center justify-between border-b border-gray-200 px-4 py-[15px] shadow-sm">
           Conversations
         </ContentTitle>
         {conversationList}
       </ConversationSidebar>
-      {conversationDetails}
+      <div
+        className={cn(
+          'flex h-full w-full flex-1 flex-col',
+          !profileId && 'hidden items-center justify-center lg:flex'
+        )}
+      >
+        {conversationDetails}
+      </div>
     </div>
   );
 };

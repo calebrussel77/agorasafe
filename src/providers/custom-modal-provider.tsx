@@ -41,10 +41,12 @@ type InnerProps<TName extends keyof typeof modals> = Prettify<
 
 export function openContext<TName extends keyof typeof modals>(
   modal: TName,
-  props: InnerProps<TName>['innerProps'],
-  modalProps?: Omit<
-    ModalProps,
-    'open' | 'onOpenChange' | 'title' | 'description' | 'children'
+  props: Prettify<InnerProps<TName>['innerProps']>,
+  modalProps?: Prettify<
+    Omit<
+      ModalProps,
+      'open' | 'onOpenChange' | 'title' | 'description' | 'children'
+    >
   >
 ) {
   openContextModal<TName>({
