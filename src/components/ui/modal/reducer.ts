@@ -28,7 +28,7 @@ interface CloseAllAction {
 
 function handleCloseModal(modal: ModalState, canceled?: boolean) {
   if (canceled && modal.type === 'confirm') {
-    modal?.props?.onCancel?.();
+    void modal?.props?.onCancel?.();
   }
   modal?.props?.onOpenChange && modal?.props?.onOpenChange(false);
 }
