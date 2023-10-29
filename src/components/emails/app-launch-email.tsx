@@ -17,8 +17,6 @@ import {
 } from '@react-email/components';
 import * as React from 'react';
 
-import { getAbsoluteHrefUrl } from '@/utils/routing';
-
 interface AppLaunchEmailProps {
   username?: string;
   userImage?: string;
@@ -30,21 +28,22 @@ interface AppLaunchEmailProps {
   inviteFromIp?: string;
   inviteFromLocation?: string;
 }
-const baseUrl = process.env.VERCEL_URL
-  ? `https://${process.env.VERCEL_URL}`
-  : '';
+
+const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? '';
+
 export const AppLaunchEmail = ({
   username = 'caleb russel',
-  userImage = getAbsoluteHrefUrl('/images/jeune-homme-joyeux.png'),
+  userImage = `${baseUrl}/images/jeune-homme-joyeux.png`,
   invitedByUsername = 'contact',
   invitedByEmail = 'contact@agorasafe.com',
   teamName = 'My Project',
-  teamImage = getAbsoluteHrefUrl('/preview-agorasafe.png'),
-  inviteLink = getAbsoluteHrefUrl('/launch'),
+  teamImage = `${baseUrl}/images/preview-agorasafe.png`,
+  inviteLink = `${baseUrl}/launch`,
   inviteFromIp = '204.13.186.218',
   inviteFromLocation = 'Douala, Cameroun',
 }: AppLaunchEmailProps) => {
   const previewText = `Join ${invitedByUsername} on Agorasafe`;
+
   return (
     <Html>
       <Head />
@@ -54,7 +53,7 @@ export const AppLaunchEmail = ({
           <Container className="mx-auto my-[40px] w-[465px] rounded border border-solid border-[#eaeaea] p-[20px]">
             <Section className="mt-[32px]">
               <Img
-                src={getAbsoluteHrefUrl('/preview-agorasafe.png')}
+                src={`${baseUrl}/images/preview-agorasafe.png`}
                 width="40"
                 height="37"
                 alt="Agorasafe"
@@ -90,7 +89,7 @@ export const AppLaunchEmail = ({
                 </Column>
                 <Column align="center">
                   <Img
-                    src={`${baseUrl}/static/vercel-arrow.png`}
+                    src={`${baseUrl}/images/vercel-arrow.png`}
                     width="12"
                     height="9"
                     alt="invited you to"

@@ -1,3 +1,4 @@
+import { openContext } from '@/providers/custom-modal-provider';
 import {
   ArrowLeftCircle,
   ArrowRight,
@@ -11,7 +12,6 @@ import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/ui/empty-state';
 
 import { LoginRedirect } from '@/features/auth';
-import { AskServiceModal } from '@/features/services';
 
 import { cn } from '@/lib/utils';
 
@@ -65,11 +65,14 @@ export function LatestServiceRequests() {
               // description="Soyez le premier à créer et publier votre demande de service."
               primaryAction={
                 <CanView allowedProfiles={['CUSTOMER']} isPublic>
-                  <AskServiceModal>
-                    <LoginRedirect reason="create-service-request">
-                      <Button size="sm">Créer ma demande</Button>
-                    </LoginRedirect>
-                  </AskServiceModal>
+                  <LoginRedirect reason="create-service-request">
+                    <Button
+                      onClick={() => openContext('createServiceRequest', {})}
+                      size="sm"
+                    >
+                      Créer ma demande
+                    </Button>
+                  </LoginRedirect>
                 </CanView>
               }
             />
@@ -110,14 +113,41 @@ export function LatestServiceRequests() {
                 </div>
               )}
               <div ref={sliderRef} className="keen-slider mt-2 w-full">
-                {data?.serviceRequests?.map(serviceRequest => (
-                  <div
-                    key={serviceRequest?.id}
-                    className="keen-slider__slide w-full"
-                  >
-                    <ServiceRequestCard serviceRequest={serviceRequest} />
-                  </div>
-                ))}
+                {data?.serviceRequests?.map(serviceRequest => {
+                  const commentAuhtors = serviceRequest?.comments?.map(
+                    comment => ({
+                      name: comment?.author?.name,
+                      src: comment?.author?.avatar,
+                      href: `/u/${comment?.author?.slug}`,
+                    })
+                  );
+
+                  return (
+                    <ServiceRequestCard
+                      isNew
+                      key={serviceRequest?.id}
+                      className="keen-slider__slide w-full"
+                      photos={serviceRequest?.photos}
+                      description={serviceRequest?.description}
+                      title={serviceRequest?.title}
+                      categoryHref={`/service-requests?category=${serviceRequest?.service?.categoryService?.slug}`}
+                      createdAt={serviceRequest?.createdAt}
+                      location={serviceRequest?.location?.name}
+                      slug={serviceRequest?.slug}
+                      commentAuthors={commentAuhtors}
+                      nbOfProviderNeededText={
+                        serviceRequest?.nbProviderNeededFormattedText
+                      }
+                      estimatedPriceText={
+                        serviceRequest?.estimatedPriceFormatted
+                      }
+                      categoryName={
+                        serviceRequest?.service?.categoryService?.name
+                      }
+                      author={serviceRequest?.author?.profile}
+                    />
+                  );
+                })}
               </div>
               {data?.totalCount > LATEST_SERVICE_REQUESTS_COUNT && (
                 <Button

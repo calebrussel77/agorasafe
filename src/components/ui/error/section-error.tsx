@@ -64,7 +64,7 @@ export function SectionError({
           >
             {shouldRetry ? 'Réessayer' : 'Recharger la page'}
           </Button>
-          {pathname !== '/' && (
+          {!pathname ? null : (
             <Button
               onClick={() => window.location.replace('/')}
               variant="link"

@@ -35,10 +35,11 @@ export const increaseDate = (
 
 export const formatDateDistance = (
   date: Date | number | string | undefined,
-  baseDate: number | Date = new Date()
+  baseDate: number | Date = new Date(),
+  { addSuffix } = { addSuffix: true }
 ) => {
   if (!date) return '';
-  return formatDistance(new Date(date), baseDate, { locale: fr });
+  return formatDistance(new Date(date), baseDate, { locale: fr, addSuffix });
 };
 
 export const formatDateRelative = (

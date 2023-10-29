@@ -171,7 +171,7 @@ const PublishPage = ({ modeQuery }: PageProps) => {
         <Header>
           <ProgressBar progress={progress} />
         </Header>
-        <CenterContent className="container w-full max-w-2xl pb-12 md:min-w-[38rem]">
+        <CenterContent className="max-w-3xl pb-12 md:min-w-[38rem]">
           <div className="w-full">
             <Typography as="h1" variant="h4" className="pb-6 text-brand-600">
               Étape {currentStep} / {totalStepCount}

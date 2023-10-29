@@ -71,7 +71,7 @@ export default function AddNewProfilePage({ profileTypeQuery }: PageProps) {
         title={meta.title(profileTypeQuery)}
         description={meta.description}
       />
-      <CenterContent className="container min-h-screen w-full max-w-2xl">
+      <CenterContent className="min-h-screen max-w-3xl">
         <div>
           <button
             onClick={() => router.back()}

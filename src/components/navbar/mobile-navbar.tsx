@@ -1,11 +1,12 @@
+import { openContext } from '@/providers/custom-modal-provider';
 import { LogOut, RefreshCcw } from 'lucide-react';
 import { UserPlus2 } from 'lucide-react';
 import React, { type FC } from 'react';
 
 import { useAuth } from '@/features/auth';
-import { FeedbackFormModal } from '@/features/feedbacks';
 import { useGetProfileConfig } from '@/features/profile-config';
 
+import { useIsMobile } from '@/hooks/use-breakpoints';
 import { useCurrentUser } from '@/hooks/use-current-user';
 
 import { ActiveLink } from '../active-link';
@@ -22,17 +23,23 @@ import { User } from '../user';
 interface MobileNavbarProps {
   className?: string;
   navigations: Array<{ name: string; href: string; isNew: boolean }>;
+  onNavItemClick: () => void;
 }
 
-const MobileNavbar: FC<MobileNavbarProps> = ({ navigations }) => {
+const MobileNavbar: FC<MobileNavbarProps> = ({
+  navigations,
+  onNavItemClick,
+}) => {
   const { onSignOut } = useAuth();
   const { profile, resetProfile } = useCurrentUser();
+
   const {
     data: userProfileConfig,
     isInitialLoading,
     error,
     refetch,
   } = useGetProfileConfig({ enabled: !!profile?.id });
+  const isMobile = useIsMobile();
 
   return (
     <>
@@ -104,6 +111,7 @@ const MobileNavbar: FC<MobileNavbarProps> = ({ navigations }) => {
                       return (
                         <ActiveLink
                           key={link.id}
+                          onClick={onNavItemClick}
                           href={url}
                           activeClassName="bg-zinc-100 text-primary"
                           className="-mx-3 flex items-center gap-x-3 px-3 py-2"
@@ -137,19 +145,27 @@ const MobileNavbar: FC<MobileNavbarProps> = ({ navigations }) => {
                     {navigations.map(item => {
                       if (item.name.toLowerCase() === 'feedback') {
                         return (
-                          <FeedbackFormModal key={item?.name}>
-                            <span className="-mx-3 flex items-center rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50">
-                              {item.name}
-                              {item?.isNew && (
-                                <Badge
-                                  content="New"
-                                  size="xs"
-                                  className="ml-0.5"
-                                  variant="success"
-                                />
-                              )}
-                            </span>
-                          </FeedbackFormModal>
+                          <button
+                            key={item?.name}
+                            onClick={() =>
+                              openContext(
+                                'feedbackForm',
+                                {},
+                                { isFullScreen: isMobile }
+                              )
+                            }
+                            className="-mx-3 flex items-center rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
+                          >
+                            {item.name}
+                            {item?.isNew && (
+                              <Badge
+                                content="New"
+                                size="xs"
+                                className="ml-0.5"
+                                variant="success"
+                              />
+                            )}
+                          </button>
                         );
                       }
                       return (
@@ -189,19 +205,21 @@ const MobileNavbar: FC<MobileNavbarProps> = ({ navigations }) => {
                   {navigations.map(item => {
                     if (item.name.toLowerCase() === 'feedback') {
                       return (
-                        <FeedbackFormModal key={item?.name}>
-                          <span className="-mx-3 flex items-center rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50">
-                            {item.name}
-                            {item?.isNew && (
-                              <Badge
-                                content="New"
-                                size="xs"
-                                className="ml-0.5"
-                                variant="success"
-                              />
-                            )}
-                          </span>
-                        </FeedbackFormModal>
+                        <button
+                          key={item?.name}
+                          onClick={() => openContext('feedbackForm', {})}
+                          className="-mx-3 flex items-center rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
+                        >
+                          {item.name}
+                          {item?.isNew && (
+                            <Badge
+                              content="New"
+                              size="xs"
+                              className="ml-0.5"
+                              variant="success"
+                            />
+                          )}
+                        </button>
                       );
                     }
 

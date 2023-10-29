@@ -1,7 +1,8 @@
 import Image from 'next/future/image';
 
+import { Container } from '@/components/ui/container';
+
 import backgroundImage from '../images/background-faqs.jpg';
-import { Container } from './Container';
 
 const faqs = [
   [

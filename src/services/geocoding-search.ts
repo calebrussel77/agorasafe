@@ -31,7 +31,8 @@ export const useGeocodingSearch = (defaultSearch = 'logbaba') => {
     async () => {
       const data = await axios.get<LocationSearch[]>(url);
       return data;
-    }
+    },
+    { enabled: locationSearch.length >= 3 }
   );
 
   const data = queryData?.data?.map(el => ({

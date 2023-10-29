@@ -1,7 +1,6 @@
-import { Anchor } from '@/components/anchor';
 import { LogoIcon } from '@/components/icons/logo-icon';
+import { Container } from '@/components/ui/container';
 
-import { Container } from './Container';
 import { NavLink } from './NavLink';
 
 export function Footer() {

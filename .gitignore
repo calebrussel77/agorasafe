@@ -5,6 +5,7 @@
 
 # dependencies
 /node_modules
+/.react-email/node_modules
 /.pnp
 .pnp.js
 
@@ -20,6 +21,7 @@
 
 # next.js
 /.next/
+/.react-email/.next/
 /out/
 next-env.d.ts
 
@@ -46,6 +48,7 @@ yarn-error.log*
 
 # typescript
 *.tsbuildinfo
+.contentlayer
 
 # miscellaneous
 /pages/api/scripts*
@@ -61,3 +64,6 @@ yarn-error.log*
 # Sentry
 next.config.original.js
 sentry.properties
+
+# web vitals
+.unlighthouse

@@ -1,6 +1,5 @@
 import { Avatar } from '@/components/ui/avatar';
-
-import { Container } from './Container';
+import { Container } from '@/components/ui/container';
 
 const testimonials = [
   [

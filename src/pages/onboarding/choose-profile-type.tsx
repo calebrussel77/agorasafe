@@ -11,7 +11,7 @@ const ChooseProfileTypePage = () => {
   const { session } = useCurrentUser();
 
   return (
-    <CenterContent className="container min-h-screen w-full max-w-2xl">
+    <CenterContent className="min-h-screen max-w-3xl">
       <Card>
         <Card.Header>
           <Card.Title className="text-xl">
@@ -20,10 +20,7 @@ const ChooseProfileTypePage = () => {
           <div className="mx-auto">
             <GroupItem
               iconBefore={
-                <Avatar
-                src={session?.user?.avatar}
-                alt={session?.user?.name}
-                />
+                <Avatar src={session?.user?.avatar} alt={session?.user?.name} />
               }
               name={session?.user?.name as never}
               description={session?.user?.email}

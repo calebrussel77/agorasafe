@@ -1,9 +1,9 @@
 import Image from 'next/future/image';
 
 import { Button } from '@/components/ui/button';
+import { Container } from '@/components/ui/container';
 
 import callToActionBg from '../images/background-call-to-action.jpg';
-import { Container } from './Container';
 
 export function CallToAction() {
   return (

@@ -16,8 +16,11 @@ import { UserBadge } from '@/components/user-badge';
 
 import { api } from '@/utils/api';
 import { generateArray } from '@/utils/misc';
+import { invalidateModeratedContent } from '@/utils/query-invalidation';
 
 import { type SimpleProfile } from '@/server/api/modules/profiles';
+
+import { useIsMobile } from '@/hooks/use-breakpoints';
 
 import { useUserProfiles } from '../services';
 import { ProfileItemSkeleton } from './profile-item-skeleton';
@@ -34,8 +37,8 @@ const ChooseProfileModale = ({
   updateProfile,
 }: ChooseProfileModaleProps) => {
   const [isLoading, setIsLoading] = useState(false);
-
   const queryUtils = api.useContext();
+  const isMobile = useIsMobile();
 
   // profiles query
   const { data, isInitialLoading, error, refetch } = useUserProfiles({
@@ -46,7 +49,7 @@ const ChooseProfileModale = ({
   const onProfileClick = async (profile: SimpleProfile) => {
     setIsLoading(true);
     updateProfile(profile);
-    await queryUtils.invalidate();
+    await invalidateModeratedContent(queryUtils);
     toast({
       delay: 3000,
       icon: (
@@ -70,9 +73,9 @@ const ChooseProfileModale = ({
   };
 
   return (
-    <Modal classNames={{ root: 'max-w-2xl' }} open={true}>
+    <Modal open={true} isFullScreen>
       <CenterContent className="w-full">
-        <h1 className="text-center text-3xl font-semibold">
+        <h1 className="text-center text-2xl font-semibold lg:text-3xl">
           Avec qui souhaitez-vous continuer ?
         </h1>
         {isLoading ? (
@@ -90,28 +93,33 @@ const ChooseProfileModale = ({
             <p className="w-full max-w-md text-center text-muted-foreground">
               {data?.message}
             </p>
-            <div className="mt-10 flex w-full flex-wrap items-start justify-center gap-1 pb-8 sm:gap-4">
+            <div className="mt-6 grid w-full max-w-2xl grid-cols-2 gap-1 pb-8 sm:gap-4">
               {isInitialLoading
-                ? generateArray(4).map(el => <ProfileItemSkeleton key={el} />)
+                ? generateArray(2).map(el => <ProfileItemSkeleton key={el} />)
                 : data?.profiles?.map(profile => (
                     <button
                       key={profile.id}
                       onClick={() => void onProfileClick(profile)}
-                      className="group flex w-full max-w-[250px] flex-col items-center justify-center rounded-md p-3 hover:bg-gray-100"
+                      className="group flex flex-col items-center justify-center rounded-md px-3 py-6 hover:bg-gray-100"
                     >
                       <UserAvatar
                         src={profile.avatar as string}
                         alt={profile.name}
                         type={profile.type}
-                        className="aspect-square h-20 w-20 shadow-md sm:h-24 sm:w-24"
+                        className="aspect-square h-16 w-16 shadow-md sm:h-20 sm:w-20"
                       />
                       <div className="mt-3 flex items-start gap-1.5">
-                        <Typography truncate as="h3">
+                        <Typography
+                          truncate
+                          as="h3"
+                          className="text-lg md:text-xl"
+                        >
                           {profile.name}
                         </Typography>
                         <UserBadge
                           className="line-clamp-1"
                           type={profile.type}
+                          withProfileTypeInitial={isMobile}
                         />
                       </div>
                       <Typography truncate variant="small" className="mt-1">
@@ -120,6 +128,7 @@ const ChooseProfileModale = ({
                     </button>
                   ))}
             </div>
+            {/* //TODO: Manage user profiles */}
             <Skeleton
               isVisible={isInitialLoading}
               className="aspect-square h-10 w-40"

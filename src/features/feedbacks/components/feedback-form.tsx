@@ -1,5 +1,4 @@
 import { FeedbackType } from '@prisma/client';
-import { type TRPCError } from '@trpc/server';
 import { Camera } from 'lucide-react';
 import React, { type FC } from 'react';
 import { Controller } from 'react-hook-form';
@@ -58,7 +57,7 @@ const FeedbackForm: FC<FeedbackFormProps> = ({ id, onSubmit }) => {
               value={field.value}
               className="mt-1 flex flex-wrap items-center gap-3"
             >
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center gap-x-2">
                 <RadioGroup.Item
                   aria-label={`Bugs`}
                   value={FeedbackType.Bug}
@@ -102,8 +101,8 @@ const FeedbackForm: FC<FeedbackFormProps> = ({ id, onSubmit }) => {
               hint="Le poids max. d'un fichier est de 4MB"
               error={fieldState?.error?.message}
               icon={<Camera className="h-10 w-10 text-zinc-600" />}
-              className="h-[130px]"
-              label="Ajouter un capture d'ecran (Optionnel)..."
+              className="h-[200px] sm:h-[130px]"
+              label="Ajouter une capture d'ecran (Optionnel)..."
               value={fileValue}
               onChange={onChange}
             />

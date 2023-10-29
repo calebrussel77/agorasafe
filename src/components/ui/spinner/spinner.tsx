@@ -38,7 +38,24 @@ const Spinner = forwardRef<
 
 Spinner.displayName = 'Spinner';
 
-const FullSpinner = ({ loadingText }: { loadingText?: string }) => {
+const FullSpinner = ({
+  loadingText,
+  isFullPage = false,
+}: {
+  loadingText?: string;
+  isFullPage?: boolean;
+}) => {
+  if (isFullPage) {
+    return (
+      <div className="fixed inset-0 z-40 flex h-full w-full items-center justify-center bg-white bg-opacity-70 backdrop-blur-sm backdrop-filter transition-all duration-200 ease-in-out">
+        <div className="relative z-20 flex flex-col items-center justify-center gap-y-1">
+          <Spinner variant="primary" className="h-16 w-16" />
+          {loadingText}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <AbsolutePlacement
       placement="center-center"

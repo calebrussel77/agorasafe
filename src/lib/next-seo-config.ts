@@ -42,6 +42,6 @@ export const seoConfig: {
   },
 } as const;
 
-export const DEFAULT_APP_IMAGE_PREVIEW = `/preview-agorasafe.png`;
+export const DEFAULT_APP_IMAGE_PREVIEW = `${WEBSITE_URL}/preview-agorasafe.png`;
 export const DEFAULT_APP_DESCRIPTION =
   'Trouvez les talents dont vous avez besoin pour répondre à vos besoins, ou proposez vos compétences pour aider les autres. Réunissez vos besoins avec les talents locaux sur notre plateforme de mise en relation. La clé pour transformer vos idées en réalité';

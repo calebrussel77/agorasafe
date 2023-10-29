@@ -6,8 +6,7 @@ import { z } from 'zod';
 
 import { EmojiPicker } from '@/components/emoji-picker';
 import { Form, useZodForm } from '@/components/ui/form';
-import { Modal, useModal } from '@/components/ui/modal';
-import { Popover } from '@/components/ui/popover';
+import { closeModal, openConfirmModal } from '@/components/ui/modal';
 import { TextareaAutosize } from '@/components/ui/textarea-autosize';
 import { toast } from '@/components/ui/toast';
 import { DropzoneUpload, useUpload } from '@/components/ui/uploadthing';
@@ -15,6 +14,9 @@ import { DropzoneUpload, useUpload } from '@/components/ui/uploadthing';
 import { isArrayOfFile } from '@/utils/type-guards';
 
 import { QS } from '@/lib/qs';
+
+import { useIsMobile } from '@/hooks/use-breakpoints';
+import { getHotkeyHandler } from '@/hooks/use-hot-keys';
 
 const chatFormSchema = z.object({
   content: z.string().min(1),
@@ -33,6 +35,8 @@ type ConversationFooterProps = React.PropsWithChildren<{
   query: Record<string, string>;
   bottomRef: RefObject<HTMLDivElement>;
 }>;
+
+const modalId = 'conversation-file-upload';
 
 const ConversationFileUploadForm = ({
   socketUrl,
@@ -89,14 +93,16 @@ const ConversationFileUploadForm = ({
   };
 
   const onHandleKeyDown = (event: React.KeyboardEvent) => {
-    if (event.key == 'Enter' && event.shiftKey == false) {
-      event.preventDefault();
-      void form.handleSubmit(onSubmit)(event);
-    }
+    event.preventDefault();
+    void form.handleSubmit(onSubmit)(event);
   };
 
   return (
-    <Form form={form} onSubmit={onSubmit} onKeyDown={onHandleKeyDown}>
+    <Form
+      form={form}
+      onSubmit={onSubmit}
+      onKeyDown={getHotkeyHandler([['Enter', onHandleKeyDown as never]])}
+    >
       <div>
         <Controller
           control={control}
@@ -111,7 +117,7 @@ const ConversationFileUploadForm = ({
                 fileTypes={['image', 'pdf', 'text']}
                 isLoading={isUploading || isLoading}
                 icon={<File className="h-10 w-10 text-zinc-600" />}
-                className="h-[300px]"
+                className="h-[650px] md:h-[300px]"
                 label="Sélectionnez ou déposez votre fichier içi !"
                 value={fileValue}
                 onChange={onChange}
@@ -152,15 +158,15 @@ const ConversationChatFooter = ({
   name,
   bottomRef,
 }: ConversationFooterProps) => {
-  const { open: isOpen, onOpenChange } = useModal();
   const form = useZodForm({
     schema: chatFormSchema,
   });
 
   const watchedContent = form.watch('content');
   const isLoading = form.formState.isSubmitting;
+  const isMobile = useIsMobile();
 
-  const onScrollDown = () => {
+  const handleScrollDown = () => {
     setTimeout(() => {
       bottomRef.current?.scrollIntoView({
         behavior: 'smooth',
@@ -169,8 +175,8 @@ const ConversationChatFooter = ({
   };
 
   const onAfterSubmitFileUpload = () => {
-    onOpenChange(false);
-    onScrollDown();
+    handleScrollDown();
+    closeModal(modalId);
   };
 
   //TODO: Refactor this service api request to the service folder
@@ -179,7 +185,7 @@ const ConversationChatFooter = ({
       const url = QS.stringifyUrl(socketUrl, query);
       await axios.post(url, formData);
       form.reset();
-      onScrollDown();
+      handleScrollDown();
     } catch (e) {
       console.error(e);
       toast({
@@ -191,38 +197,41 @@ const ConversationChatFooter = ({
     }
   };
 
-  const onHandleKeyDown = (event: React.KeyboardEvent) => {
-    if (event.key === 'Enter' && event.shiftKey === false) {
-      event.preventDefault();
-      void form.handleSubmit(onSubmit)(event);
-    }
+  const onHandleKeyDown = (event: React.KeyboardEvent<HTMLElement>) => {
+    void form.handleSubmit(onSubmit)(event);
+  };
+
+  const onOpenConversationFileUploadModal = () => {
+    openConfirmModal({
+      modalId,
+      title: 'Ajouter un fichier',
+      withFooter: false,
+      isFullScreen: isMobile,
+      children: (
+        <ConversationFileUploadForm
+          onAfterSubmitFileUpload={onAfterSubmitFileUpload}
+          socketUrl={socketUrl}
+          query={query}
+        />
+      ),
+    });
   };
 
   return (
-    <Form form={form} onSubmit={onSubmit} onKeyDown={onHandleKeyDown}>
+    <Form
+      form={form}
+      onSubmit={onSubmit}
+      onKeyDown={getHotkeyHandler([['Enter', onHandleKeyDown as never]])}
+    >
       <div className="relative border-t border-gray-200 p-4 shadow-sm">
-        <Modal
-          onOpenChange={onOpenChange}
-          open={isOpen}
-          classNames={{ root: 'sm:max-w-[525px]' }}
-          trigger={
-            <button
-              type="button"
-              disabled={isLoading}
-              className="default__transition absolute bottom-7 left-8 flex h-[24px] w-[24px] items-center justify-center rounded-full bg-zinc-500/90 p-1 hover:bg-zinc-600"
-            >
-              <Plus className="text-white" />
-            </button>
-          }
-          triggerProps={{ asChild: true }}
-          name="Ajouter un fichier"
+        <button
+          type="button"
+          onClick={onOpenConversationFileUploadModal}
+          disabled={isLoading}
+          className="default__transition absolute bottom-7 left-8 flex h-[24px] w-[24px] items-center justify-center rounded-full bg-zinc-500/90 p-1 hover:bg-zinc-600"
         >
-          <ConversationFileUploadForm
-            onAfterSubmitFileUpload={onAfterSubmitFileUpload}
-            socketUrl={socketUrl}
-            query={query}
-          />
-        </Modal>
+          <Plus className="text-white" />
+        </button>
 
         <TextareaAutosize
           {...form.register('content')}

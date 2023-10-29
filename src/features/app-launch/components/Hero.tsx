@@ -1,17 +1,9 @@
 import Image from 'next/future/image';
 
-import { CanView } from '@/components/can-view';
 import { Button } from '@/components/ui/button';
+import { Container } from '@/components/ui/container';
 
 import backgroundImage from '../images/background-faqs.jpg';
-import logoLaravel from '../images/logos/laravel.svg';
-import logoMirage from '../images/logos/mirage.svg';
-import logoStatamic from '../images/logos/statamic.svg';
-import logoStaticKit from '../images/logos/statickit.svg';
-import logoTransistor from '../images/logos/transistor.svg';
-import logoTuple from '../images/logos/tuple.svg';
-import { Container } from './Container';
-import { FormLaunchModal } from './form-launch-modal';
 
 export function Hero() {
   return (

@@ -1,6 +1,12 @@
 import { NotFound } from '@/layouts/not-found';
 import { type ProfileType } from '@prisma/client';
-import { ExternalLink, Facebook, Share2Icon, Twitter } from 'lucide-react';
+import {
+  ExternalLink,
+  Facebook,
+  Pencil,
+  Share2Icon,
+  Twitter,
+} from 'lucide-react';
 import { ShieldCheck } from 'lucide-react';
 import { Linkedin } from 'lucide-react';
 import { z } from 'zod';
@@ -11,6 +17,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Image } from '@/components/ui/image';
 import { Inline } from '@/components/ui/inline';
+import { Rating } from '@/components/ui/rating';
 import { Seo } from '@/components/ui/seo';
 import { Separator } from '@/components/ui/separator';
 import { FullSpinner } from '@/components/ui/spinner';
@@ -164,10 +171,10 @@ export default function ProfileDetailsPage({ profileSlugQuery }: PageProps) {
                     )}
                   </h1>
                   <Inline className="flex flex-wrap text-sm font-normal text-muted-foreground">
-                    <p>
-                      Membre depuis{' '}
-                      {formatDateDistance(data?.profile?.createdAt)}
-                    </p>
+                    {!isCustomer && (
+                      <Rating readonly initialRating={4} size="xs" />
+                    )}
+                    <p>Membre {formatDateDistance(data?.profile?.createdAt)}</p>
                     {isCustomer && (
                       <p>{`${data?.profile?.customerJobPostedCount} Demande Postée(s)`}</p>
                     )}
@@ -186,6 +193,7 @@ export default function ProfileDetailsPage({ profileSlugQuery }: PageProps) {
                       size="sm"
                       className="w-full sm:w-auto"
                     >
+                      <Pencil className="h-4 w-4" />
                       Modifier le profil
                     </Button>
                   )}
