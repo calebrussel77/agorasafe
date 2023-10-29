@@ -45,7 +45,17 @@ const Form = <T extends FieldValues>({
   ...props
 }: Props<T>) => (
   <FormProvider {...form}>
-    <form onSubmit={form.handleSubmit(onSubmit)} {...props}>
+    <form
+      onSubmit={form.handleSubmit(onSubmit)}
+      className={cn(
+        formToken({
+          gap,
+        }),
+        className,
+        'space-y-0'
+      )}
+      {...props}
+    >
       {/* <fieldset> passes the form's 'disabled' state to all of its elements,
             allowing us to handle disabled style variants with just className */}
       <fieldset

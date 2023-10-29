@@ -1,3 +1,4 @@
+import { openContext } from '@/providers/custom-modal-provider';
 import axios from 'axios';
 import { File, Plus, SendHorizonal } from 'lucide-react';
 import React, { type RefObject } from 'react';
@@ -6,7 +7,13 @@ import { z } from 'zod';
 
 import { EmojiPicker } from '@/components/emoji-picker';
 import { Form, useZodForm } from '@/components/ui/form';
-import { closeModal, openConfirmModal } from '@/components/ui/modal';
+import {
+  ContextModalProps,
+  ModalFooter,
+  ModalHeader,
+  ModalMain,
+  closeModal,
+} from '@/components/ui/modal';
 import { TextareaAutosize } from '@/components/ui/textarea-autosize';
 import { toast } from '@/components/ui/toast';
 import { DropzoneUpload, useUpload } from '@/components/ui/uploadthing';
@@ -36,15 +43,15 @@ type ConversationFooterProps = React.PropsWithChildren<{
   bottomRef: RefObject<HTMLDivElement>;
 }>;
 
-const modalId = 'conversation-file-upload';
-
-const ConversationFileUploadForm = ({
-  socketUrl,
-  onAfterSubmitFileUpload,
-  query,
-}: Omit<ConversationFooterProps, 'name' | 'bottomRef'> & {
-  onAfterSubmitFileUpload: () => void;
-}) => {
+const ConversationFileUploadFormModal = ({
+  context,
+  id,
+  innerProps: { socketUrl, handleScrollDown, query },
+}: ContextModalProps<
+  Omit<ConversationFooterProps, 'name' | 'bottomRef'> & {
+    handleScrollDown: () => void;
+  }
+>) => {
   const form = useZodForm({
     schema: imageUploadFormSchema,
     defaultValues: {
@@ -81,7 +88,8 @@ const ConversationFileUploadForm = ({
         fileUrl: files && files[0]?.url,
       });
       form.reset();
-      onAfterSubmitFileUpload();
+      handleScrollDown();
+      context.closeModal(id);
     } catch (e) {
       toast({
         variant: 'danger',
@@ -98,42 +106,48 @@ const ConversationFileUploadForm = ({
   };
 
   return (
-    <Form
-      form={form}
-      onSubmit={onSubmit}
-      onKeyDown={getHotkeyHandler([['Enter', onHandleKeyDown as never]])}
-    >
-      <div>
-        <Controller
-          control={control}
-          name={`fileUrl`}
-          render={({ field: { onChange, value }, fieldState }) => {
-            const fileValue = value as File[];
+    <>
+      <ModalHeader title="Ajouter un fichier" />
+      <ModalMain>
+        <Form
+          form={form}
+          onSubmit={onSubmit}
+          onKeyDown={getHotkeyHandler([['Enter', onHandleKeyDown as never]])}
+          className="h-full"
+        >
+          <div className="relative h-full flex-1 md:h-[300px]">
+            <Controller
+              control={control}
+              name={`fileUrl`}
+              render={({ field: { onChange, value }, fieldState }) => {
+                const fileValue = value as File[];
 
-            return (
-              <DropzoneUpload
-                hint="Le poids max. d'un fichier est de 4MB"
-                error={fieldState?.error?.message}
-                fileTypes={['image', 'pdf', 'text']}
-                isLoading={isUploading || isLoading}
-                icon={<File className="h-10 w-10 text-zinc-600" />}
-                className="h-[650px] md:h-[300px]"
-                label="Sélectionnez ou déposez votre fichier içi !"
-                value={fileValue}
-                onChange={onChange}
-              />
-            );
-          }}
-        />
-      </div>
-      <div className="relative">
+                return (
+                  <DropzoneUpload
+                    hint="Le poids max. d'un fichier est de 4MB"
+                    error={fieldState?.error?.message}
+                    fileTypes={['image', 'pdf', 'text']}
+                    isLoading={isUploading || isLoading}
+                    icon={<File className="h-10 w-10 text-zinc-600" />}
+                    className="absolute inset-y-0 h-full"
+                    label="Sélectionnez ou déposez votre fichier içi !"
+                    value={fileValue}
+                    onChange={onChange}
+                  />
+                );
+              }}
+            />
+          </div>
+        </Form>
+      </ModalMain>
+      <ModalFooter className="relative pb-4">
         <TextareaAutosize
           {...form.register('content')}
           disabled={isLoading || isUploading}
           placeholder={`Ajouter un message (Optionnel) ...`}
           className="bottom-0 rounded-md border-none bg-zinc-200/80 py-3.5 pl-4 pr-[71px] text-zinc-600 focus-visible:ring-0 focus-visible:ring-offset-0"
         />
-        <div className="absolute bottom-3 right-3 flex items-center gap-x-2 px-2">
+        <div className="absolute bottom-7 right-3 flex items-center gap-x-2 px-2">
           <EmojiPicker
             onChange={emoji =>
               form.setValue('content', `${watchedContent}${emoji}`)
@@ -147,8 +161,8 @@ const ConversationFileUploadForm = ({
             <SendHorizonal className="text-white" />
           </button>
         </div>
-      </div>
-    </Form>
+      </ModalFooter>
+    </>
   );
 };
 
@@ -174,11 +188,6 @@ const ConversationChatFooter = ({
     }, 150);
   };
 
-  const onAfterSubmitFileUpload = () => {
-    handleScrollDown();
-    closeModal(modalId);
-  };
-
   //TODO: Refactor this service api request to the service folder
   const onSubmit = async (formData: unknown) => {
     try {
@@ -202,19 +211,15 @@ const ConversationChatFooter = ({
   };
 
   const onOpenConversationFileUploadModal = () => {
-    openConfirmModal({
-      modalId,
-      title: 'Ajouter un fichier',
-      withFooter: false,
-      isFullScreen: isMobile,
-      children: (
-        <ConversationFileUploadForm
-          onAfterSubmitFileUpload={onAfterSubmitFileUpload}
-          socketUrl={socketUrl}
-          query={query}
-        />
-      ),
-    });
+    openContext(
+      'conversationFileUploadForm',
+      {
+        query,
+        socketUrl,
+        handleScrollDown,
+      },
+      { isFullScreen: isMobile }
+    );
   };
 
   return (
@@ -259,4 +264,4 @@ const ConversationChatFooter = ({
   );
 };
 
-export { ConversationChatFooter };
+export { ConversationChatFooter, ConversationFileUploadFormModal };

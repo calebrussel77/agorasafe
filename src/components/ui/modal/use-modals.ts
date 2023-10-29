@@ -7,7 +7,7 @@ export function useModals() {
 
   if (!ctx) {
     throw new Error(
-      '[@mantine/modals] useModals hook was called outside of context, wrap your app with ModalsProvider component'
+      '[@agorasafe/modals] useModals hook was called outside of context, wrap your app with ModalsProvider component'
     );
   }
 

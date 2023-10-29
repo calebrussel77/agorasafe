@@ -7,6 +7,7 @@ import {
   ShieldAlert,
   Trash,
   TrashIcon,
+  X,
 } from 'lucide-react';
 import { type Session } from 'next-auth';
 import { useRouter } from 'next/router';
@@ -77,9 +78,7 @@ export const ConversationChatItem = ({
   const [isEditing, setIsEditing] = useState(false);
   const [isLoadingDelete, setIsLoadingDelete] = useState(false);
   const router = useRouter();
-  const handleKeyDown = () => setIsEditing(false);
-
-  useHotkeys([['Escape', handleKeyDown]]);
+  const onHandleEscape = () => setIsEditing(false);
 
   const onProfileClick = () => {
     if (profile.id === connectedProfile.id) {
@@ -113,11 +112,11 @@ export const ConversationChatItem = ({
     }
   };
 
-  const onHandleKeyDown = (event: React.KeyboardEvent<HTMLElement>) => {
+  const onHandleSubmit = (event: React.KeyboardEvent<HTMLElement>) => {
     void form.handleSubmit(onSubmit)(event);
   };
 
-  const onDelete = async () => {
+  const onDelete = useCallback(async () => {
     setIsLoadingDelete(true);
     try {
       const url = qs.stringifyUrl({
@@ -131,7 +130,7 @@ export const ConversationChatItem = ({
     } finally {
       setIsLoadingDelete(false);
     }
-  };
+  }, [id, socketQuery, socketUrl]);
 
   const onOpenDeleteModal = useCallback(() => {
     openConfirmModal({
@@ -258,9 +257,10 @@ export const ConversationChatItem = ({
             <Form
               form={form}
               onSubmit={onSubmit}
-              className="flex w-full items-start gap-x-2 space-y-0 pt-2"
+              className="flex w-full items-start gap-x-2 space-y-0 pt-1"
               onKeyDown={getHotkeyHandler([
-                ['Enter', onHandleKeyDown as never],
+                ['Enter', onHandleSubmit as never],
+                ['Escape', onHandleEscape as never],
               ])}
             >
               <div className="relative w-full flex-1">
@@ -272,10 +272,10 @@ export const ConversationChatItem = ({
                     {...form.register('content')}
                     disabled={isLoading}
                     placeholder="Modifier le message"
-                    className="w-full rounded-md border-none bg-zinc-200/80 px-4 py-3 text-zinc-600 focus-visible:ring-0 focus-visible:ring-offset-0"
+                    className="w-full rounded-md border-none bg-zinc-200/80 py-3 pl-3 pr-[73px] text-zinc-600 focus-visible:ring-0 focus-visible:ring-offset-0"
                   />
                 </Field>
-                <div className="absolute right-4 top-2 z-20 flex items-center gap-x-2">
+                <div className="absolute bottom-8 right-4 z-20 flex items-center gap-x-2">
                   <EmojiPicker
                     onChange={emoji =>
                       form.setValue('content', `${watchedContent}${emoji}`)
@@ -294,25 +294,41 @@ export const ConversationChatItem = ({
           )}
         </div>
       </div>
+      {isEditing && (
+        <Button
+          size="xs"
+          variant="ghost"
+          className="absolute right-2 top-3 flex lg:hidden"
+          onClick={onHandleEscape}
+        >
+          <X className="h-4 w-4 text-red-500" />
+        </Button>
+      )}
       {canDeleteMessage && !isEditing && (
         <div className="">
           <DropdownMenu>
             <DropdownMenu.Trigger asChild>
-              <Button size="xs" variant="ghost">
+              <Button
+                size="xs"
+                variant="ghost"
+                className="absolute right-2 top-3"
+              >
                 <MoreVertical className="h-4 w-4" />
               </Button>
             </DropdownMenu.Trigger>
-            <DropdownMenu.Content className="min-w-[200px]">
+            <DropdownMenu.Content className="min-w-[180px]">
               <div className="flex flex-col space-y-1">
                 {messageOptions
                   .filter(el => el.canView)
                   .map(({ label, onClick, icon }) => (
                     <DropdownMenu.Item
                       key={label}
-                      className="default__transition flex cursor-pointer items-center gap-2.5 rounded-md px-3 py-2.5 text-sm text-gray-900 hover:bg-gray-100"
+                      className="default__transition flex cursor-pointer items-center gap-2.5 rounded-md px-3 py-2 text-sm text-gray-900 hover:bg-gray-100"
                       onClick={onClick}
                     >
-                      {cloneElement(icon, { className: 'h-5 w-5' })}
+                      {cloneElement(icon, {
+                        className: 'h-4 w-4 md:h-5 md:w-5',
+                      })}
                       {label}
                     </DropdownMenu.Item>
                   ))}

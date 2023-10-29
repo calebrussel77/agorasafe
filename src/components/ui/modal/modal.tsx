@@ -67,18 +67,22 @@ const DialogContent = React.forwardRef<
             'scrollbar__custom fixed left-[50%] top-[50%] z-50 flex w-full max-w-2xl translate-x-[-50%] translate-y-[-50%] flex-col',
             'overflow-y-auto border bg-background sm:rounded-lg',
             'shadow-lg duration-300 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0',
-            'data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95',
-            'data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2',
-            'data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2',
-            'data-[state=open]:slide-in-from-top-[48%]',
+            'data-[state=open]:fade-in-0',
           ],
-          isFullScreen && [
-            'inset-0 max-w-none translate-x-0 translate-y-0',
-            'data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-100 data-[state=open]:zoom-in-100',
-            'data-[state=closed]:slide-out-to-bottom-[-150%] data-[state=closed]:slide-out-to-left-0',
-            'data-[state=open]:slide-in-from-bottom-[100%] data-[state=open]:slide-in-from-left-0',
-            'shadow-none duration-500',
-          ]
+          isFullScreen
+            ? [
+                'inset-0 max-w-none translate-x-0 translate-y-0',
+                'data-[state=open]:fade-in-0',
+                'data-[state=closed]:slide-out-to-bottom-[-150%]',
+                'data-[state=open]:slide-in-from-bottom-[100%]',
+                'shadow-none duration-500',
+              ]
+            : [
+                'data-[state=closed]:slide-out-to-left-1/2 data-[state=open]:slide-in-from-left-1/2',
+                'data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95',
+                'data-[state=closed]:slide-out-to-top-[48%]',
+                'data-[state=open]:slide-in-from-top-[48%]',
+              ]
         )}
         {...props}
       >
