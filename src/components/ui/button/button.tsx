@@ -91,7 +91,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 
     if (href) {
       return (
-        <Anchor href={href} as={asLink}>
+        <Anchor href={href} as={asLink} className={className}>
           {btn}
         </Anchor>
       );

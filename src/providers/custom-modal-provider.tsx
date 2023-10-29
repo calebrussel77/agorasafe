@@ -5,6 +5,7 @@ import {
   openContextModal,
 } from '@/components/ui/modal';
 
+import { ConversationFileUploadFormModal } from '@/features/conversations';
 import { FeedbackFormModal } from '@/features/feedbacks';
 import {
   CreateServiceRequestModal,
@@ -15,6 +16,7 @@ const modals = {
   feedbackForm: FeedbackFormModal,
   customServiceRequestCategories: CustomServiceRequestCategoriesModal,
   createServiceRequest: CreateServiceRequestModal,
+  conversationFileUploadForm: ConversationFileUploadFormModal,
 };
 
 export const CustomModalsProvider = ({

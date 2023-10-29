@@ -22,7 +22,7 @@ type ModalsEvents = {
 };
 
 export const [useModalsEvents, createEvent] =
-  createUseExternalEvents<ModalsEvents>('mantine-modals');
+  createUseExternalEvents<ModalsEvents>('agorasafe-modals');
 
 export const openModal = createEvent('openModal');
 export const closeModal = createEvent('closeModal');
