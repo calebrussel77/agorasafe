@@ -9,6 +9,7 @@ import { type SimpleProfile } from '@/server/api/modules/profiles';
 
 import { ActionTooltip } from '../action-tooltip';
 import { LogoSymbolIcon } from '../icons/logo-icon';
+import { Tooltip } from '../ui/tooltip';
 import { Typography } from '../ui/typography';
 import { UserBadge } from './user-badge';
 
@@ -32,7 +33,7 @@ const UserName: FC<UserAvatarProps> = ({
   withProfileBadge = true,
   className,
   classNames,
-  withProfileBadgeInitial,
+  withProfileBadgeInitial = true,
   ...props
 }) => {
   if (!profile) return null;
@@ -47,7 +48,7 @@ const UserName: FC<UserAvatarProps> = ({
         variant="h4"
         truncate
         className={cn(
-          'line-clamp-1 text-base font-semibold',
+          'line-clamp-1 text-sm font-semibold',
           className,
           classNames?.text
         )}
@@ -58,43 +59,36 @@ const UserName: FC<UserAvatarProps> = ({
 
   return (
     <div
-      className={cn(
-        'flex flex-nowrap items-center gap-x-1 leading-none tracking-tight',
-        classNames?.root
-      )}
+      className={cn('flex flex-nowrap items-center gap-x-1', classNames?.root)}
     >
       <Typography
         as="h3"
         truncate
         variant="h4"
         className={cn(
-          'line-clamp-1 text-base font-semibold',
+          'line-clamp-1 text-sm font-semibold',
           className,
           classNames?.text
         )}
       >
         {profile?.name}
       </Typography>
+
+      {/* //TODO: Need to fix hydratation error occuring when using a tooltip */}
       {withProfileBadge && (
-        <ActionTooltip
-          label={getProfileTypeName(profile.type as ProfileType)}
-          asChild={false}
-        >
-          <UserBadge
-            size="xs"
-            type={profile.type as ProfileType}
-            withProfileBadgeInitial={withProfileBadgeInitial}
-            className={cn(classNames?.badge)}
-            {...props}
-          />
-        </ActionTooltip>
+        <UserBadge
+          size="xs"
+          type={profile.type as ProfileType}
+          withProfileBadgeInitial={withProfileBadgeInitial}
+          className={cn(classNames?.badge)}
+        />
       )}
+
+      {/* //TODO: Need to fix hydratation error occuring when using a tooltip */}
       {isAdmin && (
-        <ActionTooltip label="Agorasafe Modérateur" asChild={false}>
-          <LogoSymbolIcon
-            className={cn('h-4 w-4 flex-shrink-0', classNames?.badge)}
-          />
-        </ActionTooltip>
+        <LogoSymbolIcon
+          className={cn('h-4 w-4 flex-shrink-0', classNames?.badge)}
+        />
       )}
     </div>
   );

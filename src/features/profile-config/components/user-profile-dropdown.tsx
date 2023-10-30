@@ -55,13 +55,13 @@ const UserProfileDropdown: FC<UserProfileDropdownProps> = ({
         className="ml-4 hidden rounded-full lg:flex"
       >
         <button
+          onClick={onToggle}
           className={cn(
             'default__transition flex items-center px-2 py-1',
             isHeaderScrolled ? 'hover:bg-brand-50' : 'hover:bg-gray-500'
           )}
         >
           <User
-            onClick={onToggle}
             profile={currentProfile}
             withRating={false}
             canLinkToProfile={false}

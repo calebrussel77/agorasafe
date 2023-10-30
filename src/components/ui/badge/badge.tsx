@@ -17,7 +17,7 @@ const badgeVariants = cva(
   {
     variants: {
       size: {
-        xs: 'px-1',
+        xs: 'px-1.5',
         sm: 'px-1.5 font-semibold',
         md: 'px-2 font-semibold',
         lg: 'px-2.5 font-semibold',
@@ -37,7 +37,7 @@ const badgeVariants = cva(
           'bg-yellow-600 hover:bg-yellow-600/80 border-transparent text-white',
         success:
           'bg-green-600 hover:bg-green-600/80 border-transparent text-white',
-        outline: 'text-brand-500 border-brand-600 bg-white',
+        outline: 'text-brand-700 border-brand-600 bg-brand-100',
       },
       placement: {
         'top-left': 'top-0 -left-0 transform -translate-x-1/4 -translate-y-1/4',
@@ -59,6 +59,7 @@ export interface BadgeProps
   extends Omit<React.HTMLAttributes<HTMLDivElement>, 'content'>,
     VariantProps<typeof badgeVariants> {
   content: React.ReactNode;
+  as?: keyof JSX.IntrinsicElements | React.ComponentType<any>;
   shouldDisableOutline?: boolean;
 }
 
@@ -71,10 +72,13 @@ function Badge({
   shape,
   size = 'md',
   placement = 'bottom-right',
+  as = 'div',
   ...props
 }: BadgeProps) {
+  const Comp = as;
+
   return (
-    <div className="relative w-fit">
+    <Comp className="relative w-fit">
       {children}
       <div
         className={cn(
@@ -96,7 +100,7 @@ function Badge({
       >
         {content}
       </div>
-    </div>
+    </Comp>
   );
 }
 

@@ -31,7 +31,7 @@ const mapAvatarTextSize: Record<
 > = {
   xs: { textSize: 'text-xs', subTextSize: 'text-xs' },
   sm: { textSize: 'text-sm', subTextSize: 'text-xs' },
-  md: { textSize: 'text-base', subTextSize: 'text-sm' },
+  md: { textSize: 'text-base', subTextSize: 'text-xs' },
   lg: { textSize: 'text-md', subTextSize: 'text-sm' },
   xl: { textSize: 'text-lg', subTextSize: 'text-sm' },
   xxl: { textSize: 'text-xl', subTextSize: 'text-base' },
@@ -104,6 +104,7 @@ const User: FC<UserProps> = ({
           <UserAvatar profile={profile} shape="circle" {...avatarProps} />
         </UserProfileLink>
       )}
+
       {withUsername || subText || (isProvider && withRating) ? (
         <div className="flex w-full flex-col items-start">
           {withUsername && (
@@ -111,7 +112,7 @@ const User: FC<UserProps> = ({
               profile={profile}
               canLinkToProfile={canLinkToProfile}
             >
-              <Inline>
+              <div className="flex items-center gap-x-1">
                 <UserName
                   withProfileBadge={withProfileBadge}
                   withProfileBadgeInitial={withProfileBadgeInitial}
@@ -119,7 +120,7 @@ const User: FC<UserProps> = ({
                   className={cn(textSizeClassNames, classNames?.text)}
                 />
                 {badge}
-              </Inline>
+              </div>
             </UserProfileLink>
           )}
 
@@ -127,7 +128,7 @@ const User: FC<UserProps> = ({
             <Typography
               truncate
               className={cn(
-                '-mt-0.5 text-muted-foreground',
+                'text-muted-foreground',
                 subTextSizeClassNames,
                 classNames?.subText
               )}
@@ -139,12 +140,14 @@ const User: FC<UserProps> = ({
           )}
 
           {isProvider && withRating && (
-            <Rating readonly initialRating={1} size="xs" className="-mt-1" />
+            <Rating readonly initialRating={1} size="xs" className="-mt-0.5" />
           )}
         </div>
       ) : null}
     </div>
   );
+
+  console.log(user);
 
   return user;
 };
@@ -154,7 +157,7 @@ const UserProfileLink = ({
   profile,
   canLinkToProfile,
 }: {
-  children: JSX.Element;
+  children: ReactNode;
   profile?: UserProps['profile'];
   canLinkToProfile?: boolean;
 }) => {
@@ -173,4 +176,4 @@ const UserProfileLink = ({
   );
 };
 
-export { User };
+export { User }
