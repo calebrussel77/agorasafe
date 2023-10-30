@@ -7,7 +7,6 @@ import { Avatar } from '@/components/ui/avatar';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { DropdownMenu } from '@/components/ui/dropdown-menu';
 import { ErrorWrapper, SectionError } from '@/components/ui/error';
-import { Image } from '@/components/ui/image';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Typography } from '@/components/ui/typography';
 import { User } from '@/components/user';
@@ -64,11 +63,9 @@ const UserProfileDropdown: FC<UserProfileDropdownProps> = ({
           <User
             onClick={onToggle}
             profile={currentProfile}
-            withLocation={false}
             withRating={false}
             canLinkToProfile={false}
-            classNames={{ name: 'text-base' }}
-            withProfileTypeInitial
+            subText={null}
           />
           <ChevronDown className="ml-2 h-4 w-4 flex-shrink-0" />
         </button>
@@ -95,7 +92,11 @@ const UserProfileDropdown: FC<UserProfileDropdownProps> = ({
                   </div>
                 </div>
               ) : (
-                <User profile={currentProfile} canLinkToProfile={false} />
+                <User
+                  profile={currentProfile}
+                  canLinkToProfile={false}
+                  withProfileBadgeInitial={false}
+                />
               )}
             </div>
             <DropdownMenu.Separator />

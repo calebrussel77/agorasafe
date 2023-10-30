@@ -11,8 +11,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Spinner } from '@/components/ui/spinner';
 import { toast } from '@/components/ui/toast';
 import { Typography } from '@/components/ui/typography';
-import { UserAvatar } from '@/components/user-avatar';
-import { UserBadge } from '@/components/user-badge';
+import { UserAvatar, UserName } from '@/components/user';
 
 import { api } from '@/utils/api';
 import { generateArray } from '@/utils/misc';
@@ -103,25 +102,14 @@ const ChooseProfileModale = ({
                       className="group flex flex-col items-center justify-center rounded-md px-3 py-6 hover:bg-gray-100"
                     >
                       <UserAvatar
-                        src={profile.avatar as string}
-                        alt={profile.name}
-                        type={profile.type}
+                        profile={profile}
                         className="aspect-square h-16 w-16 shadow-md sm:h-20 sm:w-20"
                       />
-                      <div className="mt-3 flex items-start gap-1.5">
-                        <Typography
-                          truncate
-                          as="h3"
-                          className="text-lg md:text-xl"
-                        >
-                          {profile.name}
-                        </Typography>
-                        <UserBadge
-                          className="line-clamp-1"
-                          type={profile.type}
-                          withProfileTypeInitial={isMobile}
-                        />
-                      </div>
+                      <UserName
+                        profile={profile}
+                        classNames={{ root: 'mt-3', text: 'text-lg' }}
+                        withProfileBadgeInitial={isMobile}
+                      />
                       <Typography truncate variant="small" className="mt-1">
                         {profile.location?.name}
                       </Typography>

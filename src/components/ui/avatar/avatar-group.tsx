@@ -315,7 +315,7 @@ const AvatarGroup = ({
 
         return !isTooltipDisabled && !avatarData.disabled ? (
           <ActionTooltip
-            label={avatarData.name || 'sssss'}
+            label={avatarData.name}
             asChild={false}
             key={composeUniqueKey(avatarData, idx)}
           >

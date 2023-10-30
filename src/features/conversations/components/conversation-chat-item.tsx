@@ -4,8 +4,6 @@ import {
   LinkIcon,
   MoreVertical,
   SendHorizonal,
-  ShieldAlert,
-  Trash,
   TrashIcon,
   X,
 } from 'lucide-react';
@@ -15,7 +13,6 @@ import qs from 'query-string';
 import { cloneElement, useCallback, useEffect, useMemo, useState } from 'react';
 import * as z from 'zod';
 
-import { ActionTooltip } from '@/components/action-tooltip';
 import { EmojiPicker } from '@/components/emoji-picker';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu } from '@/components/ui/dropdown-menu';
@@ -27,13 +24,13 @@ import { Inline } from '@/components/ui/inline';
 import { closeModal, openConfirmModal } from '@/components/ui/modal';
 import { TextareaAutosize } from '@/components/ui/textarea-autosize';
 import { Typography } from '@/components/ui/typography';
-import { UserAvatar } from '@/components/user-avatar';
+import { UserAvatar, UserName } from '@/components/user';
 
 import { cn } from '@/lib/utils';
 
 import { type SimpleProfile } from '@/server/api/modules/profiles';
 
-import { getHotkeyHandler, useHotkeys } from '@/hooks/use-hot-keys';
+import { getHotkeyHandler } from '@/hooks/use-hot-keys';
 
 interface ConversationChatItemProps {
   id: string;
@@ -48,11 +45,6 @@ interface ConversationChatItemProps {
   socketUrl: string;
   socketQuery: Record<string, string>;
 }
-
-const roleIconMap = {
-  MEMBER: null,
-  ADMIN: <ShieldAlert className="ml-2 h-4 w-4 text-rose-500" />,
-};
 
 const formSchema = z.object({
   content: z.string().min(1),
@@ -187,27 +179,17 @@ export const ConversationChatItem = ({
           onClick={onProfileClick}
           className="cursor-pointer transition hover:drop-shadow-md"
         >
-          <UserAvatar
-            src={profile.avatar as string}
-            alt={profile?.name}
-            type={profile?.type}
-          />
+          <UserAvatar profile={profile} />
         </div>
         <div className="flex w-full flex-col">
           <div className="flex items-center gap-x-2">
             <Inline>
-              <div className="flex items-center">
-                <p
-                  onClick={onProfileClick}
-                  className="cursor-pointer text-sm font-semibold hover:underline"
-                >
-                  {profile.name}
-                </p>
-                <ActionTooltip label={session?.user?.role}>
-                  {roleIconMap[session?.user?.role || 'MEMBER']}
-                </ActionTooltip>
-              </div>
-
+              <UserName
+                profile={profile}
+                onClick={onProfileClick}
+                className="text-sm"
+                withProfileBadgeInitial
+              />
               <span className="text-xs text-zinc-500 dark:text-zinc-400">
                 {timestamp}
               </span>
