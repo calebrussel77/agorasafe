@@ -8,7 +8,6 @@ import { Anchor } from '@/components/anchor';
 import { cn } from '@/lib/utils';
 
 import { Spinner } from '../spinner';
-import { Truncate } from '../truncate';
 
 const buttonVariants = cva(
   'inline-flex items-center gap-1.5 justify-center rounded-md font-medium transition duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background',
@@ -69,6 +68,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 
     const btn = (
       <Comp
+      
         className={cn(
           'line-clamp-1',
           buttonVariants({ variant, size, className })

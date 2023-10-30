@@ -6,6 +6,8 @@ export type Variant =
   | 'success'
   | 'warning';
 
+export type SizeVariant = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxl';
+
 export const VARIANTS_COLORS: Record<Variant, string> = {
   danger: 'text-red-500',
   focused: 'text-primary-500',

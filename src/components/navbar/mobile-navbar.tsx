@@ -60,10 +60,7 @@ const MobileNavbar: FC<MobileNavbarProps> = ({
             >
               {profile ? (
                 <>
-                  <User
-                    profile={profile}
-                    classNames={{ name: 'text-base', root: 'mx-3 py-3' }}
-                  />
+                  <User profile={profile} classNames={{ root: 'mx-3 py-3' }} />
                   <Separator />
                   {userProfileConfig?.canAddNewProfile && (
                     <>

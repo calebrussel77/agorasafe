@@ -35,9 +35,7 @@ import { FullSpinner } from '@/components/ui/spinner';
 import { toast } from '@/components/ui/toast';
 import { Truncate } from '@/components/ui/truncate';
 import { Typography } from '@/components/ui/typography';
-import { User } from '@/components/user';
-import { UserAvatar } from '@/components/user-avatar';
-import { UserBadge } from '@/components/user-badge';
+import { User, UserAvatar, UserBadge, UserName } from '@/components/user';
 
 import {
   DEFAULT_SERVICE_REQUEST_COVER_IMAGE,
@@ -382,19 +380,11 @@ const ServiceRequestPublicationPage = ({
                         </ActionTooltip>
                       )}
                       <UserAvatar
-                        src={profile?.avatar as string}
-                        alt={profile.name}
-                        type={profile.type}
+                        profile={profile}
                         className="aspect-square h-20 w-20 shadow-md sm:h-24 sm:w-24"
                       />
                       <div className="mt-3 flex items-start gap-1.5">
-                        <Typography truncate as="h3" className="text-base">
-                          {profile.name}
-                        </Typography>
-                        <UserBadge
-                          className="line-clamp-1"
-                          type={profile.type}
-                        />
+                        <UserName profile={profile} className="text-base" />
                       </div>
                       <Typography truncate variant="small" className="mt-1">
                         {profile.location?.name}
@@ -449,8 +439,11 @@ const ServiceRequestPublicationPage = ({
                           >
                             <div className="flex w-full items-center justify-between">
                               <User
-                                withProfileTypeInitial
-                                withOwnerBadge={isAuthor}
+                                badge={
+                                  isAuthor ? (
+                                    <Badge content="Auteur" variant="default" />
+                                  ) : null
+                                }
                                 profile={comment?.author}
                               />
                               {canViewReservedBtn && (

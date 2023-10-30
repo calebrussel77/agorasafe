@@ -1,5 +1,4 @@
 import { NotFound } from '@/layouts/not-found';
-import { type ProfileType } from '@prisma/client';
 import {
   ExternalLink,
   Facebook,
@@ -7,7 +6,6 @@ import {
   Share2Icon,
   Twitter,
 } from 'lucide-react';
-import { ShieldCheck } from 'lucide-react';
 import { Linkedin } from 'lucide-react';
 import { z } from 'zod';
 
@@ -22,8 +20,7 @@ import { Seo } from '@/components/ui/seo';
 import { Separator } from '@/components/ui/separator';
 import { FullSpinner } from '@/components/ui/spinner';
 import { Typography } from '@/components/ui/typography';
-import { UserAvatar } from '@/components/user-avatar';
-import { UserBadge } from '@/components/user-badge';
+import { UserAvatar, UserName } from '@/components/user';
 
 import { LoginRedirect } from '@/features/auth';
 import { useGetProfileDetails } from '@/features/profiles';
@@ -116,7 +113,6 @@ export default function ProfileDetailsPage({ profileSlugQuery }: PageProps) {
   });
   const profileName = data?.profile?.name || '';
   const isDeleted = !!data?.profile?.deletedAt;
-  const isAdmin = data?.profile?.user?.role === 'ADMIN';
   const isCustomer = data?.profile?.type === 'CUSTOMER';
   const isMyProfile = data?.profile?.id === profile?.id;
 
@@ -144,10 +140,8 @@ export default function ProfileDetailsPage({ profileSlugQuery }: PageProps) {
             <div className="-mt-12 sm:-mt-16 sm:flex sm:items-end sm:space-x-5">
               <div className="flex">
                 <UserAvatar
-                  type={data?.profile?.type}
+                  profile={data?.profile}
                   className="h-24 w-24 rounded-full bg-gray-200 object-cover !ring-4 ring-card sm:h-32 sm:w-32"
-                  src={data?.profile?.avatar as string}
-                  alt={profileName}
                 />
               </div>
               <div
@@ -157,19 +151,10 @@ export default function ProfileDetailsPage({ profileSlugQuery }: PageProps) {
                 )}
               >
                 <div className="mt-6 min-w-0 flex-1">
-                  <h1 className="flex items-center">
-                    <Typography
-                      as="span"
-                      truncate
-                      className="text-2xl font-bold"
-                    >
-                      {profileName}
-                    </Typography>
-                    <UserBadge className="ml-2" type={data?.profile?.type} />
-                    {isAdmin && (
-                      <ShieldCheck className="ml-1 h-4 w-4 flex-shrink-0 text-green-500" />
-                    )}
-                  </h1>
+                  <UserName
+                    profile={data?.profile}
+                    classNames={{ text: 'text-2xl font-bold' }}
+                  />
                   <Inline className="flex flex-wrap text-sm font-normal text-muted-foreground">
                     {!isCustomer && (
                       <Rating readonly initialRating={4} size="xs" />

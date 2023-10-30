@@ -6,7 +6,6 @@ import {
   UserProfileDropdown,
   useGetProfileConfig,
 } from '@/features/profile-config';
-import { CreateServiceRequestModal } from '@/features/services';
 
 import { cn } from '@/lib/utils';
 

@@ -10,7 +10,7 @@ import { Truncate, type TruncateProps } from '../truncate';
 
 const VARIANTS = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'] as const;
 
-const typographyVariants = cva('', {
+export const typographyVariants = cva('', {
   variants: {
     variant: {
       h1: 'text-4xl md:text-6xl font-bold tracking-tight',
@@ -39,7 +39,7 @@ type ExpandedTypography = {
 
 type SizeVariant = TruncatedTypography | ExpandedTypography;
 
-type TypographyProps<
+export type TypographyProps<
   T extends keyof JSX.IntrinsicElements | React.ComponentType<any>
 > = {
   as?: T;

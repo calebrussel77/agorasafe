@@ -29,7 +29,7 @@ const badgeVariants = cva(
       },
       variant: {
         default:
-          'bg-secondary hover:bg-secondary/80 border-transparent text-gray-600',
+          'bg-gray-200 hover:bg-gray-200/80 border-transparent text-gray-600',
         primary:
           'bg-primary hover:bg-primary/80 border-transparent text-primary-foreground',
         danger: 'bg-red-600 hover:bg-red-600/80 border-transparent text-white',

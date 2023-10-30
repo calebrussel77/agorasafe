@@ -8,27 +8,29 @@ import { cn } from '@/lib/utils';
 import { Badge, type BadgeProps } from '../ui/badge';
 
 interface UserBadgeProps extends Omit<BadgeProps, 'content'> {
-  type: ProfileType;
-  withProfileTypeInitial?: boolean;
+  type: ProfileType | null;
+  withProfileBadgeInitial?: boolean;
 }
 
 const UserBadge: FC<UserBadgeProps> = ({
   type,
-  withProfileTypeInitial,
+  withProfileBadgeInitial,
   className,
   ...props
 }) => {
+  if (!type) return null;
+
   return (
     <Badge
       variant={getIsCustomer(type) ? 'default' : 'primary'}
       content={
-        withProfileTypeInitial
+        withProfileBadgeInitial
           ? getProfileTypeName(type).charAt(0)
           : getProfileTypeName(type)
       }
       size="xs"
       className={cn(
-        'flex-shrink-0 rounded-md text-xs font-semibold',
+        'line-clamp-1 flex-shrink-0 rounded-md text-xs font-semibold',
         className
       )}
       {...props}

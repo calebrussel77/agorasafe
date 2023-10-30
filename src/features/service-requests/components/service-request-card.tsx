@@ -183,9 +183,8 @@ const ServiceRequestCard: FC<ServiceRequestCardProps> = ({
         <div className="relative mt-6 flex items-center justify-between gap-x-4">
           <User
             profile={author}
-            withProfileTypeInitial
-            withLocation={false}
-            classNames={{ name: 'text-sm' }}
+            subText={null}
+            classNames={{ text: 'text-sm' }}
             avatarProps={{ size: 'xs' }}
           />
           {commentAuthors && commentAuthors?.length > 0 && (
