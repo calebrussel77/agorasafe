@@ -11,6 +11,8 @@ import { api } from '@/utils/api';
 
 import { cn } from '@/lib/utils';
 
+import { getHotkeyHandler } from '@/hooks/use-hot-keys';
+
 import { useCreateServiceRequestComment } from '../services';
 
 const schema = z.object({
@@ -49,11 +51,17 @@ const ServiceRequestCommentForm = ({
     });
   };
 
+  const onHandleKeyDown = (event: React.KeyboardEvent) => {
+    event.preventDefault();
+    void form.handleSubmit(onHandleSubmit)(event);
+  };
+
   return (
     <Form
       form={form}
       onSubmit={onHandleSubmit}
       className={cn('space-y-2', className)}
+      onKeyDown={getHotkeyHandler([['Enter', onHandleKeyDown as never]])}
     >
       <Field
         // hint="En quoi votre offre pourrait-elle être meilleure par rapport aux autres ?"

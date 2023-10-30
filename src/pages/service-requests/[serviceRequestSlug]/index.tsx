@@ -35,7 +35,7 @@ import { FullSpinner } from '@/components/ui/spinner';
 import { toast } from '@/components/ui/toast';
 import { Truncate } from '@/components/ui/truncate';
 import { Typography } from '@/components/ui/typography';
-import { User, UserAvatar, UserBadge, UserName } from '@/components/user';
+import { User, UserAvatar, UserName } from '@/components/user';
 
 import {
   DEFAULT_SERVICE_REQUEST_COVER_IMAGE,
@@ -53,7 +53,11 @@ import { api } from '@/utils/api';
 import { formatPhoneNumber } from '@/utils/misc';
 import { isEmptyArray } from '@/utils/type-guards';
 
-import { dateToReadableString, formatDateRelative } from '@/lib/date-fns';
+import {
+  dateToReadableString,
+  formatDateDistance,
+  formatDateRelative,
+} from '@/lib/date-fns';
 import { htmlParse } from '@/lib/html-react-parser';
 
 import { createServerSideProps } from '@/server/utils/server-side';
@@ -345,6 +349,8 @@ const ServiceRequestPublicationPage = ({
               </div>
             </div>
           </section>
+
+          {/* Reserved providers section */}
           {providersReservedCount > 0 && (
             <section aria-labelledby="comment-section" className="w-full">
               <Typography as="h3">
@@ -359,7 +365,7 @@ const ServiceRequestPublicationPage = ({
                   return (
                     <div
                       key={element.providerProfileId}
-                      className="group relative flex w-full max-w-[250px] flex-col items-center justify-center rounded-md bg-gray-100 p-3"
+                      className="group relative flex w-full max-w-[250px] flex-col items-center justify-center rounded-md border bg-gray-100 p-3"
                     >
                       {isStatusOpen && isAuthorMine && (
                         <ActionTooltip label="Annuler la réservation">
@@ -396,6 +402,8 @@ const ServiceRequestPublicationPage = ({
             </section>
           )}
         </AsyncWrapper>
+
+        {/* Comments section */}
         <AsyncWrapper
           isLoading={isInitialLoadingComments}
           error={commentsError}
@@ -435,16 +443,23 @@ const ServiceRequestPublicationPage = ({
                         return (
                           <li
                             key={comment.id}
-                            className="border border-gray-300 bg-white px-6 py-4 shadow-sm sm:overflow-hidden sm:rounded-lg"
+                            className="border border-gray-300 bg-white p-3 shadow-sm sm:overflow-hidden sm:rounded-lg"
                           >
-                            <div className="flex w-full items-center justify-between">
+                            <div className="flex w-full items-start justify-between">
                               <User
                                 badge={
                                   isAuthor ? (
-                                    <Badge content="Auteur" variant="default" />
+                                    <Badge
+                                      content="Auteur"
+                                      size="xs"
+                                      variant="outline"
+                                      // className="-mt-2"
+                                      shape="rounded"
+                                    />
                                   ) : null
                                 }
                                 profile={comment?.author}
+                                avatarProps={{ size: 'md' }}
                               />
                               {canViewReservedBtn && (
                                 <ActionTooltip label={btnMessage}>
@@ -462,8 +477,7 @@ const ServiceRequestPublicationPage = ({
                                         providerProfileId: comment?.author?.id,
                                       })
                                     }
-                                    size="sm"
-                                    className="ml-2 px-1.5"
+                                    className="ml-1"
                                   >
                                     {!isReserved ? (
                                       <UserPlus className="h-4 w-4" />
@@ -474,13 +488,13 @@ const ServiceRequestPublicationPage = ({
                                 </ActionTooltip>
                               )}
                             </div>
-                            <div className="ml-10 mt-1">
-                              <div className="mt-3 text-gray-600">
+                            <div className="mt-2">
+                              <div className="text-sm text-gray-600">
                                 {htmlParse(comment?.text)}
                               </div>
-                              <div className="mt-1 flex w-full items-end justify-end space-x-2 text-sm">
+                              <div className="mt-2 flex w-full items-end justify-end space-x-2 text-sm">
                                 <span className="text-xs text-gray-500">
-                                  {formatDateRelative(comment?.createdAt)}
+                                  {formatDateDistance(comment?.createdAt)}
                                 </span>
                               </div>
                             </div>

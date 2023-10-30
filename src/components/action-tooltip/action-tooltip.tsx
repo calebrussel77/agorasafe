@@ -7,7 +7,7 @@ interface ActionTooltipProps {
   children: ReactNode;
   side?: 'top' | 'right' | 'bottom' | 'left';
   align?: 'start' | 'center' | 'end';
-  asChild?:boolean
+  asChild?: boolean;
 }
 
 export const ActionTooltip = ({
