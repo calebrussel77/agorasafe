@@ -53,11 +53,7 @@ import { api } from '@/utils/api';
 import { formatPhoneNumber } from '@/utils/misc';
 import { isEmptyArray } from '@/utils/type-guards';
 
-import {
-  dateToReadableString,
-  formatDateDistance,
-  formatDateRelative,
-} from '@/lib/date-fns';
+import { dateToReadableString, formatDateDistance } from '@/lib/date-fns';
 import { htmlParse } from '@/lib/html-react-parser';
 
 import { createServerSideProps } from '@/server/utils/server-side';

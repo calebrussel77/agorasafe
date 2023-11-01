@@ -13,12 +13,13 @@ import { EmptyState } from '@/components/ui/empty-state';
 
 import { LoginRedirect } from '@/features/auth';
 
+import { api } from '@/utils/api';
+
 import { cn } from '@/lib/utils';
 
 import { useSliderControlsImages } from '@/hooks/use-slider-controls-images';
 
 import { LATEST_SERVICE_REQUESTS_COUNT } from '../constants';
-import { useGetAllServiceRequests } from '../services';
 import { ServiceRequestCard } from './service-request-card';
 
 export function LatestServiceRequests() {
@@ -37,9 +38,10 @@ export function LatestServiceRequests() {
       slides: { perView: 1 },
     });
 
-  const { data, error, refetch, isLoading } = useGetAllServiceRequests({
-    limit: LATEST_SERVICE_REQUESTS_COUNT,
-  });
+  const { data, error, refetch, isLoading } =
+    api.services.getAllServiceRequests.useQuery({
+      limit: LATEST_SERVICE_REQUESTS_COUNT,
+    });
 
   return (
     <div className="bg-white py-24">
@@ -114,37 +116,12 @@ export function LatestServiceRequests() {
               )}
               <div ref={sliderRef} className="keen-slider mt-2 w-full">
                 {data?.serviceRequests?.map(serviceRequest => {
-                  const commentAuhtors = serviceRequest?.comments?.map(
-                    comment => ({
-                      name: comment?.author?.name,
-                      src: comment?.author?.avatar,
-                      href: `/u/${comment?.author?.slug}`,
-                    })
-                  );
-
                   return (
                     <ServiceRequestCard
-                      isNew
                       key={serviceRequest?.id}
                       className="keen-slider__slide w-full"
-                      photos={serviceRequest?.photos}
-                      description={serviceRequest?.description}
-                      title={serviceRequest?.title}
-                      categoryHref={`/service-requests?category=${serviceRequest?.service?.categoryService?.slug}`}
-                      createdAt={serviceRequest?.createdAt}
-                      location={serviceRequest?.location?.name}
-                      slug={serviceRequest?.slug}
-                      commentAuthors={commentAuhtors}
-                      nbOfProviderNeededText={
-                        serviceRequest?.nbProviderNeededFormattedText
-                      }
-                      estimatedPriceText={
-                        serviceRequest?.estimatedPriceFormatted
-                      }
-                      categoryName={
-                        serviceRequest?.service?.categoryService?.name
-                      }
-                      author={serviceRequest?.author?.profile}
+                      serviceRequest={serviceRequest}
+                      isNew
                     />
                   );
                 })}

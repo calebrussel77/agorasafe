@@ -106,11 +106,3 @@ export const useServiceRequestComments = (
   });
 };
 
-export const useGetAllServiceRequests = (
-  inputs: GetAllServiceRequestsInput,
-  options?: GetAllServiceRequestsOptions
-) => {
-  return api.services.getAllServiceRequests.useQuery(inputs, {
-    ...options,
-  });
-};
