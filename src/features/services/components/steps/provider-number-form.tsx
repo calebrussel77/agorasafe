@@ -1,5 +1,6 @@
 import { useRouter } from 'next/router';
 
+import { FixedFooterContainer } from '@/components/fixed-footer-container';
 import { Button } from '@/components/ui/button';
 import { Field } from '@/components/ui/field';
 import { Form, useZodForm } from '@/components/ui/form';
@@ -9,7 +10,6 @@ import {
   type PublishServiceRequestFormStore,
   usePublishServiceRequest,
 } from '../../stores';
-import { FixedFooterForm } from '../fixed-footer-form';
 
 type Address = Pick<PublishServiceRequestFormStore, 'numberOfProviderNeeded'>;
 type ProviderNumberFormProps = { nextStep: () => void; prevStep: () => void };
@@ -54,12 +54,12 @@ const ProviderNumberForm = ({
             placeholder="Entrez le nombre de personnes dont vous avez besoin..."
           />
         </Field>
-        <FixedFooterForm>
+        <FixedFooterContainer>
           <Button type="button" onClick={prevStep} variant="ghost" size="lg">
             Retour
           </Button>
           <Button size="lg">Suivant</Button>
-        </FixedFooterForm>
+        </FixedFooterContainer>
       </Form>
     </>
   );

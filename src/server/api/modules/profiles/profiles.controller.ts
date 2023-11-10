@@ -1,24 +1,10 @@
 import { throwDbError } from '../../../utils/error-handling';
-import { GetByIdOrSlugQueryInput } from '../../validations/base.validations';
+import { type GetByIdOrSlugQueryInput } from '../../validations/base.validations';
 import {
-  createProfileService,
   getProfileDetailsService,
   getProfilesByUserIdService,
 } from './profiles.service';
-import {
-  type CreateProfileValidation,
-  type GetProfilesByUserIdValidation,
-} from './profiles.validations';
-
-export const createProfileController = async (
-  inputs: CreateProfileValidation
-) => {
-  try {
-    return await createProfileService(inputs);
-  } catch (error) {
-    throwDbError(error);
-  }
-};
+import { type GetProfilesByUserIdValidation } from './profiles.validations';
 
 export const getProfileDetailsController = async (
   inputs: GetByIdOrSlugQueryInput

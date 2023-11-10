@@ -5,7 +5,6 @@ import {
   createTRPCRouter,
   customerProcedure,
   profileProcedure,
-  providerProcedure,
   publicProcedure,
 } from '@/server/api/trpc';
 

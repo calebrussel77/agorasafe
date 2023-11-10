@@ -221,7 +221,7 @@ const ServiceRequestPublicationPage = ({
                       name: 'text-sm text-muted-foreground font-normal whitespace-nowrap truncate',
                     }}
                     iconBefore={<MapPin className="h-5 w-5" />}
-                    name={data?.serviceRequest?.location?.name}
+                    name={data?.serviceRequest?.location?.address}
                   />
                   <GroupItem
                     isHoverDisabled
@@ -389,7 +389,7 @@ const ServiceRequestPublicationPage = ({
                         <UserName profile={profile} className="text-base" />
                       </div>
                       <Typography truncate variant="small" className="mt-1">
-                        {profile.location?.name}
+                        {profile.location?.address}
                       </Typography>
                     </div>
                   );

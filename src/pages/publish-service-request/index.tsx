@@ -48,7 +48,6 @@ const PublishPage = ({ modeQuery }: PageProps) => {
   const { isLoading, error, mutate } = useCreateServiceRequest({
     onSuccess(data) {
       const href = `/service-requests/${data?.serviceRequest?.slug}`;
-
       toast({
         delay: 4000,
         variant: 'success',

@@ -1,6 +1,8 @@
 import headlessuiPlugin from '@headlessui/tailwindcss';
-import tailwindCssAnimatePlugin from 'tailwindcss-animate';
+import tailwindCssTypographyPlugin from '@tailwindcss/typography';
 import { type Config } from 'tailwindcss';
+// TODO: need to remove this library in the future
+import tailwindCssAnimatePlugin from 'tailwindcss-animate';
 
 export default {
   content: ['./src/**/*.{js,ts,jsx,tsx}'],
@@ -93,7 +95,11 @@ export default {
       },
     },
   },
-  plugins: [tailwindCssAnimatePlugin, headlessuiPlugin],
+  plugins: [
+    tailwindCssAnimatePlugin,
+    headlessuiPlugin,
+    tailwindCssTypographyPlugin,
+  ],
 } as Config;
 
 // satisfies Config;

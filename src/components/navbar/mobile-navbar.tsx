@@ -32,6 +32,7 @@ const MobileNavbar: FC<MobileNavbarProps> = ({
 }) => {
   const { onSignOut } = useAuth();
   const { profile, resetProfile } = useCurrentUser();
+  const isMobile = useIsMobile();
 
   const {
     data: userProfileConfig,
@@ -39,7 +40,6 @@ const MobileNavbar: FC<MobileNavbarProps> = ({
     error,
     refetch,
   } = useGetProfileConfig({ enabled: !!profile?.id });
-  const isMobile = useIsMobile();
 
   return (
     <>
@@ -204,7 +204,13 @@ const MobileNavbar: FC<MobileNavbarProps> = ({
                       return (
                         <button
                           key={item?.name}
-                          onClick={() => openContext('feedbackForm', {})}
+                          onClick={() =>
+                            openContext(
+                              'feedbackForm',
+                              {},
+                              { isFullScreen: isMobile }
+                            )
+                          }
                           className="-mx-3 flex items-center rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
                         >
                           {item.name}

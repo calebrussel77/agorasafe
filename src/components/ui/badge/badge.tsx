@@ -20,7 +20,7 @@ const badgeVariants = cva(
         xs: 'px-1.5',
         sm: 'px-1.5 font-semibold',
         md: 'px-2 font-semibold',
-        lg: 'px-2.5 font-semibold',
+        lg: 'px-2.5 text-base font-semibold',
       },
       shape: {
         rounded: 'rounded-md',
@@ -90,7 +90,7 @@ function Badge({
             class:
               placement &&
               children &&
-              'absolute z-30 flex items-center justify-center',
+              'absolute z-10 flex items-center justify-center',
           }),
           !shouldDisableOutline && 'border-2 border-white',
           content === '' && 'h-3 w-3 p-0',

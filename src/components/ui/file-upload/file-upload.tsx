@@ -2,7 +2,6 @@
 
 /* eslint-disable no-unused-vars */
 import { UploadCloud } from 'lucide-react';
-import { Trash2 } from 'lucide-react';
 import React, {
   type PropsWithChildren,
   type ReactElement,
@@ -12,11 +11,12 @@ import React, {
   useState,
 } from 'react';
 
+import { createEvent } from '@/utils/create-event';
+
 import { cn } from '@/lib/utils';
 
 import { useMergeRefs } from '@/hooks/use-merge-refs';
 
-import { createEvent } from './create-event';
 // FileUpload
 import { Preview as DefaultPreview } from './preview';
 
@@ -24,7 +24,7 @@ const DEFAULT_MAX_FILE_SIZE = 200 * 10 * 1000;
 const DEFAULT_FILE_TYPES = 'image/*';
 
 export interface FileWithPreview extends File {
-  preview?: string;
+  preview?: string | null;
 }
 
 export type FileWithPreviewType = FileWithPreview;
@@ -44,9 +44,7 @@ export interface FileUploadOptions {
   dataTestId?: string;
   icon?: ReactElement | JSX.Element;
   maxSize?: number;
-  handleAddFile?: (
-    files: FileWithPreviewType[] | FileWithPreviewType
-  ) => void;
+  handleAddFile?: (files: FileWithPreviewType[]) => void;
   handleRemoveFile?: HandleRemoveType;
   preview?: typeof DefaultPreview | null;
   onBlur?: () => void;
@@ -101,15 +99,18 @@ export const FileUpload = forwardRef<HTMLInputElement, FileUploadProps>(
 
     const refs = useMergeRefs(inputRef, ref);
 
-    // Ensure component is controlled
-    useEffect(() => {
-      if (value) {
-        setFiles(ensureArray(value));
-      }
-    }, [value]);
+    // Clean up URL on unmount
+    // useEffect(() => {
+    //   return () => {
+    //     files &&
+    //       files.map(file =>
+    //         file instanceof File ? URL.revokeObjectURL(file.preview) : file
+    //       );
+    //   };
+    // }, [files]);
 
     const handleChange: React.ChangeEventHandler<HTMLInputElement> = e => {
-      let newFiles: FileWithPreview[] | FileWithPreview = Array.from(
+      const newFiles: FileWithPreview[] = Array.from(
         e.target.files as never
         //@ts-expect-error unexpected ts error fot this type
       ).map((file: FileWithPreview) => {
@@ -118,16 +119,17 @@ export const FileUpload = forwardRef<HTMLInputElement, FileUploadProps>(
         file.preview = URL.createObjectURL(file);
         return file;
       });
+
       setFiles(newFiles);
 
-      if (newFiles.length === 1) {
-        newFiles = newFiles[0] as never;
-      }
+      // if (newFiles.length === 1) {
+      //   newFiles = newFiles[0] as never;
+      // }
 
       const event = createEvent({ name, value: newFiles });
       handleAddFile && handleAddFile(newFiles);
       onChange && onChange(event);
-      // onBlur && onBlur();
+      onBlur && onBlur();
     };
 
     const handleRemove: FileUploadProps['handleRemoveFile'] = removedFile => {
@@ -138,7 +140,7 @@ export const FileUpload = forwardRef<HTMLInputElement, FileUploadProps>(
       const event = createEvent({ name, value });
       onChange && onChange(event);
       handleRemoveFile && handleRemoveFile(removedFile);
-      // onBlur && onBlur();
+      onBlur && onBlur();
     };
 
     const handleClick = () => {

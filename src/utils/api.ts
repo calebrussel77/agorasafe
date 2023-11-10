@@ -8,7 +8,6 @@ import { WEBSITE_URL } from '@/constants';
 import { initializeProfileStore } from '@/stores/profile-store';
 import {
   TRPCClientError,
-  httpBatchLink,
   httpLink,
   loggerLink,
   splitLink,
@@ -107,9 +106,6 @@ export const api = createTRPCNext<AppRouter>({
           // false: httpBatchLink({ url, maxURLLength: 2083 }),
           false: httpLink({ url }), // Let's disable batching for now
         }),
-        // httpBatchLink({
-        //   url: `${getBaseUrl()}/api/trpc`,
-        // }),
       ],
     };
   },

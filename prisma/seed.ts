@@ -3,6 +3,7 @@ import { PrismaClient } from '@prisma/client';
 
 import { engagementSkills, serviceCategories, services } from '../src/data';
 import { formatYearMonthDay } from '../src/lib/date-fns';
+import { makeRandomId } from '../src/utils/misc';
 import { slugit } from '../src/utils/strings';
 
 const prisma = new PrismaClient({ log: ['warn', 'error'] });
@@ -149,9 +150,12 @@ const createPhoto = async () => {
 const createLocation = async () => {
   return prisma.location.create({
     data: {
-      lat: faker.location.latitude().toFixed(),
-      long: faker.location.longitude().toFixed(),
-      name: `${faker.location.streetAddress()}`,
+      lat: faker.location.latitude(),
+      long: faker.location.longitude(),
+      address: faker.location.streetAddress(),
+      city: faker.location.city(),
+      country: faker.location.country(),
+      placeId: makeRandomId(),
     },
   });
 };
@@ -186,7 +190,6 @@ const createUserWithAdminRoleAndProfiles = async () => {
       lastName: faker.person.lastName(),
       birthdate: formatYearMonthDay(faker.date.birthdate({ mode: 'year' })),
       sex: 'MALE',
-      hasBeenOnboarded: true,
       role: 'ADMIN',
       picture: faker.image.avatar(),
       profiles: {
@@ -232,77 +235,83 @@ const createUserWithAdminRoleAndProfiles = async () => {
       console.log(
         '🧹👮 Updating the CUSTOMER profile with details and create 02 service requests...'
       );
-      await prisma.profile.update({
-        where: { id: profile.id },
-        data: {
-          customerInfo: {
-            create: {
-              serviceRequests: {
-                create: [
-                  {
-                    date: faker.date.past(),
-                    title: faker.lorem.lines(5),
-                    description: faker.lorem.paragraph(4),
-                    estimatedPrice: +faker.commerce.price(),
-                    numberOfProviderNeeded: faker.number.int({
-                      min: 1,
-                      max: 5,
-                    }),
-                    nbOfHours: faker.number.int({ min: 1, max: 5 }),
-                    phoneToContact: faker.phone.number('+23769#######'),
-                    service: {
-                      connect: {
-                        name: faker.helpers.shuffle(services)[0]?.name,
-                      },
-                    },
-                    slug: slugit(faker.lorem.lines(2)),
-                    startHour: 8,
-                    location: {
-                      connectOrCreate: {
-                        where: { name: faker.location.streetAddress() },
-                        create: {
-                          lat: faker.location.latitude().toFixed(),
-                          long: faker.location.longitude().toFixed(),
-                          name: faker.location.streetAddress(),
-                        },
-                      },
-                    },
-                  },
-                  {
-                    date: faker.date.past(),
-                    title: faker.lorem.lines(2),
-                    description: faker.lorem.paragraph(4),
-                    estimatedPrice: +faker.commerce.price(),
-                    numberOfProviderNeeded: faker.number.int({
-                      min: 1,
-                      max: 5,
-                    }),
-                    nbOfHours: faker.number.int({ min: 1, max: 5 }),
-                    phoneToContact: faker.phone.number('+23765#######'),
-                    service: {
-                      connect: {
-                        name: faker.helpers.shuffle(services)[0]?.name,
-                      },
-                    },
-                    slug: slugit(faker.lorem.lines(2)),
-                    startHour: 15,
-                    location: {
-                      connectOrCreate: {
-                        where: { name: faker.location.streetAddress() },
-                        create: {
-                          lat: faker.location.latitude().toFixed(),
-                          long: faker.location.longitude().toFixed(),
-                          name: faker.location.streetAddress(),
-                        },
-                      },
-                    },
-                  },
-                ],
-              },
-            },
-          },
-        },
-      });
+      // await prisma.profile.update({
+      //   where: { id: profile.id },
+      //   data: {
+      //     customerInfo: {
+      //       create: {
+      //         serviceRequests: {
+      //           create: [
+      //             {
+      //               date: faker.date.past(),
+      //               title: faker.lorem.lines(5),
+      //               description: faker.lorem.paragraph(4),
+      //               estimatedPrice: +faker.commerce.price(),
+      //               numberOfProviderNeeded: faker.number.int({
+      //                 min: 1,
+      //                 max: 5,
+      //               }),
+      //               nbOfHours: faker.number.int({ min: 1, max: 5 }),
+      //               phoneToContact: faker.phone.number('+23769#######'),
+      //               service: {
+      //                 connect: {
+      //                   name: faker.helpers.shuffle(services)[0]?.name,
+      //                 },
+      //               },
+      //               slug: slugit(faker.lorem.lines(2)),
+      //               startHour: 8,
+      //               location: {
+      //                 connectOrCreate: {
+      //                   where: { name: faker.location.streetAddress() },
+      //                   create: {
+      //                     lat: faker.location.latitude(),
+      //                     long: faker.location.longitude(),
+      //                     address: faker.location.streetAddress(),
+      //                     city: faker.location.city(),
+      //                     country: faker.location.country(),
+      //                     placeId: makeRandomId(),
+      //                   },
+      //                 },
+      //               },
+      //             },
+      //             {
+      //               date: faker.date.past(),
+      //               title: faker.lorem.lines(2),
+      //               description: faker.lorem.paragraph(4),
+      //               estimatedPrice: +faker.commerce.price(),
+      //               numberOfProviderNeeded: faker.number.int({
+      //                 min: 1,
+      //                 max: 5,
+      //               }),
+      //               nbOfHours: faker.number.int({ min: 1, max: 5 }),
+      //               phoneToContact: faker.phone.number('+23765#######'),
+      //               service: {
+      //                 connect: {
+      //                   name: faker.helpers.shuffle(services)[0]?.name,
+      //                 },
+      //               },
+      //               slug: slugit(faker.lorem.lines(2)),
+      //               startHour: 15,
+      //               location: {
+      //                 connectOrCreate: {
+      //                   where: { name: faker.location.streetAddress() },
+      //                   create: {
+      //                     lat: faker.location.latitude(),
+      //                     long: faker.location.longitude(),
+      //                     address: faker.location.streetAddress(),
+      //                     city: faker.location.city(),
+      //                     country: faker.location.country(),
+      //                     placeId: makeRandomId(),
+      //                   },
+      //                 },
+      //               },
+      //             },
+      //           ],
+      //         },
+      //       },
+      //     },
+      //   },
+      // });
     } else {
       console.log('🧹👮 Updating the PROVIDER profile with details...');
       await prisma.profile.update({

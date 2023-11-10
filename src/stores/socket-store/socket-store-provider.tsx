@@ -41,12 +41,8 @@ const SocketStoreProvider = ({ children }: React.PropsWithChildren) => {
   }
 
   useEffect(() => {
-    // console.log(window.location.origin, 'ORIGIN WINDOW');
     const socketInstance = io(window.location.origin || WEBSITE_URL, {
       path: '/api/socket/io',
-      // addTrailingSlash: false,
-      // transports: ['websocket'],
-      // enable retries
     });
 
     socketInstance.on('error', err => {

@@ -13,7 +13,7 @@ import {
   type PublishServiceRequestFormStore,
   usePublishServiceRequest,
 } from '../../stores';
-import { FixedFooterForm } from '../fixed-footer-form';
+import { FixedFooterContainer } from '@/components/fixed-footer-container';
 
 type DateFormType = Pick<PublishServiceRequestFormStore, 'date'>;
 type DateFormProps = { nextStep: () => void; prevStep: () => void };
@@ -73,12 +73,12 @@ const DateForm = ({ nextStep, prevStep }: DateFormProps) => {
             }}
           />
         </div>
-        <FixedFooterForm>
+        <FixedFooterContainer>
           <Button type="button" onClick={prevStep} variant="ghost" size="lg">
             Retour
           </Button>
           <Button size="lg">Suivant</Button>
-        </FixedFooterForm>
+        </FixedFooterContainer>
       </Form>
     </>
   );

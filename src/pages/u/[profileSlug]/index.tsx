@@ -20,7 +20,7 @@ import { Seo } from '@/components/ui/seo';
 import { Separator } from '@/components/ui/separator';
 import { FullSpinner } from '@/components/ui/spinner';
 import { Typography } from '@/components/ui/typography';
-import { UserAvatar, UserName } from '@/components/user';
+import { UserAvatar, UserName, UserRating } from '@/components/user';
 
 import { LoginRedirect } from '@/features/auth';
 import { useGetProfileDetails } from '@/features/profiles';
@@ -157,7 +157,11 @@ export default function ProfileDetailsPage({ profileSlugQuery }: PageProps) {
                   />
                   <Inline className="flex flex-wrap text-sm font-normal text-muted-foreground">
                     {!isCustomer && (
-                      <Rating readonly initialRating={4} size="xs" />
+                      <UserRating
+                        className="mt-0"
+                        reviewsCount={data?.profile?._count?.receivedReviews}
+                        profileName={data?.profile?.name}
+                      />
                     )}
                     <p>Membre {formatDateDistance(data?.profile?.createdAt)}</p>
                     {isCustomer && (
@@ -271,7 +275,7 @@ export default function ProfileDetailsPage({ profileSlugQuery }: PageProps) {
                     Localisation
                   </dt>
                   <dd className="text-skin-inverted-muted mt-1 font-normal">
-                    {data?.profile?.location?.name || '...'}
+                    {data?.profile?.location?.address || '...'}
                   </dd>
                 </div>
                 {!isCustomer && (
@@ -339,13 +343,13 @@ export default function ProfileDetailsPage({ profileSlugQuery }: PageProps) {
               <h2 className="text-xl font-semibold">Mes engagements clients</h2>
             </div>
             <Separator className="my-4 w-full " />
-            <div className="flex w-full flex-wrap items-center gap-3">
+            <div className="flex w-full max-w-3xl flex-wrap items-center gap-3">
               {data?.profile?.providerInfo?.skills?.map(skill => (
                 <Badge
                   key={skill?.id}
                   size="lg"
-                  variant="primary"
-                  className="w-full max-w-md py-1.5"
+                  variant="outline"
+                  className="w-full max-w-md py-1.5 text-center"
                   content={skill?.name}
                 />
               ))}
@@ -361,10 +365,10 @@ export default function ProfileDetailsPage({ profileSlugQuery }: PageProps) {
               <h2 className="text-xl font-semibold">Modes de travail</h2>
             </div>
             <Separator className="my-4 w-full " />
-            <div className="flex w-full flex-wrap items-center gap-3">
+            <div className="flex w-full max-w-3xl flex-wrap items-center gap-3">
               <Badge
                 size="lg"
-                variant="primary"
+                variant="outline"
                 className="py-1.5"
                 content={getIsFaceToFaceLabel(
                   data?.profile?.providerInfo?.isFaceToFace
@@ -372,7 +376,7 @@ export default function ProfileDetailsPage({ profileSlugQuery }: PageProps) {
               />
               <Badge
                 size="lg"
-                variant="primary"
+                variant="outline"
                 className="py-1.5"
                 content={getIsRemoteLabel(
                   data?.profile?.providerInfo?.isRemote

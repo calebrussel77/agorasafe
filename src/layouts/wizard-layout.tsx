@@ -14,16 +14,18 @@ interface WizardLayoutProps {
   currentStep: number;
   steps: StepItem[];
   children?: ReactNode;
+  withHeader?: boolean;
 }
 
 const WizardLayout: FC<WizardLayoutProps> = ({
   children,
   currentStep,
   steps,
+  withHeader = false,
 }) => {
   return (
     <div className="flex h-full min-h-screen w-full flex-1 flex-col pb-36">
-      <Header />
+      {withHeader ? <Header /> : null}
       <CenterContent className="container w-full min-w-[38rem] max-w-2xl pb-12">
         <div className="w-full">
           <Typography as="h1" variant="h4" className="pb-6 text-brand-600">

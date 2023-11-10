@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import { Controller, useFieldArray } from 'react-hook-form';
 import { z } from 'zod';
 
+import { FixedFooterContainer } from '@/components/fixed-footer-container';
 import { Button } from '@/components/ui/button';
 import { Form, useZodForm } from '@/components/ui/form';
 import { HelperMessage } from '@/components/ui/helper-message';
@@ -15,7 +16,6 @@ import { isArrayOfFile, isEmptyArray } from '@/utils/type-guards';
 
 import { usePublishServiceRequest } from '../../stores';
 import { type PublishServiceRequestInputs } from '../../types';
-import { FixedFooterForm } from '../fixed-footer-form';
 
 const photosFormSchema = z.object({
   photos: z.array(z.unknown()).optional().nullable().default(null),
@@ -112,14 +112,14 @@ const PhotosForm = ({ prevStep, onSubmit, isLoading }: PhotosFormProps) => {
             Le poids maximum d'une image est de 4MB
           </HelperMessage>
         </div>
-        <FixedFooterForm>
+        <FixedFooterContainer>
           <Button type="button" onClick={prevStep} variant="ghost" size="lg">
             Retour
           </Button>
           <Button size="lg" disabled={isLoading || isUploading}>
             Publier ma demande
           </Button>
-        </FixedFooterForm>
+        </FixedFooterContainer>
       </Form>
     </>
   );

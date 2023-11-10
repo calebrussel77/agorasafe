@@ -11,7 +11,11 @@ import { Image } from '@/components/ui/image';
 import { SectionMessage } from '@/components/ui/section-message';
 import { SignInError } from '@/components/ui/sign-error';
 
-import { useAuth } from '@/features/auth';
+import {
+  type LoginRedirectReason,
+  loginRedirectReasons,
+  useAuth,
+} from '@/features/auth';
 
 import { handleRouteBack } from '@/utils/routing';
 
@@ -19,14 +23,21 @@ import { cn } from '@/lib/utils';
 
 import { createServerSideProps } from '@/server/utils/server-side';
 
-import { useRedirectUrl } from '@/hooks/use-redirect-url';
-
 const LoginPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
-  const error = router.query?.error as string | undefined;
+  const {
+    error,
+    redirectUrl = '/',
+    reason,
+  } = router.query as {
+    error: string;
+    redirectUrl: string;
+    reason: LoginRedirectReason;
+  };
 
-  const { redirectUrl, redirectReason } = useRedirectUrl();
+  const redirectReason = loginRedirectReasons[reason];
+
   const { onGooleSignIn } = useAuth();
 
   const onRegisterWithGoogle = async () => {
@@ -41,62 +52,55 @@ const LoginPage = () => {
 
   return (
     <>
-      {!!redirectReason && (
-        <SectionMessage
-          className="mb-0 rounded-none"
-          title={redirectReason}
-          appareance="warning"
-          isSticky
+      <div className="fixed bottom-0 left-0 top-0 hidden h-full w-1/2 flex-col bg-muted p-10 text-white dark:border-r lg:flex">
+        <div className="absolute inset-0 z-10 bg-gray-900/40" />
+        <Image
+          src="/images/login-image.png"
+          alt="Femme qui tresse une tête"
+          className="absolute inset-0 h-full w-full"
         />
-      )}
-      {!!error && <SignInError className="mb-0 rounded-none" error={error} />}
-      <div className="container relative grid min-h-screen flex-col items-center justify-center lg:max-w-none lg:grid-cols-2 lg:px-0">
-        <Anchor
-          href="/"
-          className="absolute left-4 top-4 flex items-center gap-x-1 lg:hidden"
-        >
-          <LogoSymbolIcon className="h-7 w-auto md:h-8" />
-          <Badge
-            content="Alpha"
-            size="sm"
-            variant="warning"
-            shape="rounded"
-            title="Ce projet est encore en cours de developpement."
-          />
-        </Anchor>
-        <button
-          onClick={() => handleRouteBack({ router })}
-          className={cn(
-            buttonVariants({ variant: 'ghost' }),
-            'absolute right-4 top-4 md:right-8 md:top-8'
-          )}
-        >
-          <MoveLeft className="h-5 w-5" />
-          <span>Retour</span>
-        </button>
-        <div className="relative hidden h-full flex-col bg-muted p-10 text-white dark:border-r lg:flex">
-          <div className="absolute inset-0 z-10 bg-gray-900/40" />
-          <Image
-            src="/images/login-image.png"
-            alt="Femme qui tresse une tête"
-            className="absolute inset-0 h-full w-full"
-          />
-          <div className="relative z-20">
-            <LogoSymbolIcon className="h-8 w-auto" />
-          </div>
-          <div className="relative z-20 mt-auto">
-            <blockquote className="space-y-2">
-              <p className="text-lg">
-                &ldquo;Grâce à Agorasafe j'ai pu facilement publier mon besoin
-                et choisir un prestataire qualifié tout près de chez moi pour
-                résoudre mon problème.&rdquo;
-              </p>
-              <footer className="text-sm">Jeanne N.</footer>
-            </blockquote>
-          </div>
+        <div className="relative z-20 mt-auto">
+          <blockquote className="space-y-2">
+            <p className="text-lg">
+              &ldquo;Grâce à Agorasafe j'ai pu facilement publier mon besoin et
+              choisir un prestataire qualifié tout près de chez moi pour
+              résoudre mon problème.&rdquo;
+            </p>
+            <footer className="text-sm">Jeanne N.</footer>
+          </blockquote>
         </div>
-        <div className="lg:p-8">
-          <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[450px]">
+      </div>
+      <div className="ml-auto flex h-screen w-1/2 flex-col">
+        {!!error && <SignInError className="mb-0 rounded-none" error={error} />}
+        {!!redirectReason && (
+          <SectionMessage
+            className="mb-0 rounded-none"
+            title={redirectReason}
+            appareance="warning"
+            isSticky
+          />
+        )}
+        <div className="flex h-full flex-1 flex-col p-4">
+          <div className="flex items-center justify-between">
+            <button
+              onClick={() => handleRouteBack({ router })}
+              className={cn(buttonVariants({ variant: 'ghost' }))}
+            >
+              <MoveLeft className="h-5 w-5" />
+              <span>Retour</span>
+            </button>
+            <Anchor href="/" className="ml-1 flex items-center gap-x-1.5">
+              <LogoSymbolIcon className="h-7 w-auto md:h-8" />
+              <Badge
+                content="Alpha"
+                size="sm"
+                variant="warning"
+                shape="rounded"
+                title="Ce projet est encore en cours de developpement."
+              />
+            </Anchor>
+          </div>
+          <div className="mx-auto flex h-full w-full flex-1 flex-col items-center justify-center space-y-6 sm:w-[450px]">
             <div className="flex flex-col space-y-2 text-center">
               <h1 className="text-2xl font-semibold tracking-tight">
                 Se connecter ou s’inscrire en quelques secondes
@@ -142,15 +146,6 @@ export const getServerSideProps = createServerSideProps({
   shouldUseSession: true,
   resolver: ({ session }) => {
     if (session) {
-      // redirect to choosing profile type selection page if user has'nt been onboarded
-      if (!session.user.hasBeenOnboarded) {
-        return {
-          redirect: {
-            destination: '/onboarding/choose-profile-type',
-            permanent: false,
-          },
-        };
-      }
       return {
         redirect: {
           destination: '/dashboard',

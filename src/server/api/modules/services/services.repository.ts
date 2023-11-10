@@ -74,7 +74,9 @@ export const getAllServiceRequests = ({
         date: true,
         title: true,
         description: true,
-        location: { select: { lat: true, long: true, name: true } },
+        location: {
+          select: { lat: true, long: true, address: true, placeId: true },
+        },
         nbOfHours: true,
         estimatedPrice: true,
         numberOfProviderNeeded: true,
@@ -224,11 +226,14 @@ export async function createServiceRequest({
       },
       location: {
         connectOrCreate: {
-          where: { name: location.value },
+          where: { placeId: location.placeId },
           create: {
             lat: location.lat,
             long: location.long,
-            name: location.value,
+            address: location.address,
+            placeId: location.placeId,
+            country: location.country,
+            city: location.city,
           },
         },
       },
@@ -287,11 +292,14 @@ export const updateServiceRequest = ({
   if (location) {
     _location = {
       connectOrCreate: {
-        where: { name: location.value },
+        where: { placeId: location.placeId },
         create: {
-          lat: location.lat as string,
-          long: location.long as string,
-          name: location.value as string,
+          lat: location.lat as never,
+          long: location.long as never,
+          address: location.address as never,
+          placeId: location.placeId as never,
+          country: location.country,
+          city: location.city,
         },
       },
     };

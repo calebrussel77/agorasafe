@@ -1,6 +1,7 @@
 import { useRouter } from 'next/router';
 import { Controller } from 'react-hook-form';
 
+import { FixedFooterContainer } from '@/components/fixed-footer-container';
 import { Button } from '@/components/ui/button';
 import { Form, useZodForm } from '@/components/ui/form';
 
@@ -11,7 +12,6 @@ import {
   usePublishServiceRequest,
 } from '../../stores';
 import { generateHoursBetweenSevenAmAndtwentyOnePm } from '../../utils';
-import { FixedFooterForm } from '../fixed-footer-form';
 
 type StartHourType = Pick<PublishServiceRequestFormStore, 'startHour'>;
 
@@ -69,12 +69,12 @@ const StartHourForm = ({ nextStep, prevStep }: StartHourFormProps) => {
             />
           ))}
         </div>
-        <FixedFooterForm>
+        <FixedFooterContainer>
           <Button type="button" onClick={prevStep} variant="ghost" size="lg">
             Retour
           </Button>
           <Button size="lg">Suivant</Button>
-        </FixedFooterForm>
+        </FixedFooterContainer>
       </Form>
     </>
   );

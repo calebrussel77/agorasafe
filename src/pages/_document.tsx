@@ -7,6 +7,10 @@ export default function Document() {
       <body className="h-screen scroll-smooth bg-white font-sans text-base text-gray-900 antialiased">
         <Main />
         <NextScript />
+        <script
+          defer
+          src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY}&libraries=places`}
+        ></script>
       </body>
     </Html>
   );

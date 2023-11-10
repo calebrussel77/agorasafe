@@ -1,12 +1,12 @@
 import { APP_PROFILES_INFO } from '@/constants';
-import { useGeocodingSearch } from '@/services';
-import { phoneSchema } from '@/validations';
+import { locationSchema, phoneSchema } from '@/validations';
 import { ProfileType } from '@prisma/client';
 import { type TRPCClientErrorLike } from '@trpc/client';
 import { CameraIcon, MapPin } from 'lucide-react';
 import { Controller } from 'react-hook-form';
 import { z } from 'zod';
 
+import { PlacesAutocomplete } from '@/components/agorasafe-map';
 import { Avatar } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -33,13 +33,7 @@ const schema = z.object({
   name: z.string(),
   phone: phoneSchema,
   profileType: z.nativeEnum(ProfileType),
-  location: z.object({
-    value: z.string(),
-    label: z.string(),
-    lat: z.coerce.string(),
-    long: z.coerce.string(),
-    wikidata: z.string().optional(),
-  }),
+  location: locationSchema,
 });
 
 export type CreateNewProfileInput = z.infer<typeof schema>;
@@ -74,9 +68,6 @@ const CreateProfileForm = ({
   });
 
   const { control, watch } = form;
-
-  const { locationSearch, setLocationSearch, data, isInitialLoading } =
-    useGeocodingSearch();
 
   const watchLocation = watch('location');
   const watchPhone = watch('phone');
@@ -199,21 +190,11 @@ const CreateProfileForm = ({
             control={control}
             name="location"
             render={({ field: { onChange, value } }) => (
-              <ComboBox
-                onChange={onChange}
-                value={value as never}
-                isLoading={isInitialLoading}
-                onSearchChange={setLocationSearch}
+              <PlacesAutocomplete
                 placeholder="Choisir ma localisation..."
                 placeholderSearch="Recherchez votre position..."
-                iconAfter={<MapPin className="h-5 w-5 opacity-50" />}
-                search={locationSearch}
-                options={data?.map(element => ({
-                  label: element.format?.label,
-                  value: element.format?.label,
-                  lat: element.format?.lat,
-                  long: element?.format?.long,
-                }))}
+                onSelectPlace={onChange}
+                selectedPlace={value as never}
               />
             )}
           />

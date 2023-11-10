@@ -28,6 +28,7 @@ export const env = createEnv({
     CLOUDINARY_SECRET: z.string(),
     UPLOADTHING_SECRET: z.string(),
     UPLOADTHING_APP_ID: z.string(),
+    RATE_LIMITING: z.string(),
   },
 
   /**
@@ -45,6 +46,7 @@ export const env = createEnv({
     NEXT_PUBLIC_COMPANY_NAME: z.string(),
     NEXT_PUBLIC_DEBUG: z.string(),
     NEXT_PUBLIC_GA_MEASUREMENT_ID: z.string(),
+    NEXT_PUBLIC_GOOGLE_MAP_API_KEY: z.string(),
   },
 
   /**
@@ -66,6 +68,7 @@ export const env = createEnv({
       process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN,
     NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
     NEXT_PUBLIC_APP_NAME: process.env.NEXT_PUBLIC_APP_NAME,
+    NEXT_PUBLIC_GOOGLE_MAP_API_KEY: process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY,
     NEXT_PUBLIC_SUPPORT_MAIL_ADDRESS:
       process.env.NEXT_PUBLIC_SUPPORT_MAIL_ADDRESS,
     NEXT_PUBLIC_COMPANY_NAME: process.env.NEXT_PUBLIC_COMPANY_NAME,
@@ -74,6 +77,7 @@ export const env = createEnv({
     NEXT_PUBLIC_SENTRY_DSN: process.env.NEXT_PUBLIC_SENTRY_DSN,
     UPLOADTHING_SECRET: process.env.UPLOADTHING_SECRET,
     UPLOADTHING_APP_ID: process.env.UPLOADTHING_APP_ID,
+    RATE_LIMITING: process.env.RATE_LIMITING,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation.

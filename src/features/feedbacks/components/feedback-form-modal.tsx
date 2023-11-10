@@ -1,3 +1,4 @@
+import { openContext } from '@/providers/custom-modal-provider';
 import React, { type ReactNode } from 'react';
 
 import { Button } from '@/components/ui/button';
@@ -13,6 +14,8 @@ import { useUpload } from '@/components/ui/uploadthing';
 
 import { api } from '@/utils/api';
 import { isArray } from '@/utils/type-guards';
+
+import { useIsMobile } from '@/hooks/use-breakpoints';
 
 import { type FeedBackFormInput, FeedbackForm } from './feedback-form';
 

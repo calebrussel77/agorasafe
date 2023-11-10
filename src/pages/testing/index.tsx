@@ -1,5 +1,6 @@
 import { useState } from 'react';
 
+import { AgorasafeMap } from '@/components/agorasafe-map';
 import { Button } from '@/components/ui/button';
 import { CenterContent } from '@/components/ui/layout';
 import { type ContextModalProps, modals } from '@/components/ui/modal';
@@ -55,45 +56,18 @@ const TestPage = () => {
   return (
     <>
       <Seo title={meta.title} description={meta.description} />
-      <CenterContent>
+      <AgorasafeMap />
+      {/* <CenterContent>
         The test page bro
         <YourComponent />
-        {/* <Button
-          onClick={openModal}
-
-          // onClick={() =>
-          //   modals.openConfirmModal({
-          //     title: 'Please confirm your action',
-          //     shouldCloseOnConfirm: false,
-          //     labels: { confirm: 'Next modal', cancel: 'Close modal' },
-          //     children: (
-          //       <Typography>
-          //         This action is so important that you are required to confirm
-          //         it with a modal. Please click one of these buttons to proceed.
-          //       </Typography>
-          //     ),
-          //     onCancel: () => console.log('Cancel'),
-          //     onConfirm: () =>
-          //       modals.openConfirmModal({
-          //         title: 'This is modal at second layer',
-          //         labels: { confirm: 'Close modal', cancel: 'Back' },
-          //         shouldCloseOnConfirm: false,
-          //         children: (
-          //           <Typography>
-          //             When this modal is closed modals state will revert to
-          //             first modal
-          //           </Typography>
-          //         ),
-          //         onConfirm: modals.closeAll,
-          //       }),
-          //   })
-          // }
-        >
-          Open confirm modal
-        </Button> */}
-      </CenterContent>
+     
+      </CenterContent> */}
     </>
   );
+};
+
+TestPage.getLayout = (page: React.ReactNode) => {
+  return page;
 };
 
 export default TestPage;

@@ -135,7 +135,7 @@ const ServiceRequestCard: FC<ServiceRequestCardProps> = ({
                 name: 'text-sm text-muted-foreground font-normal',
               }}
               iconBefore={<MapPin className="h-4 w-4" />}
-              name={serviceRequest?.location?.name}
+              name={serviceRequest?.location?.address}
             />
             <GroupItem
               isHoverDisabled

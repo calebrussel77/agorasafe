@@ -5,14 +5,14 @@ import { SessionProvider } from 'next-auth/react';
 import { type FC, type PropsWithChildren } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 
-import { ProfileSession } from '@/components/profile-session';
 import { FullPageError } from '@/components/ui/error';
 import { Toaster } from '@/components/ui/toast';
 
 import { type AppPageProps } from '@/pages/_app';
-import { TestModal } from '@/pages/testing';
 
+import { ChangeProfileProvider } from './change-profile-provider';
 import { CustomModalsProvider } from './custom-modal-provider';
+import { UserOnboardingProvider } from './user-ònboarding-provider';
 
 export type AppPagePropsWithChildren = {
   session?: AppPageProps['pageProps']['session'];
@@ -37,8 +37,9 @@ const AppProvider: FC<PropsWithChildren<AppPagePropsWithChildren>> = ({
             {...((initialProfileState as ProfileStore) ?? undefined)}
           >
             <CustomModalsProvider>
-              <ProfileSession />
-              {children}
+              <UserOnboardingProvider>
+                <ChangeProfileProvider>{children}</ChangeProfileProvider>
+              </UserOnboardingProvider>
               <Toaster />
             </CustomModalsProvider>
           </ProfileStoreProvider>

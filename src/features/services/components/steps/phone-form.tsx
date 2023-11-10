@@ -13,7 +13,7 @@ import {
   type PublishServiceRequestFormStore,
   usePublishServiceRequest,
 } from '../../stores';
-import { FixedFooterForm } from '../fixed-footer-form';
+import { FixedFooterContainer } from '@/components/fixed-footer-container';
 
 type Address = Pick<PublishServiceRequestFormStore, 'phoneToContact'>;
 
@@ -71,12 +71,12 @@ const PhoneForm = ({ nextStep, prevStep }: PhoneFormProps) => {
           appareance="info"
           title="Ces informations seront transmises uniquement aux prestataires que vous réserverez."
         />
-        <FixedFooterForm>
+        <FixedFooterContainer>
           <Button type="button" onClick={prevStep} variant="ghost" size="lg">
             Retour
           </Button>
           <Button size="lg">Suivant</Button>
-        </FixedFooterForm>
+        </FixedFooterContainer>
       </Form>
     </>
   );

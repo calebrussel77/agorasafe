@@ -1,16 +1,16 @@
 import { openContext } from '@/providers/custom-modal-provider';
 import { LucideDoorClosed, Search } from 'lucide-react';
 
-import { CanView } from '@/components/can-view';
 import { AsyncWrapper } from '@/components/ui/async-wrapper';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Container } from '@/components/ui/container';
 import { DebouncedInput } from '@/components/ui/debounced-input';
 import { EmptyState } from '@/components/ui/empty-state';
 import { Seo } from '@/components/ui/seo';
 
-import { LoginRedirect } from '@/features/auth';
 import {
+  ServiceRequestButton,
   ServiceRequestCard,
   ServiceRequestsHero,
 } from '@/features/service-requests';
@@ -19,9 +19,13 @@ import { api } from '@/utils/api';
 
 import { createServerSideProps } from '@/server/utils/server-side';
 
+import { useIsMobile } from '@/hooks/use-breakpoints';
+
 import { type AppPageProps } from '../_app';
 
 const ServiceRequestsPage: AppPageProps['Component'] = () => {
+  const isMobile = useIsMobile();
+
   //TODO: Need to add infinite scroll to this
   const { data, error, refetch, isLoading } =
     api.services.getAllServiceRequests.useQuery({});
@@ -34,30 +38,28 @@ const ServiceRequestsPage: AppPageProps['Component'] = () => {
       />
       <ServiceRequestsHero />
       <Container className="mt-16">
-        <div className="">
+        <div className="mx-auto w-full max-w-xl">
           <DebouncedInput
             value="sss"
             iconAfter={<Search className="h-4 w-4" />}
             placeholder="Recherchez une demande de sercice..."
-            classNames={{ root: 'w-full max-w-md' }}
+            classNames={{ root: 'w-full' }}
           />
-          {/* <Tabs defaultValue="account" className="mt-10 w-full">
-            <Tabs.List className="mx-auto grid w-[300px] grid-cols-2">
-              <Tabs.Trigger value="account">Clients</Tabs.Trigger>
-              <Tabs.Trigger value="password">Prestataires</Tabs.Trigger>
-            </Tabs.List>
-            <Tabs.Content
-              value="account"
-              className="flex items-center justify-center"
-            ></Tabs.Content>
-            <Tabs.Content
-              value="password"
-              className="flex items-center justify-center"
-            >
-              <div></div>
-            </Tabs.Content>
-          </Tabs> */}
         </div>
+        {/* <div className="mx-auto mt-6 flex w-full max-w-lg flex-wrap items-center gap-3">
+          <Badge size="lg" className="cursor-pointer py-1.5" content="Douala" />
+          <Badge
+            size="lg"
+            className="cursor-pointer py-1.5"
+            content="Yaoundé"
+          />
+          <Badge
+            size="lg"
+            className="cursor-pointer py-1.5"
+            content="Bafoussam"
+          />
+          <Badge size="lg" className="cursor-pointer py-1.5" content="Garoua" />
+        </div> */}
         <AsyncWrapper
           isLoading={isLoading}
           error={error}
@@ -79,26 +81,28 @@ const ServiceRequestsPage: AppPageProps['Component'] = () => {
           {data?.serviceRequests && data?.serviceRequests?.length === 0 && (
             <EmptyState
               icon={<LucideDoorClosed />}
-              className="my-8"
+              className="my-10"
               description="Aucune demande publiée pour l'instant."
-              // description="Soyez le premier à créer et publier votre demande de service."
               primaryAction={
-                <CanView allowedProfiles={['CUSTOMER']} isPublic>
-                  <LoginRedirect reason="create-service-request">
-                    <Button
-                      onClick={() => openContext('createServiceRequest', {})}
-                      size="sm"
-                    >
-                      Créer ma demande
-                    </Button>
-                  </LoginRedirect>
-                </CanView>
+                <ServiceRequestButton>
+                  <Button
+                    size="sm"
+                    onClick={() =>
+                      openContext(
+                        'createServiceRequest',
+                        {},
+                        { isFullScreen: isMobile }
+                      )
+                    }
+                  >
+                    Créer ma demande
+                  </Button>
+                </ServiceRequestButton>
               }
             />
           )}
         </AsyncWrapper>
       </Container>
-      {/* <LatestServiceRequests /> */}
     </>
   );
 };

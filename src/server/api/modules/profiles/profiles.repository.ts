@@ -69,6 +69,16 @@ export function createProfileByUserId({
       user: { connect: { id: userId } },
       ...data,
     },
+    select: simpleProfileSelect,
+  });
+}
+
+export function updateProfileById(
+  inputs: Prisma.ProfileUpdateInput & { profileId: string }
+) {
+  return prisma.profile.update({
+    where: { id: inputs.profileId },
+    data: inputs,
   });
 }
 
@@ -84,15 +94,6 @@ export async function getProfileById(profileId: string) {
 }
 
 export async function getProfilesByUserId(userId: string) {
-  return prisma.profile.findMany({
-    where: {
-      userId,
-    },
-    select: simpleProfileSelect,
-  });
-}
-
-export async function getProfilesWithLocationByUserId(userId: string) {
   return prisma.profile.findMany({
     where: {
       userId,

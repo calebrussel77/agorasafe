@@ -10,7 +10,7 @@ import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 
 import { usePublishServiceRequest } from '../../stores';
-import { FixedFooterForm } from '../fixed-footer-form';
+import { FixedFooterContainer } from '@/components/fixed-footer-container';
 
 const firstSchema = z.object({
   title: z
@@ -127,9 +127,9 @@ const BasicInfoForm = ({ nextStep }: BasicInfoFormProps) => {
             placeholder="Entrez la description de votre demande"
           />
         </Field>
-        <FixedFooterForm>
+        <FixedFooterContainer>
           <Button size="lg">Suivant</Button>
-        </FixedFooterForm>
+        </FixedFooterContainer>
       </Form>
     </>
   );

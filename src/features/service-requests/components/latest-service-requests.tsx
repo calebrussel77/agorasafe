@@ -6,23 +6,24 @@ import {
   LucideDoorClosed,
 } from 'lucide-react';
 
-import { CanView } from '@/components/can-view';
 import { AsyncWrapper } from '@/components/ui/async-wrapper';
 import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/ui/empty-state';
-
-import { LoginRedirect } from '@/features/auth';
 
 import { api } from '@/utils/api';
 
 import { cn } from '@/lib/utils';
 
+import { useIsMobile } from '@/hooks/use-breakpoints';
 import { useSliderControlsImages } from '@/hooks/use-slider-controls-images';
 
 import { LATEST_SERVICE_REQUESTS_COUNT } from '../constants';
+import { ServiceRequestButton } from './service-request-button';
 import { ServiceRequestCard } from './service-request-card';
 
 export function LatestServiceRequests() {
+  const isMobile = useIsMobile();
+
   const { currentSlide, sliderRef, hasLoaded, instanceRef } =
     useSliderControlsImages({
       autoSlide: false,
@@ -66,16 +67,18 @@ export function LatestServiceRequests() {
               description="Aucune demande publiée pour l'instant."
               // description="Soyez le premier à créer et publier votre demande de service."
               primaryAction={
-                <CanView allowedProfiles={['CUSTOMER']} isPublic>
-                  <LoginRedirect reason="create-service-request">
-                    <Button
-                      onClick={() => openContext('createServiceRequest', {})}
-                      size="sm"
-                    >
-                      Créer ma demande
-                    </Button>
-                  </LoginRedirect>
-                </CanView>
+                <ServiceRequestButton>
+                  <Button
+                    size="sm"
+                    onClick={() => openContext(
+                      'createServiceRequest',
+                      {},
+                      { isFullScreen: isMobile }
+                    )}
+                  >
+                    Créer ma demande
+                  </Button>
+                </ServiceRequestButton>
               }
             />
           )}

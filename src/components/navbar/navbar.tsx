@@ -1,11 +1,11 @@
 import { openContext } from '@/providers/custom-modal-provider';
-import React, { type FC, type ReactNode, useState } from 'react';
+import React, { type FC, type ReactNode } from 'react';
 
-import { LoginRedirect } from '@/features/auth';
 import {
   UserProfileDropdown,
   useGetProfileConfig,
 } from '@/features/profile-config';
+import { ServiceRequestButton } from '@/features/service-requests';
 
 import { cn } from '@/lib/utils';
 
@@ -64,7 +64,6 @@ const Navbar: FC<NavbarProps> = ({
           if (item.name.toLowerCase() === 'feedback') {
             return (
               <button
-                title="Faire un commentaire"
                 key={item?.name}
                 onClick={() =>
                   openContext('feedbackForm', {}, { isFullScreen: isMobile })
@@ -112,22 +111,18 @@ const Navbar: FC<NavbarProps> = ({
         })}
       </div>
       <div className="ml-1 flex flex-1 items-center justify-end">
-        <CanView allowedProfiles={['CUSTOMER']} isPublic>
-          <LoginRedirect reason="create-service-request">
-            <Button
-              onClick={() =>
-                openContext(
-                  'createServiceRequest',
-                  {},
-                  { isFullScreen: isMobile }
-                )
-              }
-              size="sm"
-            >
-              Demander un service
-            </Button>
-          </LoginRedirect>
-        </CanView>
+        <ServiceRequestButton>
+          <Button
+            size="sm"
+            onClick={() => openContext(
+              'createServiceRequest',
+              {},
+              { isFullScreen: isMobile }
+            )}
+          >
+            Demander un service
+          </Button>
+        </ServiceRequestButton>
         <CanView allowedProfiles={['CUSTOMER', 'PROVIDER']}>
           <UserProfileDropdown
             isHeaderScrolled={isHeaderScrolled}

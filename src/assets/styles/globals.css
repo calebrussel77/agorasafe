@@ -1,6 +1,7 @@
 /*
  * CSS Import statements 
  */
+
 @import '../../components/ui/spinner/spinner.style.css';
 @import '../../components/ui/label/label.style.css';
 @import '../../components/ui/phone-input/phone-input.style.css';
@@ -23,6 +24,11 @@
 /* To well position an image grid gallery */
 .pswp img {
   object-fit: cover !important;
+}
+
+/* Remove Tailwind forms plugins box-shadow  for react-select */
+.agorasafe__select__input {
+  @apply focus:shadow-none focus:ring-0 focus:ring-transparent !important;
 }
 
 @layer base {
@@ -81,4 +87,3 @@
     @apply transition duration-300 ease-in-out;
   }
 }
- 

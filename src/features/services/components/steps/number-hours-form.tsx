@@ -13,7 +13,7 @@ import {
   type PublishServiceRequestFormStore,
   usePublishServiceRequest,
 } from '../../stores';
-import { FixedFooterForm } from '../fixed-footer-form';
+import { FixedFooterContainer } from '@/components/fixed-footer-container';
 
 const cardsInfo = [
   { label: '1h00', title: 'Court', value: 1 },
@@ -95,12 +95,12 @@ const NumberHoursForm = ({ nextStep, prevStep }: NumberHoursFormProps) => {
             }}
           />
         </div>
-        <FixedFooterForm>
+        <FixedFooterContainer>
           <Button type="button" onClick={prevStep} variant="ghost" size="lg">
             Retour
           </Button>
           <Button size="lg">Suivant</Button>
-        </FixedFooterForm>
+        </FixedFooterContainer>
       </Form>
     </>
   );

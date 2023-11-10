@@ -29,7 +29,6 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
     {
       className,
       type,
-      autoFocus,
       variant,
       iconBefore,
       iconAfter,
@@ -41,8 +40,6 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
     },
     ref
   ) => {
-    const { elementRef } = useFocus(autoFocus);
-    const refs = useMergeRefs(elementRef, ref);
     const hasElementAfter = iconAfter || loading;
     const hasError = variant === 'danger';
 
@@ -72,7 +69,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             classNames?.input,
             className
           )}
-          ref={refs}
+          ref={ref}
           {...props}
         />
 
