@@ -170,12 +170,7 @@ const SectionMessage = forwardRef<HTMLDivElement, SectionMessageProps>(
                   </h3>
                 )}
                 {description && (
-                  <div
-                    className={cn(
-                      'text-sm opacity-80',
-                      classNames?.description
-                    )}
-                  >
+                  <div className={cn('text-sm', classNames?.description)}>
                     {description}
                   </div>
                 )}

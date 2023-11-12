@@ -12,6 +12,8 @@ import { ProfileItemSkeleton, useUserProfiles } from '@/features/profiles';
 
 import { generateArray } from '@/utils/misc';
 
+import { cn } from '@/lib/utils';
+
 import { type SimpleProfile } from '@/server/api/modules/profiles';
 
 import { useIsMobile } from '@/hooks/use-breakpoints';
@@ -47,6 +49,7 @@ const ChangeProfileModal: FC<ChangeProfileModalProps> = ({}) => {
   });
 
   const onProfileClick = (_profile: SimpleProfile) => {
+    if (!_profile) return;
     updateProfile(_profile);
     reloadWithToast();
   };
@@ -65,14 +68,18 @@ const ChangeProfileModal: FC<ChangeProfileModalProps> = ({}) => {
         <p className="w-full max-w-md text-center text-muted-foreground">
           {data?.message}
         </p>
-        <div className="mt-6 grid w-full max-w-2xl grid-cols-2 gap-1 pb-8 sm:gap-4">
+        <div
+          className={cn(
+            'mt-6 flex w-full flex-wrap items-end justify-center gap-1 pb-8 sm:gap-4'
+          )}
+        >
           {isInitialLoading
             ? generateArray(2).map(el => <ProfileItemSkeleton key={el} />)
             : data?.profiles?.map(profile => (
                 <button
                   key={profile.id}
                   onClick={() => void onProfileClick(profile)}
-                  className="group flex flex-col items-center justify-center rounded-md px-3 py-6 hover:bg-gray-100"
+                  className="group flex w-full max-w-sm flex-col items-center justify-center rounded-md px-3 py-6 hover:bg-gray-100"
                 >
                   <UserAvatar
                     profile={profile}

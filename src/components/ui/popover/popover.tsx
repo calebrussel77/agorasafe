@@ -1,3 +1,4 @@
+import { Portal as HeadlessUIPortal } from '@headlessui/react';
 import * as PopoverPrimitive from '@radix-ui/react-popover';
 import * as React from 'react';
 
@@ -11,18 +12,21 @@ const PopoverContent = React.forwardRef<
   React.ElementRef<typeof PopoverPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof PopoverPrimitive.Content>
 >(({ className, align = 'end', sideOffset = 4, ...props }, ref) => (
-  <PopoverPrimitive.Portal>
+  // ! The @radix-ui `portal` component doesn't work well with ssr
+  // ! so i have to use the `headless ui portal compoent` who support ssr by avoiding me server hydratation errors
+  // ! see this issue for more: https://github.com/radix-ui/primitives/issues/1386
+  <HeadlessUIPortal>
     <PopoverPrimitive.Content
       ref={ref}
       align={align}
       sideOffset={sideOffset}
       className={cn(
-        'min-w-72 z-50 rounded-md border bg-popover px-1.5 py-3 shadow-md outline-none animate-in data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2',
+        'min-w-72 z-[60] rounded-md border bg-popover px-1.5 py-3 shadow-md outline-none animate-in data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2',
         className
       )}
       {...props}
     />
-  </PopoverPrimitive.Portal>
+  </HeadlessUIPortal>
 ));
 PopoverContent.displayName = PopoverPrimitive.Content.displayName;
 

@@ -10,12 +10,26 @@ import { Popover } from '../ui/popover';
 interface EmojiPickerProps {
   className?: string;
   onChange: (emoji: string) => void;
+  onTriggerClick?: (event: React.MouseEvent) => void;
+  open?: boolean;
+  onOpenChange?: () => void;
 }
 
-const EmojiPicker: FC<EmojiPickerProps> = ({ className, onChange }) => {
+const EmojiPicker: FC<EmojiPickerProps> = ({
+  className,
+  onChange,
+  onTriggerClick,
+  open,
+  onOpenChange,
+}) => {
   return (
-    <Popover>
-      <Popover.Trigger>
+    <Popover onOpenChange={onOpenChange} open={open}>
+      <Popover.Trigger
+        onClick={onTriggerClick}
+        title="Rajouter un émoji"
+        aria-label="Cliquez pour rajouter un émoji"
+        className="rounded-full p-1 hover:bg-gray-100"
+      >
         <Smile className="default__transition text-zinc-500 hover:text-zinc-600" />
       </Popover.Trigger>
       <Popover.Content

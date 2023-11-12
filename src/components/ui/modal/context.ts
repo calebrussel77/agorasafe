@@ -2,6 +2,7 @@ import { type ReactNode, createContext } from 'react';
 
 import type { ConfirmModalProps } from './confirmModal';
 import { type ModalProps } from './modal';
+import { type MantineModalsOverride } from '@/components/ui/modal';
 
 export type ModalSettings = Partial<Omit<ModalProps, 'open'>> & {
   modalId?: string;
@@ -43,17 +44,7 @@ export interface ModalsContextProps {
   closeAll: () => void;
 }
 
-export type MantineModalsOverride = Record<string, never>;
-
-export type MantineModalsOverwritten = MantineModalsOverride extends {
-  modals: Record<string, React.FC<ContextModalProps<any>>>;
-}
-  ? MantineModalsOverride
-  : {
-      modals: Record<string, React.FC<ContextModalProps<any>>>;
-    };
-
-export type MantineModals = MantineModalsOverwritten['modals'];
+export type MantineModals = MantineModalsOverride['modals'];
 
 export type MantineModal = keyof MantineModals;
 

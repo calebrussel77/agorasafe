@@ -1,15 +1,13 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
+import { Portal as HeadlessUIPortal } from '@headlessui/react';
 import * as DialogPrimitive from '@radix-ui/react-dialog';
 import { X } from 'lucide-react';
 import * as React from 'react';
 
 import { cn } from '@/lib/utils';
 
-import { useMergeRefs } from '@/hooks/use-merge-refs';
-
-import { NoSSR } from '../no-ssr';
 import { Typography } from '../typography';
 
 type ClassNames = {
@@ -23,11 +21,10 @@ const DialogPortal = ({
   children,
   ...props
 }: DialogPrimitive.DialogPortalProps) => (
-  <NoSSR>
-    <DialogPrimitive.Portal {...props}>
-      <div className="fixed inset-0 z-50">{children}</div>
-    </DialogPrimitive.Portal>
-  </NoSSR>
+  // ! The @radix-ui `portal` component doesn't work well with ssr
+  // ! so i have to use the `headless ui portal compoent` who support ssr by avoiding me server hydratation errors
+  // ! see this issue for more: https://github.com/radix-ui/primitives/issues/1386
+  <HeadlessUIPortal>{children}</HeadlessUIPortal>
 );
 DialogPortal.displayName = DialogPrimitive.Portal.displayName;
 
@@ -52,12 +49,9 @@ const DialogContent = React.forwardRef<
     isFullScreen?: boolean;
   }
 >(({ className, children, isFullScreen = false, ...props }, ref) => {
-  const scrollRef = React.useRef<HTMLElement>(null);
-  const refs = useMergeRefs(scrollRef, ref);
-
   return (
     <DialogPrimitive.Content
-      ref={refs}
+      ref={ref}
       style={{
         maxHeight: isFullScreen ? '100vh' : `calc(100vh - 4rem * 2)`,
       }}

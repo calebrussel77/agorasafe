@@ -1,4 +1,3 @@
-import { openContext } from '@/providers/custom-modal-provider';
 import {
   ArrowLeftCircle,
   ArrowRight,
@@ -65,19 +64,9 @@ export function LatestServiceRequests() {
               icon={<LucideDoorClosed />}
               className="my-8"
               description="Aucune demande publiée pour l'instant."
-              // description="Soyez le premier à créer et publier votre demande de service."
               primaryAction={
                 <ServiceRequestButton>
-                  <Button
-                    size="sm"
-                    onClick={() => openContext(
-                      'createServiceRequest',
-                      {},
-                      { isFullScreen: isMobile }
-                    )}
-                  >
-                    Créer ma demande
-                  </Button>
+                  <Button size="sm">Créer ma demande</Button>
                 </ServiceRequestButton>
               }
             />

@@ -1,12 +1,11 @@
-import { openContext } from '@/providers/custom-modal-provider';
 import { LogOut, RefreshCcw } from 'lucide-react';
 import { UserPlus2 } from 'lucide-react';
 import React, { type FC } from 'react';
 
 import { useAuth } from '@/features/auth';
+import { FeedbackButton } from '@/features/feedbacks';
 import { useGetProfileConfig } from '@/features/profile-config';
 
-import { useIsMobile } from '@/hooks/use-breakpoints';
 import { useCurrentUser } from '@/hooks/use-current-user';
 
 import { ActiveLink } from '../active-link';
@@ -32,7 +31,6 @@ const MobileNavbar: FC<MobileNavbarProps> = ({
 }) => {
   const { onSignOut } = useAuth();
   const { profile, resetProfile } = useCurrentUser();
-  const isMobile = useIsMobile();
 
   const {
     data: userProfileConfig,
@@ -142,27 +140,19 @@ const MobileNavbar: FC<MobileNavbarProps> = ({
                     {navigations.map(item => {
                       if (item.name.toLowerCase() === 'feedback') {
                         return (
-                          <button
-                            key={item?.name}
-                            onClick={() =>
-                              openContext(
-                                'feedbackForm',
-                                {},
-                                { isFullScreen: isMobile }
-                              )
-                            }
-                            className="-mx-3 flex items-center rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
-                          >
-                            {item.name}
-                            {item?.isNew && (
-                              <Badge
-                                content="New"
-                                size="xs"
-                                className="ml-0.5"
-                                variant="success"
-                              />
-                            )}
-                          </button>
+                          <FeedbackButton key={item?.name}>
+                            <button className="-mx-3 flex items-center rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50">
+                              {item.name}
+                              {item?.isNew && (
+                                <Badge
+                                  content="New"
+                                  size="xs"
+                                  className="ml-0.5"
+                                  variant="success"
+                                />
+                              )}
+                            </button>
+                          </FeedbackButton>
                         );
                       }
                       return (
@@ -202,27 +192,19 @@ const MobileNavbar: FC<MobileNavbarProps> = ({
                   {navigations.map(item => {
                     if (item.name.toLowerCase() === 'feedback') {
                       return (
-                        <button
-                          key={item?.name}
-                          onClick={() =>
-                            openContext(
-                              'feedbackForm',
-                              {},
-                              { isFullScreen: isMobile }
-                            )
-                          }
-                          className="-mx-3 flex items-center rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
-                        >
-                          {item.name}
-                          {item?.isNew && (
-                            <Badge
-                              content="New"
-                              size="xs"
-                              className="ml-0.5"
-                              variant="success"
-                            />
-                          )}
-                        </button>
+                        <FeedbackButton key={item?.name}>
+                          <button className="-mx-3 flex items-center rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50">
+                            {item.name}
+                            {item?.isNew && (
+                              <Badge
+                                content="New"
+                                size="xs"
+                                className="ml-0.5"
+                                variant="success"
+                              />
+                            )}
+                          </button>
+                        </FeedbackButton>
                       );
                     }
 

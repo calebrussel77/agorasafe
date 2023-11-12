@@ -1,4 +1,4 @@
-import { uniqWith } from '@/utils/arrays';
+import { removeDuplicates } from '@/utils/arrays';
 import { formatPhoneNumber } from '@/utils/misc';
 
 import {
@@ -255,7 +255,7 @@ export const getAllServiceRequestsService = async (
     nbProviderNeededFormattedText: getFomattedProviderNeeded(
       serviceRequest?.numberOfProviderNeeded
     ),
-    comments: uniqWith(
+    comments: removeDuplicates(
       serviceRequest.comments,
       (a, b) => a.author.slug === b.author.slug
     ),

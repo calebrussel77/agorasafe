@@ -22,7 +22,7 @@ type Props<T extends FieldValues> = {
 } & VariantProps<typeof formToken> &
   Pick<
     React.HTMLProps<HTMLFormElement>,
-    'className' | 'children' | 'onKeyDown'
+    'className' | 'children' | 'onKeyDown' | "id"
   >;
 
 const formToken = cva(

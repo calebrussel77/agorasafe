@@ -1,5 +1,3 @@
-import { type ProfileType } from '@prisma/client';
-
 import {
   type ReactQueryOptions,
   type RouterInputs,
@@ -19,8 +17,3 @@ export type GetProfileDetailsInput =
   RouterInputs['profiles']['getProfileDetails'];
 export type GetProfileDetailsOptions =
   ReactQueryOptions['profiles']['getProfileDetails'];
-
-export type CreateProfileOptions =
-  ReactQueryOptions['profiles']['createProfile'];
-export type CreateProfileOutput = RouterOutputs['profiles']['createProfile'];
-export type CreateProfileInput = RouterInputs['profiles']['createProfile'];

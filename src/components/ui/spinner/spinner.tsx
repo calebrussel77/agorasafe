@@ -30,7 +30,12 @@ const Spinner = forwardRef<
   return (
     <div
       ref={ref}
-      className={cn('loader', variantClassNames, sizeClassNames, className)}
+      className={cn(
+        'spinner-loader',
+        variantClassNames,
+        sizeClassNames,
+        className
+      )}
       {...rest}
     />
   );

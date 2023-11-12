@@ -1,6 +1,6 @@
-import { openContext } from '@/providers/custom-modal-provider';
 import React, { type FC, type ReactNode } from 'react';
 
+import { FeedbackButton } from '@/features/feedbacks';
 import {
   UserProfileDropdown,
   useGetProfileConfig,
@@ -39,8 +39,6 @@ const Navbar: FC<NavbarProps> = ({
     enabled: isDropdownMenuOpen,
   });
 
-  const isMobile = useIsMobile();
-
   return (
     <nav
       className={cn('flex items-center gap-x-4 px-4 py-3.5 lg:px-8', className)}
@@ -63,28 +61,18 @@ const Navbar: FC<NavbarProps> = ({
         {navigations.map(item => {
           if (item.name.toLowerCase() === 'feedback') {
             return (
-              <button
-                key={item?.name}
-                onClick={() =>
-                  openContext('feedbackForm', {}, { isFullScreen: isMobile })
-                }
-                className={cn(
-                  'default__transition flex items-center rounded-md px-2 py-1 text-sm',
-                  'hover:bg-brand-50 hover:text-brand-600'
-                )}
-              >
-                {item?.isNew && (
+              <FeedbackButton key={item?.name}>
+                <button>
                   <Badge
                     content="New"
+                    variant="success"
                     size="xs"
                     placement="top-right"
-                    variant="success"
-                    className="-right-6"
                   >
                     {item.name}
                   </Badge>
-                )}
-              </button>
+                </button>
+              </FeedbackButton>
             );
           }
 
@@ -112,16 +100,7 @@ const Navbar: FC<NavbarProps> = ({
       </div>
       <div className="ml-1 flex flex-1 items-center justify-end">
         <ServiceRequestButton>
-          <Button
-            size="sm"
-            onClick={() => openContext(
-              'createServiceRequest',
-              {},
-              { isFullScreen: isMobile }
-            )}
-          >
-            Demander un service
-          </Button>
+          <Button size="sm">Demander un service</Button>
         </ServiceRequestButton>
         <CanView allowedProfiles={['CUSTOMER', 'PROVIDER']}>
           <UserProfileDropdown

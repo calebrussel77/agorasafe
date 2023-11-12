@@ -42,7 +42,7 @@ import { getCompletionPercentage } from '@/utils/misc';
 import { getIsFaceToFaceLabel, getIsRemoteLabel } from '@/utils/profile';
 import { isArrayOfFile } from '@/utils/type-guards';
 
-import { htmlParse } from '@/lib/html-react-parser';
+import { htmlParse } from '@/lib/html-helper';
 import { cn } from '@/lib/utils';
 
 import {

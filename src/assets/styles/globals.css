@@ -86,4 +86,6 @@
   .default__transition {
     @apply transition duration-300 ease-in-out;
   }
+
+  @import '../../components/ui/rich-text-editor/rich-text-editor.style.css';
 }

@@ -1,4 +1,3 @@
-import { openContext } from '@/providers/custom-modal-provider';
 import axios from 'axios';
 import { File, Plus, SendHorizonal } from 'lucide-react';
 import React, { type RefObject } from 'react';
@@ -13,6 +12,7 @@ import {
   ModalHeader,
   ModalMain,
   closeModal,
+  openContextModal,
 } from '@/components/ui/modal';
 import { TextareaAutosize } from '@/components/ui/textarea-autosize';
 import { toast } from '@/components/ui/toast';
@@ -211,15 +211,15 @@ const ConversationChatFooter = ({
   };
 
   const onOpenConversationFileUploadModal = () => {
-    openContext(
-      'conversationFileUploadForm',
-      {
+    openContextModal({
+      isFullScreen: isMobile,
+      modal: 'conversationFileUploadForm',
+      innerProps: {
         query,
         socketUrl,
         handleScrollDown,
       },
-      { isFullScreen: isMobile }
-    );
+    });
   };
 
   return (

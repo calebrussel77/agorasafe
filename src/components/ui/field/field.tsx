@@ -33,6 +33,7 @@ export interface FieldOptions {
   hint?: string;
   className?: string;
   labelClassName?: string;
+  id?: string;
 }
 
 export type FieldProps = FieldOptions;
@@ -53,6 +54,7 @@ export const Field = forwardRef<HTMLDivElement, FieldProps>(
       hint,
       labelClassName,
       className,
+      id,
     },
     ref
   ) => {
@@ -74,7 +76,11 @@ export const Field = forwardRef<HTMLDivElement, FieldProps>(
     const Container = layout === 'flex-row' ? RowContainer : Fragment;
 
     const htmlFor =
-      children.props.id || children.props.name || `${baseType}--${generatedId}`;
+      id ||
+      children.props.id ||
+      children.props.name ||
+      `${baseType}--${generatedId}`;
+
     const hasHintText = !!hint;
 
     const infoText = info && wrapChildren(info);
@@ -124,7 +130,7 @@ export const Field = forwardRef<HTMLDivElement, FieldProps>(
           </Container>
 
           {hasHintText && !hasVariantMessage && (
-            <HelperMessage className='mt-0.5'>{hint}</HelperMessage>
+            <HelperMessage className="mt-0.5">{hint}</HelperMessage>
           )}
 
           {successText && (

@@ -15,12 +15,6 @@ import { simpleProfileSelect } from '@/server/api/modules/profiles';
 import { getServerAuthSession } from '@/server/auth';
 import { prisma } from '@/server/db';
 
-const reqBodySchema = z
-  .object({
-    content: z.string().trim(),
-  })
-  .optional();
-
 const reqQuerySchema = z.object({
   conversationId: z.string(),
   directMessageId: z.string(),
@@ -81,7 +75,7 @@ export default async function handler(
       throw new Error('Impossible de trouver ce message');
 
     const isMessageOwner = directMessage.profile.id === user.id;
-    const isAdmin = session.user.role === Role.ADMIN;
+    const isAdmin = session?.user?.role === Role.ADMIN;
     const canModify = isMessageOwner || isAdmin;
 
     if (!canModify)

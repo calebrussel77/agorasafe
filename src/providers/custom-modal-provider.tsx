@@ -1,8 +1,5 @@
 import {
-  type ModalProps,
   ModalsProvider,
-  closeContextModal,
-  openContextModal,
 } from '@/components/ui/modal';
 
 import { ConversationFileUploadFormModal } from '@/features/conversations';
@@ -12,12 +9,19 @@ import {
   CustomServiceRequestCategoriesModal,
 } from '@/features/services';
 
-const modals = {
+export const appModals = {
   feedbackForm: FeedbackFormModal,
   customServiceRequestCategories: CustomServiceRequestCategoriesModal,
   createServiceRequest: CreateServiceRequestModal,
   conversationFileUploadForm: ConversationFileUploadFormModal,
 };
+
+// neccessary to add type checking of the mantine context modals implementation in the app
+declare module '@/components/ui/modal' {
+  export interface MantineModalsOverride {
+    modals: typeof appModals;
+  }
+}
 
 export const CustomModalsProvider = ({
   children,
@@ -30,34 +34,9 @@ export const CustomModalsProvider = ({
         confirm: 'Confirmer',
         cancel: 'Annuler',
       }}
-      modals={modals}
+      modals={appModals}
     >
       {children}
     </ModalsProvider>
   );
 };
-
-type InnerProps<TName extends keyof typeof modals> = Prettify<
-  Pick<Parameters<(typeof modals)[TName]>[0], 'innerProps'>
->;
-
-export function openContext<TName extends keyof typeof modals>(
-  modal: TName,
-  props: Prettify<InnerProps<TName>['innerProps']>,
-  modalProps?: Prettify<
-    Omit<
-      ModalProps,
-      'open' | 'onOpenChange' | 'title' | 'description' | 'children'
-    >
-  >
-) {
-  openContextModal<TName>({
-    modal,
-    innerProps: props,
-    ...modalProps,
-  });
-}
-
-export function closeContext<TName extends keyof typeof modals>(modal: TName) {
-  closeContextModal(modal);
-}

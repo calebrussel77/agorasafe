@@ -1,6 +1,9 @@
+import { Config } from 'isomorphic-dompurify';
 import { z } from 'zod';
 
 import { parseNumericString } from '@/utils/query-string-helpers';
+
+import { sanitizeHTML } from '@/lib/html-helper';
 
 const limit = z.preprocess(
   parseNumericString,
@@ -32,3 +35,18 @@ export type GetByIdOrSlugQueryInput = z.infer<typeof getByIdOrSlugQuerySchema>;
 
 export const getByIdQuerySchema = z.object({ id: z.number() });
 export type GetByIdQueryInput = z.infer<typeof getByIdQuerySchema>;
+
+export const getSanitizedStringSchema = (config?: Config) =>
+  z.preprocess(val => {
+    if (!val) return '';
+
+    const str = String(val);
+    const result = sanitizeHTML(str, config);
+    return result;
+  }, z.string());
+
+export const nonEmptyHtmlString = getSanitizedStringSchema({
+  ALLOWED_TAGS: ['div', 'strong', 'p', 'em', 'u', 's', 'a', 'br'],
+}).refine(data => {
+  return data && data.length > 0 && data !== '<p></p>';
+}, 'Ce champs ne peut être vide.');

@@ -1,7 +1,7 @@
-import { openContext } from '@/providers/custom-modal-provider';
-import React, { type ReactNode } from 'react';
+import React from 'react';
 
 import { Button } from '@/components/ui/button';
+import { LoadingOverlay } from '@/components/ui/loading-overlay';
 import {
   type ContextModalProps,
   ModalFooter,
@@ -14,8 +14,6 @@ import { useUpload } from '@/components/ui/uploadthing';
 
 import { api } from '@/utils/api';
 import { isArray } from '@/utils/type-guards';
-
-import { useIsMobile } from '@/hooks/use-breakpoints';
 
 import { type FeedBackFormInput, FeedbackForm } from './feedback-form';
 
@@ -57,7 +55,10 @@ const FeedbackFormModal = ({ context: ctx, id }: ContextModalProps<object>) => {
         title="😊 Partagez votre avis sur Agorasafe"
         description="Nous attachons une grande importance à votre opinion. Aidez-nous à améliorer Agorasafe en partageant vos commentaires. Votre avis compte !"
       />
-      <ModalMain>
+      <ModalMain className="relative">
+        <LoadingOverlay
+          visible={createFeedbackMutation.isLoading || isUploading}
+        />
         {createFeedbackMutation.error && (
           <SectionMessage
             description={createFeedbackMutation.error?.message}
@@ -66,7 +67,8 @@ const FeedbackFormModal = ({ context: ctx, id }: ContextModalProps<object>) => {
         )}
         {createFeedbackMutation?.isSuccess ? (
           <SectionMessage
-            description="Formulaire soumis avec succès ! Nous vous remercions de nous avoir partagé vos commentaires."
+            title="Formulaire soumis avec succès !"
+            description="Nous vous remercions de nous avoir partagé vos commentaires."
             appareance="success"
             hasCloseButton={false}
           />

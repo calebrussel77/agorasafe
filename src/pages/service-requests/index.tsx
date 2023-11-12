@@ -1,8 +1,6 @@
-import { openContext } from '@/providers/custom-modal-provider';
 import { LucideDoorClosed, Search } from 'lucide-react';
 
 import { AsyncWrapper } from '@/components/ui/async-wrapper';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Container } from '@/components/ui/container';
 import { DebouncedInput } from '@/components/ui/debounced-input';
@@ -19,13 +17,9 @@ import { api } from '@/utils/api';
 
 import { createServerSideProps } from '@/server/utils/server-side';
 
-import { useIsMobile } from '@/hooks/use-breakpoints';
-
 import { type AppPageProps } from '../_app';
 
 const ServiceRequestsPage: AppPageProps['Component'] = () => {
-  const isMobile = useIsMobile();
-
   //TODO: Need to add infinite scroll to this
   const { data, error, refetch, isLoading } =
     api.services.getAllServiceRequests.useQuery({});
@@ -85,18 +79,7 @@ const ServiceRequestsPage: AppPageProps['Component'] = () => {
               description="Aucune demande publiée pour l'instant."
               primaryAction={
                 <ServiceRequestButton>
-                  <Button
-                    size="sm"
-                    onClick={() =>
-                      openContext(
-                        'createServiceRequest',
-                        {},
-                        { isFullScreen: isMobile }
-                      )
-                    }
-                  >
-                    Créer ma demande
-                  </Button>
+                  <Button size="sm">Créer ma demande</Button>
                 </ServiceRequestButton>
               }
             />

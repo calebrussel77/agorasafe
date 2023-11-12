@@ -1,4 +1,3 @@
-import { openContext } from '@/providers/custom-modal-provider';
 import { ArrowLeft, ChevronRight, PencilIcon } from 'lucide-react';
 import { Search } from 'lucide-react';
 import { useRouter } from 'next/router';
@@ -15,6 +14,7 @@ import {
   type ContextModalProps,
   ModalHeader,
   ModalMain,
+  openContextModal,
 } from '@/components/ui/modal';
 
 import { QS } from '@/lib/qs';
@@ -151,16 +151,16 @@ const CreateServiceRequestModal = ({
                 description="Nous n'avons trouvés aucun résultat pour votre recherche. Créer une demande personnalisée ?"
                 primaryAction={
                   <Button
-                    onClick={() =>
-                      openContext(
-                        'customServiceRequestCategories',
-                        {
+                    onClick={() => {
+                      openContextModal({
+                        isFullScreen: isMobile,
+                        modal: 'customServiceRequestCategories',
+                        innerProps: {
                           categories: dataServices?.services as never,
                           query,
                         },
-                        { isFullScreen: isMobile }
-                      )
-                    }
+                      });
+                    }}
                   >
                     Faire une demande personnalisée
                   </Button>
@@ -190,16 +190,16 @@ const CreateServiceRequestModal = ({
                   </Anchor>
                 ))}
                 <GroupItem
-                  onClick={() =>
-                    openContext(
-                      'customServiceRequestCategories',
-                      {
+                  onClick={() => {
+                    openContextModal({
+                      isFullScreen: isMobile,
+                      modal: 'customServiceRequestCategories',
+                      innerProps: {
                         categories: dataServices?.services as never,
                         query,
                       },
-                      { isFullScreen: isMobile }
-                    )
-                  }
+                    });
+                  }}
                   classNames={{
                     root: 'py-4 mx-1 bg-gray-100 rounded-md mt-6 group cursor-pointer',
                     name: 'font-normal text-base text-gray-600',

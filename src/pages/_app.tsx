@@ -86,21 +86,14 @@ const MyApp = (props: AppPageProps) => {
           origin: WEBSITE_URL,
         })}
       />
-      <AnimatePresence mode="wait" onExitComplete={handleExitComplete}>
-        <AppProvider
-          {...{
-            session,
-            initialProfileState,
-          }}
-        >
-          <PageTransition>
-            {getLayout(
-              <Component {...pageProps} key={router.asPath} />,
-              router
-            )}
-          </PageTransition>
-        </AppProvider>
-      </AnimatePresence>
+      <AppProvider
+        {...{
+          session,
+          initialProfileState,
+        }}
+      >
+        {getLayout(<Component {...pageProps} key={router.asPath} />, router)}
+      </AppProvider>
     </>
   );
 };

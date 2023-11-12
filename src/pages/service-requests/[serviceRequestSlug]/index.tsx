@@ -54,7 +54,7 @@ import { formatPhoneNumber } from '@/utils/misc';
 import { isEmptyArray } from '@/utils/type-guards';
 
 import { dateToReadableString, formatDateDistance } from '@/lib/date-fns';
-import { htmlParse } from '@/lib/html-react-parser';
+import { htmlParse } from '@/lib/html-helper';
 
 import { createServerSideProps } from '@/server/utils/server-side';
 

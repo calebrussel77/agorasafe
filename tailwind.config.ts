@@ -1,7 +1,8 @@
+// TODO: need to remove this library in the future
 import headlessuiPlugin from '@headlessui/tailwindcss';
+
 import tailwindCssTypographyPlugin from '@tailwindcss/typography';
 import { type Config } from 'tailwindcss';
-// TODO: need to remove this library in the future
 import tailwindCssAnimatePlugin from 'tailwindcss-animate';
 
 export default {
