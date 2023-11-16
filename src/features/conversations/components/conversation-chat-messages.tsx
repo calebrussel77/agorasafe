@@ -60,7 +60,7 @@ const ConversationChatMessages = ({
     count: directMessages?.length ?? 0,
   });
 
-  useConversationChatSocket({ conversationId, createEventKey, updateEventKey });
+  // useConversationChatSocket({ conversationId, createEventKey, updateEventKey });
 
   if (status === 'loading') {
     return (

@@ -18,30 +18,27 @@ import { cn } from '@/lib/utils';
 type Props<T extends FieldValues> = {
   form: UseFormReturn<T>;
   onError?: SubmitErrorHandler<T>;
-  onSubmit: SubmitHandler<T>;
+  onSubmit?: SubmitHandler<T>;
 } & VariantProps<typeof formToken> &
   Pick<
     React.HTMLProps<HTMLFormElement>,
-    'className' | 'children' | 'onKeyDown' | "id"
+    'className' | 'children' | 'onKeyDown' | 'id'
   >;
 
-const formToken = cva(
-  ['relative disabled:opacity-70 disabled:cursor-not-allowed'],
-  {
-    variants: {
-      gap: {
-        sm: ['space-y-3'],
-        md: ['space-y-6'],
-        lg: ['space-y-9'],
-        xl: ['space-y-12'],
-      },
+const formToken = cva(['disabled:opacity-70 disabled:cursor-not-allowed'], {
+  variants: {
+    gap: {
+      sm: ['space-y-3'],
+      md: ['space-y-6'],
+      lg: ['space-y-9'],
+      xl: ['space-y-12'],
     },
-    compoundVariants: [{ gap: 'md' }],
-    defaultVariants: {
-      gap: 'md',
-    },
-  }
-);
+  },
+  compoundVariants: [{ gap: 'md' }],
+  defaultVariants: {
+    gap: 'md',
+  },
+});
 
 const Form = <T extends FieldValues>({
   form,

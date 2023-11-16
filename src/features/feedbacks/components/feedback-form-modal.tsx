@@ -19,7 +19,10 @@ import { type FeedBackFormInput, FeedbackForm } from './feedback-form';
 
 const formId = 'feedback-form';
 
-const FeedbackFormModal = ({ context: ctx, id }: ContextModalProps<object>) => {
+const FeedbackFormModal = ({
+  context: ctx,
+  id,
+}: ContextModalProps<Record<string, any>>) => {
   const createFeedbackMutation = api.feedbacks.create.useMutation({
     onSuccess() {
       toast({

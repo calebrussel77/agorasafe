@@ -68,6 +68,7 @@ const Navbar: FC<NavbarProps> = ({
                     variant="success"
                     size="xs"
                     placement="top-right"
+                    className="-right-4 -top-1"
                   >
                     {item.name}
                   </Badge>

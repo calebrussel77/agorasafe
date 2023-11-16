@@ -52,8 +52,8 @@ const FeedbackForm: FC<FeedbackFormProps> = ({ id, onSubmit }) => {
               id="feedback-comment"
               label="Votre commentaire"
               placeholder="Ajouter votre commentaire..."
-              disableLocalStorage
               error={fieldState?.error?.message}
+              autoFocus
               required
               editorSize="md"
               value={value}
@@ -62,10 +62,6 @@ const FeedbackForm: FC<FeedbackFormProps> = ({ id, onSubmit }) => {
           );
         }}
       />
-      {/* <Textarea
-          {...form.register('content')}
-          placeholder={`Ajouter votre commentaire...`}
-        /> */}
 
       <Field label="Type" required>
         <Controller

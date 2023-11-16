@@ -1,4 +1,4 @@
-import { type Prisma } from '@prisma/client';
+import { type Prisma, ServiceRequestStatus } from '@prisma/client';
 
 import { isEmptyArray } from '@/utils/type-guards';
 
@@ -35,9 +35,11 @@ export const getAllServiceRequests = ({
   query,
   providersReserved = 'All',
   orderBy = 'desc',
-  status = 'OPEN',
+  status: _status = 'OPEN',
+  authorId,
 }: GetAllServiceRequestsInput) => {
   const skip = page ? (page - 1) * limit : undefined;
+  let status: ServiceRequestStatus | undefined;
 
   let OR: Prisma.ServiceRequestWhereInput[] | undefined = undefined;
   let selectCount:
@@ -45,8 +47,9 @@ export const getAllServiceRequests = ({
     | null
     | undefined = { providersReserved: true };
 
-  if (query)
-    OR = [{ title: { contains: query } }, { description: { contains: query } }];
+  if (_status === 'ALL') {
+    status = undefined;
+  } else status = _status;
 
   if (providersReserved === 'Active') {
     selectCount = {
@@ -60,12 +63,17 @@ export const getAllServiceRequests = ({
     };
   }
 
+  if (query) {
+    OR = [{ title: { contains: query } }, { description: { contains: query } }];
+    status = undefined;
+  }
+
   return prisma.$transaction([
     prisma.serviceRequest.count({
       where: { status },
     }),
     prisma.serviceRequest.findMany({
-      where: { status, OR },
+      where: { status, OR, authorId: authorId ?? undefined },
       orderBy: { createdAt: orderBy },
       select: {
         id: true,
@@ -323,7 +331,7 @@ export const getServiceRequestWithDetails = ({
   let selectCount:
     | Prisma.ServiceRequestCountOutputTypeSelect
     | null
-    | undefined = { providersReserved: true };
+    | undefined = { providersReserved: true, comments: true, reviews: true };
 
   let providersReservedWhere:
     | Prisma.ServiceRequestReservationWhereInput
@@ -336,6 +344,8 @@ export const getServiceRequestWithDetails = ({
     };
     selectCount = {
       providersReserved: { where: { removedAt: null, isActive: true } },
+      comments: true,
+      reviews: true,
     };
   }
 
@@ -345,6 +355,8 @@ export const getServiceRequestWithDetails = ({
     };
     selectCount = {
       providersReserved: { where: { isActive: false } },
+      comments: true,
+      reviews: true,
     };
   }
 

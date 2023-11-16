@@ -1,8 +1,9 @@
 import { type ReactNode, createContext } from 'react';
 
+import { type MantineModalsOverride } from '@/components/ui/modal';
+
 import type { ConfirmModalProps } from './confirmModal';
 import { type ModalProps } from './modal';
-import { type MantineModalsOverride } from '@/components/ui/modal';
 
 export type ModalSettings = Partial<Omit<ModalProps, 'open'>> & {
   modalId?: string;
@@ -28,6 +29,10 @@ export type ModalState =
   | { id: string; props: OpenConfirmModal; type: 'confirm' }
   | { id: string; props: OpenContextModal; type: 'context'; ctx: string };
 
+export type MantineModals = MantineModalsOverride['modals'];
+
+export type MantineModal = keyof MantineModals;
+
 export interface ModalsContextProps {
   modals: ModalState[];
   openModal: (props: ModalSettings) => string;
@@ -43,10 +48,6 @@ export interface ModalsContextProps {
   ) => void;
   closeAll: () => void;
 }
-
-export type MantineModals = MantineModalsOverride['modals'];
-
-export type MantineModal = keyof MantineModals;
 
 export const ModalsContext = createContext<ModalsContextProps>(null as never);
 ModalsContext.displayName = '@agorasafe/modals/ModalsContext';

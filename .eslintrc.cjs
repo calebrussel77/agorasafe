@@ -48,6 +48,12 @@ const config = {
     'no-unused-vars': [1, { args: 'after-used', varsIgnorePattern: '^_' }],
     'no-console': 'off',
     'no-unsafe-optional-chaining': 0,
+    '@typescript-eslint/no-misused-promises': [
+      'warn',
+      {
+        checksVoidReturn: false,
+      },
+    ],
     '@typescript-eslint/no-unsafe-call': 'off',
     '@typescript-eslint/restrict-template-expressions': [
       'warn',

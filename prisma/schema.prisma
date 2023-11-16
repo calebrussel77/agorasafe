@@ -361,6 +361,7 @@ model User {
     onboardingComplete Boolean?  @default(false)
     // onboardingSteps Json      @default("[\"MODERATION\", \"PAYMENT_INFO\"]") // TODO: Store enums as a JSON field since i'm using MySql => OnboardingStep[]
     picture            String?
+    version            Float
     birthdate          String?
     email              String    @unique
     emailVerified      DateTime?

@@ -11,8 +11,11 @@ export const getAllServicesWithCategorySchema = getAllQuerySchema.extend({
 
 export const getAllServiceRequestsSchema = getAllQuerySchema.extend({
   providersReserved: z.enum(['Active', 'Inactive', 'All']).optional(),
-  status: z.nativeEnum(ServiceRequestStatus).optional(),
+  status: z
+    .enum([ServiceRequestStatus.OPEN, ServiceRequestStatus.CLOSED, 'ALL'])
+    .optional(),
   orderBy: z.enum(['desc', 'asc']).optional(),
+  authorId: z.string().trim().optional(),
 });
 
 export const getServiceRequestSchema = z

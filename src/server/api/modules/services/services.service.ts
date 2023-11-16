@@ -222,6 +222,12 @@ export const getServiceRequestService = async (
         serviceRequestDetails?.estimatedPrice,
         'Prix non défini'
       ),
+      stats: {
+        commentCount: serviceRequestDetails?._count?.comments,
+        providersReservedCount:
+          serviceRequestDetails?._count?.providersReserved,
+        reviewCount: serviceRequestDetails?._count?.reviews,
+      },
       // isProfileChoosed,
     },
     success: true,
@@ -258,7 +264,7 @@ export const getAllServiceRequestsService = async (
     comments: removeDuplicates(
       serviceRequest.comments,
       (a, b) => a.author.slug === b.author.slug
-    ),
+    ).filter(el => el.author.slug !== serviceRequest.author.profile.slug),
     estimatedPriceFormatted: getFormattedEstimatedPrice(
       serviceRequest?.estimatedPrice,
       'Prix non défini'

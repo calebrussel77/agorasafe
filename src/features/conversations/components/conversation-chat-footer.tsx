@@ -1,56 +1,87 @@
+import { useMutation } from '@tanstack/react-query';
 import axios from 'axios';
+import { produce } from 'immer';
 import { File, Plus, SendHorizonal } from 'lucide-react';
 import React, { type RefObject } from 'react';
 import { Controller } from 'react-hook-form';
 import { z } from 'zod';
 
-import { EmojiPicker } from '@/components/emoji-picker';
 import { Form, useZodForm } from '@/components/ui/form';
 import {
-  ContextModalProps,
+  type ContextModalProps,
   ModalFooter,
   ModalHeader,
   ModalMain,
-  closeModal,
   openContextModal,
 } from '@/components/ui/modal';
-import { TextareaAutosize } from '@/components/ui/textarea-autosize';
+import { Editor } from '@/components/ui/rich-text-editor';
 import { toast } from '@/components/ui/toast';
 import { DropzoneUpload, useUpload } from '@/components/ui/uploadthing';
 
+import { api } from '@/utils/api';
+import { makeRandomId } from '@/utils/misc';
 import { isArrayOfFile } from '@/utils/type-guards';
 
 import { QS } from '@/lib/qs';
 
+import { nonEmptyHtmlString } from '@/server/api/validations/base.validations';
+
 import { useIsMobile } from '@/hooks/use-breakpoints';
+import { useCurrentUser } from '@/hooks/use-current-user';
 import { getHotkeyHandler } from '@/hooks/use-hot-keys';
 
+import { type MessageWithWithProfile } from '../types';
+
 const chatFormSchema = z.object({
-  content: z.string().min(1),
+  content: nonEmptyHtmlString,
 });
 
 const imageUploadFormSchema = z.object({
-  content: z.string().optional().nullable(),
+  content: z.string().or(z.undefined()).nullish(),
   fileUrl: z.array(z.unknown()).min(1, 'Vous devez fournir un fichier.'),
 });
 
 type ImageUploadFormInput = z.infer<typeof imageUploadFormSchema>;
 
+type ChatFormInput = z.infer<typeof chatFormSchema>;
+
 type ConversationFooterProps = React.PropsWithChildren<{
   name: string;
   socketUrl: string;
-  query: Record<string, string>;
+  query: Record<'conversationId', string>;
   bottomRef: RefObject<HTMLDivElement>;
 }>;
+
+const createConversationMessage = async ({
+  url,
+  formData,
+}: {
+  url: string;
+  formData: ChatFormInput;
+}) => {
+  return axios.post<MessageWithWithProfile>(url, formData);
+};
+
+const createConversationMessageWithFile = async ({
+  url,
+  formData,
+}: {
+  url: string;
+  formData: { content?: string; fileUrl: string };
+}) => {
+  return axios.post<{ content?: string; fileUrl: string }>(url, formData);
+};
 
 const ConversationFileUploadFormModal = ({
   context,
   id,
   innerProps: { socketUrl, handleScrollDown, query },
 }: ContextModalProps<
-  Omit<ConversationFooterProps, 'name' | 'bottomRef'> & {
-    handleScrollDown: () => void;
-  }
+  Prettify<
+    Omit<ConversationFooterProps, 'name' | 'bottomRef'> & {
+      handleScrollDown: () => void;
+    }
+  >
 >) => {
   const form = useZodForm({
     schema: imageUploadFormSchema,
@@ -59,10 +90,9 @@ const ConversationFileUploadFormModal = ({
     },
   });
 
-  const { control, formState } = form;
-
-  const isLoading = formState.isSubmitting;
-  const watchedContent = form.watch('content');
+  const { control } = form;
+  const queryUtils = api.useContext();
+  const { profile } = useCurrentUser();
 
   const { startUpload, isUploading } = useUpload({
     endpoint: 'conversationFiles',
@@ -75,29 +105,99 @@ const ConversationFileUploadFormModal = ({
     },
   });
 
-  const onSubmit = async (formData: ImageUploadFormInput) => {
-    try {
-      const fileArray = formData.fileUrl;
-      const files = isArrayOfFile(fileArray)
-        ? await startUpload(fileArray)
-        : [];
+  const createMessage = useMutation({
+    mutationFn: createConversationMessageWithFile,
+    async onMutate({ formData: { content, fileUrl } }) {
+      // Cancel any outgoing refetches
+      // (so they don't overwrite our optimistic update)
+      await queryUtils.messages.getDirectMessages.cancel();
+      await queryUtils.conversations.getConversations.cancel();
 
-      const url = QS.stringifyUrl(socketUrl, query);
-      await axios.post(url, {
-        content: formData?.content,
-        fileUrl: files && files[0]?.url,
-      });
+      if (!profile) return;
+
+      //Update the UI by adding the new message on the messages list
+      queryUtils.messages.getDirectMessages.setInfiniteData(
+        { conversationId: query.conversationId },
+        produce(oldData => {
+          if (!oldData || !oldData.pages || oldData.pages.length === 0) {
+            return oldData;
+          }
+
+          for (const page of oldData.pages)
+            page.directMessages.push({
+              content: content ?? null,
+              createdAt: new Date(),
+              conversationId: query.conversationId,
+              id: makeRandomId(),
+              profileId: profile.id,
+              fileUrl,
+              deletedAt: null,
+              updatedAt: new Date(),
+              profile: profile as never,
+            });
+        })
+      );
+
+      //Update the UI by adding the new message on the conversations list (lastMessage)
+      queryUtils.conversations.getConversations.setInfiniteData(
+        { profileId: profile?.id },
+        produce(oldData => {
+          if (!oldData) {
+            return oldData;
+          }
+          for (const page of oldData.pages) {
+            for (const item of page.conversations) {
+              item.directMessages[0] = {
+                content: content ?? null,
+                createdAt: new Date(),
+                conversationId: query.conversationId,
+                id: makeRandomId(),
+                profileId: profile?.id,
+                fileUrl,
+                deletedAt: null,
+                updatedAt: new Date(),
+              };
+            }
+          }
+        })
+      );
+
+      //Reset the form and scroll down
       form.reset();
       handleScrollDown();
       context.closeModal(id);
-    } catch (e) {
+    },
+    onError(error, variables, context) {
+      console.error(error);
       toast({
         variant: 'danger',
         title: "Une erreur s'est produite",
         description:
-          "Une erreur s'est produite lors de l'envoi de votre message.",
+          "Une erreur s'est produite lors de l'envoi de votre message. Rechargez votre page et reessayez.",
       });
-    }
+    },
+    // Always refetch after error or success:
+    onSettled: async () => {
+      await queryUtils.conversations.getConversations.invalidate({
+        profileId: profile?.id as string,
+      });
+      await queryUtils.messages.getDirectMessages.invalidate({
+        conversationId: query.conversationId,
+      });
+    },
+  });
+
+  const onSubmit = async (formData: ImageUploadFormInput) => {
+    const fileArray = formData.fileUrl;
+    const files = isArrayOfFile(fileArray) ? await startUpload(fileArray) : [];
+    const url = QS.stringifyUrl(socketUrl, query);
+    createMessage.mutate({
+      url,
+      formData: {
+        content: formData?.content ?? undefined,
+        fileUrl: (files && files[0]?.url) as string,
+      },
+    });
   };
 
   const onHandleKeyDown = (event: React.KeyboardEvent) => {
@@ -127,8 +227,8 @@ const ConversationFileUploadFormModal = ({
                     hint="Le poids max. d'un fichier est de 4MB"
                     error={fieldState?.error?.message}
                     fileTypes={['image', 'pdf', 'text']}
-                    isLoading={isUploading || isLoading}
-                    icon={<File className="h-10 w-10 text-zinc-600" />}
+                    isLoading={isUploading || createMessage?.isLoading}
+                    icon={<File className="h-10 w-10 text-gray-600" />}
                     className="absolute inset-y-0 h-full"
                     label="Sélectionnez ou déposez votre fichier içi !"
                     value={fileValue}
@@ -140,27 +240,34 @@ const ConversationFileUploadFormModal = ({
           </div>
         </Form>
       </ModalMain>
-      <ModalFooter className="relative pb-4">
-        <TextareaAutosize
-          {...form.register('content')}
-          disabled={isLoading || isUploading}
-          placeholder={`Ajouter un message (Optionnel) ...`}
-          className="bottom-0 rounded-md border-none bg-zinc-200/80 py-3.5 pl-4 pr-[71px] text-zinc-600 focus-visible:ring-0 focus-visible:ring-offset-0"
+      <ModalFooter className="relative w-full pb-4">
+        <Controller
+          control={form.control}
+          name="content"
+          render={({ field: { onChange, value } }) => {
+            return (
+              <Editor
+                placeholder={`Ajouter un message...`}
+                disabled={createMessage?.isLoading || isUploading}
+                editorSize="sm"
+                value={value || ''}
+                onChange={onChange}
+                onSuperEnter={() => form.handleSubmit(onSubmit)()}
+                className="rounded-lg border-none bg-gray-100 pr-20"
+                iconRight={
+                  <button
+                    type="submit"
+                    onClick={() => form.handleSubmit(onSubmit)()}
+                    disabled={createMessage?.isLoading || isUploading}
+                    className="default__transition flex h-[24px] w-[24px] items-center justify-center rounded-full bg-brand-500/90 p-1 hover:bg-brand-600"
+                  >
+                    <SendHorizonal className="text-white" />
+                  </button>
+                }
+              />
+            );
+          }}
         />
-        <div className="absolute bottom-7 right-3 flex items-center gap-x-2 px-2">
-          <EmojiPicker
-            onChange={emoji =>
-              form.setValue('content', `${watchedContent}${emoji}`)
-            }
-          />
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="default__transition flex h-[24px] w-[24px] items-center justify-center rounded-full bg-brand-500/90 p-1 hover:bg-brand-600"
-          >
-            <SendHorizonal className="text-white" />
-          </button>
-        </div>
       </ModalFooter>
     </>
   );
@@ -176,9 +283,9 @@ const ConversationChatFooter = ({
     schema: chatFormSchema,
   });
 
-  const watchedContent = form.watch('content');
-  const isLoading = form.formState.isSubmitting;
   const isMobile = useIsMobile();
+  const { profile } = useCurrentUser();
+  const queryUtils = api.useContext();
 
   const handleScrollDown = () => {
     setTimeout(() => {
@@ -188,26 +295,90 @@ const ConversationChatFooter = ({
     }, 150);
   };
 
-  //TODO: Refactor this service api request to the service folder
-  const onSubmit = async (formData: unknown) => {
-    try {
-      const url = QS.stringifyUrl(socketUrl, query);
-      await axios.post(url, formData);
+  const createMessage = useMutation({
+    mutationFn: createConversationMessage,
+    async onMutate({ formData: { content } }) {
+      // Cancel any outgoing refetches
+      // (so they don't overwrite our optimistic update)
+      await queryUtils.messages.getDirectMessages.cancel();
+      await queryUtils.conversations.getConversations.cancel();
+
+      if (!profile) return;
+
+      //Update the UI by adding the new message on the messages list
+      queryUtils.messages.getDirectMessages.setInfiniteData(
+        { conversationId: query.conversationId },
+        produce(oldData => {
+          if (!oldData || !oldData.pages || oldData.pages.length === 0) {
+            return oldData;
+          }
+
+          for (const page of oldData.pages)
+            page.directMessages.push({
+              content,
+              createdAt: new Date(),
+              conversationId: query.conversationId,
+              id: makeRandomId(),
+              profileId: profile.id,
+              fileUrl: null,
+              deletedAt: null,
+              updatedAt: new Date(),
+              profile: profile as never,
+            });
+        })
+      );
+
+      //Update the UI by adding the new message on the conversations list (lastMessage)
+      queryUtils.conversations.getConversations.setInfiniteData(
+        { profileId: profile?.id },
+        produce(oldData => {
+          if (!oldData) {
+            return oldData;
+          }
+          for (const page of oldData.pages) {
+            for (const item of page.conversations) {
+              item.directMessages[0] = {
+                content,
+                createdAt: new Date(),
+                conversationId: query.conversationId,
+                id: makeRandomId(),
+                profileId: profile?.id,
+                fileUrl: null,
+                deletedAt: null,
+                updatedAt: new Date(),
+              };
+            }
+          }
+        })
+      );
+
+      //Reset the form and scroll down
       form.reset();
       handleScrollDown();
-    } catch (e) {
-      console.error(e);
+    },
+    onError(error, variables, context) {
+      console.error(error);
       toast({
         variant: 'danger',
         title: "Une erreur s'est produite",
         description:
-          "Une erreur s'est produite lors de l'envoi de votre message",
+          "Une erreur s'est produite lors de l'envoi de votre message. Rechargez votre page et reessayez.",
       });
-    }
-  };
+    },
+    // Always refetch after error or success:
+    onSettled: async () => {
+      await queryUtils.conversations.getConversations.invalidate({
+        profileId: profile?.id as string,
+      });
+      await queryUtils.messages.getDirectMessages.invalidate({
+        conversationId: query.conversationId,
+      });
+    },
+  });
 
-  const onHandleKeyDown = (event: React.KeyboardEvent<HTMLElement>) => {
-    void form.handleSubmit(onSubmit)(event);
+  const onSubmit = (formData: ChatFormInput) => {
+    const url = QS.stringifyUrl(socketUrl, query);
+    createMessage.mutate({ url, formData });
   };
 
   const onOpenConversationFileUploadModal = () => {
@@ -223,42 +394,47 @@ const ConversationChatFooter = ({
   };
 
   return (
-    <Form
-      form={form}
-      onSubmit={onSubmit}
-      onKeyDown={getHotkeyHandler([['Enter', onHandleKeyDown as never]])}
-    >
-      <div className="relative border-t border-gray-200 p-4 shadow-sm">
-        <button
-          type="button"
-          onClick={onOpenConversationFileUploadModal}
-          disabled={isLoading}
-          className="default__transition absolute bottom-7 left-8 flex h-[24px] w-[24px] items-center justify-center rounded-full bg-zinc-500/90 p-1 hover:bg-zinc-600"
-        >
-          <Plus className="text-white" />
-        </button>
-
-        <TextareaAutosize
-          {...form.register('content')}
-          disabled={isLoading}
-          required
-          placeholder={`Envoyer un message à ${name}`}
-          className="bottom-0 rounded-md border-none bg-zinc-200/80 py-3.5 pl-12 pr-[70px] text-zinc-600 focus-visible:ring-0 focus-visible:ring-offset-0"
+    <Form form={form}>
+      <div className="relative border-t border-gray-200 px-4 py-2 shadow-sm">
+        <Controller
+          control={form.control}
+          name="content"
+          render={({ field: { onChange, value }, fieldState }) => {
+            return (
+              <Editor
+                placeholder={`Envoyer un message à ${name}`}
+                disabled={createMessage.isLoading}
+                // When we have only one input of type RTE, we need to invoke the onSuperEnter event to submit the form,
+                // without adding extra space.
+                onSuperEnter={() => form.handleSubmit(onSubmit)()}
+                editorSize="sm"
+                value={value || ''}
+                onChange={onChange}
+                className="rounded-lg border-none bg-gray-100 pr-20"
+                iconRight={
+                  <button
+                    type="submit"
+                    disabled={createMessage.isLoading}
+                    onClick={form.handleSubmit(onSubmit)}
+                    className="default__transition flex h-[24px] w-[24px] items-center justify-center rounded-full bg-brand-500/90 p-1 hover:bg-brand-600"
+                  >
+                    <SendHorizonal className="text-white" />
+                  </button>
+                }
+                iconLeft={
+                  <button
+                    type="button"
+                    onClick={onOpenConversationFileUploadModal}
+                    disabled={createMessage.isLoading}
+                    className="default__transition flex h-[24px] w-[24px] items-center justify-center rounded-full bg-gray-500/90 p-1 hover:bg-gray-600"
+                  >
+                    <Plus className="text-white" />
+                  </button>
+                }
+              />
+            );
+          }}
         />
-        <div className="absolute bottom-7 right-8 flex items-center gap-x-2 px-2">
-          <EmojiPicker
-            onChange={emoji =>
-              form.setValue('content', `${watchedContent}${emoji}`)
-            }
-          />
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="default__transition flex h-[24px] w-[24px] items-center justify-center rounded-full bg-brand-500/90 p-1 hover:bg-brand-600"
-          >
-            <SendHorizonal className="text-white" />
-          </button>
-        </div>
       </div>
     </Form>
   );

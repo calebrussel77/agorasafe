@@ -1,22 +1,22 @@
+import { SendHorizonal } from 'lucide-react';
+import { Controller } from 'react-hook-form';
 import { z } from 'zod';
 
-import { Button } from '@/components/ui/button';
-import { Field } from '@/components/ui/field';
 import { Form, useZodForm } from '@/components/ui/form';
-import { Textarea } from '@/components/ui/textarea';
+import { Editor } from '@/components/ui/rich-text-editor';
 
-import { LoginRedirect } from '@/features/auth';
+import { useLoginRedirect } from '@/features/auth';
 
 import { api } from '@/utils/api';
 
 import { cn } from '@/lib/utils';
 
-import { getHotkeyHandler } from '@/hooks/use-hot-keys';
+import { nonEmptyHtmlString } from '@/server/api/validations/base.validations';
 
 import { useCreateServiceRequestComment } from '../services';
 
 const schema = z.object({
-  text: z.string().trim(),
+  text: nonEmptyHtmlString,
 });
 
 export type ServiceRequestCommentFormInput = z.infer<typeof schema>;
@@ -32,8 +32,9 @@ const ServiceRequestCommentForm = ({
     schema,
   });
 
-  const { register, setValue } = form;
+  const { setValue } = form;
   const queryUtils = api.useContext();
+  const { requireLogin } = useLoginRedirect({ reason: 'create-comment' });
 
   const { mutate, isLoading } = useCreateServiceRequestComment({
     onSuccess: async () => {
@@ -45,42 +46,44 @@ const ServiceRequestCommentForm = ({
   });
 
   const onHandleSubmit = (formData: ServiceRequestCommentFormInput) => {
-    mutate({
-      text: formData?.text,
-      serviceRequestSlug,
-    });
-  };
-
-  const onHandleKeyDown = (event: React.KeyboardEvent) => {
-    event.preventDefault();
-    void form.handleSubmit(onHandleSubmit)(event);
+    requireLogin(() =>
+      mutate({
+        text: formData?.text,
+        serviceRequestSlug,
+      })
+    );
   };
 
   return (
-    <Form
-      form={form}
-      onSubmit={onHandleSubmit}
-      className={cn('space-y-2', className)}
-      onKeyDown={getHotkeyHandler([['Enter', onHandleKeyDown as never]])}
-    >
-      <Field
-        // hint="En quoi votre offre pourrait-elle être meilleure par rapport aux autres ?"
-        // label="Votre commentaire"
-        required
-      >
-        <Textarea
-          {...register('text')}
-          rows={3}
-          cols={3}
-          className="bg-white"
-          placeholder="Votre commentaire..."
-        />
-      </Field>
-      <div className="flex items-end justify-end">
-        <LoginRedirect reason="make-service-request-offer">
-          <Button isLoading={isLoading}>Envoyer</Button>
-        </LoginRedirect>
-      </div>
+    <Form form={form} className={cn('space-y-2', className)}>
+      <Controller
+        control={form.control}
+        name="text"
+        render={({ field: { onChange, value }, fieldState }) => {
+          return (
+            <Editor
+              placeholder="Votre commentaire..."
+              autoFocus
+              required
+              disabled={isLoading}
+              onSuperEnter={() => form.handleSubmit(onHandleSubmit)()}
+              editorSize="md"
+              value={value}
+              onChange={onChange}
+              iconRight={
+                <button
+                  type="submit"
+                  onClick={form.handleSubmit(onHandleSubmit)}
+                  disabled={isLoading}
+                  className="default__transition flex h-[24px] w-[24px] items-center justify-center rounded-full bg-brand-500/90 p-1 hover:bg-brand-600"
+                >
+                  <SendHorizonal className="text-white" />
+                </button>
+              }
+            />
+          );
+        }}
+      />
     </Form>
   );
 };

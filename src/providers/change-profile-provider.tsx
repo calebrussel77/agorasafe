@@ -1,10 +1,8 @@
 import { initializeProfileStore } from '@/stores/profile-store';
 import dynamic from 'next/dynamic';
 import React, { type FC, type ReactNode } from 'react';
-import { useMountedState } from 'react-use';
 
 import { Modal } from '@/components/ui/modal';
-import { FullSpinner } from '@/components/ui/spinner';
 
 import { useCurrentUser } from '@/hooks/use-current-user';
 
@@ -31,7 +29,7 @@ const ChangeProfileProvider: FC<ChangeProfileProviderProps> = ({
 
   const isOpened = status === 'authenticated' && !hasCurrentProfile;
 
-  if (status === 'loading') return <FullSpinner isFullPage />;
+  // if (status === 'loading') return <FullSpinner isFullPage />;
 
   return isOpened ? (
     <Modal defaultOpen={true} isFullScreen>

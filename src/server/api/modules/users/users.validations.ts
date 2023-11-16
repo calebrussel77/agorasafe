@@ -2,6 +2,8 @@ import { locationSchema, phoneSchema } from '@/validations';
 import { ProfileType } from '@prisma/client';
 import { z } from 'zod';
 
+import { getSanitizedStringSchema } from '../../validations/base.validations';
+
 // This file need to be exported on the client -
 // We can't export it on the index file because trpc will throw error
 
@@ -9,13 +11,11 @@ export const onboardClientProfileSchema = z.object({
   avatar: z.string().trim().nullish(),
   name: z.string().min(3, 'Votre nom doit avoir au moins 03 caractères.'),
   phone: phoneSchema,
-  bio: z
-    .string()
-    .trim()
-    .min(3, 'Entrez une bio valide.')
-    .max(180, 'Votre bio doit être de 180 caractères maximum.')
+  bio: getSanitizedStringSchema({
+    ALLOWED_TAGS: ['div', 'strong', 'p', 'em', 'u', 's', 'a', 'br'],
+  })
     .nullish()
-    .optional(),
+    .optional(), //TODO: add validation for max length => 180
   location: locationSchema,
 });
 

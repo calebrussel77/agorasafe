@@ -43,9 +43,9 @@ export default async function handler(
     const resultQuery = reqQuerySchema.safeParse(req.query);
 
     if (!resultBody.success)
-      throwBadRequestError(resultBody.error.format()._errors[0]);
+      throwBadRequestError(resultBody.error.errors[0]?.message);
     if (!resultQuery.success)
-      throwBadRequestError(resultQuery.error.format()._errors[0]);
+      throwBadRequestError(resultQuery.error.errors[0]?.message);
 
     const session = await getServerAuthSession({ req, res });
     const { profile } = getInitialState(req.headers);

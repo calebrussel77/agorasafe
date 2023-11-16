@@ -89,6 +89,7 @@
     "framer-motion": "^10.16.1",
     "gray-matter": "^4.0.3",
     "html-react-parser": "^4.2.10",
+    "immer": "^10.0.3",
     "isomorphic-dompurify": "^1.9.0",
     "js-cookie": "^3.0.5",
     "keen-slider": "^6.8.5",

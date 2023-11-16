@@ -29,7 +29,7 @@ NotificationsPage.getLayout = function getLayout(
   const profile = page?.props?.profile;
   const pageTitle = `Notifications - ${profile?.name}`;
   return (
-    <MainLayout title={pageTitle}>
+    <MainLayout title={pageTitle} footer={null}>
       <Sidebar />
       {page}
     </MainLayout>

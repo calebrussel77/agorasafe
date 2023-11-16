@@ -4,24 +4,40 @@ import { useMemo } from 'react';
 import { htmlParse, needsColorSwap } from '@/lib/html-helper';
 import { cn } from '@/lib/utils';
 
-type Props = {
-  html: string;
-  withMentions?: boolean;
-  className?: string;
-};
+import { Truncate, type TruncateProps } from '../ui/truncate';
 
-export function RenderHtml({ html, withMentions = false, className }: Props) {
+type Props =
+  | ({
+      truncate: true;
+      html: string;
+      withMentions?: boolean;
+      className?: string;
+    } & TruncateProps)
+  | {
+      truncate: false;
+      html: string;
+      withMentions?: boolean;
+      className?: string;
+    };
+
+export function RenderHtml({
+  html,
+  truncate,
+  withMentions = false,
+  className,
+  ...props
+}: Props) {
   const _html = useMemo(
     () =>
       htmlParse(html, {
         replace(domNode) {
           const { attribs, tagName, children } = domNode as Element;
 
-          console.log(attribs, tagName, children, 'FROM RICH TEXT EDITOR');
-
           if (!attribs) {
             return;
           }
+
+          console.log({ children });
 
           if (attribs && tagName === 'span') {
             const props = attributesToProps(attribs);
@@ -51,16 +67,19 @@ export function RenderHtml({ html, withMentions = false, className }: Props) {
     [html, withMentions]
   );
 
-  if (!html) return null;
-
-  return (
-    <div
-      className={cn(
-        'prose prose-sm max-w-none text-base text-inherit prose-h1:m-0 prose-h2:m-0 prose-h3:m-0 prose-p:m-0 prose-a:font-bold prose-a:text-brand-500 prose-a:no-underline prose-blockquote:m-0 prose-img:m-0',
-        className
-      )}
-    >
-      {_html}
-    </div>
+  const containerClassName = cn(
+    'prose prose-sm max-w-none text-base text-inherit prose-h1:m-0 prose-h2:m-0 hover:prose-a:underline prose-h3:m-0 prose-p:m-0 prose-a:font-bold prose-a:text-brand-500 prose-a:no-underline prose-blockquote:m-0 prose-img:m-0',
+    className
   );
+
+  if (truncate)
+    return (
+      <div className={containerClassName}>
+        <Truncate lines={3} hasEllipsisText {...props}>
+          {_html}
+        </Truncate>
+      </div>
+    );
+
+  return <div className={containerClassName}>{_html}</div>;
 }

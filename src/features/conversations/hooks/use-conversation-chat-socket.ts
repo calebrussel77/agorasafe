@@ -1,10 +1,9 @@
 import { useSocketStore } from '@/stores/socket-store';
-import { DirectMessage } from '@prisma/client';
 import { useEffect } from 'react';
 
 import { api } from '@/utils/api';
 
-import { SimpleProfile } from '@/server/api/modules/profiles';
+import { MessageWithWithProfile } from '../types';
 
 type ChatSocketProps = {
   createEventKey: string;
@@ -12,9 +11,6 @@ type ChatSocketProps = {
   conversationId: string;
 };
 
-type MessageWithWithProfile = DirectMessage & {
-  profile: SimpleProfile;
-};
 
 export const useConversationChatSocket = ({
   createEventKey,

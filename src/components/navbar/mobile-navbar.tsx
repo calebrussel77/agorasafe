@@ -15,6 +15,7 @@ import { AsyncWrapper } from '../ui/async-wrapper';
 import { Avatar } from '../ui/avatar';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
+import { openContextModal } from '../ui/modal/events';
 import { Separator } from '../ui/separator';
 import { Typography } from '../ui/typography';
 import { User } from '../user';
@@ -63,7 +64,16 @@ const MobileNavbar: FC<MobileNavbarProps> = ({
                   {userProfileConfig?.canAddNewProfile && (
                     <>
                       <Button
-                        href={userProfileConfig?.addNewProfileHref}
+                        onClick={() =>
+                          openContextModal({
+                            modal: 'addProfile',
+                            isFullScreen: true,
+                            innerProps: {
+                              choosedProfileType:
+                                userProfileConfig?.allowedProfileType,
+                            },
+                          })
+                        }
                         size="sm"
                         className="my-1 w-full px-2"
                         variant="ghost"

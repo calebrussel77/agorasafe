@@ -24,6 +24,7 @@ export interface FieldOptions {
   disabled?: boolean;
   disabledIcon?: JSX.Element;
   label?: string | JSX.Element;
+  description?: string;
   required?: boolean;
   loading?: boolean;
   error?: string | JSX.Element;
@@ -54,6 +55,7 @@ export const Field = forwardRef<HTMLDivElement, FieldProps>(
       hint,
       labelClassName,
       className,
+      description,
       id,
     },
     ref
@@ -128,26 +130,34 @@ export const Field = forwardRef<HTMLDivElement, FieldProps>(
             )}
             {!isCheckable && child}
           </Container>
+          <div className="flex w-full items-center justify-between">
+            <div>
+              {hasHintText && !hasVariantMessage && (
+                <HelperMessage className="mt-0.5">{hint}</HelperMessage>
+              )}
 
-          {hasHintText && !hasVariantMessage && (
-            <HelperMessage className="mt-0.5">{hint}</HelperMessage>
-          )}
+              {successText && (
+                <VariantMessage variant="success">{successText}</VariantMessage>
+              )}
+              {hasError && (
+                <VariantMessage variant="danger">
+                  {combinedErrorText}
+                </VariantMessage>
+              )}
+              {infoText && (
+                <VariantMessage variant="info">{infoText}</VariantMessage>
+              )}
 
-          {successText && (
-            <VariantMessage variant="success">{successText}</VariantMessage>
-          )}
-          {hasError && (
-            <VariantMessage variant="danger">
-              {combinedErrorText}
-            </VariantMessage>
-          )}
-          {infoText && (
-            <VariantMessage variant="info">{infoText}</VariantMessage>
-          )}
-
-          {warningText && (
-            <VariantMessage variant="warning">{warningText}</VariantMessage>
-          )}
+              {warningText && (
+                <VariantMessage variant="warning">{warningText}</VariantMessage>
+              )}
+            </div>
+            {description && (
+              <div className="ml-1 text-sm text-muted-foreground">
+                {description}
+              </div>
+            )}
+          </div>
         </>
       </div>
     );

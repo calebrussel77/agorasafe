@@ -29,17 +29,19 @@ const ChangeProfileModal: FC<ChangeProfileModalProps> = ({}) => {
   const isMobile = useIsMobile();
 
   const { reloadWithToast } = useToastOnPageReload(() =>
-    toast({
-      delay: 3000,
-      icon: <UserAvatar className="h-10 w-10" profile={profile} />,
-      variant: 'success',
-      description: (
-        <p className="text-sm">
-          Vous interagissez maintenant en tant que{' '}
-          <span className="font-semibold">{profile?.name}</span>
-        </p>
-      ),
-    })
+    profile
+      ? toast({
+          delay: 3000,
+          icon: <UserAvatar className="h-10 w-10" profile={profile} />,
+          variant: 'success',
+          description: (
+            <p className="text-sm">
+              Vous interagissez maintenant en tant que{' '}
+              <span className="font-semibold">{profile?.name}</span>
+            </p>
+          ),
+        })
+      : null
   );
 
   // profiles query
@@ -79,7 +81,7 @@ const ChangeProfileModal: FC<ChangeProfileModalProps> = ({}) => {
                 <button
                   key={profile.id}
                   onClick={() => void onProfileClick(profile)}
-                  className="group flex w-full max-w-sm flex-col items-center justify-center rounded-md px-3 py-6 hover:bg-gray-100"
+                  className="group flex w-full max-w-[250px] flex-col items-center justify-center rounded-md px-3 py-6 hover:bg-gray-100"
                 >
                   <UserAvatar
                     profile={profile}

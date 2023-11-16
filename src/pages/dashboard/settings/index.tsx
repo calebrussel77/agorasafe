@@ -27,7 +27,7 @@ SettingsPage.getLayout = function getLayout(page: ReactElement<PageProps>) {
   const profile = page?.props?.profile;
   const pageTitle = `Paramètres - ${profile?.name}`;
   return (
-    <MainLayout title={pageTitle}>
+    <MainLayout title={pageTitle} footer={null}>
       <Sidebar />
       {page}
     </MainLayout>

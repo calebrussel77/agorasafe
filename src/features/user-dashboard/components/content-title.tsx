@@ -6,7 +6,7 @@ const ContentTitle = ({
   description,
 }: React.PropsWithChildren<{ className?: string; description?: string }>) => {
   return (
-    <div className={cn('border-b border-gray-300 px-4 pb-3', className)}>
+    <div className={cn('border-b border-gray-200 px-4 pb-3', className)}>
       <h1 className="border-gray-300 text-3xl font-semibold text-brand-600">
         {children}
       </h1>

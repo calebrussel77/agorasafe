@@ -30,7 +30,7 @@ AppliedServicesPage.getLayout = function getLayout(
   const pageTitle = `Services postulés - ${profile?.name}`;
   const pageDescription = `Services postulés - ${profile?.name}`;
   return (
-    <MainLayout title={pageTitle} description={pageDescription}>
+    <MainLayout title={pageTitle} description={pageDescription} footer={null}>
       <Sidebar />
       {page}
     </MainLayout>

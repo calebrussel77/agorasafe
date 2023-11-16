@@ -45,6 +45,7 @@ export const getSessionUser = async ({ userId }: { userId?: string }) => {
     email: user?.email,
     avatar: user?.picture,
     role: user?.role,
+    version: user?.version,
     onboardingComplete: user?.onboardingComplete,
     createdProfiles: user?.profiles,
     createdProfilesCount: user?._count?.profiles,

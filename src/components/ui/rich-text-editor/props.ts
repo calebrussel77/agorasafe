@@ -11,8 +11,8 @@ export const defaultEditorProps: ({
 }) => EditorProps = ({ withCommands }) => ({
   attributes: {
     class: cn(
-      'prose-gray prose prose-sm text-base prose-h1:m-0 prose-h2:m-0 prose-h3:m-0 prose-p:m-0 prose-a:font-bold prose-a:text-brand-500 prose-a:no-underline prose-a:font-bold prose-a:text-brand-500 hover:prose-a:text-brand-600 hover:prose-a:underline prose-blockquote:m-0 prose-img:m-0 font-sans focus:outline-none max-w-full',
-      withCommands && 'prose-lg'
+      'prose-gray mt-1 flex-1 w-full scrollbar__custom overflow-y-auto max-h-[90px] prose prose-sm text-sm prose-h1:m-0 prose-h2:m-0 prose-h3:m-0 prose-p:m-0 prose-a:font-bold prose-a:text-brand-500 prose-a:no-underline prose-a:font-bold prose-a:text-brand-500 hover:prose-a:text-brand-600 hover:prose-a:underline prose-blockquote:m-0 prose-img:m-0 font-sans focus:outline-none max-w-full',
+      withCommands && 'prose-lg text-base'
     ),
   },
   handleDOMEvents: {

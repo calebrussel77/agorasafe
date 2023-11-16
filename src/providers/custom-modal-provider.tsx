@@ -1,19 +1,20 @@
-import {
-  ModalsProvider,
-} from '@/components/ui/modal';
+import { ModalsProvider } from '@/components/ui/modal';
 
 import { ConversationFileUploadFormModal } from '@/features/conversations';
 import { FeedbackFormModal } from '@/features/feedbacks';
+import { AddProfileModal } from '@/features/profiles';
 import {
   CreateServiceRequestModal,
   CustomServiceRequestCategoriesModal,
 } from '@/features/services';
 
+//TODO: Need to find a way of using dynamic imports whithout typescript errors and continue having autocomplete
 export const appModals = {
   feedbackForm: FeedbackFormModal,
   customServiceRequestCategories: CustomServiceRequestCategoriesModal,
   createServiceRequest: CreateServiceRequestModal,
   conversationFileUploadForm: ConversationFileUploadFormModal,
+  addProfile: AddProfileModal,
 };
 
 // neccessary to add type checking of the mantine context modals implementation in the app

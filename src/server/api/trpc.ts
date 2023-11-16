@@ -6,18 +6,15 @@
  * TL;DR - This is where all the tRPC server stuff is created and plugged in. The pieces you will
  * need to use are documented accordingly near the end.
  */
-import { SESSION_VERSION } from '@/constants';
-import { getInitialState } from '@/stores/profile-store/initial-state';
+import { sessionVersion } from '@/constants';
 import { TRPCError, initTRPC } from '@trpc/server';
-import { type CreateNextContextOptions } from '@trpc/server/adapters/next';
 import { type Session } from 'next-auth';
 import superjson from 'superjson';
 
-import { getServerAuthSession } from '@/server/auth';
 import { prisma } from '@/server/db';
 
 import { throwForbiddenError } from '../utils/error-handling';
-import { Context } from './create-context';
+import { type Context } from './create-context';
 import { type SimpleProfile } from './modules/profiles';
 
 /**
@@ -100,6 +97,10 @@ const isAuthed = t.middleware(({ ctx: { user, profile }, next }) => {
     throw new TRPCError({ code: 'UNAUTHORIZED' });
   }
 
+  if (user.version !== sessionVersion) {
+    throw new TRPCError({ code: 'UNAUTHORIZED' });
+  }
+
   return next({
     ctx: { user, profile },
   });
@@ -107,6 +108,10 @@ const isAuthed = t.middleware(({ ctx: { user, profile }, next }) => {
 
 const isMuted = t.middleware(({ ctx: { user, profile }, next }) => {
   if (!user || !profile) {
+    throw new TRPCError({ code: 'UNAUTHORIZED' });
+  }
+
+  if (user.version !== sessionVersion) {
     throw new TRPCError({ code: 'UNAUTHORIZED' });
   }
 
@@ -127,6 +132,10 @@ const isAdmin = t.middleware(({ ctx: { user, profile }, next }) => {
     throw new TRPCError({ code: 'UNAUTHORIZED' });
   }
 
+  if (user.version !== sessionVersion) {
+    throw new TRPCError({ code: 'UNAUTHORIZED' });
+  }
+
   if (user.role !== 'ADMIN')
     throw new TRPCError({
       code: 'FORBIDDEN',
@@ -140,6 +149,10 @@ const isAdmin = t.middleware(({ ctx: { user, profile }, next }) => {
 
 const hasProfile = t.middleware(({ ctx: { user, profile }, next }) => {
   if (!user || !profile) {
+    throw new TRPCError({ code: 'UNAUTHORIZED' });
+  }
+
+  if (user.version !== sessionVersion) {
     throw new TRPCError({ code: 'UNAUTHORIZED' });
   }
 
@@ -160,6 +173,10 @@ const isCustomer = t.middleware(({ ctx: { user, profile }, next }) => {
     throw new TRPCError({ code: 'UNAUTHORIZED' });
   }
 
+  if (user.version !== sessionVersion) {
+    throw new TRPCError({ code: 'UNAUTHORIZED' });
+  }
+
   if (profile.type !== 'CUSTOMER') {
     throwForbiddenError();
   }
@@ -171,6 +188,10 @@ const isCustomer = t.middleware(({ ctx: { user, profile }, next }) => {
 
 const isProvider = t.middleware(({ ctx: { profile, user }, next }) => {
   if (!user || !profile) {
+    throw new TRPCError({ code: 'UNAUTHORIZED' });
+  }
+
+  if (user.version !== sessionVersion) {
     throw new TRPCError({ code: 'UNAUTHORIZED' });
   }
 

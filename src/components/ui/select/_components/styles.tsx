@@ -27,10 +27,10 @@ export const defaultStyles = (variant: Variant | undefined) => {
           ? 'rgba(229, 231, 235, 0.7)'
           : 'white',
         borderRadius: '0.25rem',
-        padding: '1px 0px',
-        '&:hover': {
-          backgroundColor: state.isFocused ? '' : 'rgb(243 244 246)',
-        },
+        padding: '0.7px 0px',
+        // '&:hover': {
+        //   backgroundColor: state.isFocused ? '' : 'rgb(243 244 246)',
+        // },
         cursor: state.isDisabled ? 'not-allowed' : 'pointer',
         transitionDuration: '300ms',
         transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)',
@@ -62,7 +62,7 @@ export const defaultStyles = (variant: Variant | undefined) => {
     placeholder: (baseStyles, state) => ({
       ...baseStyles,
       color: 'rgb(156, 163, 175)',
-      fontSize: '13px',
+      fontSize: '14px',
     }),
     option: (baseStyles, state) => ({
       ...baseStyles,
@@ -71,7 +71,7 @@ export const defaultStyles = (variant: Variant | undefined) => {
         : state.isDisabled
         ? '#ccc'
         : 'rgb(31, 41, 55)',
-      fontSize: '13px',
+      fontSize: '14px',
       zIndex: '9999',
     }),
     menu: (baseStyles, state) => {

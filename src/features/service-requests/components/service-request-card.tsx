@@ -15,11 +15,12 @@ import { AbsolutePlacement } from '@/components/ui/layout';
 import { Typography } from '@/components/ui/typography';
 import { User } from '@/components/user';
 
+import { removeTags } from '@/utils/strings';
 import { isEmptyArray } from '@/utils/type-guards';
 
 import { cn } from '@/lib/utils';
 
-import { useSliderControlsImages } from '@/hooks/use-slider-controls-images';
+import { useFadeSliderImages } from '@/hooks/use-fade-slider-images';
 
 import { DEFAULT_SERVICE_REQUEST_COVER_IMAGE } from '../constants';
 import { type GetAllServiceRequestsOutput } from '../types';
@@ -45,8 +46,7 @@ const ServiceRequestCard: FC<ServiceRequestCardProps> = ({
     : serviceRequest?.photos;
   const photosCount = photos?.length || 1;
 
-  const { currentSlide, sliderRef, hasLoaded, instanceRef } =
-    useSliderControlsImages({ autoSlide: false });
+  const { sliderRef } = useFadeSliderImages({ imagesCount: photosCount });
 
   return (
     <article
@@ -66,24 +66,6 @@ const ServiceRequestCard: FC<ServiceRequestCardProps> = ({
               className="keen-slider__slide aspect-[16/9] w-full bg-gray-50 object-cover sm:aspect-[2/1] lg:aspect-[3/2]"
             />
           ))}
-          {hasLoaded && instanceRef?.current && (
-            <AbsolutePlacement
-              placement="bottom-center"
-              className="flex flex-nowrap items-center gap-3"
-            >
-              {[...Array(photosCount).keys()].map(idx => {
-                return (
-                  <NavigationDot
-                    key={idx}
-                    onClick={() => {
-                      instanceRef?.current?.moveToIdx(idx);
-                    }}
-                    isActive={currentSlide === idx}
-                  />
-                );
-              })}
-            </AbsolutePlacement>
-          )}
         </div>
       ) : (
         <Image
@@ -153,7 +135,7 @@ const ServiceRequestCard: FC<ServiceRequestCardProps> = ({
             lines={3}
             className="mt-3 line-clamp-3 text-sm leading-6 text-gray-600"
           >
-            {serviceRequest?.description}
+            {removeTags(serviceRequest?.description as string)}
           </Typography>
         </div>
         <div className="relative mt-6 flex items-center justify-between gap-x-4">

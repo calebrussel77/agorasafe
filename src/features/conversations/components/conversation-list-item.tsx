@@ -1,7 +1,10 @@
 import { type Session } from 'next-auth';
 
+import { RenderHtml } from '@/components/render-html';
 import { Typography } from '@/components/ui/typography';
 import { UserAvatar, UserName } from '@/components/user';
+
+import { removeTags } from '@/utils/strings';
 
 import { cn } from '@/lib/utils';
 
@@ -33,15 +36,16 @@ export const ConversationListItem = ({
             <UserName profile={profile} withProfileBadgeInitial />
             <span className="text-xs text-zinc-500">{timestamp}</span>
           </div>
-          <Typography
+          <RenderHtml
             truncate
+            lines={1}
+            hasEllipsisText={false}
             className={cn(
-              'text-sm text-zinc-500',
+              'not-prose text-sm text-zinc-500',
               isLastMessageDeleted && 'mt-1 italic text-zinc-500'
             )}
-          >
-            {lastMessage}
-          </Typography>
+            html={removeTags(lastMessage)}
+          />
         </div>
       </div>
     </div>

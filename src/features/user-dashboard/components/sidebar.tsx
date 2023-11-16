@@ -1,12 +1,7 @@
-import { Home } from 'lucide-react';
-
 import { Anchor } from '@/components/anchor';
-import { LogoIcon } from '@/components/icons/logo-icon';
 import { Avatar } from '@/components/ui/avatar';
-import { Button } from '@/components/ui/button';
 import { ErrorWrapper, SectionError } from '@/components/ui/error';
 import { GroupItem } from '@/components/ui/group-item';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Typography } from '@/components/ui/typography';
 
@@ -14,8 +9,6 @@ import { useGetProfileConfig } from '@/features/profile-config';
 
 import { generateArray } from '@/utils/misc';
 import { isPathMatchRoute } from '@/utils/routing';
-
-import { cn } from '@/lib/utils';
 
 import { useCurrentUser } from '@/hooks/use-current-user';
 import { useHeaderHeight } from '@/hooks/use-header-height';
@@ -27,7 +20,7 @@ const Sidebar = () => {
     error,
   } = useGetProfileConfig();
 
-  const { profile: currentProfile, isAuth } = useCurrentUser();
+  const { profile: currentProfile } = useCurrentUser();
 
   const { height } = useHeaderHeight();
 
@@ -98,22 +91,6 @@ const Sidebar = () => {
 
   return (
     <>
-      {/* <Sheet>
-        <SheetTrigger asChild>
-          <Button
-            type="button"
-            variant="default"
-            size="sm"
-            className="fixed bottom-3 right-2 z-20 h-auto w-auto rounded-full p-3 shadow-lg shadow-brand-500/80 lg:hidden"
-          >
-            <Home className="h-5 w-5" aria-hidden="true" />
-          </Button>
-        </SheetTrigger>
-        <SheetContent className="w-[75%] bg-white" side="left">
-          <LogoIcon className="mb-4 h-5 w-auto" />
-          {content}
-        </SheetContent>
-      </Sheet> */}
       <div
         style={{
           top: `calc(${height} - 20px)`,

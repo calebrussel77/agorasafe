@@ -1,9 +1,12 @@
-import { useRouter } from 'next/router';
 import { z } from 'zod';
 
 import { Header } from '@/components/header';
+import { Welcome2Icon } from '@/components/icons/welcome2-icon';
+import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { EmptyState } from '@/components/ui/empty-state';
 import { CenterContent } from '@/components/ui/layout';
+import { modals } from '@/components/ui/modal';
 import { ProgressBar } from '@/components/ui/progress-bar';
 import { SectionMessage } from '@/components/ui/section-message';
 import { Seo } from '@/components/ui/seo';
@@ -43,19 +46,22 @@ type PageProps = Prettify<InferNextProps<typeof getServerSideProps>>;
 
 const PublishPage = ({ modeQuery }: PageProps) => {
   const { step: currentStep, nextStep, prevStep } = useStepper();
-  const router = useRouter();
   const { toast } = useToast();
+
   const { isLoading, error, mutate } = useCreateServiceRequest({
     onSuccess(data) {
       const href = `/service-requests/${data?.serviceRequest?.slug}`;
-      toast({
-        delay: 4000,
-        variant: 'success',
-        title: 'Demande de service publiée',
-        description:
-          'Votre demande de service a bien été publiée auprès des prestaires',
+      modals.open({
+        children: (
+          <EmptyState
+            classNames={{ root: 'my-24', icon: 'h-36 w-auto' }}
+            icon={<Welcome2Icon />}
+            name="🎉🥳Votre demande a été publiée avec succès !"
+            description={`Votre demande " ${data?.serviceRequest?.title} " a bien été publiée au près des prestataires !`}
+            primaryAction={<Button href={href}>Voir la demande</Button>}
+          />
+        ),
       });
-      void router.push(href);
     },
     onError(error) {
       toast({

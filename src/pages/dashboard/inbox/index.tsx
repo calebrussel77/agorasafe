@@ -17,8 +17,6 @@ import {
 } from '@/features/conversations';
 import { MainContent, Sidebar } from '@/features/user-dashboard';
 
-import { cn } from '@/lib/utils';
-
 import { getOrCreateConversation } from '@/server/api/modules/conversations';
 import { createServerSideProps } from '@/server/utils/server-side';
 

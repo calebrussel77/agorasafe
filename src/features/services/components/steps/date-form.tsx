@@ -1,19 +1,20 @@
 import { useRouter } from 'next/router';
 import { Controller } from 'react-hook-form';
 
+import { FixedFooterContainer } from '@/components/fixed-footer-container';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { Field } from '@/components/ui/field';
 import { Form, useZodForm } from '@/components/ui/form';
+import { HelperMessage } from '@/components/ui/helper-message';
 
-import { increaseDate } from '@/lib/date-fns';
+import { dateToReadableString, increaseDate } from '@/lib/date-fns';
 import { cn } from '@/lib/utils';
 
 import {
   type PublishServiceRequestFormStore,
   usePublishServiceRequest,
 } from '../../stores';
-import { FixedFooterContainer } from '@/components/fixed-footer-container';
 
 type DateFormType = Pick<PublishServiceRequestFormStore, 'date'>;
 type DateFormProps = { nextStep: () => void; prevStep: () => void };
@@ -38,6 +39,8 @@ const DateForm = ({ nextStep, prevStep }: DateFormProps) => {
 
   const { control } = form;
 
+  const watchedDate = form.watch('date') as Date;
+
   const onHandleSubmit = (formData: DateFormType) => {
     updateServiceRequest(formData, categorySlugQuery);
 
@@ -47,7 +50,7 @@ const DateForm = ({ nextStep, prevStep }: DateFormProps) => {
   return (
     <>
       <Form form={form} onSubmit={onHandleSubmit}>
-        <div className="flex justify-center">
+        <div className="">
           <Controller
             control={control}
             rules={{ required: 'La date est requise' }}
@@ -63,7 +66,7 @@ const DateForm = ({ nextStep, prevStep }: DateFormProps) => {
                     selected={value as Date}
                     onSelect={onChange}
                     className={cn(
-                      'rounded-md border shadow-md',
+                      'flex justify-center rounded-md border shadow-md',
                       fieldState?.error?.message && 'border-2 border-red-500'
                     )}
                     {...rest}
@@ -72,6 +75,11 @@ const DateForm = ({ nextStep, prevStep }: DateFormProps) => {
               );
             }}
           />
+          {watchedDate && (
+            <HelperMessage className="mt-2 text-sm text-muted-foreground">
+              Le {dateToReadableString(watchedDate)}
+            </HelperMessage>
+          )}
         </div>
         <FixedFooterContainer>
           <Button type="button" onClick={prevStep} variant="ghost" size="lg">

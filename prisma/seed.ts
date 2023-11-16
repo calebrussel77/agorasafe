@@ -184,6 +184,8 @@ const createUserWithAdminRoleAndProfiles = async () => {
   const { profiles } = await prisma.user.create({
     data: {
       email: 'calebrussel77@gmail.com',
+      version: Number(process.env.NEXT_PUBLIC_SESSION_VERSION),
+      tos: true,
       // email: 'fake.email@gmail.fr',
       firstName: faker.person.firstName(),
       fullName: faker.person.fullName(),
@@ -379,8 +381,8 @@ const destroyData = async () => {
   try {
     console.log('🌱 Cleaned up the database...');
 
-    console.log('🧹 Deleting service request reservations...');
-    await prisma.serviceRequestReservation.deleteMany();
+    // console.log('🧹 Deleting service request reservations...');
+    // await prisma.serviceRequestReservation.deleteMany();
 
     console.log('🧹 Deleting locations...');
     await prisma.location.deleteMany();
@@ -397,10 +399,10 @@ const destroyData = async () => {
     console.log('🧹 Deleting services...');
     await prisma.service.deleteMany();
 
-    console.log('🧹 Deleting skills...');
-    await prisma.skill.deleteMany();
+    // console.log('🧹 Deleting skills...');
+    // await prisma.skill.deleteMany();
 
-    console.log('🧹 Deleting service categories...');
+    // console.log('🧹 Deleting service categories...');
     await prisma.categoryService.deleteMany();
 
     console.log('🧹 Deleting service requests...');
@@ -425,8 +427,8 @@ const importData = async () => {
     console.log(`🧹 Creating categories with services...`);
     await createCategoriesWithServices();
 
-    console.log(`🧹 Creating engagement skills...`);
-    await createEngamentSkills();
+    // console.log(`🧹 Creating engagement skills...`);
+    // await createEngamentSkills();
 
     // console.log(
     //   `🧹 Creating 01 user with 02 complete profiles with details...`

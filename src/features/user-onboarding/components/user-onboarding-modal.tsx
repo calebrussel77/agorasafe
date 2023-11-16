@@ -1,10 +1,12 @@
-import { APP_PROFILES_INFO } from '@/constants';
+import { profilesDescription } from '@/constants';
 import { imageSchema } from '@/validations';
 import { ProfileType } from '@prisma/client';
 import { CameraIcon } from 'lucide-react';
+import { s } from 'msw/lib/glossary-de6278a9';
 import { signOut } from 'next-auth/react';
 import React, { type FC, type ReactNode, useEffect, useState } from 'react';
 import { Controller } from 'react-hook-form';
+import { useInView } from 'react-intersection-observer';
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 import { z } from 'zod';
@@ -12,6 +14,7 @@ import { z } from 'zod';
 import { PlacesAutocomplete } from '@/components/agorasafe-map';
 import { FixedFooterContainer } from '@/components/fixed-footer-container';
 import { LogoIcon } from '@/components/icons/logo-icon';
+import { WelcomeIcon } from '@/components/icons/welcome-icon';
 import { AsyncWrapper } from '@/components/ui/async-wrapper';
 import { Avatar } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
@@ -19,20 +22,21 @@ import { Button, type ButtonProps } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Field } from '@/components/ui/field';
-import { FileUpload, FileWithPreview } from '@/components/ui/file-upload';
+import { FileUpload } from '@/components/ui/file-upload';
 import { Form, useZodForm } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { CenterContent } from '@/components/ui/layout';
 import { LoadingOverlay } from '@/components/ui/loading-overlay';
+import { modals } from '@/components/ui/modal';
 import { PhoneInput } from '@/components/ui/phone-input';
 import { ProgressBar } from '@/components/ui/progress-bar';
 import { RadioGroup } from '@/components/ui/radio-group';
+import { Editor } from '@/components/ui/rich-text-editor';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { SectionMessage } from '@/components/ui/section-message';
 import { Select } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
-import { Textarea } from '@/components/ui/textarea';
 import { toast } from '@/components/ui/toast';
 import { Typography } from '@/components/ui/typography';
 import { useUpload } from '@/components/ui/uploadthing';
@@ -180,6 +184,7 @@ const TermsSection = ({ nextStep }: { nextStep: () => void }) => {
     api.users.acceptTOS.useMutation();
 
   const { updateUser } = useCurrentUser();
+  const { ref, inView: isInView } = useInView();
 
   const handleAcceptTOS = () => {
     acceptTOSMutate(undefined, {
@@ -198,10 +203,12 @@ const TermsSection = ({ nextStep }: { nextStep: () => void }) => {
         <ReactMarkdown rehypePlugins={[rehypeRaw]} className="prose prose-sm">
           {terms?.content}
         </ReactMarkdown>
+        <div ref={ref} className="mt-3" />
         <FixedFooterContainer className="items-start">
           <CancelButton showWarning>Je refuse</CancelButton>
           <Button
             size="lg"
+            disabled={!isInView}
             isLoading={isAcceptTOSLoading}
             onClick={handleAcceptTOS}
           >
@@ -252,24 +259,21 @@ const ProfileChoiceSection = ({
               defaultValue={field.value as never}
               className="grid grid-cols-1 gap-4 md:grid-cols-2"
             >
-              {APP_PROFILES_INFO.map(siteProfile => (
+              {Object.entries(profilesDescription).map(([key, value]) => (
                 <Label
-                  key={siteProfile.type}
+                  key={key}
                   className={cn(
                     'flex items-center gap-2 rounded-md border p-4 shadow transition duration-300 hover:bg-zinc-100',
-                    field.value === siteProfile.type &&
+                    field.value === key &&
                       'shadow-brand-500 ring-2 ring-brand-500'
                   )}
-                  htmlFor={siteProfile.type}
+                  htmlFor={key}
                 >
-                  <RadioGroup.Item
-                    value={siteProfile.type}
-                    id={siteProfile.type}
-                  />
+                  <RadioGroup.Item value={key} id={key} />
                   <div>
-                    <Typography as="h4">{siteProfile.title}</Typography>
+                    <Typography as="h4">{value.label}</Typography>
                     <Typography variant="small" className="font-normal">
-                      {siteProfile.description}
+                      {value.description}
                     </Typography>
                   </div>
                 </Label>
@@ -329,8 +333,32 @@ const ProfileDetailsSection = ({
       await updateUser();
       // await invalidateModeratedContent(queryUtils);
       updateProfile(data?.profile);
+      modals.open({
+        children: (
+          <div className="flex flex-col justify-center p-10">
+            <WelcomeIcon className="h-36 w-auto" />
+            <div className="mt-6 flex flex-col items-center justify-center text-center">
+              <Typography variant="h2">
+                Bienvenue {data?.profile?.name} !🎉🥳
+              </Typography>
+              <Typography variant="subtle" className="mt-2">
+                Nous sommes content de vous compter parmi nous, sur Agorasafe.
+                N'hésitez pas à nous faire vos retours via l'onglet{' '}
+                <strong>feedback</strong> afin que nous puissions améliorer
+                votre expérence.
+              </Typography>
+              <Button
+                onClick={() => modals.closeAll()}
+                className="mt-10 w-auto"
+              >
+                D'accord, j'ai compris
+              </Button>
+            </div>
+          </div>
+        ),
+      });
       toast({
-        delay: 300,
+        delay: 4_000,
         title: htmlParse(data?.message),
         variant: 'success',
       });
@@ -341,7 +369,7 @@ const ProfileDetailsSection = ({
     schema,
   });
 
-  const { control, register, reset } = form;
+  const { control, reset } = form;
 
   const { startUpload, isUploading } = useUpload({
     endpoint: 'profilePhotos',
@@ -355,9 +383,7 @@ const ProfileDetailsSection = ({
 
   if (!choosedProfileType) return null;
 
-  const profileInfo = APP_PROFILES_INFO.find(
-    el => el.type === choosedProfileType
-  );
+  const profileInfo = profilesDescription[choosedProfileType];
 
   if (!profileInfo) return null;
 
@@ -404,7 +430,7 @@ const ProfileDetailsSection = ({
                 <FileUpload
                   ref={ref}
                   handleAddFile={onChange}
-                  value={value as never} //TODO - Need to find why rerendering without initializing to empty array
+                  value={value as never}
                   preview={null}
                 >
                   {({ openFile, files }) => {
@@ -496,12 +522,23 @@ const ProfileDetailsSection = ({
               )}
             />
           </Field>
-          <Field
-            label="Bio (180 caractères max.)"
-            hint="Dites aux autres ce qui vous caractérise le plus."
-          >
-            <Textarea {...register('bio')} placeholder="Ma superbe bio..." />
-          </Field>
+          <Controller
+            control={control}
+            name="bio"
+            render={({ field: { onChange, value }, fieldState }) => {
+              return (
+                <Editor
+                  id="profile-bio-content"
+                  label="Bio (180 caractères max.)"
+                  placeholder="Dites aux autres ce qui vous caractérise le plus..."
+                  error={fieldState?.error?.message}
+                  editorSize="md"
+                  value={value || ''}
+                  onChange={onChange}
+                />
+              );
+            }}
+          />
         </SectionContainer>
 
         {isProvider && (
@@ -529,6 +566,7 @@ const ProfileDetailsSection = ({
                   render={({ field, fieldState: { error } }) => (
                     <Select
                       isMulti
+                      placeholder="Choisissez vos engagements client..."
                       isLoading={isSkillsLoading}
                       variant={error ? 'danger' : undefined}
                       isClearable={false}
@@ -580,7 +618,7 @@ const ProfileDetailsSection = ({
         <Controller
           name="profileType"
           control={control}
-          defaultValue={profileInfo.type}
+          defaultValue={choosedProfileType}
           render={({ field }) => (
             <RadioGroup
               defaultValue={field.value}
@@ -589,19 +627,19 @@ const ProfileDetailsSection = ({
               disabled
             >
               <Label
-                key={profileInfo.type}
+                key={choosedProfileType}
                 className={cn(
                   'flex items-center gap-2 rounded-md border p-4 shadow transition duration-300 hover:bg-zinc-100',
                   'cursor-not-allowed shadow-brand-500 ring-2 ring-brand-500'
                 )}
-                htmlFor={profileInfo.type}
+                htmlFor={choosedProfileType}
               >
                 <RadioGroup.Item
-                  value={profileInfo.type}
-                  id={profileInfo.type}
+                  value={choosedProfileType}
+                  id={choosedProfileType}
                 />
                 <div>
-                  <Typography as="h4">{profileInfo.title}</Typography>
+                  <Typography as="h4">{profileInfo.label}</Typography>
                   <Typography variant="small" className="font-normal">
                     {profileInfo.description}
                   </Typography>

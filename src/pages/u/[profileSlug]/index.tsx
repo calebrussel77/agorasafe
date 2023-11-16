@@ -9,6 +9,7 @@ import {
 import { Linkedin } from 'lucide-react';
 import { z } from 'zod';
 
+import { RenderHtml } from '@/components/render-html';
 import { ShareButton } from '@/components/share-button/share-button';
 import { AsyncWrapper } from '@/components/ui/async-wrapper';
 import { Badge } from '@/components/ui/badge';
@@ -19,6 +20,7 @@ import { Rating } from '@/components/ui/rating';
 import { Seo } from '@/components/ui/seo';
 import { Separator } from '@/components/ui/separator';
 import { FullSpinner } from '@/components/ui/spinner';
+import { Truncate } from '@/components/ui/truncate';
 import { Typography } from '@/components/ui/typography';
 import { UserAvatar, UserName, UserRating } from '@/components/user';
 
@@ -219,17 +221,13 @@ export default function ProfileDetailsPage({ profileSlugQuery }: PageProps) {
             )}
           >
             <div>
-              <h3 className="text-skin-inverted font-sans text-lg font-medium leading-6">
-                Biographie
-              </h3>
-              <Typography
+              <h3 className="text font-sans text-lg leading-6">Biographie</h3>
+              <RenderHtml
+                className="mt-2"
                 truncate
-                lines={3}
                 hasEllipsisText
-                className="mt-2 font-normal text-muted-foreground"
-              >
-                {data?.profile?.bio || '...'}
-              </Typography>
+                html={data?.profile?.bio || '...'}
+              />
               <div className="mb-6 mt-4 flex items-center gap-x-4">
                 {data?.profile?.facebookUrl && (
                   <a
@@ -343,11 +341,11 @@ export default function ProfileDetailsPage({ profileSlugQuery }: PageProps) {
               <h2 className="text-xl font-semibold">Mes engagements clients</h2>
             </div>
             <Separator className="my-4 w-full " />
-            <div className="flex w-full max-w-3xl flex-wrap items-center gap-3">
+            <div className="flex w-full max-w-4xl flex-wrap items-center gap-3">
               {data?.profile?.providerInfo?.skills?.map(skill => (
                 <Badge
                   key={skill?.id}
-                  size="lg"
+                  size="md"
                   variant="outline"
                   className="w-full max-w-md py-1.5 text-center"
                   content={skill?.name}
@@ -367,7 +365,7 @@ export default function ProfileDetailsPage({ profileSlugQuery }: PageProps) {
             <Separator className="my-4 w-full " />
             <div className="flex w-full max-w-3xl flex-wrap items-center gap-3">
               <Badge
-                size="lg"
+                size="md"
                 variant="outline"
                 className="py-1.5"
                 content={getIsFaceToFaceLabel(
@@ -375,7 +373,7 @@ export default function ProfileDetailsPage({ profileSlugQuery }: PageProps) {
                 )}
               />
               <Badge
-                size="lg"
+                size="md"
                 variant="outline"
                 className="py-1.5"
                 content={getIsRemoteLabel(

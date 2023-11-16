@@ -40,15 +40,20 @@ export const htmlParse = (
   str: string,
   options?: HTMLReactParserOptions | undefined
 ) => {
-  return htmlReactParser(sanitizeHTML(str) as never, {
+  return htmlReactParser(str, {
     replace(domNode) {
       const { attribs, tagName, children } = domNode as Element;
 
       if (!attribs) {
         return;
       }
+
       if (attribs && tagName === 'a') {
         const props = attributesToProps(attribs);
+
+        console.log({ children });
+        console.log('tagName: a,');
+
         const updatedHref = attribs?.href?.startsWith('http')
           ? children
           : `http://${children as unknown as string}`;
@@ -67,6 +72,8 @@ export const htmlParse = (
         }
         return <a {...props} />;
       }
+
+      options && options.replace?.(domNode);
     },
     ...options,
   }) as ReactNode;

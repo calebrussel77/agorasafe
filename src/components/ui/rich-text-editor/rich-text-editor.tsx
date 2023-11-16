@@ -11,7 +11,13 @@ import {
   type Editor as TipTapEditor,
   useEditor,
 } from '@tiptap/react';
-import { useEffect, useImperativeHandle, useRef, useState } from 'react';
+import {
+  ReactNode,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from 'react';
 import { useLocalStorage } from 'react-use';
 import { useDebouncedCallback } from 'use-debounce';
 
@@ -21,8 +27,7 @@ import { type SizeVariant } from '@/utils/variants';
 
 import { cn } from '@/lib/utils';
 
-import { Field, FieldProps } from '../field';
-import { type InputProps } from '../input';
+import { Field, type FieldProps } from '../field';
 import { EditorBubbleMenu } from './bubble-menu';
 import { defaultExtensions } from './extensions';
 import { ImageResizer } from './extensions/image-resizer';
@@ -30,25 +35,21 @@ import { defaultEditorProps } from './props';
 import { NovelContext } from './provider';
 
 const mapEditorSizeHeight: Omit<Record<SizeVariant, string>, 'xs' | 'xxl'> = {
-  sm: 'min-h-[30px]',
+  sm: 'min-h-[40px]',
   md: 'min-h-[75px]',
-  lg: 'min-h-[80px]',
-  xl: 'min-h-[95px]',
+  lg: 'min-h-[95px]',
+  xl: 'min-h-[110px]',
 };
 
 export function Editor({
-  completionApi = '/api/generate',
   className,
-  defaultValue = '',
+  classNames,
   extensions = [],
   editorProps = {},
   onChange = () => {},
-  onDebouncedUpdate = () => {},
-  debounceDuration = 750,
-  storageKey = 'agorasafe__content',
-  disableLocalStorage = false,
   innerRef,
   placeholder,
+  reset = 0,
   editorSize = 'sm',
   disabled,
   withEmoji = true,
@@ -57,8 +58,13 @@ export function Editor({
   id,
   label,
   error,
+  autoFocus = false,
   hint,
+  iconRight,
+  iconLeft,
   required,
+  description,
+  value: _value,
 }: Props) {
   const withFormatting = includeControls.includes('formatting');
   const withList = includeControls.includes('list');
@@ -68,23 +74,10 @@ export function Editor({
   const withCommands = includeControls.includes('commands');
   const withColors = withFormatting && includeControls.includes('colors');
 
-  const storageKeyId = id || storageKey;
-  const [content, setContent] = useLocalStorage(storageKeyId, defaultValue);
+  const hasRightSection = withEmoji || iconRight;
+  const hasLeftSection = iconLeft;
 
-  const [hydrated, setHydrated] = useState(false);
   const [isEmojiOpen, setIsEmojiOpen] = useState(false);
-
-  const debouncedUpdates = useDebouncedCallback(
-    async ({ editor }: { editor: EditorClass; transaction: Transaction }) => {
-      const json = editor.getJSON();
-      await onDebouncedUpdate(editor);
-
-      if (!disableLocalStorage) {
-        setContent(json as never);
-      }
-    },
-    debounceDuration
-  );
 
   const editor = useEditor({
     extensions: [
@@ -107,32 +100,32 @@ export function Editor({
       ...defaultEditorProps({ withCommands }),
       ...editorProps,
     },
-    onUpdate: e => {
-      onChange(e.editor.getHTML());
-      debouncedUpdates(e);
-    },
-    autofocus: 'end',
+    content: _value as string,
+    onUpdate: onChange ? ({ editor }) => onChange(editor.getHTML()) : undefined,
     editable: !disabled,
   });
 
   const editorRef = useRef<TipTapEditor>();
 
-  // Default: Hydrate the editor with the content from localStorage.
-  // If disableLocalStorage is true, hydrate the editor with the defaultValue.
-  useEffect(() => {
-    if (!editor || hydrated) return;
-
-    const value = disableLocalStorage ? defaultValue : content;
-
-    if (value) {
-      editor.commands.setContent(value);
-      setHydrated(true);
-    }
-  }, [editor, defaultValue, content, hydrated, disableLocalStorage]);
-
   useEffect(() => {
     if (editor && !editorRef.current) editorRef.current = editor;
   }, [editor]);
+
+  useEffect(() => {
+    if (editor && autoFocus)
+      editor.commands.focus('end', { scrollIntoView: true });
+  }, [editor, autoFocus]);
+
+  // To clear content after a form submission
+  useEffect(() => {
+    if (!_value && editor) editor.commands.clearContent();
+  }, [editor, _value]);
+
+  useEffect(() => {
+    if (reset > 0 && editor && _value && editor.getHTML() !== _value) {
+      editor.commands.setContent(_value as string);
+    }
+  }, [reset]); //eslint-disable-line
 
   // Used to call editor commands outside the component via a ref
   useImperativeHandle(innerRef, () => ({
@@ -154,7 +147,7 @@ export function Editor({
   return (
     <NovelContext.Provider
       value={{
-        completionApi,
+        completionApi: '',
       }}
     >
       <Field
@@ -163,6 +156,8 @@ export function Editor({
         error={error}
         hint={hint}
         required={required}
+        description={description}
+        className="w-full"
       >
         <EditorContent
           id={id}
@@ -171,13 +166,27 @@ export function Editor({
             editor?.chain().focus().run();
           }}
           className={cn(
-            'relative w-full rounded-md border border-input bg-transparent px-4 py-2',
+            'relative w-full rounded-md border border-input bg-transparent px-4 py-2 shadow-sm',
             mapEditorSizeHeight[editorSize],
             error && 'border-red-500',
-            withEmoji && 'pr-10',
-            className
+            hasRightSection && 'pr-10',
+            hasLeftSection && 'pl-10',
+            disabled && 'cursor-not-allowed bg-gray-100',
+            className,
+            classNames?.root
           )}
         >
+          {hasLeftSection && (
+            <div
+              className={cn(
+                'absolute bottom-2 left-2 z-20 flex flex-nowrap items-center gap-2',
+                classNames?.leftContainer
+              )}
+            >
+              {iconLeft}
+            </div>
+          )}
+
           {editor && (
             <EditorBubbleMenu
               editor={editor}
@@ -186,14 +195,19 @@ export function Editor({
             />
           )}
           {editor?.isActive('image') && <ImageResizer editor={editor} />}
-          {withEmoji && (
-            <div className="absolute bottom-1 right-2 z-20">
+          {hasRightSection && (
+            <div
+              className={cn(
+                'absolute bottom-1 right-2 z-20 flex flex-nowrap items-center gap-2',
+                classNames?.rightContainer
+              )}
+            >
               <EmojiPicker
                 open={isEmojiOpen}
                 onOpenChange={() => setIsEmojiOpen(!isEmojiOpen)}
                 onTriggerClick={event => {
                   // Little hack to prevent the emoji picker from closing popover
-                  event.preventDefault();
+                  // event.preventDefault();
                   event.stopPropagation();
                   editor.commands.blur();
                   setIsEmojiOpen(!isEmojiOpen);
@@ -204,6 +218,7 @@ export function Editor({
                   editor.commands.blur();
                 }}
               />
+              {iconRight}
             </div>
           )}
         </EditorContent>
@@ -226,11 +241,18 @@ type ControlType =
   | 'commands'
   | 'colors';
 
+type ClassNames = {
+  root: string;
+  emoji: string;
+  rightContainer: string;
+  leftContainer: string;
+};
+
 type Props = Omit<
   EditorContentProps,
   'editor' | 'children' | 'onChange' | 'size'
 > &
-  Pick<FieldProps, 'hint' | 'error' | 'label'> & {
+  Pick<FieldProps, 'hint' | 'error' | 'label' | 'description'> & {
     includeControls?: ControlType[];
     disabled?: boolean;
     withEmoji?: boolean;
@@ -240,12 +262,9 @@ type Props = Omit<
     defaultSuggestions?: Array<{ id: number; label: string }>;
     innerRef?: React.ForwardedRef<EditorCommandsRef>;
     onSuperEnter?: () => void;
-
-    /**
-     * The API route to use for the OpenAI completion API.
-     * Defaults to "/api/generate".
-     */
-    completionApi?: string;
+    classNames?: Partial<ClassNames>;
+    iconLeft?: ReactNode;
+    iconRight?: ReactNode;
     /**
      * Additional classes to add to the editor container.
      * Defaults to "relative min-h-[500px] w-full max-w-screen-lg border-stone-200 bg-white sm:mb-[calc(20vh)] sm:rounded-lg sm:border sm:shadow-lg".
@@ -272,25 +291,4 @@ type Props = Omit<
      */
     // eslint-disable-next-line no-unused-vars
     onChange?: (value?: string) => void;
-    /**
-     * A callback function that is called whenever the editor is updated, but only after the defined debounce duration.
-     * Defaults to () => {}.
-     */
-    // eslint-disable-next-line no-unused-vars
-    onDebouncedUpdate?: (editor?: EditorClass) => void | Promise<void>;
-    /**
-     * The duration (in milliseconds) to debounce the onDebouncedUpdate callback.
-     * Defaults to 750.
-     */
-    debounceDuration?: number;
-    /**
-     * The key to use for storing the editor's value in local storage.
-     * Defaults to "agorasafe__content".
-     */
-    storageKey?: string;
-    /**
-     * Disable local storage read/save.
-     * Defaults to false.
-     */
-    disableLocalStorage?: boolean;
   };

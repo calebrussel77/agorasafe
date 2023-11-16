@@ -1,3 +1,4 @@
+import { sessionVersion } from '@/constants';
 import { env } from '@/env.mjs';
 import { PrismaAdapter } from '@next-auth/prisma-adapter';
 import { type Role, User } from '@prisma/client';
@@ -33,6 +34,7 @@ declare module 'next-auth' {
   interface User {
     // ...other properties
     fullName: string;
+    version: number;
     picture: string;
   }
 }
@@ -87,6 +89,7 @@ export const authOptions: NextAuthOptions = {
           email: profile?.email,
           picture: profile?.picture,
           fullName: `${profile.given_name} ${profile.family_name}`,
+          version: sessionVersion,
         };
       },
     }),

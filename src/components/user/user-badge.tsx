@@ -30,7 +30,7 @@ const UserBadge: FC<UserBadgeProps> = ({
       }
       size="xs"
       className={cn(
-        'line-clamp-1 flex-shrink-0 rounded-md text-xs font-semibold',
+        'line-clamp-1 flex-shrink-0 rounded-md px-1 text-xs',
         className
       )}
       {...props}

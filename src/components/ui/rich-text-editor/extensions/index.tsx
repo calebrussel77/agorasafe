@@ -116,7 +116,7 @@ export const defaultExtensions = ({
           Extension.create({
             name: 'onSubmitShortcut',
             addKeyboardShortcuts: () => ({
-              'Mod-Enter': () => {
+              Enter: () => {
                 onSuperEnter();
                 return true; // Dunno why they want a boolean here
               },

@@ -31,15 +31,13 @@ const ServiceRequestsPage: AppPageProps['Component'] = () => {
         description="Découvrez une multitude de demandes de service sur Agorasafe. Trouvez des prestataires qualifiés et explorez des opportunités passionnantes. Simplifiez la manière de satisfaire vos besoins ou de développer votre entreprise."
       />
       <ServiceRequestsHero />
-      <Container className="mt-16">
-        <div className="mx-auto w-full max-w-xl">
-          <DebouncedInput
-            value="sss"
-            iconAfter={<Search className="h-4 w-4" />}
-            placeholder="Recherchez une demande de sercice..."
-            classNames={{ root: 'w-full' }}
-          />
-        </div>
+      <Container className="mt-16 space-y-10">
+        <DebouncedInput
+          value=""
+          placeholder="Recherchez une demande de service..."
+          iconAfter={<Search className="h-4 w-4" />}
+          classNames={{ root: 'mx-auto w-full max-w-xl' }}
+        />
         {/* <div className="mx-auto mt-6 flex w-full max-w-lg flex-wrap items-center gap-3">
           <Badge size="lg" className="cursor-pointer py-1.5" content="Douala" />
           <Badge
@@ -60,7 +58,7 @@ const ServiceRequestsPage: AppPageProps['Component'] = () => {
           onRetryError={refetch}
         >
           {data?.serviceRequests && data?.serviceRequests?.length > 0 && (
-            <div className="mt-6 grid w-full grid-cols-1 gap-x-4 gap-y-6 lg:grid-cols-2 xl:grid-cols-3">
+            <div className="grid w-full grid-cols-1 gap-x-4 gap-y-6 lg:grid-cols-2 xl:grid-cols-3">
               {data?.serviceRequests?.map(serviceRequest => {
                 return (
                   <ServiceRequestCard
@@ -75,7 +73,6 @@ const ServiceRequestsPage: AppPageProps['Component'] = () => {
           {data?.serviceRequests && data?.serviceRequests?.length === 0 && (
             <EmptyState
               icon={<LucideDoorClosed />}
-              className="my-10"
               description="Aucune demande publiée pour l'instant."
               primaryAction={
                 <ServiceRequestButton>

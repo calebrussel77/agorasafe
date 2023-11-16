@@ -59,17 +59,17 @@ const UserName: FC<UserAvatarProps> = ({
 
   return (
     <div
-      className={cn('flex flex-nowrap items-center gap-x-1', classNames?.root)}
+      className={cn(
+        'flex flex-nowrap items-center gap-x-1',
+        className,
+        classNames?.root
+      )}
     >
       <Typography
         as="h3"
         truncate
         variant="h4"
-        className={cn(
-          'line-clamp-1 text-sm font-semibold',
-          className,
-          classNames?.text
-        )}
+        className={cn('line-clamp-1 text-sm font-semibold', classNames?.text)}
       >
         {profile?.name}
       </Typography>

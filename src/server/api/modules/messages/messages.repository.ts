@@ -76,7 +76,9 @@ export function getDirectMessages(inputs: GetDirectMessagesInput) {
     cursor: cursor ? { id: cursor } : undefined,
     skip: cursor ? 1 : undefined,
     take: limit,
-    include: { profile: { select: simpleProfileSelect } },
+    include: {
+      profile: { select: simpleProfileSelect },
+    },
     orderBy: { createdAt: orderBy },
   });
 }

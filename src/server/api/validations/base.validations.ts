@@ -49,4 +49,4 @@ export const nonEmptyHtmlString = getSanitizedStringSchema({
   ALLOWED_TAGS: ['div', 'strong', 'p', 'em', 'u', 's', 'a', 'br'],
 }).refine(data => {
   return data && data.length > 0 && data !== '<p></p>';
-}, 'Ce champs ne peut être vide.');
+}, 'Ce champs est requis.');
