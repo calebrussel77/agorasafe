@@ -16,11 +16,9 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Image } from '@/components/ui/image';
 import { Inline } from '@/components/ui/inline';
-import { Rating } from '@/components/ui/rating';
 import { Seo } from '@/components/ui/seo';
 import { Separator } from '@/components/ui/separator';
 import { FullSpinner } from '@/components/ui/spinner';
-import { Truncate } from '@/components/ui/truncate';
 import { Typography } from '@/components/ui/typography';
 import { UserAvatar, UserName, UserRating } from '@/components/user';
 
@@ -113,6 +111,7 @@ export default function ProfileDetailsPage({ profileSlugQuery }: PageProps) {
   const { data, isInitialLoading, error } = useGetProfileDetails({
     slug: profileSlugQuery,
   });
+
   const profileName = data?.profile?.name || '';
   const isDeleted = !!data?.profile?.deletedAt;
   const isCustomer = data?.profile?.type === 'CUSTOMER';

@@ -92,7 +92,7 @@ const User: FC<UserProps> = ({
   const subTextSizeClassNames =
     classNames?.subText ?? mapAvatarTextSize[size].subTextSize;
 
-  subText = subText === null ? null : profile?.location?.address;
+  subText = subText === null ? null : subText || profile?.location?.address;
   const isProvider = profile?.type === 'PROVIDER';
 
   const user = (
@@ -118,7 +118,9 @@ const User: FC<UserProps> = ({
                   withProfileBadge={withProfileBadge}
                   withProfileBadgeInitial={withProfileBadgeInitial}
                   profile={profile}
-                  className={cn(textSizeClassNames, classNames?.text)}
+                  classNames={{
+                    text: cn(textSizeClassNames, classNames?.text),
+                  }}
                 />
                 {badge}
               </div>
@@ -154,7 +156,7 @@ const User: FC<UserProps> = ({
   return user;
 };
 
-const UserProfileLink = ({
+export const UserProfileLink = ({
   children,
   profile,
   canLinkToProfile,

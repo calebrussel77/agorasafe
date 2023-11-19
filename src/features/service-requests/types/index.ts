@@ -4,53 +4,51 @@ import {
   type RouterOutputs,
 } from '@/utils/api';
 
-export type GetAllServiceCategoriesInput =
-  RouterInputs['services']['getAllServiceCategories'];
-export type GetAllservicesInput = RouterInputs['services']['getAllservices'];
-
-export type GetServiceRequestInput =
-  RouterInputs['services']['getServiceRequest'];
+//Get single item
+export type GetServiceRequestInput = RouterInputs['serviceRequests']['get'];
 export type GetServiceRequestOptions =
-  ReactQueryOptions['services']['getServiceRequest'];
-export type GetServiceRequestOutput =
-  RouterOutputs['services']['getServiceRequest'];
+  ReactQueryOptions['serviceRequests']['get'];
+export type GetServiceRequestOutput = RouterOutputs['serviceRequests']['get'];
 
-export type GetAllservicesOptions =
-  ReactQueryOptions['services']['getAllservices'];
-export type GetAllServiceCategoriesOptions =
-  ReactQueryOptions['services']['getAllServiceCategories'];
+//Creation
+export type CreateServiceRequestOptions =
+  ReactQueryOptions['serviceRequests']['create'];
+export type CreateServiceRequestInputs =
+  RouterInputs['serviceRequests']['create'];
 
-export type GetServiceRequestCommentsOptions =
-  ReactQueryOptions['services']['getServiceRequestComments'];
-export type GetServiceRequestCommentsOutput =
-  RouterOutputs['services']['getServiceRequestComments'];
-export type GetServiceRequestCommentsInput =
-  RouterInputs['services']['getServiceRequestComments'];
-
-export type PublishServiceRequestOptions =
-  ReactQueryOptions['services']['publishServiceRequest'];
-
-export type GetAllServiceCategoriesOutput =
-  RouterOutputs['services']['getAllServiceCategories'];
-export type GetAllservicesOutput = RouterOutputs['services']['getAllservices'];
-
-export type ServiceItem = GetAllservicesOutput['services'][number];
-export type ServiceCategoryItem =
-  GetAllServiceCategoriesOutput['categories'][number];
-
+//Service requests
 export type GetAllServiceRequestsOutput =
-  RouterOutputs['services']['getAllServiceRequests'];
+  RouterOutputs['serviceRequests']['getAll'];
 export type GetAllServiceRequestsOptions =
-  ReactQueryOptions['services']['getAllServiceRequests'];
+  ReactQueryOptions['serviceRequests']['getAll'];
 export type GetAllServiceRequestsInput =
-  RouterInputs['services']['getAllServiceRequests'];
+  RouterInputs['serviceRequests']['getAll'];
 
-  export type ToggleServiceRequestReservationOutput =
-  RouterOutputs['services']['toggleServiceRequestReservation'];
+//Reservations
+export type ToggleServiceRequestReservationOutput =
+  RouterOutputs['serviceRequests']['toggleReservation'];
 export type ToggleServiceRequestReservationOptions =
-  ReactQueryOptions['services']['toggleServiceRequestReservation'];
+  ReactQueryOptions['serviceRequests']['toggleReservation'];
 export type ToggleServiceRequestReservationInput =
-  RouterInputs['services']['toggleServiceRequestReservation'];
+  RouterInputs['serviceRequests']['toggleReservation'];
 
+//Proposals
+export type CreateServiceRequestProposalOutput =
+  RouterOutputs['serviceRequests']['createProposal'];
+export type CreateServiceRequestProposalOptions =
+  ReactQueryOptions['serviceRequests']['createProposal'];
+export type CreateServiceRequestProposalInput =
+  RouterInputs['serviceRequests']['createProposal'];
+
+//Comments
 export type CreateServiceRequestCommentOptions =
-  ReactQueryOptions['services']['createServiceRequestComment'];
+  ReactQueryOptions['serviceRequests']['createComment'];
+
+//Services
+export type GetAllServiceCategoriesOutput =
+  RouterOutputs['services']['getAllServiceCategory'];
+export type GetAllservicesOutput = RouterOutputs['services']['getAll'];
+
+export type ServiceItem = GetAllservicesOutput[number];
+
+export type ServiceCategoryItem = GetAllServiceCategoriesOutput[number];

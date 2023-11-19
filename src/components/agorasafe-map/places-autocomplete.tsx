@@ -1,6 +1,4 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import { env } from '@/env.mjs';
-import { type Libraries, useLoadScript } from '@react-google-maps/api';
 import { ChevronsUpDown, MapPinIcon } from 'lucide-react';
 import React, { type FC } from 'react';
 import { useMeasure } from 'react-use';
@@ -8,7 +6,7 @@ import usePlacesAutocompleteAutocomplete, {
   getDetails,
 } from 'use-places-autocomplete';
 
-import { Variant } from '@/utils/variants';
+import { type Variant } from '@/utils/variants';
 
 import { cn } from '@/lib/utils';
 
@@ -17,7 +15,6 @@ import { Button } from '../ui/button';
 import { Command } from '../ui/command';
 import { IconContainer } from '../ui/icon-container';
 import { Popover } from '../ui/popover';
-import { SectionMessage } from '../ui/section-message';
 import { Spinner } from '../ui/spinner';
 import { Truncate } from '../ui/truncate';
 import { Typography } from '../ui/typography';

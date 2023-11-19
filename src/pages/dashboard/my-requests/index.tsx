@@ -11,7 +11,7 @@ import { Tabs } from '@/components/ui/tabs';
 
 import {
   ServiceRequestButton,
-  ServiceRequestCard,
+  UserServiceRequestCard,
 } from '@/features/service-requests';
 import { ContentTitle, MainContent, Sidebar } from '@/features/user-dashboard';
 
@@ -21,11 +21,11 @@ import { createServerSideProps } from '@/server/utils/server-side';
 
 type PageProps = Prettify<InferNextProps<typeof getServerSideProps>>;
 
-const mapEmptyMessageStatus: Record<'OPEN' | 'CLOSED' | 'ALL', string> = {
+const mapEmptyMessageStatus = {
   ALL: "Vous n'avez créé aucune demande de service.",
   OPEN: "Vous n'avez aucune demande de service en cours.",
-  CLOSED: "Vous n'avez aucune demande de service clôturée.",
-};
+  CLOSED: "Vous n'avez aucune demande de service terminée.",
+} as const;
 
 const MyRequestsPage = ({ profile, session }: PageProps) => {
   const [status, setStatus] =
@@ -35,7 +35,7 @@ const MyRequestsPage = ({ profile, session }: PageProps) => {
 
   //TODO: Need to add infinite scroll to
   const { data, error, refetch, isLoading } =
-    api.services.getAllServiceRequests.useQuery({
+    api.serviceRequests.getAll.useQuery({
       authorId: profile?.id,
       status: status,
       query: search,
@@ -45,14 +45,14 @@ const MyRequestsPage = ({ profile, session }: PageProps) => {
     <>
       <MainContent>
         <ContentTitle>Mes demandes</ContentTitle>
-        <div className="mt-10 flex items-center space-x-3 px-4">
+        <div className="mt-10 flex flex-wrap items-center space-y-3 px-4 lg:space-x-3 lg:space-y-0">
           <DebouncedInput
             value={search}
             type="search"
             onChange={event => setSearch(event.target.value)}
             iconAfter={<Search className="h-4 w-4" />}
             placeholder="Recherchez parmi mes demandes de service..."
-            classNames={{ root: 'w-full max-w-md' }}
+            classNames={{ root: 'lg:max-w-md w-full' }}
           />
           <Tabs
             defaultValue="ALL"
@@ -72,11 +72,11 @@ const MyRequestsPage = ({ profile, session }: PageProps) => {
             error={error}
             onRetryError={refetch}
           >
-            {data?.serviceRequests && data?.serviceRequests?.length > 0 && (
-              <div className="grid w-full grid-cols-1 gap-x-4 gap-y-6 lg:grid-cols-2 xl:grid-cols-3">
+            {data?.serviceRequests && data?.serviceRequests?.length > 0 ? (
+              <div className="mx-auto grid w-full max-w-5xl space-y-3">
                 {data?.serviceRequests?.map(serviceRequest => {
                   return (
-                    <ServiceRequestCard
+                    <UserServiceRequestCard
                       key={serviceRequest?.id}
                       className="w-full"
                       serviceRequest={serviceRequest}
@@ -84,8 +84,7 @@ const MyRequestsPage = ({ profile, session }: PageProps) => {
                   );
                 })}
               </div>
-            )}
-            {data?.serviceRequests && data?.serviceRequests?.length === 0 && (
+            ) : (
               <EmptyState
                 icon={<LucideDoorClosed />}
                 description={
@@ -123,8 +122,10 @@ export const getServerSideProps = createServerSideProps({
   shouldUseSession: true,
   resolver: async ({ ctx, ssg, profile, session }) => {
     if (!session || !profile) return { notFound: true };
+
+    //TODO: Need to add infinite scroll to
     if (ssg) {
-      await ssg?.services.getAllServiceRequests.prefetch({
+      await ssg?.serviceRequests.getAll.prefetch({
         authorId: profile?.id,
         status: 'ALL',
       });

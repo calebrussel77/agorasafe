@@ -22,7 +22,7 @@ import { type AppPageProps } from '../_app';
 const ServiceRequestsPage: AppPageProps['Component'] = () => {
   //TODO: Need to add infinite scroll to this
   const { data, error, refetch, isLoading } =
-    api.services.getAllServiceRequests.useQuery({});
+    api.serviceRequests.getAll.useQuery({});
 
   return (
     <>
@@ -91,7 +91,7 @@ export const getServerSideProps = createServerSideProps({
   shouldUseSSG: true,
   resolver: async ({ ctx, ssg }) => {
     if (ssg) {
-      await ssg?.services.getAllServiceRequests.prefetch({});
+      await ssg?.serviceRequests.getAll.prefetch({});
     }
     return { props: {} };
   },

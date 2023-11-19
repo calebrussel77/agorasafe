@@ -1,5 +1,7 @@
-// import { useAutoAnimate } from '@formkit/auto-animate/react';
+import { useAutoAnimate } from '@formkit/auto-animate/react';
 import React, { type ElementType, type HTMLAttributes } from 'react';
+
+import { cn } from '@/lib/utils';
 
 interface Props extends HTMLAttributes<HTMLElement> {
   as?: ElementType;
@@ -8,11 +10,12 @@ interface Props extends HTMLAttributes<HTMLElement> {
 const AutoAnimate: React.FC<Props> = ({
   as: Tag = 'div',
   children,
+  className,
   ...rest
 }) => {
-  // const [ref] = useAutoAnimate<HTMLElement>();
+  const [ref] = useAutoAnimate<HTMLElement>();
   return (
-    <Tag {...rest}>
+    <Tag ref={ref} className={cn('overflow-hidden', className)} {...rest}>
       {children}
     </Tag>
   );

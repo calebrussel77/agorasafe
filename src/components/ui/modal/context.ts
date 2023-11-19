@@ -39,7 +39,7 @@ export interface ModalsContextProps {
   openConfirmModal: (props: OpenConfirmModal) => string;
   openContextModal: <TKey extends MantineModal>(
     modal: TKey,
-    props: OpenContextModal<Parameters<MantineModals[TKey]>[0]['innerProps']>
+    props: OpenContextModal<Parameters<MantineModals[TKey]>[0]>['innerProps']
   ) => string;
   closeModal: (id: string, canceled?: boolean) => void;
   closeContextModal: <TKey extends MantineModal>(

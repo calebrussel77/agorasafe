@@ -33,7 +33,7 @@ export const getByIdOrSlugQuerySchema = z
 
 export type GetByIdOrSlugQueryInput = z.infer<typeof getByIdOrSlugQuerySchema>;
 
-export const getByIdQuerySchema = z.object({ id: z.number() });
+export const getByIdQuerySchema = z.object({ id: z.string() });
 export type GetByIdQueryInput = z.infer<typeof getByIdQuerySchema>;
 
 export const getSanitizedStringSchema = (config?: Config) =>

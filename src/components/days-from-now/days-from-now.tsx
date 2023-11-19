@@ -6,6 +6,7 @@ export const DaysFromNow = ({
   date,
   addSuffix = true,
   inUtc = false,
+  className,
 }: Props) => {
   //   const day = inUtc ? dayjs.utc(date) : dayjs(date);
 
@@ -16,7 +17,7 @@ export const DaysFromNow = ({
   if (!isMounted) return null;
 
   return (
-    <time title={datetime} dateTime={datetime}>
+    <time title={datetime} dateTime={datetime} className={className}>
       {formatDateDistance(date, new Date(), { addSuffix })}
     </time>
   );
@@ -26,4 +27,5 @@ type Props = {
   date: Date | number | string;
   addSuffix?: boolean;
   inUtc?: boolean;
+  className?: string;
 };

@@ -6,7 +6,7 @@ import { AddProfileModal } from '@/features/profiles';
 import {
   CreateServiceRequestModal,
   CustomServiceRequestCategoriesModal,
-} from '@/features/services';
+} from '@/features/service-requests';
 
 //TODO: Need to find a way of using dynamic imports whithout typescript errors and continue having autocomplete
 export const appModals = {

@@ -6,6 +6,7 @@ import {
   isAfter,
   isBefore,
   parseISO,
+  sub,
 } from 'date-fns';
 import { fr } from 'date-fns/locale';
 
@@ -26,11 +27,30 @@ export const dateToReadableString = (
   return format(new Date(date), stringFormat, { locale: fr });
 };
 
+/**
+ * Add the specified years, months, weeks, days, hours, minutes and seconds to the given date.
+ * @param date
+ * @param duration
+ * @returns
+ */
 export const increaseDate = (
   date: Date | number | string,
   duration: Duration
 ) => {
   return add(new Date(date), duration);
+};
+
+/**
+ * Subtract the specified years, months, weeks, days, hours, minutes and seconds from the given date.
+ * @param date
+ * @param duration
+ * @returns date
+ */
+export const decreaseDate = (
+  date: Date | number | string,
+  duration: Duration
+) => {
+  return sub(new Date(date), duration);
 };
 
 export const formatDateDistance = (

@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/no-floating-promises */
 
 /* eslint-disable @typescript-eslint/naming-convention */
-import { type Editor as EditorClass, type Extensions } from '@tiptap/core';
-import { type Transaction } from '@tiptap/pm/state';
+import { type Extensions } from '@tiptap/core';
 import { type EditorProps } from '@tiptap/pm/view';
 import {
   EditorContent,
@@ -12,14 +11,12 @@ import {
   useEditor,
 } from '@tiptap/react';
 import {
-  ReactNode,
+  type ReactNode,
   useEffect,
   useImperativeHandle,
   useRef,
   useState,
 } from 'react';
-import { useLocalStorage } from 'react-use';
-import { useDebouncedCallback } from 'use-debounce';
 
 import { EmojiPicker } from '@/components/emoji-picker';
 
@@ -27,6 +24,7 @@ import { type SizeVariant } from '@/utils/variants';
 
 import { cn } from '@/lib/utils';
 
+import { AutoAnimate } from '../auto-animate';
 import { Field, type FieldProps } from '../field';
 import { EditorBubbleMenu } from './bubble-menu';
 import { defaultExtensions } from './extensions';
@@ -65,6 +63,8 @@ export function Editor({
   required,
   description,
   value: _value,
+  ref,
+  ...props
 }: Props) {
   const withFormatting = includeControls.includes('formatting');
   const withList = includeControls.includes('list');
@@ -160,7 +160,7 @@ export function Editor({
         className="w-full"
       >
         <EditorContent
-          id={id}
+          {...props}
           editor={editor}
           onClick={() => {
             editor?.chain().focus().run();
@@ -194,33 +194,37 @@ export function Editor({
               withNodeBubbleMenu={withCommands}
             />
           )}
+
           {editor?.isActive('image') && <ImageResizer editor={editor} />}
-          {hasRightSection && (
-            <div
-              className={cn(
-                'absolute bottom-1 right-2 z-20 flex flex-nowrap items-center gap-2',
-                classNames?.rightContainer
-              )}
-            >
-              <EmojiPicker
-                open={isEmojiOpen}
-                onOpenChange={() => setIsEmojiOpen(!isEmojiOpen)}
-                onTriggerClick={event => {
-                  // Little hack to prevent the emoji picker from closing popover
-                  // event.preventDefault();
-                  event.stopPropagation();
-                  editor.commands.blur();
-                  setIsEmojiOpen(!isEmojiOpen);
-                }}
-                onChange={emoji => {
-                  const currentPosition = editor.state.selection.$anchor.pos;
-                  editor.commands.insertContentAt(currentPosition, emoji);
-                  editor.commands.blur();
-                }}
-              />
-              {iconRight}
-            </div>
-          )}
+
+          <AutoAnimate
+            className={cn(
+              'absolute bottom-1 right-2 z-20 flex flex-nowrap items-center gap-2',
+              classNames?.rightContainer
+            )}
+          >
+            {hasRightSection && (
+              <>
+                <EmojiPicker
+                  open={isEmojiOpen}
+                  onOpenChange={() => setIsEmojiOpen(!isEmojiOpen)}
+                  onTriggerClick={event => {
+                    // Little hack to prevent the emoji picker from closing popover
+                    // event.preventDefault();
+                    event.stopPropagation();
+                    editor.commands.blur();
+                    setIsEmojiOpen(!isEmojiOpen);
+                  }}
+                  onChange={emoji => {
+                    const currentPosition = editor.state.selection.$anchor.pos;
+                    editor.commands.insertContentAt(currentPosition, emoji);
+                    editor.commands.blur();
+                  }}
+                />
+                {iconRight}
+              </>
+            )}
+          </AutoAnimate>
         </EditorContent>
       </Field>
     </NovelContext.Provider>

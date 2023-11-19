@@ -8,11 +8,6 @@ import {
   Testimonials,
 } from '@/features/app-launch';
 import {
-  FeaturesSection,
-  HeroSection,
-  TestimonialSection,
-} from '@/features/home-page';
-import {
   LATEST_SERVICE_REQUESTS_COUNT,
   LatestServiceRequests,
 } from '@/features/service-requests';
@@ -40,7 +35,7 @@ export const getServerSideProps = createServerSideProps({
   shouldUseSSG: true,
   resolver: async ({ ctx, ssg }) => {
     if (ssg) {
-      await ssg?.services.getAllServiceRequests.prefetch({
+      await ssg?.serviceRequests.getAll.prefetch({
         limit: LATEST_SERVICE_REQUESTS_COUNT,
       });
     }

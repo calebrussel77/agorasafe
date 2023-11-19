@@ -22,7 +22,7 @@ import { cn } from '@/lib/utils';
 import { Inline } from '../inline';
 import { MessageAction } from './section-message-action';
 
-const sectionMessage = cva('w-full flex justify-center items-start gap-2', {
+const sectionMessage = cva('w-full', {
   variants: {
     appareance: {
       danger: [
@@ -142,6 +142,7 @@ const SectionMessage = forwardRef<HTMLDivElement, SectionMessageProps>(
               'relative mb-3 rounded-sm',
               sectionMessage({ appareance, size, class: className }),
               isSticky && 'sticky top-0 z-40 w-full',
+              !isActionsArray && 'flex items-start justify-center gap-2',
               classNames?.root
             )}
             {...props}
@@ -174,22 +175,20 @@ const SectionMessage = forwardRef<HTMLDivElement, SectionMessageProps>(
                     {description}
                   </div>
                 )}
-                {isActionsArray
-                  ? actions?.length > 0 && (
-                      <div className="flex flex-wrap items-center gap-1">
-                        <Inline
-                          divider={
-                            <span className="text-brand-100">&middot;</span>
-                          }
-                          className="gap-1"
-                        >
-                          {actions}
-                        </Inline>
-                      </div>
-                    )
-                  : actions}
               </div>
             </div>
+            {isActionsArray
+              ? actions?.length > 0 && (
+                  <div className="ml-10 mt-3 flex flex-wrap items-center gap-1">
+                    <Inline
+                      divider={<span className="text-brand-100">&middot;</span>}
+                      className="gap-1"
+                    >
+                      {actions}
+                    </Inline>
+                  </div>
+                )
+              : actions}
             {hasCloseButton && (
               <button
                 type="button"

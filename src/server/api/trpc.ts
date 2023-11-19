@@ -8,45 +8,10 @@
  */
 import { sessionVersion } from '@/constants';
 import { TRPCError, initTRPC } from '@trpc/server';
-import { type Session } from 'next-auth';
 import superjson from 'superjson';
-
-import { prisma } from '@/server/db';
 
 import { throwForbiddenError } from '../utils/error-handling';
 import { type Context } from './create-context';
-import { type SimpleProfile } from './modules/profiles';
-
-/**
- * 1. CONTEXT
- *
- * This section defines the "contexts" that are available in the backend API.
- *
- * These allow you to access things when processing a request, like the database, the session, etc.
- */
-
-type CreateContextOptions = {
-  session: Session | null;
-  profile: SimpleProfile | null;
-};
-
-/**
- * This helper generates the "internals" for a tRPC context. If you need to use it, you can export
- * it from here.
- *
- * Examples of things you may need it for:
- * - testing, so we don't have to mock Next.js' req/res
- * - tRPC's `createSSGHelpers`, where we don't have req/res
- *
- * @see https://create.t3.gg/en/usage/trpc#-serverapitrpcts
- */
-export const createInnerTRPCContext = (opts: CreateContextOptions) => {
-  return {
-    session: opts.session,
-    profile: opts.profile,
-    prisma,
-  };
-};
 
 /**
  * 2. INITIALIZATION

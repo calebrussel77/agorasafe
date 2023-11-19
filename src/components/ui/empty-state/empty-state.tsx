@@ -71,7 +71,7 @@ function EmptyState({
   return (
     <div
       className={cn(
-        'mx-auto flex w-full max-w-lg flex-col items-center justify-center gap-3',
+        'mx-auto flex w-full max-w-lg flex-col items-center justify-center gap-2',
         classNames?.root,
         className
       )}

@@ -3,7 +3,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 import '@/assets/styles/globals.css';
 import { WEBSITE_URL, isMaintenanceMode } from '@/constants';
-import { env } from '@/env.mjs';
 import { MainLayout } from '@/layouts';
 import { AppProvider } from '@/providers/app-provider';
 import { type ProfileStore } from '@/stores/profile-store';
@@ -51,7 +50,6 @@ function handleExitComplete() {
 }
 
 const MyApp = (props: AppPageProps) => {
-  // useNewDeploy();
   useNotificationNetwork();
 
   const {
