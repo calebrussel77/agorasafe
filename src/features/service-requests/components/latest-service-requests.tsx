@@ -46,7 +46,7 @@ export function LatestServiceRequests() {
           )}
           {data?.serviceRequests && data?.serviceRequests?.length > 0 && (
             <div className="mx-auto mt-8 max-w-2xl lg:mx-0 lg:max-w-none">
-              <div className="mt-2 grid w-full grid-cols-3 gap-3">
+              <div className="mt-2 grid w-full grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
                 {data?.serviceRequests?.map(serviceRequest => {
                   return (
                     <ServiceRequestCard

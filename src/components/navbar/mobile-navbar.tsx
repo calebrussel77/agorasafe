@@ -23,13 +23,10 @@ import { User } from '../user';
 interface MobileNavbarProps {
   className?: string;
   navigations: Array<{ name: string; href: string; isNew: boolean }>;
-  onNavItemClick: () => void;
+  closeSideBar: () => void;
 }
 
-const MobileNavbar: FC<MobileNavbarProps> = ({
-  navigations,
-  onNavItemClick,
-}) => {
+const MobileNavbar: FC<MobileNavbarProps> = ({ navigations, closeSideBar }) => {
   const { onSignOut } = useAuth();
   const { profile, resetProfile } = useCurrentUser();
 
@@ -64,7 +61,7 @@ const MobileNavbar: FC<MobileNavbarProps> = ({
                   {userProfileConfig?.canAddNewProfile && (
                     <>
                       <Button
-                        onClick={() =>
+                        onClick={() => {
                           openContextModal({
                             modal: 'addProfile',
                             isFullScreen: true,
@@ -72,8 +69,9 @@ const MobileNavbar: FC<MobileNavbarProps> = ({
                               choosedProfileType:
                                 userProfileConfig?.allowedProfileType,
                             },
-                          })
-                        }
+                          });
+                          closeSideBar();
+                        }}
                         size="sm"
                         className="my-1 w-full px-2"
                         variant="ghost"
@@ -90,7 +88,10 @@ const MobileNavbar: FC<MobileNavbarProps> = ({
                   {userProfileConfig?.canSwitchToOtherProfile && (
                     <>
                       <Button
-                        onClick={resetProfile}
+                        onClick={() => {
+                          resetProfile();
+                          closeSideBar();
+                        }}
                         size="sm"
                         variant="ghost"
                         className="my-1 w-full px-6"
@@ -116,7 +117,7 @@ const MobileNavbar: FC<MobileNavbarProps> = ({
                       return (
                         <ActiveLink
                           key={link.id}
-                          onClick={onNavItemClick}
+                          onClick={closeSideBar}
                           href={url}
                           activeClassName="bg-zinc-100 text-primary"
                           className="-mx-3 flex items-center gap-x-3 px-3 py-2"
@@ -150,7 +151,10 @@ const MobileNavbar: FC<MobileNavbarProps> = ({
                     {navigations.map(item => {
                       if (item.name.toLowerCase() === 'feedback') {
                         return (
-                          <FeedbackButton key={item?.name}>
+                          <FeedbackButton
+                            onHandleClick={closeSideBar}
+                            key={item?.name}
+                          >
                             <button className="-mx-3 flex items-center rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50">
                               {item.name}
                               {item?.isNew && (
@@ -167,6 +171,7 @@ const MobileNavbar: FC<MobileNavbarProps> = ({
                       }
                       return (
                         <Anchor
+                          onClick={closeSideBar}
                           key={item.name}
                           href={item.href}
                           className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"

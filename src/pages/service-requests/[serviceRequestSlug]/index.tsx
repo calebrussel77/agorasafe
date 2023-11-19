@@ -297,7 +297,7 @@ const ServiceRequestPublicationPage = ({
                     variant={isStatusOpen ? 'outline' : 'default'}
                   >
                     {isStatusOpen
-                      ? 'Clôturer ma demande'
+                      ? 'Annuler ma demande'
                       : 'Republier ma demande'}
                   </Button>
                 )}
@@ -400,19 +400,19 @@ const ServiceRequestPublicationPage = ({
             <Tabs.List className="w-full">
               <Tabs.Trigger
                 value={ServiceRequestTab.COMMENTS}
-                className="flex-grow text-base"
+                className="flex-grow text-sm md:text-base"
               >
                 Commentaires ({stats?.commentCount})
               </Tabs.Trigger>
               <Tabs.Trigger
                 value={ServiceRequestTab.PROPOSALS}
-                className="flex-grow text-base"
+                className="flex-grow text-sm md:text-base"
               >
                 Propositions ({stats?.proposalCount})
               </Tabs.Trigger>
               <Tabs.Trigger
                 value={ServiceRequestTab.RESERVED}
-                className="flex-grow text-base"
+                className="flex-grow text-sm md:text-base"
               >
                 Reservés ({stats?.providersReservedCount})
               </Tabs.Trigger>
@@ -488,7 +488,8 @@ const ServiceRequestPublicationPage = ({
                             {canViewReservedBtn && (
                               <ActionTooltip label={btnMessage}>
                                 <Button
-                                  variant={isReserved ? 'outline' : 'secondary'}
+                                  variant={isReserved ? 'outline' : 'default'}
+                                  size="sm"
                                   disabled={isLoadingToggleReservation}
                                   onClick={() =>
                                     mutateToggleReservation({
@@ -558,7 +559,7 @@ const ServiceRequestPublicationPage = ({
                     return (
                       <div
                         key={providerProfile.id}
-                        className="group relative flex w-full max-w-[250px] flex-col items-center justify-center rounded-md border bg-gray-100 p-3"
+                        className="group relative mx-auto flex w-full max-w-[250px] flex-col items-center justify-center rounded-md border bg-gray-100 p-3"
                       >
                         {isStatusOpen && isAuthorMine && (
                           <ActionTooltip label="Annuler la réservation">

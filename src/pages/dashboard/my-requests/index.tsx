@@ -45,18 +45,18 @@ const MyRequestsPage = ({ profile, session }: PageProps) => {
     <>
       <MainContent>
         <ContentTitle>Mes demandes</ContentTitle>
-        <div className="mt-10 flex flex-wrap items-center space-y-3 px-4 lg:space-x-3 lg:space-y-0">
+        <div className="mt-10 flex w-full max-w-2xl flex-col flex-wrap items-center gap-3 px-4 sm:flex-row">
           <DebouncedInput
             value={search}
             type="search"
             onChange={event => setSearch(event.target.value)}
             iconAfter={<Search className="h-4 w-4" />}
             placeholder="Recherchez parmi mes demandes de service..."
-            classNames={{ root: 'lg:max-w-md w-full' }}
+            classNames={{ root: 'flex-1 w-full' }}
           />
           <Tabs
             defaultValue="ALL"
-            className="w-[500px]"
+            // className="w-[500px]"
             onValueChange={setStatus as never}
           >
             <Tabs.List>
@@ -73,7 +73,7 @@ const MyRequestsPage = ({ profile, session }: PageProps) => {
             onRetryError={refetch}
           >
             {data?.serviceRequests && data?.serviceRequests?.length > 0 ? (
-              <div className="mx-auto grid w-full max-w-5xl space-y-3">
+              <div className="mx-auto grid w-full max-w-5xl space-y-3 md:grid-cols-2 lg:grid-cols-1">
                 {data?.serviceRequests?.map(serviceRequest => {
                   return (
                     <UserServiceRequestCard

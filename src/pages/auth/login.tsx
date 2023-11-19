@@ -70,7 +70,7 @@ const LoginPage = () => {
           </blockquote>
         </div>
       </div>
-      <div className="ml-auto flex h-screen w-1/2 flex-col">
+      <div className="flex h-screen w-full flex-col lg:ml-auto lg:w-1/2">
         {!!error && <SignInError className="mb-0 rounded-none" error={error} />}
         {!!redirectReason && (
           <SectionMessage

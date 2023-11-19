@@ -43,7 +43,7 @@ const Header = ({ children }: { children?: ReactNode }) => {
             <SheetContent className="w-[75%] bg-white p-0">
               <MobileNavbar
                 navigations={navigations}
-                onNavItemClick={() => setIsOpenSheet(false)}
+                closeSideBar={() => setIsOpenSheet(false)}
               />
             </SheetContent>
           </Sheet>

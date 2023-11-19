@@ -7,9 +7,10 @@ import { useIsMobile } from '@/hooks/use-breakpoints';
 interface FeedbackButtonProps {
   className?: string;
   children: ReactElement;
+  onHandleClick?: () => void;
 }
 
-const FeedbackButton = ({ children }: FeedbackButtonProps) => {
+const FeedbackButton = ({ children, onHandleClick }: FeedbackButtonProps) => {
   const isMobile = useIsMobile();
 
   const handleClick = () => {
@@ -18,6 +19,7 @@ const FeedbackButton = ({ children }: FeedbackButtonProps) => {
       modal: 'feedbackForm',
       innerProps: {},
     });
+    onHandleClick?.();
   };
 
   return (
