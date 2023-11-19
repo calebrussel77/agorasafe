@@ -13,7 +13,6 @@ import {
 import { getLoginLink, useLoginRedirect } from '@/features/auth';
 
 import { api } from '@/utils/api';
-import { makeRandomId } from '@/utils/misc';
 
 import { cn } from '@/lib/utils';
 
@@ -183,7 +182,7 @@ const CommentForm = ({
                   disabled={commentMutation.isLoading}
                   onFocus={!autoFocus ? () => setIsFocused(true) : undefined}
                   onSuperEnter={() => form.handleSubmit(onHandleSubmit)()}
-                  editorSize="sm"
+                  editorSize="md"
                   withEmoji={isFocused}
                   value={value}
                   onChange={onChange}

@@ -166,7 +166,7 @@ export function Editor({
             editor?.chain().focus().run();
           }}
           className={cn(
-            'relative w-full rounded-md border border-input bg-transparent px-4 py-2 shadow-sm',
+            'relative w-full rounded-md border border-input bg-transparent px-4 py-2',
             mapEditorSizeHeight[editorSize],
             error && 'border-red-500',
             hasRightSection && 'pr-10',

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react';
 
 const useLocalStorage = <T>(
   key: string,
@@ -11,7 +11,7 @@ const useLocalStorage = <T>(
     // Retrieve from localStorage
     const item = window.localStorage.getItem(key);
     if (item) {
-      setStoredValue(JSON.parse(item));
+      setStoredValue(JSON.parse(item) as never);
     }
   }, [key]);
 
