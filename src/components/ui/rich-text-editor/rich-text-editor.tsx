@@ -97,7 +97,7 @@ export function Editor({
       ...extensions,
     ],
     editorProps: {
-      ...defaultEditorProps({ withCommands }),
+      ...defaultEditorProps({ withCommands, disabled }),
       ...editorProps,
     },
     content: _value as string,
@@ -110,6 +110,13 @@ export function Editor({
   useEffect(() => {
     if (editor && !editorRef.current) editorRef.current = editor;
   }, [editor]);
+
+  useEffect(() => {
+    if (!editor) {
+      return undefined;
+    }
+    editor.setEditable(!disabled);
+  }, [editor, disabled]);
 
   useEffect(() => {
     if (editor && autoFocus)
@@ -165,13 +172,13 @@ export function Editor({
           onClick={() => {
             editor?.chain().focus().run();
           }}
+          disabled={disabled}
           className={cn(
             'relative w-full rounded-md border border-input bg-transparent px-4 py-2',
             mapEditorSizeHeight[editorSize],
             error && 'border-red-500',
             hasRightSection && 'pr-10',
             hasLeftSection && 'pl-10',
-            disabled && 'cursor-not-allowed bg-gray-100',
             className,
             classNames?.root
           )}

@@ -137,7 +137,7 @@ const CommentForm = ({
       <SectionMessage
         appareance="warning"
         title="Vous ne pouvez pas Commenter"
-        description="Vous ne pouvez pas commenter car vous avez été muté."
+        description="Vous ne pouvez pas commenter car vous avez été mis en sourdine."
       />
     );
   }
@@ -148,7 +148,7 @@ const CommentForm = ({
         hasCloseButton={false}
         appareance="info"
         title="Connectez-vous pour Commenter"
-        description="Connectez-vous ou créez votre compte pour commenter"
+        description="Accéder à votre compte afin de pouvoir laisser votre commentaire"
         actions={
           <Button
             size="sm"

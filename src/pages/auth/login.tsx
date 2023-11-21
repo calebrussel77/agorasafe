@@ -86,7 +86,6 @@ const LoginPage = () => {
               onClick={() => handleRouteBack({ router })}
               className={cn(buttonVariants({ variant: 'ghost' }))}
             >
-              <MoveLeft className="h-5 w-5" />
               <span>Retour</span>
             </button>
             <Anchor href="/" className="ml-1 flex items-center gap-x-1.5">

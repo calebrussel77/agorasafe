@@ -1,3 +1,4 @@
+import { useRouter } from 'next/router';
 import React, { type FC } from 'react';
 
 import { Button } from '@/components/ui/button';
@@ -18,31 +19,15 @@ import { type SimpleProfile } from '@/server/api/modules/profiles';
 
 import { useIsMobile } from '@/hooks/use-breakpoints';
 import { useCurrentUser } from '@/hooks/use-current-user';
-import { useToastOnPageReload } from '@/hooks/use-toast-on-page-reload';
 
 interface ChangeProfileModalProps {
   className?: string;
 }
 
 const ChangeProfileModal: FC<ChangeProfileModalProps> = ({}) => {
-  const { session, updateProfile, profile } = useCurrentUser();
+  const { session, updateProfile } = useCurrentUser();
+  const router = useRouter();
   const isMobile = useIsMobile();
-
-  const { reloadWithToast } = useToastOnPageReload(() =>
-    profile
-      ? toast({
-          delay: 3000,
-          icon: <UserAvatar className="h-10 w-10" profile={profile} />,
-          variant: 'success',
-          description: (
-            <p className="text-sm">
-              Vous interagissez maintenant en tant que{' '}
-              <span className="font-semibold">{profile?.name}</span>
-            </p>
-          ),
-        })
-      : null
-  );
 
   // profiles query
   const { data, isInitialLoading, error, refetch } = useUserProfiles({
@@ -50,10 +35,22 @@ const ChangeProfileModal: FC<ChangeProfileModalProps> = ({}) => {
     staleTime: 60 * 1000,
   });
 
-  const onProfileClick = (_profile: SimpleProfile) => {
+  // reloadWithToast();
+  const onProfileClick = async (_profile: SimpleProfile) => {
     if (!_profile) return;
     updateProfile(_profile);
-    reloadWithToast();
+    await router.replace(router?.pathname);
+    toast({
+      delay: 3000,
+      icon: <UserAvatar className="h-10 w-10" profile={_profile} />,
+      variant: 'success',
+      description: (
+        <p className="text-sm">
+          Vous interagissez maintenant en tant que{' '}
+          <span className="font-semibold">{_profile?.name}</span>
+        </p>
+      ),
+    });
   };
 
   return (

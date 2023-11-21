@@ -139,56 +139,59 @@ const SectionMessage = forwardRef<HTMLDivElement, SectionMessageProps>(
             ref={ref}
             role="alert"
             className={cn(
-              'relative mb-3 rounded-sm',
+              'relative mb-3 w-full rounded-sm',
               sectionMessage({ appareance, size, class: className }),
               isSticky && 'sticky top-0 z-40 w-full',
-              !isActionsArray && 'flex items-start justify-center gap-2',
               classNames?.root
             )}
             {...props}
           >
             <div
               className={cn(
-                'flex w-full flex-1 items-start gap-3',
+                'flex w-full items-start gap-3',
                 classNames?.wrapper
               )}
             >
-              {
-                <Icon
-                  className={cn(
-                    'h-6 w-6 flex-shrink-0',
-                    iconColor,
-                    classNames?.icon
+              <Icon
+                className={cn(
+                  'h-6 w-6 flex-shrink-0',
+                  iconColor,
+                  classNames?.icon
+                )}
+              />
+              <div
+                className={cn(
+                  'flex flex-col items-start gap-3',
+                  !isActionsArray &&
+                    'flex flex-col items-start justify-center gap-3 md:flex-row'
+                )}
+              >
+                <div className="space-y-1">
+                  {title && (
+                    <h3
+                      className={cn('text-sm font-semibold', classNames?.title)}
+                    >
+                      {title}
+                    </h3>
                   )}
-                />
-              }
-              <div className="space-y-1">
-                {title && (
-                  <h3
-                    className={cn('text-sm font-semibold', classNames?.title)}
-                  >
-                    {title}
-                  </h3>
-                )}
-                {description && (
-                  <div className={cn('text-sm', classNames?.description)}>
-                    {description}
-                  </div>
-                )}
+                  {description && (
+                    <div className={cn('text-sm', classNames?.description)}>
+                      {description}
+                    </div>
+                  )}
+                </div>
+                {isActionsArray
+                  ? actions?.length > 0 && (
+                      <Inline
+                        divider={<span className="text-white">&middot;</span>}
+                        className="gap-1"
+                      >
+                        {actions}
+                      </Inline>
+                    )
+                  : actions}
               </div>
             </div>
-            {isActionsArray
-              ? actions?.length > 0 && (
-                  <div className="ml-10 mt-3 flex flex-wrap items-center gap-1">
-                    <Inline
-                      divider={<span className="text-brand-100">&middot;</span>}
-                      className="gap-1"
-                    >
-                      {actions}
-                    </Inline>
-                  </div>
-                )
-              : actions}
             {hasCloseButton && (
               <button
                 type="button"

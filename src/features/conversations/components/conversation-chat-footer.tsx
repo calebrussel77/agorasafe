@@ -403,7 +403,6 @@ const ConversationChatFooter = ({
             return (
               <Editor
                 placeholder={`Envoyer un message à ${name}`}
-                disabled={createMessage.isLoading}
                 // When we have only one input of type RTE, we need to invoke the onSuperEnter event to submit the form,
                 // without adding extra space.
                 onSuperEnter={() => form.handleSubmit(onSubmit)()}
@@ -414,7 +413,6 @@ const ConversationChatFooter = ({
                 iconRight={
                   <button
                     type="submit"
-                    disabled={createMessage.isLoading}
                     onClick={form.handleSubmit(onSubmit)}
                     className="default__transition flex h-[24px] w-[24px] items-center justify-center rounded-full bg-brand-500/90 p-1 hover:bg-brand-600"
                   >

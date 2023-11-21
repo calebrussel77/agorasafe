@@ -6,12 +6,15 @@ import { startImageUpload } from './plugins/upload-images';
 
 export const defaultEditorProps: ({
   withCommands,
+  disabled,
 }: {
   withCommands: boolean;
-}) => EditorProps = ({ withCommands }) => ({
+  disabled?: boolean;
+}) => EditorProps = ({ withCommands, disabled }) => ({
   attributes: {
     class: cn(
       'prose-gray mt-1 flex-1 w-full scrollbar__custom overflow-y-auto max-h-[90px] prose prose-sm text-sm prose-h1:m-0 prose-h2:m-0 prose-h3:m-0 prose-p:m-0 prose-a:font-bold prose-a:text-brand-500 prose-a:no-underline prose-a:font-bold prose-a:text-brand-500 hover:prose-a:text-brand-600 hover:prose-a:underline prose-blockquote:m-0 prose-img:m-0 font-sans focus:outline-none max-w-full',
+      disabled && 'cursor-not-allowed text-[#999]',
       withCommands && 'prose-lg text-base'
     ),
   },
