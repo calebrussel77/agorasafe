@@ -1,10 +1,9 @@
 import { Menu } from 'lucide-react';
+import { useRouter } from 'next/router';
 import { type ReactNode, useState } from 'react';
 
 import { MobileNavbar, Navbar } from '@/components/navbar';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-
-import { isWindowDefined } from '@/utils/type-guards';
 
 import { cn } from '@/lib/utils';
 
@@ -17,10 +16,9 @@ const navigations = [
 
 const Header = ({ children }: { children?: ReactNode }) => {
   const [isOpenSheet, setIsOpenSheet] = useState(false);
+  const router = useRouter();
 
-  const isHomePage = isWindowDefined()
-    ? window.location.pathname === '/'
-    : false;
+  const isHomePage = router.asPath === '/';
 
   return (
     <>

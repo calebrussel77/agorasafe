@@ -3,6 +3,8 @@ import Image from 'next/future/image';
 import { Button } from '@/components/ui/button';
 import { Container } from '@/components/ui/container';
 
+import { gaTrackEvent } from '@/utils/ga-events';
+
 import callToActionBg from '../images/background-call-to-action.jpg';
 
 export function CallToAction() {
@@ -30,7 +32,17 @@ export function CallToAction() {
             succès mutuel. Rejoignez-nous dès aujourd'hui et connectez-vous à
             une nouvelle expérience de services en ligne
           </p>
-          <Button href="/auth/login" variant="secondary" className="mt-10">
+          <Button
+            onClick={() =>
+              gaTrackEvent('cta-click', {
+                category: 'CTA',
+                message: 'Homepage - Start now CTA',
+              })
+            }
+            href="/auth/login"
+            variant="secondary"
+            className="mt-10"
+          >
             Commencer
           </Button>
         </div>

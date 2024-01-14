@@ -52,17 +52,27 @@ export const createServiceRequestSchema = z.object({
   categorySlug: z.string(),
 });
 
+export type CreateServiceRequestProposalInput = z.infer<
+  typeof createServiceRequestProposalSchema
+>;
+export const createServiceRequestProposalSchema = z.object({
+  serviceRequestId: z.string(),
+  content: nonEmptyHtmlString,
+  price: z.number().optional(),
+});
+
 export const toggleServiceRequestReservationSchema = z.object({
   serviceRequestId: z.string(),
   providerProfileId: z.string(),
-  customerProfileId: z.string(),
+  proposalId: z.string().optional(),
 });
 
 export const updateServiceRequestSchema = createServiceRequestSchema
   .omit({ categorySlug: true, serviceSlug: true })
   .deepPartial()
   .extend({
-    serviceRequestSlug: z.string(),
+    serviceRequestSlug: z.string().optional(),
+    serviceRequestId: z.string(),
     status: z.nativeEnum(ServiceRequestStatus).optional(),
   });
 
@@ -87,15 +97,6 @@ export type GetAllServiceRequestsInput = z.infer<
 export type ToggleServiceRequestReservationInput = z.infer<
   typeof toggleServiceRequestReservationSchema
 >;
-
-export type CreateServiceRequestProposalInput = z.infer<
-  typeof createServiceRequestProposalSchema
->;
-export const createServiceRequestProposalSchema = z.object({
-  serviceRequestId: z.string(),
-  content: nonEmptyHtmlString,
-  price: z.number().optional(),
-});
 
 export type UpdateServiceRequestProposalInput = z.infer<
   typeof updateServiceRequestProposalSchema

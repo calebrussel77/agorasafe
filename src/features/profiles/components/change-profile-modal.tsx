@@ -39,7 +39,7 @@ const ChangeProfileModal: FC<ChangeProfileModalProps> = ({}) => {
   const onProfileClick = async (_profile: SimpleProfile) => {
     if (!_profile) return;
     updateProfile(_profile);
-    await router.replace(router?.pathname);
+    await router.replace(router?.asPath);
     toast({
       delay: 3000,
       icon: <UserAvatar className="h-10 w-10" profile={_profile} />,

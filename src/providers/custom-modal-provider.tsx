@@ -4,6 +4,7 @@ import { ConversationFileUploadFormModal } from '@/features/conversations';
 import { FeedbackFormModal } from '@/features/feedbacks';
 import { AddProfileModal } from '@/features/profiles';
 import {
+  CreateProposalModal,
   CreateServiceRequestModal,
   CustomServiceRequestCategoriesModal,
 } from '@/features/service-requests';
@@ -15,6 +16,7 @@ export const appModals = {
   createServiceRequest: CreateServiceRequestModal,
   conversationFileUploadForm: ConversationFileUploadFormModal,
   addProfile: AddProfileModal,
+  createProposal: CreateProposalModal,
 };
 
 // neccessary to add type checking of the mantine context modals implementation in the app

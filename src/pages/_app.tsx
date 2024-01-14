@@ -15,6 +15,8 @@ import { getSession } from 'next-auth/react';
 import App, { type AppContext, type AppProps } from 'next/app';
 import { GoogleAnalytics } from 'nextjs-google-analytics';
 import { type ReactElement, type ReactNode, useMemo } from 'react';
+import 'swiper/css';
+import 'swiper/css/pagination';
 
 import { DefaultSeo } from '@/components/default-seo';
 import { Meta } from '@/components/meta';

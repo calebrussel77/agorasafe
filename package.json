@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "author": "calebrussel77@gmail.com",
   "private": true,
+  "engines": {
+    "node": "^18"
+  },
   "scripts": {
     "build": "next build",
     "start": "next start",
@@ -92,7 +95,6 @@
     "immer": "^10.0.3",
     "isomorphic-dompurify": "^1.9.0",
     "js-cookie": "^3.0.5",
-    "keen-slider": "^6.8.5",
     "lucide-react": "^0.263.1",
     "msw": "^1.2.2",
     "next": "^12.3.4",
@@ -129,11 +131,12 @@
     "socket.io-client": "^4.7.2",
     "sonner": "^1.2.0",
     "superjson": "1.12.2",
+    "swiper": "^11.0.4",
     "tailwind-merge": "^1.13.1",
     "tailwindcss-animate": "^1.0.6",
     "tippy.js": "^6.3.7",
     "tiptap-markdown": "^0.8.2",
-    "uploadthing": "^5.5.0",
+    "uploadthing": "^5.7.2",
     "use-debounce": "^10.0.0",
     "use-places-autocomplete": "^4.0.1",
     "whatwg-fetch": "^3.6.2",

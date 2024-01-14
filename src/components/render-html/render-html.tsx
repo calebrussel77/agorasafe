@@ -37,8 +37,6 @@ export function RenderHtml({
             return;
           }
 
-          console.log({ children });
-
           if (attribs && tagName === 'span') {
             const props = attributesToProps(attribs);
             const dataType = attribs['data-type'];

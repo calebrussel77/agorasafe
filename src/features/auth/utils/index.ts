@@ -12,6 +12,8 @@ export const loginRedirectReasons = {
   'make-service-request-offer':
     'Vous devez être connecté pour faire votre offre.',
   'create-comment': 'Connectez-vous pour faire votre commentaire.',
+  'reserve-service-request-provider':
+    'Vous devez être connecté pour réserver un prestataire.',
   'send-message': 'Vous devez être connecté envoyer un message.',
 };
 

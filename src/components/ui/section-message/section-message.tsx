@@ -161,9 +161,9 @@ const SectionMessage = forwardRef<HTMLDivElement, SectionMessageProps>(
               />
               <div
                 className={cn(
-                  'flex flex-col items-start gap-3',
+                  'flex w-full flex-col items-start gap-3',
                   !isActionsArray &&
-                    'flex flex-col items-start justify-center gap-3 md:flex-row'
+                    'flex flex-col items-start justify-center gap-3 md:flex-row md:justify-between'
                 )}
               >
                 <div className="space-y-1">

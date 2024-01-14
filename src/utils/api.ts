@@ -6,12 +6,7 @@
  */
 import { WEBSITE_URL } from '@/constants';
 import { initializeProfileStore } from '@/stores/profile-store';
-import {
-  TRPCClientError,
-  httpLink,
-  loggerLink,
-  splitLink,
-} from '@trpc/client';
+import { TRPCClientError, httpLink, loggerLink, splitLink } from '@trpc/client';
 import { createTRPCNext } from '@trpc/next';
 import { type inferReactQueryProcedureOptions } from '@trpc/react-query';
 import { type inferRouterInputs, type inferRouterOutputs } from '@trpc/server';

@@ -51,6 +51,6 @@ Nous pouvons mettre à jour cette politique de temps à autre. Nous vous informe
 
 ## Contact
 
-Si vous avez des questions sur cette politique, veuillez nous contacter à [support@agorasafe.com].
+Si vous avez des questions sur cette politique, veuillez nous contacter à **support@agorasafe.com**.
 
 Merci de faire partie de la communauté Agorasafe !

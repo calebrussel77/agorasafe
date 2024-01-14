@@ -2,12 +2,14 @@ import { Prisma } from '@prisma/client';
 
 export const simpleProfileSelect = Prisma.validator<Prisma.ProfileSelect>()({
   id: true,
+  createdAt: true,
   slug: true,
   avatar: true,
   name: true,
   phone: true,
   user: { select: { id: true, role: true } },
   _count: { select: { receivedReviews: true } },
+  providerInfo: { select: { skills: true } },
   location: {
     select: {
       id: true,

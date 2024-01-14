@@ -1,25 +1,29 @@
 import { NotFound } from '@/layouts/not-found';
+import { produce } from 'immer';
 import {
+  ArrowUpRight,
   Banknote,
+  DoorOpen,
   FolderClock,
+  LockIcon,
   MapPin,
+  MoreHorizontal,
   PhoneCall,
   Share2Icon,
+  ShieldClose,
   TimerIcon,
+  Trash,
   User2Icon,
   UserCheck2,
-  UserMinus,
-  UserPlus,
   UserPlus2,
 } from 'lucide-react';
 import { Calendar } from 'lucide-react';
-import { EyeOffIcon } from 'lucide-react';
-import { MoveLeft } from 'lucide-react';
+import { EyeIcon, EyeOffIcon } from 'lucide-react';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
 import { z } from 'zod';
 
-import { ActionTooltip } from '@/components/action-tooltip';
+import { BackButton } from '@/components/back-button/back-button';
 import { CanView } from '@/components/can-view';
 import { CommentForm } from '@/components/comment-form';
 import { RenderHtml } from '@/components/render-html';
@@ -28,12 +32,14 @@ import { AsyncWrapper } from '@/components/ui/async-wrapper';
 import { AutoAnimate } from '@/components/ui/auto-animate';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { DropdownMenu } from '@/components/ui/dropdown-menu';
 import { EmptyState } from '@/components/ui/empty-state';
 import { GroupItem } from '@/components/ui/group-item';
 import { IconContainer } from '@/components/ui/icon-container';
 import { ImageGridGallery } from '@/components/ui/image';
 import { Inline } from '@/components/ui/inline';
 import { CenterContent } from '@/components/ui/layout';
+import { openContextModal } from '@/components/ui/modal';
 import { SectionMessage } from '@/components/ui/section-message';
 import { Seo } from '@/components/ui/seo';
 import { Separator } from '@/components/ui/separator';
@@ -41,17 +47,22 @@ import { FullSpinner } from '@/components/ui/spinner';
 import { Tabs } from '@/components/ui/tabs';
 import { toast } from '@/components/ui/toast';
 import { Typography } from '@/components/ui/typography';
-import { User, UserAvatar, UserName, UserRating } from '@/components/user';
+import { User } from '@/components/user';
 
 import { useGetInfiniteComments } from '@/features/comments';
-import { DEFAULT_SERVICE_REQUEST_COVER_IMAGE } from '@/features/service-requests';
+import {
+  DEFAULT_SERVICE_REQUEST_COVER_IMAGE,
+  ServiceRequestProviderReservationBtn,
+} from '@/features/service-requests';
 import { mapServiceRequestStatus } from '@/features/service-requests';
 
 import { api } from '@/utils/api';
 import { formatPhoneNumber } from '@/utils/misc';
+import { formatPrice } from '@/utils/number';
 import { isEmptyArray } from '@/utils/type-guards';
 
 import { dateToReadableString, formatDateDistance } from '@/lib/date-fns';
+import { cn } from '@/lib/utils';
 
 import { createServerSideProps } from '@/server/utils/server-side';
 
@@ -63,49 +74,20 @@ enum ServiceRequestTab {
   PROPOSALS = 'proposals',
 }
 
-const ServiceRequestPublicationPage = ({
-  profile,
-  serviceRequestSlugQuery,
-}: PageProps) => {
-  const router = useRouter();
+//TODO: Refactor the whole page by separing components on features folder.
+const ServiceRequestPublicationPage = ({ profile, id }: PageProps) => {
   const queryUtils = api.useContext();
+  const router = useRouter();
 
   const [tab, setTab] = useState<ServiceRequestTab>(ServiceRequestTab.COMMENTS);
 
   const { data, isInitialLoading, error, refetch } =
     api.serviceRequests.get.useQuery({
-      slug: serviceRequestSlugQuery,
-      providersReserved: 'Active',
+      id,
     });
 
-  const serviceRequest = data?.serviceRequest;
-
-  const {
-    mutate: mutateToggleReservation,
-    isLoading: isLoadingToggleReservation,
-  } = api.serviceRequests.toggleReservation.useMutation({
-    onError(error) {
-      toast({
-        variant: 'danger',
-        title: 'Une erreur est survenue',
-        description: error?.message,
-      });
-    },
-    async onSuccess(data) {
-      await queryUtils.serviceRequests.get.invalidate({
-        slug: serviceRequestSlugQuery,
-        providersReserved: 'Active',
-      });
-      toast({
-        delay: 2000,
-        variant: 'success',
-        title: data.message,
-      });
-    },
-  });
-
-  const { isLoading: isLoadingUpdate, mutate } =
-    api.serviceRequests.update.useMutation({
+  const deleteProposalMutation = api.serviceRequests.deleteProposal.useMutation(
+    {
       onError(error) {
         toast({
           variant: 'danger',
@@ -113,14 +95,74 @@ const ServiceRequestPublicationPage = ({
           description: error?.message,
         });
       },
+      async onSuccess(data) {
+        await queryUtils.serviceRequests.get.invalidate({ id });
+        await queryUtils.serviceRequests.getProposals.invalidate({
+          id,
+        });
+      },
+    }
+  );
+
+  const serviceRequest = data?.serviceRequest;
+
+  const [isProposalOpen, setIsProposalOpen] = useState(false);
+
+  const toggleViewProposal = () => setIsProposalOpen(!isProposalOpen);
+
+  const { isLoading: isLoadingUpdate, mutate } =
+    api.serviceRequests.update.useMutation({
+      onMutate({ status }) {
+        queryUtils.serviceRequests.get.setData(
+          { id },
+          produce(old => {
+            if (!old) {
+              return old;
+            }
+            old['serviceRequest']['status'] = status as never;
+          })
+        );
+      },
+      onError(error) {
+        toast({
+          variant: 'danger',
+          title: 'Une erreur est survenue',
+          description: error?.message,
+        });
+      },
+      async onSuccess() {
+        await queryUtils.serviceRequests.get.invalidate({ id });
+        await queryUtils.serviceRequests.getStats.invalidate({ id });
+        await queryUtils.serviceRequests.getProposals.invalidate({
+          id,
+        });
+      },
     });
+
+  const deleteServiceRequestMutation = api.serviceRequests.delete.useMutation({
+    onError(error) {
+      toast({
+        variant: 'danger',
+        title: 'Une erreur est survenue',
+        description: error?.message,
+      });
+    },
+    async onSuccess() {
+      toast({
+        variant: 'success',
+        title: 'Votre demande à bien été supprimée',
+        description: error?.message,
+      });
+      await router.push('/', undefined, { shallow: true });
+    },
+  });
 
   const {
     data: providersReservedData,
     isInitialLoading: isInitialLoadingProvidersReserved,
     error: ProvidersReservedError,
   } = api.serviceRequests.getReservedProviders.useQuery(
-    { id: serviceRequest?.id },
+    { id },
     { enabled: !!serviceRequest && tab === ServiceRequestTab.RESERVED }
   );
 
@@ -129,7 +171,7 @@ const ServiceRequestPublicationPage = ({
     isInitialLoading: isInitialLoadingProposals,
     error: ProposalsError,
   } = api.serviceRequests.getProposals.useQuery(
-    { id: serviceRequest?.id },
+    { id },
     { enabled: !!serviceRequest && tab === ServiceRequestTab.PROPOSALS }
   );
 
@@ -139,24 +181,29 @@ const ServiceRequestPublicationPage = ({
     error: commentsError,
   } = useGetInfiniteComments(
     {
-      entityId: serviceRequest?.id || '',
+      entityId: id,
       entityType: 'service-request',
     },
     { enabled: !!serviceRequest && tab === ServiceRequestTab.COMMENTS }
   );
 
-  const isAuthorMine = profile?.id === serviceRequest?.author?.profile?.id;
+  const { data: stats } = api.serviceRequests.getStats.useQuery({
+    id,
+  });
+
+  const isServiceRequestOwner =
+    profile?.id === serviceRequest?.author?.profile?.id;
   const authorName = serviceRequest?.author?.profile?.name;
 
   const isStatusOpen = serviceRequest?.status === 'OPEN';
   const isReserved = serviceRequest?.isProfileReserved;
+  const hasSubmitProposal = serviceRequest?.hasProposalSubmitted;
 
   const serviceRequestAuthorId = serviceRequest?.author?.profile?.id;
+
   const coverBg = isEmptyArray(serviceRequest?.photos)
     ? DEFAULT_SERVICE_REQUEST_COVER_IMAGE
     : serviceRequest?.photos?.[0]?.url;
-
-  const stats = serviceRequest?.stats;
 
   const images = serviceRequest?.photos?.map(el => ({
     name: el.name,
@@ -188,13 +235,7 @@ const ServiceRequestPublicationPage = ({
             aria-labelledby="service-request-main-infos"
             className="w-full"
           >
-            <button
-              onClick={() => void router.push('/')}
-              className="mb-3 flex items-center gap-2"
-            >
-              <MoveLeft className="h-5 w-5" />
-              <span>Accueil</span>
-            </button>
+            <BackButton href="/" label="Accueil" className="mb-3" />
             <ImageGridGallery
               className="h-64 w-full bg-gray-100 md:h-80"
               images={
@@ -225,7 +266,7 @@ const ServiceRequestPublicationPage = ({
                 className="my-2"
                 title="Demande clôturée"
                 hasCloseButton={false}
-                description="Cette demande de service est desormais cloturée."
+                description="Cette demande de service est desormais cloturée. Vous ne pouvez plus interagir dessus."
               />
             )}
             <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
@@ -240,8 +281,11 @@ const ServiceRequestPublicationPage = ({
                     content={
                       mapServiceRequestStatus[serviceRequest?.status as never]
                     }
-                    variant={isStatusOpen ? 'primary' : 'danger'}
+                    variant={isStatusOpen ? 'success' : 'danger'}
                   />
+                  {hasSubmitProposal && (
+                    <Badge content="Proposition en attente" variant="primary" />
+                  )}
                 </div>
                 <Typography as="h2" className="mt-1">
                   {serviceRequest?.title}
@@ -267,8 +311,20 @@ const ServiceRequestPublicationPage = ({
               </div>
               <div className="ml-2 flex w-full items-center gap-2 sm:w-auto sm:flex-row">
                 <CanView allowedProfiles={['PROVIDER']}>
-                  {!isReserved ? (
-                    <Button size="sm" className="w-full sm:w-auto">
+                  {!isReserved && !hasSubmitProposal ? (
+                    <Button
+                      onClick={() => {
+                        openContextModal({
+                          modal: 'createProposal',
+                          innerProps: {
+                            serviceRequestName: serviceRequest?.title,
+                            serviceRequestId: serviceRequest?.id,
+                          },
+                        });
+                      }}
+                      size="sm"
+                      className="w-full sm:w-auto"
+                    >
                       Faire une proposition
                     </Button>
                   ) : null}
@@ -280,36 +336,68 @@ const ServiceRequestPublicationPage = ({
                     href={`/dashboard/inbox?profileId=${serviceRequest?.author?.profile?.id}`}
                     className="w-full sm:w-auto"
                   >
-                    Envoyer un Message
+                    Envoyer un message
                   </Button>
                 </CanView>
-                {isAuthorMine && (
-                  <Button
-                    size="sm"
-                    className="w-full sm:w-auto"
-                    onClick={() =>
-                      mutate({
-                        serviceRequestSlug: serviceRequestSlugQuery,
-                        status: isStatusOpen ? 'CLOSED' : 'OPEN',
-                      })
-                    }
-                    isLoading={isLoadingUpdate}
-                    variant={isStatusOpen ? 'outline' : 'default'}
-                  >
-                    {isStatusOpen
-                      ? 'Annuler ma demande'
-                      : 'Republier ma demande'}
-                  </Button>
-                )}
                 <ShareButton
-                  url={`/service-requests/${serviceRequestSlugQuery}`}
+                  url={`/service-requests/${id}/${serviceRequest?.slug}`}
                   title={serviceRequest?.title}
                 >
                   <Button variant="outline" size="sm">
                     <Share2Icon className="h-5 w-5" />
-                    {!profile && 'Partager'}
+                    Partager
                   </Button>
                 </ShareButton>
+                <DropdownMenu>
+                  <DropdownMenu.Trigger asChild>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="w-full sm:w-auto"
+                    >
+                      <MoreHorizontal className="h-5 w-5" />
+                    </Button>
+                  </DropdownMenu.Trigger>
+                  <DropdownMenu.Content className="min-w-[270px]">
+                    <div className="flex flex-col space-y-1">
+                      <DropdownMenu.Item
+                        className={cn(
+                          'default__transition flex cursor-pointer items-center gap-2.5 rounded-md px-3 py-2.5 text-sm text-gray-900 hover:bg-gray-100'
+                        )}
+                        onClick={() =>
+                          mutate({
+                            serviceRequestId: id,
+                            status: isStatusOpen ? 'CLOSED' : 'OPEN',
+                          })
+                        }
+                        disabled={isLoadingUpdate}
+                      >
+                        {isStatusOpen ? (
+                          <LockIcon className="h-5 w-5" />
+                        ) : (
+                          <ArrowUpRight className="h-5 w-5" />
+                        )}
+                        {isStatusOpen
+                          ? 'Fermer ma demande'
+                          : 'Republier ma demande'}
+                      </DropdownMenu.Item>
+                      <DropdownMenu.Item
+                        className={cn(
+                          'default__transition flex cursor-pointer items-center gap-2.5 rounded-md px-3 py-2.5 text-sm text-red-600 hover:bg-red-100'
+                        )}
+                        onClick={() =>
+                          deleteServiceRequestMutation.mutate({
+                            id,
+                          })
+                        }
+                        disabled={deleteServiceRequestMutation.isLoading}
+                      >
+                        <Trash className="h-5 w-5" />
+                        Supprimer
+                      </DropdownMenu.Item>
+                    </div>
+                  </DropdownMenu.Content>
+                </DropdownMenu>
               </div>
             </div>
             <div className="mt-3">
@@ -365,7 +453,7 @@ const ServiceRequestPublicationPage = ({
               <Typography variant="subtle">A propos du demandeur</Typography>
               <div className="mt-3 flex w-full max-w-xl flex-wrap items-center justify-between gap-y-3">
                 <User profile={serviceRequest?.author?.profile} />
-                {(isAuthorMine || isReserved) && (
+                {(isServiceRequestOwner || isReserved) && (
                   <GroupItem
                     isHoverDisabled
                     iconBefore={
@@ -436,9 +524,10 @@ const ServiceRequestPublicationPage = ({
                 <CommentForm
                   entityId={serviceRequest?.id}
                   entityType="service-request"
+                  disabled={!isStatusOpen}
                   // autoFocus
                 />
-                {stats?.commentCount === 0 && (
+                {comments?.length === 0 && (
                   <EmptyState
                     icon={<FolderClock />}
                     name="Aucun commentaire"
@@ -448,36 +537,22 @@ const ServiceRequestPublicationPage = ({
                 {comments && comments?.length > 0 && (
                   <AutoAnimate as="ul" role="list" className="space-y-3 py-2">
                     {comments?.map(comment => {
-                      const isAuthor =
+                      const isCommentOwner =
                         comment?.author?.id === serviceRequestAuthorId;
-                      const canViewReservedBtn =
-                        isAuthorMine &&
-                        !isAuthor &&
-                        isStatusOpen &&
-                        comment?.author?.type === 'PROVIDER';
-
-                      const isReserved = providersReservedData?.some(
-                        el => el.id === comment?.author?.id
-                      );
-
-                      const btnMessage = isReserved
-                        ? 'Annuler la réservation'
-                        : 'Réserver';
 
                       return (
                         <li
                           key={comment.id}
-                          className="border border-gray-300 bg-white p-3 shadow-sm sm:overflow-hidden sm:rounded-lg"
+                          className="rounded-md border border-gray-100 bg-gray-50 p-3 sm:overflow-hidden sm:rounded-lg"
                         >
                           <div className="flex w-full items-start justify-between">
                             <User
                               badge={
-                                isAuthor ? (
+                                isCommentOwner ? (
                                   <Badge
-                                    content="Auteur"
+                                    content="Démandeur"
                                     size="xs"
                                     variant="outline"
-                                    // className="-mt-2"
                                     shape="rounded"
                                   />
                                 ) : null
@@ -485,39 +560,19 @@ const ServiceRequestPublicationPage = ({
                               profile={comment?.author}
                               avatarProps={{ size: 'md' }}
                             />
-                            {canViewReservedBtn && (
-                              <ActionTooltip label={btnMessage}>
-                                <Button
-                                  variant={isReserved ? 'outline' : 'default'}
-                                  size="sm"
-                                  disabled={isLoadingToggleReservation}
-                                  onClick={() =>
-                                    mutateToggleReservation({
-                                      customerProfileId:
-                                        serviceRequestAuthorId as string,
-                                      serviceRequestId: serviceRequest?.id,
-                                      providerProfileId: comment?.author?.id,
-                                    })
-                                  }
-                                  className="ml-1"
-                                >
-                                  {!isReserved ? (
-                                    <UserPlus className="h-4 w-4" />
-                                  ) : (
-                                    <UserMinus className="h-4 w-4" />
-                                  )}
-                                </Button>
-                              </ActionTooltip>
-                            )}
+                            {/* <ServiceRequestProviderReservationBtn
+                              {...{
+                                serviceRequestId: serviceRequest?.id,
+                                providerProfileId: comment?.author?.id,
+                              }}
+                            /> */}
                           </div>
                           <div className="mt-2">
                             <RenderHtml
                               html={comment?.text}
                               truncate
                               lines={3}
-                              className="text-sm text-gray-600"
                             />
-
                             <div className="mt-2 flex w-full items-end justify-end space-x-2 text-sm">
                               <span className="text-xs text-gray-500">
                                 {formatDateDistance(comment?.createdAt)}
@@ -529,6 +584,103 @@ const ServiceRequestPublicationPage = ({
                     })}
                   </AutoAnimate>
                 )}
+              </div>
+            </section>
+          </AsyncWrapper>
+        )}
+
+        {/* Propositions section */}
+        {tab === ServiceRequestTab.PROPOSALS && (
+          <AsyncWrapper
+            isLoading={isInitialLoadingProposals}
+            error={ProposalsError}
+          >
+            <section aria-labelledby="providers-reserved" className="w-full">
+              <Typography as="h3">
+                Propositions ({stats?.proposalCount})
+              </Typography>
+              <Separator className="my-4 w-full " />
+              {stats?.proposalCount === 0 && (
+                <EmptyState
+                  icon={<UserPlus2 />}
+                  name="Aucune proposition pour l'instant"
+                  description="Ici vous trouverez la liste des propositions faites pour la demande."
+                />
+              )}
+              <div className="mt-6 flex w-full flex-wrap items-center gap-3">
+                {proposalsData?.map(proposal => {
+                  const isOwner = profile?.id === proposal?.author?.profile?.id;
+
+                  return (
+                    <div
+                      key={proposal.id}
+                      className="w-full rounded-md border border-gray-100 bg-gray-50 p-3"
+                    >
+                      <div className="flex w-full flex-nowrap items-start justify-between">
+                        <div>
+                          <User
+                            profile={proposal?.author?.profile}
+                            avatarProps={{ size: 'md' }}
+                            size="lg"
+                          />
+                          <Badge
+                            content={
+                              proposal?.price
+                                ? formatPrice(proposal.price)
+                                : 'Pas de prix'
+                            }
+                          />
+                          <RenderHtml
+                            className="mt-2"
+                            truncate
+                            html={proposal?.content}
+                          />
+                        </div>
+                        <ServiceRequestProviderReservationBtn
+                          {...{
+                            serviceRequestId: serviceRequest?.id,
+                            providerProfileId: proposal?.author?.profile?.id,
+                            proposalId: proposal.id,
+                          }}
+                        />
+                        {isOwner && (
+                          <Button
+                            variant="outline"
+                            title="Supprimer ma proposition"
+                            size="sm"
+                            isLoading={deleteProposalMutation.isLoading}
+                            onClick={() =>
+                              deleteProposalMutation.mutate({ id: proposal.id })
+                            }
+                          >
+                            <Trash className="h-4 w-4" />
+                            Supprimer
+                          </Button>
+                        )}
+                      </div>
+                      <div className="flex w-full items-center justify-between">
+                        {proposal?.author?.profile?.providerInfo && (
+                          <div className="mt-3 flex w-full flex-wrap items-center gap-2">
+                            {proposal?.author?.profile?.providerInfo?.skills?.map(
+                              skill => (
+                                <Badge
+                                  key={skill?.id}
+                                  size="md"
+                                  variant="outline"
+                                  className="w-full max-w-md py-1.5 text-center"
+                                  content={skill?.name}
+                                />
+                              )
+                            )}
+                          </div>
+                        )}
+                        <div className="ml-1 whitespace-nowrap text-xs text-gray-500">
+                          {formatDateDistance(proposal?.createdAt)}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </section>
           </AsyncWrapper>
@@ -554,91 +706,86 @@ const ServiceRequestPublicationPage = ({
               )}
               <div className="mt-6 flex flex-wrap items-center gap-3">
                 {providersReservedData &&
-                  providersReservedData?.map(providerProfile => {
-                    if (!providerProfile) return null;
-                    return (
-                      <div
-                        key={providerProfile.id}
-                        className="group relative mx-auto flex w-full max-w-[250px] flex-col items-center justify-center rounded-md border bg-gray-100 p-3"
-                      >
-                        {isStatusOpen && isAuthorMine && (
-                          <ActionTooltip label="Annuler la réservation">
-                            <button
-                              disabled={isLoadingToggleReservation}
-                              onClick={() =>
-                                mutateToggleReservation({
-                                  customerProfileId:
-                                    serviceRequestAuthorId as string,
-                                  serviceRequestId: serviceRequest?.id,
-                                  providerProfileId: providerProfile?.id,
-                                })
-                              }
-                              className="absolute right-2 top-2 rounded-full p-1 text-gray-600 hover:bg-gray-200"
-                            >
-                              <UserMinus className="h-5 w-5" />
-                            </button>
-                          </ActionTooltip>
-                        )}
-                        <UserAvatar
-                          profile={providerProfile}
-                          className="aspect-square h-20 w-20 shadow-md sm:h-24 sm:w-24"
-                        />
-                        <UserName
-                          profile={providerProfile}
-                          canLinkToProfile
-                          className="mt-3 text-base"
-                        />
-                        <Typography truncate variant="small">
-                          {providerProfile.location?.address}
-                        </Typography>
-                        <UserRating
-                          className="mt-1"
-                          reviewsCount={
-                            providerProfile?._count?.receivedReviews
-                          }
-                        />
-                      </div>
-                    );
-                  })}
-              </div>
-            </section>
-          </AsyncWrapper>
-        )}
+                  providersReservedData?.reservedProviders?.map(
+                    reservedProvider => {
+                      if (!reservedProvider) return null;
 
-        {/* Propositions section */}
-        {tab === ServiceRequestTab.PROPOSALS && (
-          <AsyncWrapper
-            isLoading={isInitialLoadingProposals}
-            error={ProposalsError}
-          >
-            <section aria-labelledby="providers-reserved" className="w-full">
-              <Typography as="h3">
-                Propositions ({stats?.proposalCount})
-              </Typography>
-              <Separator className="my-4 w-full " />
-              {stats?.proposalCount === 0 && (
-                <EmptyState
-                  icon={<UserPlus2 />}
-                  name="Aucune proposition pour l'instant"
-                  description="Ici vous trouverez la liste des propositions faites pour la demande."
-                />
-              )}
-              <div className="mt-6 flex w-full flex-wrap items-center gap-3">
-                {proposalsData?.map(proposalProfile => (
-                  <div
-                    key={proposalProfile.id}
-                    className="flex w-full flex-nowrap items-center justify-between gap-2 rounded-md bg-gray-50 p-3"
-                  >
-                    <User
-                      profile={proposalProfile}
-                      avatarProps={{ size: 'md' }}
-                      size="md"
-                    />
-                    <Button size="sm" variant="outline">
-                      Réserver
-                    </Button>
-                  </div>
-                ))}
+                      return (
+                        <div
+                          key={reservedProvider.profile?.id}
+                          className="flex w-full flex-nowrap items-start justify-between gap-2 rounded-md bg-gray-50 p-3"
+                        >
+                          <div>
+                            <User
+                              profile={reservedProvider?.profile}
+                              avatarProps={{ size: 'md' }}
+                              size="lg"
+                            />
+                            {reservedProvider?.proposal ? (
+                              <>
+                                <Button
+                                  size="xs"
+                                  variant="link"
+                                  className="mt-2"
+                                  onClick={toggleViewProposal}
+                                >
+                                  <EyeIcon className="h-4 w-4" />
+                                  {isProposalOpen
+                                    ? 'Cacher la proposition'
+                                    : 'Voir la proposition'}
+                                </Button>
+                                <AutoAnimate>
+                                  {isProposalOpen && (
+                                    <div className="mt-3 border-l border-gray-300 pl-6 opacity-75">
+                                      <Badge
+                                        className=""
+                                        content={
+                                          reservedProvider?.proposal?.price
+                                            ? formatPrice(
+                                                reservedProvider?.proposal
+                                                  ?.price
+                                              )
+                                            : 'Pas de prix'
+                                        }
+                                      />
+                                      <RenderHtml
+                                        className="mt-3"
+                                        truncate
+                                        html={
+                                          reservedProvider?.proposal?.content ||
+                                          ''
+                                        }
+                                      />
+                                    </div>
+                                  )}
+                                </AutoAnimate>
+                              </>
+                            ) : null}
+
+                            {reservedProvider?.skills && (
+                              <div className="mt-3 flex w-full flex-wrap items-center gap-2">
+                                {reservedProvider?.skills?.map(skill => (
+                                  <Badge
+                                    key={skill?.id}
+                                    size="md"
+                                    variant="outline"
+                                    className="w-full max-w-md py-1.5 text-center"
+                                    content={skill?.name}
+                                  />
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                          <ServiceRequestProviderReservationBtn
+                            {...{
+                              serviceRequestId: serviceRequest?.id,
+                              providerProfileId: reservedProvider.profile?.id,
+                            }}
+                          />
+                        </div>
+                      );
+                    }
+                  )}
               </div>
             </section>
           </AsyncWrapper>
@@ -649,7 +796,8 @@ const ServiceRequestPublicationPage = ({
 };
 
 const querySchema = z.object({
-  serviceRequestSlug: z.string().trim(),
+  id: z.string(),
+  slug: z.array(z.string()).optional(),
 });
 
 export const getServerSideProps = createServerSideProps({
@@ -660,17 +808,19 @@ export const getServerSideProps = createServerSideProps({
 
     if (!result.success) return { notFound: true };
 
-    const { serviceRequestSlug: serviceRequestSlugQuery } = result.data;
+    const { id } = result.data;
 
     //Prefetch queries so it is already on the client side cache
     if (ssg) {
       await ssg?.serviceRequests.get.prefetch({
-        slug: serviceRequestSlugQuery,
-        providersReserved: 'Active',
+        id,
+      });
+      await ssg?.serviceRequests.getStats.prefetch({
+        id,
       });
     }
 
-    return { props: { serviceRequestSlugQuery, profile } };
+    return { props: { id, profile } };
   },
 });
 

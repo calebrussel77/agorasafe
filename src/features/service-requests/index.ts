@@ -1,9 +1,12 @@
 export * from './components/latest-service-requests';
+export * from './components/featured-providers';
 export * from './components/service-request-card';
 export * from './components/service-requests-hero';
 export * from './components/service-request-button';
 export * from './components/user-service-request-card';
 export * from './components/create-service-request-modal';
+export * from './components/service-request-provider-reservation-btn';
+export * from './components/create-proposal-modal';
 
 export * from './components/steps/address-form';
 export * from './components/steps/basic-info-form';

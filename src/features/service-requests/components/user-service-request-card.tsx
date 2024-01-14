@@ -14,7 +14,10 @@ import { Inline } from '@/components/ui/inline';
 import { Typography } from '@/components/ui/typography';
 import { User } from '@/components/user';
 
-import { DEFAULT_SERVICE_REQUEST_COVER_IMAGE } from '@/features/service-requests';
+import {
+  DEFAULT_SERVICE_REQUEST_COVER_IMAGE,
+  ServiceRequestProviderReservationBtn,
+} from '@/features/service-requests';
 
 import { abbreviateNumber } from '@/utils/number';
 
@@ -90,7 +93,7 @@ const UserServiceRequestCard: FC<UserServiceRequestCardProps> = ({
         <div className="group relative">
           <Anchor
             className="mt-2 flex items-center gap-1"
-            href={`/service-requests/${serviceRequest?.slug}`}
+            href={`/service-requests/${serviceRequest?.id}/${serviceRequest?.slug}`}
           >
             <Typography
               as="h4"
@@ -151,9 +154,12 @@ const UserServiceRequestCard: FC<UserServiceRequestCardProps> = ({
                   avatarProps={{ size: 'md' }}
                   size="md"
                 />
-                <Button size="sm" variant="outline">
-                  Rétirer
-                </Button>
+                <ServiceRequestProviderReservationBtn
+                  {...{
+                    serviceRequestId: serviceRequest?.id,
+                    providerProfileId: profile?.id,
+                  }}
+                />
               </div>
             ))}
           </div>

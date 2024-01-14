@@ -1,7 +1,7 @@
 import { faker } from '@faker-js/faker';
 import { PrismaClient } from '@prisma/client';
 
-import { engagementSkills, serviceCategories, services } from '../src/data';
+import { serviceCategories, services, skills } from '../src/data';
 import { formatYearMonthDay } from '../src/lib/date-fns';
 import { makeRandomId } from '../src/utils/misc';
 import { slugit } from '../src/utils/strings';
@@ -326,8 +326,8 @@ const createUserWithAdminRoleAndProfiles = async () => {
               isRemote: false,
               skills: {
                 connect: [
-                  { name: faker.helpers.shuffle(engagementSkills)[3]?.name },
-                  { name: faker.helpers.shuffle(engagementSkills)[6]?.name },
+                  { name: faker.helpers.shuffle(skills)[3]?.name },
+                  { name: faker.helpers.shuffle(skills)[6]?.name },
                 ],
               },
               showCaseProjects: {
@@ -354,9 +354,15 @@ const createUserWithAdminRoleAndProfiles = async () => {
   }
 };
 
-const createEngamentSkills = async () => {
+// const createEngamentSkills = async () => {
+//   await prisma.skill.createMany({
+//     data: engagementSkills?.map(skill => ({ name: skill.name })),
+//   });
+// };
+
+const createSkills = async () => {
   await prisma.skill.createMany({
-    data: engagementSkills?.map(skill => ({ name: skill.name })),
+    data: skills?.map(skill => ({ name: skill.name })),
   });
 };
 
@@ -427,7 +433,9 @@ const importData = async () => {
     console.log(`🧹 Creating categories with services...`);
     await createCategoriesWithServices();
 
-    // console.log(`🧹 Creating engagement skills...`);
+    console.log(`🧹 Creating skills...`);
+    await createSkills();
+
     // await createEngamentSkills();
 
     // console.log(

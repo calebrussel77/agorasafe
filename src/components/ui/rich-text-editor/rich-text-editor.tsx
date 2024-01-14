@@ -175,6 +175,7 @@ export function Editor({
           disabled={disabled}
           className={cn(
             'relative w-full rounded-md border border-input bg-transparent px-4 py-2',
+            disabled ? 'cursor-not-allowed bg-gray-100' : 'cursor-text',
             mapEditorSizeHeight[editorSize],
             error && 'border-red-500',
             hasRightSection && 'pr-10',

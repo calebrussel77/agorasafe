@@ -6,14 +6,14 @@ import { prisma } from '@/server/db';
 import { ProposalSelect } from './proposals.select';
 import { type GetProposalsInput } from './proposals.validations';
 
-export const getProposals = async ({
+export const getProposals = async <TSelect extends Prisma.ProposalSelect>({
   limit,
   cursor,
   sort,
   where,
-  select: _select,
+  select,
 }: GetProposalsInput & {
-  select?: Prisma.ProposalSelect;
+  select: TSelect;
   where: Prisma.ProposalWhereInput | undefined;
 }) => {
   const orderBy: Prisma.Enumerable<Prisma.ProposalOrderByWithRelationInput> =
@@ -22,12 +22,12 @@ export const getProposals = async ({
   if (sort === ProposalSort.Newest) orderBy.push({ createdAt: 'desc' });
   else orderBy.push({ createdAt: 'asc' });
 
-  return await prisma.proposal.findMany({
+  return prisma.proposal.findMany({
     take: limit,
     cursor: cursor ? { id: cursor } : undefined,
     where,
     orderBy,
-    select: { ...ProposalSelect, ..._select },
+    select,
   });
 };
 
@@ -44,7 +44,7 @@ export const getProposalCount = async <
   select?: TSelect;
   where?: Prisma.ProposalWhereInput;
 }) => {
-  return await prisma.proposal.count({
+  return prisma.proposal.count({
     where,
     select,
   });
@@ -68,7 +68,7 @@ export function createProposal({
 export function updateProposal({
   data,
   where,
-  select,
+  select = ProposalSelect,
 }: {
   where: Prisma.ProposalWhereUniqueInput;
   data: Prisma.ProposalUpdateInput;
@@ -79,6 +79,6 @@ export function updateProposal({
     data: {
       ...data,
     },
-    select: { ...ProposalSelect, ...select },
+    select,
   });
 }

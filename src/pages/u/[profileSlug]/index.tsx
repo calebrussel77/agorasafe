@@ -25,6 +25,7 @@ import { UserAvatar, UserName, UserRating } from '@/components/user';
 import { LoginRedirect } from '@/features/auth';
 import { useGetProfileDetails } from '@/features/profiles';
 
+import { api } from '@/utils/api';
 import { getIsFaceToFaceLabel, getIsRemoteLabel } from '@/utils/profile';
 
 import { formatDateDistance } from '@/lib/date-fns';
@@ -96,6 +97,9 @@ export const getServerSideProps = createServerSideProps({
       await ssg?.profiles.getProfileDetails.prefetch({
         slug: profileSlugQuery,
       });
+      await ssg?.profiles.getStats.prefetch({
+        slug: profileSlugQuery,
+      });
     }
 
     return {
@@ -111,13 +115,16 @@ export default function ProfileDetailsPage({ profileSlugQuery }: PageProps) {
   const { data, isInitialLoading, error } = useGetProfileDetails({
     slug: profileSlugQuery,
   });
+  const { data: stats, isLoading } = api.profiles.getStats.useQuery({
+    slug: profileSlugQuery,
+  });
 
   const profileName = data?.profile?.name || '';
   const isDeleted = !!data?.profile?.deletedAt;
   const isCustomer = data?.profile?.type === 'CUSTOMER';
   const isMyProfile = data?.profile?.id === profile?.id;
 
-  if (isInitialLoading) return <FullSpinner />;
+  if (isInitialLoading || isLoading) return <FullSpinner />;
 
   if (isDeleted || !data?.profile) return <NotFound />;
 
@@ -166,13 +173,13 @@ export default function ProfileDetailsPage({ profileSlugQuery }: PageProps) {
                     )}
                     <p>Membre {formatDateDistance(data?.profile?.createdAt)}</p>
                     {isCustomer && (
-                      <p>{`${data?.profile?.customerJobPostedCount} Demande Postée(s)`}</p>
+                      <p>{`${stats?.customerServiceRequestCreatedCount} Demande Postée(s)`}</p>
                     )}
                     {isCustomer && (
-                      <p>{`${data?.profile?.customerJobProvidersReservedCount} Prestataires réservé(s)`}</p>
+                      <p>{`${stats?.customerServiceRequestProviderReservationCount} Prestataires réservé(s)`}</p>
                     )}
                     {!isCustomer && (
-                      <p>{`${data?.profile?.providerJobsReservedCount} Jobs réalisé(s)`}</p>
+                      <p>{`${stats?.providerServiceRequestReservedCount} Jobs réalisé(s)`}</p>
                     )}
                   </Inline>
                 </div>
@@ -328,7 +335,7 @@ export default function ProfileDetailsPage({ profileSlugQuery }: PageProps) {
 
         <section className="mx-auto mt-3 w-full max-w-7xl px-4 md:mt-10">
           <div className="mt-6 space-y-1">
-            <h2 className="text-xl font-semibold">A propos de moi</h2>
+            <h2 className="text-xl font-semibold">A propos</h2>
           </div>
           <Separator className="my-4 w-full " />
           <div className="text-gray-600">{data?.profile?.aboutMe ?? '...'}</div>
@@ -337,7 +344,9 @@ export default function ProfileDetailsPage({ profileSlugQuery }: PageProps) {
         {!isCustomer && (
           <section className="mx-auto mt-3 w-full max-w-7xl px-4 md:mt-10">
             <div className="mt-6 space-y-1">
-              <h2 className="text-xl font-semibold">Mes engagements clients</h2>
+              <h2 className="text-xl font-semibold">
+                Compétences professionnelles
+              </h2>
             </div>
             <Separator className="my-4 w-full " />
             <div className="flex w-full max-w-4xl flex-wrap items-center gap-3">

@@ -1,3 +1,5 @@
+import { z } from 'zod';
+
 import {
   createTRPCRouter,
   customerProcedure,
@@ -12,6 +14,7 @@ import {
   createServiceRequestProposalHandler,
   createServiceRequestProposalSchema,
   createServiceRequestSchema,
+  deleteServiceRequestHandler,
   deleteServiceRequestProposalHandler,
   getAllServiceRequestsHandler,
   getAllServiceRequestsSchema,
@@ -19,6 +22,7 @@ import {
   getServiceRequestProposalsHandler,
   getServiceRequestReservedProvidersHandler,
   getServiceRequestSchema,
+  getServiceRequestStatsHandler,
   toggleServiceRequestReservationHandler,
   toggleServiceRequestReservationSchema,
   updateServiceRequestHandler,
@@ -41,7 +45,7 @@ export const serviceRequestsRouter = createTRPCRouter({
     .mutation(createServiceRequestCommentHandler),
 
   getProposals: publicProcedure
-    .input(getByIdOrSlugQuerySchema)
+    .input(getByIdQuerySchema.extend({ isArchived: z.boolean().optional() }))
     .query(getServiceRequestProposalsHandler),
 
   createProposal: profileProcedure
@@ -60,8 +64,12 @@ export const serviceRequestsRouter = createTRPCRouter({
     .input(updateServiceRequestSchema)
     .mutation(updateServiceRequestHandler),
 
+  delete: profileProcedure
+    .input(getByIdQuerySchema)
+    .mutation(deleteServiceRequestHandler),
+
   getReservedProviders: publicProcedure
-    .input(getByIdOrSlugQuerySchema)
+    .input(getByIdQuerySchema.and(getServiceRequestSchema))
     .query(getServiceRequestReservedProvidersHandler),
 
   toggleReservation: customerProcedure
@@ -71,6 +79,10 @@ export const serviceRequestsRouter = createTRPCRouter({
   get: publicProcedure
     .input(getServiceRequestSchema)
     .query(getServiceRequestHandler),
+
+  getStats: publicProcedure
+    .input(getServiceRequestSchema)
+    .query(getServiceRequestStatsHandler),
 
   getAll: publicProcedure
     .input(getAllServiceRequestsSchema)

@@ -9,9 +9,9 @@
 @import 'font.css';
 
 /* Librairies */
-@import 'keen-slider/keen-slider.min.css';
 @import 'react-phone-input-2/lib/style.css';
 @import 'photoswipe/dist/photoswipe.css';
+@import '../../components/ui/rich-text-editor/rich-text-editor.style.css';
 
 /*
  * End CSS Import statements 
@@ -86,6 +86,4 @@
   .default__transition {
     @apply transition duration-300 ease-in-out;
   }
-
-  @import '../../components/ui/rich-text-editor/rich-text-editor.style.css';
 }

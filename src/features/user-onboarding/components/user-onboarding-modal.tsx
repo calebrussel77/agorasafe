@@ -54,6 +54,7 @@ import {
   onboardProviderProfileSchema,
 } from '@/server/api/modules/users/users.validations';
 
+import { useIsMobile } from '@/hooks/use-breakpoints';
 import { useCurrentUser } from '@/hooks/use-current-user';
 import { useStepper } from '@/hooks/use-stepper';
 
@@ -111,17 +112,19 @@ const UserOnboardingModal: FC<UserOnboardingModalProps> = () => {
     <div className="flex h-screen max-h-screen flex-col overflow-hidden">
       <div className="">
         <ProgressBar progress={progress} />
-        <CenterContent className=" mt-2 w-full max-w-3xl lg:min-w-[38rem] lg:items-start lg:justify-start">
+        <CenterContent className="mt-1 w-full max-w-3xl lg:min-w-[38rem] lg:items-start lg:justify-start">
           <div className="my-2 flex w-full flex-col items-center justify-center space-y-1 lg:my-4">
-            <LogoIcon className="mg:h-6 h-5 w-auto" />
+            <LogoIcon className="mg:h-6 h-4 w-auto sm:h-5" />
             {/* <Typography variant="small" className="text-center md:text-left">
               Bienvenue {newUser?.name} ! Configurons ensemble votre compte.
             </Typography> */}
           </div>
-          <Typography as="h1" variant="h4" className="my-3 text-brand-600">
+          {/* <Typography as="h1" variant="h4" className="my-3 text-brand-600">
             Étape {step} / {stepsCount}
+          </Typography> */}
+          <Typography as="h2" className="text-center">
+            {onboardingSteps[currentIdx]?.title}
           </Typography>
-          <Typography as="h2">{onboardingSteps[currentIdx]?.title}</Typography>
           <Typography
             variant="subtle"
             className="pb-2 text-center md:text-left"
@@ -203,11 +206,11 @@ const TermsSection = ({ nextStep }: { nextStep: () => void }) => {
         <ReactMarkdown rehypePlugins={[rehypeRaw]} className="prose prose-sm">
           {terms?.content}
         </ReactMarkdown>
-        <div ref={ref} className="mt-3" />
+        <div ref={ref} className="h-12 w-full" />
         <FixedFooterContainer className="items-start">
           <CancelButton showWarning>Je refuse</CancelButton>
           <Button
-            size="lg"
+            size="sm"
             disabled={!isInView}
             isLoading={isAcceptTOSLoading}
             onClick={handleAcceptTOS}
@@ -283,7 +286,7 @@ const ProfileChoiceSection = ({
         />
         <FixedFooterContainer className="items-start">
           <CancelButton>Me déconnecter</CancelButton>
-          <Button size="lg" type="submit" disabled={!watchProfileType}>
+          <Button size="sm" type="submit" disabled={!watchProfileType}>
             Suivant
           </Button>
         </FixedFooterContainer>
@@ -302,9 +305,12 @@ const schema = z.discriminatedUnion('profileType', [
     avatar: imageSchema.nullish(),
     skills: z
       .array(z.object({ label: z.string(), value: z.string() }), {
-        required_error: 'Vous devez rajouter vos engagements client.',
+        required_error: 'Vous devez rajouter vos compétences professionnelles.',
       })
-      .length(3, 'Vous ne pouvez rajouter que 03 engagements client.'),
+      .length(
+        3,
+        'Vous ne pouvez rajouter que 03 compétences professionnelles.'
+      ),
   }),
 ]);
 
@@ -318,8 +324,6 @@ const ProfileDetailsSection = ({
   choosedProfileType: ProfileType | null;
 }) => {
   const { session, updateUser, updateProfile } = useCurrentUser();
-
-  const queryUtils = api.useContext();
 
   const { data: skills, isInitialLoading: isSkillsLoading } =
     api.skills.getAll.useQuery();
@@ -422,7 +426,10 @@ const ProfileDetailsSection = ({
 
       <Form onSubmit={onSubmit} form={form} gap="lg">
         <div className="mx-auto flex items-center justify-center">
-          <Field>
+          <Field
+            hint="Votre avatar ne peut peser que 4mb max."
+            className="flex items-center justify-center space-y-2"
+          >
             <Controller
               control={control}
               name="avatar"
@@ -559,14 +566,14 @@ const ProfileDetailsSection = ({
                   )}
                 />
               </Field>
-              <Field label="Vos engagements client (Max. 03)" required>
+              <Field label="Compétences pro. (Max. 03)" required>
                 <Controller
                   name="skills"
                   control={control}
                   render={({ field, fieldState: { error } }) => (
                     <Select
                       isMulti
-                      placeholder="Choisissez vos engagements client..."
+                      placeholder="Choisissez vos compétences professionnelles..."
                       isLoading={isSkillsLoading}
                       variant={error ? 'danger' : undefined}
                       isClearable={false}
@@ -658,7 +665,7 @@ const ProfileDetailsSection = ({
           >
             Retour
           </Button>
-          <Button size="lg" type="submit" isLoading={isLoading}>
+          <Button type="submit" isLoading={isLoading}>
             Enregistrer
           </Button>
         </FixedFooterContainer>
@@ -673,6 +680,7 @@ const CancelButton = ({
   ...props
 }: ButtonProps & { showWarning?: boolean }) => {
   const handleCancelOnboarding = () => void signOut();
+  const isMobile = useIsMobile();
 
   return (
     <div className="">
@@ -680,13 +688,16 @@ const CancelButton = ({
         {...props}
         variant="outline"
         type="button"
-        className={cn(showWarning && 'w-[160px]')}
+        size="sm"
+        className={cn(showWarning && !isMobile && 'w-[160px]')}
         onClick={handleCancelOnboarding}
       >
         {children}
       </Button>
       {showWarning && (
-        <Typography variant="small">Vous serez déconnecté.</Typography>
+        <Typography variant="small" className="text-xs md:text-sm">
+          Vous serez déconnecté.
+        </Typography>
       )}
     </div>
   );

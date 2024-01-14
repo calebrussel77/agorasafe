@@ -160,7 +160,7 @@ const CreateServiceRequestModal = ({
                         isFullScreen: isMobile,
                         modal: 'customServiceRequestCategories',
                         innerProps: {
-                          categories: dataServices as never,
+                          categories: data,
                           query,
                         },
                       });
@@ -199,7 +199,7 @@ const CreateServiceRequestModal = ({
                       isFullScreen: isMobile,
                       modal: 'customServiceRequestCategories',
                       innerProps: {
-                        categories: dataServices as never,
+                        categories: data,
                         query,
                       },
                     });
@@ -234,7 +234,7 @@ const CustomServiceRequestCategoriesModal = ({
   innerProps: { categories, query },
 }: ContextModalProps<{
   query?: string;
-  categories: GetAllServiceCategoriesOutput;
+  categories?: GetAllServiceCategoriesOutput;
 }>) => {
   const router = useRouter();
   const onClose = () => ctx.closeModal(id);

@@ -28,7 +28,7 @@ const LoginPage = () => {
   const router = useRouter();
   const {
     error,
-    redirectUrl = '/',
+    redirectUrl = '/dashboard',
     reason,
   } = router.query as {
     error: string;

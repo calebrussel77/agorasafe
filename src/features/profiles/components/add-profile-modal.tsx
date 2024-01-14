@@ -67,9 +67,9 @@ const schema = z.discriminatedUnion('profileType', [
     avatar: imageSchema.nullish(),
     skills: z
       .array(z.object({ label: z.string(), value: z.string() }), {
-        required_error: 'Vous devez rajouter vos engagements client.',
+        required_error: 'Vous devez rajouter vos compétences.',
       })
-      .length(3, 'Vous ne pouvez rajouter que 03 engagements client.'),
+      .length(3, 'Vous ne pouvez rajouter que 03 compétences professionnelles.'),
   }),
 ]);
 
@@ -200,8 +200,10 @@ const AddProfileModal = ({
 
   return (
     <>
-      <ModalHeader title={`Ajouter un profil ${profileInfo.label}`} />
-      <ModalMain className="relative">
+      <ModalHeader
+        title={`👷🏿‍♂️ Ajouter un profil ${profileInfo.label.toLowerCase()}`}
+      />
+      <ModalMain className="relative mx-auto w-full max-w-3xl">
         {createProfileError && (
           <SectionMessage
             appareance="danger"
@@ -212,7 +214,10 @@ const AddProfileModal = ({
 
         <Form onSubmit={onSubmit} form={form} gap="lg">
           <div className="mx-auto flex items-center justify-center">
-            <Field>
+            <Field
+              hint="Votre avatar ne peut peser que 4mb max."
+              className="flex items-center justify-center space-y-2"
+            >
               <Controller
                 control={control}
                 name="avatar"
@@ -348,7 +353,7 @@ const AddProfileModal = ({
                     )}
                   />
                 </Field>
-                <Field label="Vos engagements client (Max. 03)" required>
+                <Field label="Vos compétences professionnelles (Max. 03)" required>
                   <Controller
                     name="skills"
                     control={control}
@@ -470,7 +475,7 @@ const SectionContainer = ({
   return (
     <section aria-labelledby={title} className="space-y-6">
       <div className="space-y-2">
-        <Typography as="h3" className="text-gray-400">
+        <Typography as="h3" className="text-primary">
           {title}
         </Typography>
         <Separator />

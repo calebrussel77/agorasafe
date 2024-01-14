@@ -55,16 +55,15 @@ const PublishPage = ({ modeQuery }: PageProps) => {
   const { isLoading, error, mutate } = api.serviceRequests.create.useMutation({
     async onSuccess(data) {
       reset();
-      const href = `/service-requests/${data?.serviceRequest?.slug}`;
+      const href = `/service-requests/${data?.serviceRequest?.id}/${data?.serviceRequest?.slug}`;
       await router.push(href, undefined, { shallow: true });
       modals.open({
         children: (
           <EmptyState
             classNames={{ root: 'my-24', icon: 'h-36 w-auto' }}
             icon={<Welcome2Icon />}
-            name="🎉🥳Votre demande a été crée et publiée avec succès !"
+            name="🎉🥳 Votre demande publiée avec succès"
             description={`Votre demande " ${data?.serviceRequest?.title} " a bien été publiée au près des prestataires !`}
-            primaryAction={<Button href={href}>Voir la demande</Button>}
           />
         ),
       });

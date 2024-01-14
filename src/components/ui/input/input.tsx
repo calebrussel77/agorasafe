@@ -4,9 +4,6 @@ import { type Variant, getVariantBorderColor } from '@/utils/variants';
 
 import { cn } from '@/lib/utils';
 
-import { useFocus } from '@/hooks/use-focus';
-import { useMergeRefs } from '@/hooks/use-merge-refs';
-
 import { Spinner } from '../spinner';
 
 type ClassNames = {

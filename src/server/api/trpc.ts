@@ -62,7 +62,7 @@ const isAuthed = t.middleware(({ ctx: { user, profile }, next }) => {
     throw new TRPCError({ code: 'UNAUTHORIZED' });
   }
 
-  if (user.version !== sessionVersion) {
+  if (user?.version !== sessionVersion) {
     throw new TRPCError({ code: 'UNAUTHORIZED' });
   }
 
@@ -76,7 +76,7 @@ const isMuted = t.middleware(({ ctx: { user, profile }, next }) => {
     throw new TRPCError({ code: 'UNAUTHORIZED' });
   }
 
-  if (user.version !== sessionVersion) {
+  if (user?.version !== sessionVersion) {
     throw new TRPCError({ code: 'UNAUTHORIZED' });
   }
 
@@ -97,7 +97,7 @@ const isAdmin = t.middleware(({ ctx: { user, profile }, next }) => {
     throw new TRPCError({ code: 'UNAUTHORIZED' });
   }
 
-  if (user.version !== sessionVersion) {
+  if (user?.version !== sessionVersion) {
     throw new TRPCError({ code: 'UNAUTHORIZED' });
   }
 
@@ -117,7 +117,7 @@ const hasProfile = t.middleware(({ ctx: { user, profile }, next }) => {
     throw new TRPCError({ code: 'UNAUTHORIZED' });
   }
 
-  if (user.version !== sessionVersion) {
+  if (user?.version !== sessionVersion) {
     throw new TRPCError({ code: 'UNAUTHORIZED' });
   }
 
@@ -138,7 +138,7 @@ const isCustomer = t.middleware(({ ctx: { user, profile }, next }) => {
     throw new TRPCError({ code: 'UNAUTHORIZED' });
   }
 
-  if (user.version !== sessionVersion) {
+  if (user?.version !== sessionVersion) {
     throw new TRPCError({ code: 'UNAUTHORIZED' });
   }
 
@@ -156,7 +156,7 @@ const isProvider = t.middleware(({ ctx: { profile, user }, next }) => {
     throw new TRPCError({ code: 'UNAUTHORIZED' });
   }
 
-  if (user.version !== sessionVersion) {
+  if (user?.version !== sessionVersion) {
     throw new TRPCError({ code: 'UNAUTHORIZED' });
   }
 

@@ -7,23 +7,41 @@ import { getDynamicDbSlug } from '@/server/utils/db-slug';
 
 import { type GetByIdOrSlugQueryInput } from '../../validations/base.validations';
 import { simpleProfileSelect } from '../profiles';
+import { ServiceRequestSelect } from './service-requests.select';
 import {
   type CreateServiceRequestCommentInput,
   type CreateServiceRequestInput,
-  CreateServiceRequestProposalInput,
   type GetAllServiceRequestsInput,
   type GetServiceRequestInput,
   type ToggleServiceRequestReservationInput,
   type UpdateServiceRequestInput,
-  UpdateServiceRequestProposalInput,
 } from './service-requests.validations';
 
 export const getServiceRequestReservedProviders = ({
   input,
 }: {
-  input: GetByIdOrSlugQueryInput;
+  input: GetByIdOrSlugQueryInput &
+    Pick<GetServiceRequestInput, 'providersReserved'>;
 }) => {
-  const { id, slug } = input;
+  const { id, slug, providersReserved = 'Active' } = input;
+
+  let ReservedProviderWhere:
+    | Prisma.ServiceRequestReservationWhereInput
+    | null
+    | undefined = undefined;
+
+  if (providersReserved === 'Active') {
+    ReservedProviderWhere = {
+      removedAt: null,
+      isActive: true,
+    };
+  }
+
+  if (providersReserved === 'Inactive') {
+    ReservedProviderWhere = {
+      isActive: false,
+    };
+  }
 
   return prisma.serviceRequest.findUnique({
     where: {
@@ -33,17 +51,30 @@ export const getServiceRequestReservedProviders = ({
     select: {
       id: true,
       status: true, // needed for check
+      author: { select: { profile: { select: { id: true } } } }, // needed for check
+      numberOfProviderNeeded: true, // needed for check
       providersReserved: {
+        where: ReservedProviderWhere,
         select: {
           providerProfileId: true, // needed for check
           removedAt: true, // needed for check
           isActive: true, // needed for check
-          provider: { select: { profile: { select: simpleProfileSelect } } },
+          proposal: {
+            select: { content: true, price: true, id: true, createdAt: true },
+          },
+          provider: {
+            select: {
+              profile: { select: simpleProfileSelect },
+              skills: true,
+              profession: true,
+            },
+          },
         },
       },
     },
   });
 };
+
 export const getServiceRequestProposals = ({
   input,
 }: {
@@ -78,7 +109,7 @@ export const getAllServiceRequests = ({
   limit,
   page,
   query,
-  providersReserved = 'All',
+  providersReserved = 'Active',
   orderBy = 'desc',
   status: _status = 'OPEN',
   showReservedProviders,
@@ -91,7 +122,12 @@ export const getAllServiceRequests = ({
   let selectCount:
     | Prisma.ServiceRequestCountOutputTypeSelect
     | null
-    | undefined = { providersReserved: true };
+    | undefined = {
+    comments: true,
+    reviews: true,
+    proposals: { where: { isArchived: false } },
+    photos: true,
+  };
 
   if (_status === 'ALL') {
     status = undefined;
@@ -99,12 +135,14 @@ export const getAllServiceRequests = ({
 
   if (providersReserved === 'Active') {
     selectCount = {
+      ...selectCount,
       providersReserved: { where: { removedAt: null, isActive: true } },
     };
   }
 
   if (providersReserved === 'Inactive') {
     selectCount = {
+      ...selectCount,
       providersReserved: { where: { isActive: false } },
     };
   }
@@ -158,9 +196,6 @@ export const getAllServiceRequests = ({
         _count: {
           select: {
             ...selectCount,
-            comments: true,
-            proposals: true,
-            photos: true,
           },
         },
       },
@@ -272,7 +307,8 @@ export const updateServiceRequest = ({
 }: {
   input: UpdateServiceRequestInput;
 }) => {
-  const { serviceRequestSlug, location, photos, ...rest } = input;
+  const { serviceRequestSlug, location, photos, serviceRequestId, ...rest } =
+    input;
 
   let _photos:
     | Prisma.FileUpdateManyWithoutServiceRequestNestedInput
@@ -310,7 +346,7 @@ export const updateServiceRequest = ({
   }
 
   return prisma.serviceRequest.update({
-    where: { slug: serviceRequestSlug },
+    where: { slug: serviceRequestSlug ?? undefined, id: serviceRequestId },
     data: {
       ...rest,
       photos: _photos,
@@ -319,8 +355,8 @@ export const updateServiceRequest = ({
   });
 };
 
-export const getServiceRequestWithDetails = ({
-  input: { id, slug, providersReserved = 'All' },
+export const getServiceRequestStats = ({
+  input: { id, slug, providersReserved = 'Active' },
 }: {
   input: GetServiceRequestInput;
 }) => {
@@ -330,27 +366,21 @@ export const getServiceRequestWithDetails = ({
     | undefined = {
     comments: true,
     reviews: true,
-    proposals: true,
+    proposals: { where: { isArchived: false } },
     photos: true,
   };
 
   if (providersReserved === 'Active') {
     selectCount = {
+      ...selectCount,
       providersReserved: { where: { removedAt: null, isActive: true } },
-      comments: true,
-      reviews: true,
-      proposals: true,
-      photos: true,
     };
   }
 
   if (providersReserved === 'Inactive') {
     selectCount = {
+      ...selectCount,
       providersReserved: { where: { isActive: false } },
-      comments: true,
-      reviews: true,
-      proposals: true,
-      photos: true,
     };
   }
 
@@ -359,28 +389,38 @@ export const getServiceRequestWithDetails = ({
       id: id ?? undefined,
       slug: slug ?? undefined,
     },
-    include: {
-      location: true,
-      providersReserved: { select: { providerProfileId: true } },
-      author: { select: { profile: { select: simpleProfileSelect } } },
-      photos: true,
-      _count: { select: selectCount },
+    select: { id: true, _count: { select: selectCount } },
+  });
+};
+
+export const getServiceRequestWithDetails = ({
+  input: { id, slug },
+}: {
+  input: GetServiceRequestInput;
+}) => {
+  return prisma.serviceRequest.findUnique({
+    where: {
+      id: id ?? undefined,
+      slug: slug ?? undefined,
     },
+    select: { ...ServiceRequestSelect },
   });
 };
 
 export function createServiceRequestReservation({
   input,
+  authorProfileId,
 }: {
   input: ToggleServiceRequestReservationInput;
-}) {
-  const { customerProfileId, providerProfileId, serviceRequestId } = input;
+} & { authorProfileId: string }) {
+  const { providerProfileId, serviceRequestId, proposalId } = input;
 
   return prisma.serviceRequest.update({
     where: { id: serviceRequestId },
     data: {
       providersReserved: {
         create: {
+          proposal: proposalId ? { connect: { id: proposalId } } : undefined,
           provider: {
             connectOrCreate: {
               where: { profileId: providerProfileId },
@@ -389,8 +429,8 @@ export function createServiceRequestReservation({
           },
           customer: {
             connectOrCreate: {
-              where: { profileId: customerProfileId },
-              create: { profile: { connect: { id: customerProfileId } } },
+              where: { profileId: authorProfileId },
+              create: { profile: { connect: { id: authorProfileId } } },
             },
           },
         },
@@ -403,10 +443,11 @@ export function updateServiceRequestReservation({
   input,
   data,
 }: {
-  input: ToggleServiceRequestReservationInput;
+  input: ToggleServiceRequestReservationInput & { authorProfileId: string };
   data: Prisma.ServiceRequestReservationUpdateWithoutServiceRequestInput;
 }) {
-  const { customerProfileId, providerProfileId, serviceRequestId } = input;
+  const { authorProfileId, providerProfileId, serviceRequestId, proposalId } =
+    input;
 
   return prisma.serviceRequest.update({
     where: { id: serviceRequestId },
@@ -417,7 +458,7 @@ export function updateServiceRequestReservation({
             providerProfileId_serviceRequestId_customerProfileId: {
               providerProfileId,
               serviceRequestId,
-              customerProfileId,
+              customerProfileId: authorProfileId,
             },
           },
           data,
@@ -427,47 +468,9 @@ export function updateServiceRequestReservation({
   });
 }
 
-export function toggleServiceRequestReservation({
-  input,
-  isProviderReservedAndActive,
-}: {
-  input: ToggleServiceRequestReservationInput;
-  isProviderReservedAndActive?: boolean;
-}) {
-  const { customerProfileId, providerProfileId, serviceRequestId } = input;
-  let update = {
-    removedAt: null,
-    isActive: true,
-  } as { isActive: boolean; removedAt: Date | null };
-
-  if (isProviderReservedAndActive) {
-    update = {
-      removedAt: new Date(),
-      isActive: false,
-    };
-  }
-
-  return prisma.serviceRequest.update({
-    where: { id: serviceRequestId },
-    data: {
-      providersReserved: {
-        upsert: {
-          where: {
-            providerProfileId_serviceRequestId_customerProfileId: {
-              customerProfileId,
-              providerProfileId,
-              serviceRequestId,
-            },
-          },
-          create: {
-            customerProfileId,
-            providerProfileId,
-            removedAt: null,
-            isActive: true,
-          },
-          update,
-        },
-      },
-    },
+//TODO : in the future, we should archived service request
+export const deleteServiceRequest = ({ id }: { id: string }) => {
+  return prisma.serviceRequest.delete({
+    where: { id },
   });
-}
+};

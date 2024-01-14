@@ -125,12 +125,13 @@ const UserProfileDropdown: FC<UserProfileDropdownProps> = ({
                         onClick={() => {
                           openContextModal({
                             modal: 'addProfile',
+                            isFullScreen: true,
                             innerProps: {
                               choosedProfileType:
                                 userProfileConfig?.allowedProfileType,
                             },
                           });
-                          onToggle(false)
+                          onToggle(false);
                         }}
                         size="sm"
                         variant="ghost"

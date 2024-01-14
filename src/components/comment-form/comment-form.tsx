@@ -13,6 +13,7 @@ import {
 import { getLoginLink, useLoginRedirect } from '@/features/auth';
 
 import { api } from '@/utils/api';
+import { makeRandomId } from '@/utils/misc';
 
 import { cn } from '@/lib/utils';
 
@@ -42,17 +43,18 @@ const CommentForm = ({
   onCancel,
   autoFocus,
   replyTo,
+  disabled,
 }: {
   className?: string;
   comment?: { id: string; text: string };
   onCancel?: () => void;
   autoFocus?: boolean;
   replyTo?: SimpleProfile;
+  disabled?: boolean;
 } & CommentConnectorInput) => {
   const editorRef = useRef<EditorCommandsRef | null>(null);
 
   const queryUtils = api.useContext();
-  const { requireLogin } = useLoginRedirect({ reason: 'create-comment' });
   const { profile } = useCurrentUser();
   const [isFocused, setIsFocused] = useState(autoFocus || false);
   const defaultValues = { ...comment, entityId, entityType };
@@ -63,7 +65,7 @@ const CommentForm = ({
   });
 
   const commentMutation = api.comments.upsert.useMutation({
-    onSuccess: (response, variables) => {
+    onMutate(variables) {
       if (variables.id) {
         queryUtils.comments.getInfinite.setInfiniteData(
           {
@@ -93,10 +95,10 @@ const CommentForm = ({
 
             for (const page of old.pages) {
               page.comments.unshift({
-                id: response.id,
+                id: makeRandomId(),
                 author: profile,
-                text: response.text,
-                createdAt: response.createdAt,
+                text: variables.text,
+                createdAt: new Date(),
               });
             }
           })
@@ -108,11 +110,18 @@ const CommentForm = ({
       }
       handleCancel();
     },
-    onError(error, variables, context) {
+    onError(error) {
       toast({
         variant: 'danger',
         title:
           "Une erreur s'est produite lors de l'envoi de votre commentaire.",
+      });
+    },
+    async onSettled(data, error, variables, context) {
+      await queryUtils.comments.getCount.invalidate({ entityId, entityType });
+      await queryUtils.comments.getInfinite.invalidate({
+        entityId,
+        entityType,
       });
     },
   });
@@ -147,8 +156,8 @@ const CommentForm = ({
       <SectionMessage
         hasCloseButton={false}
         appareance="info"
-        title="Connectez-vous pour Commenter"
-        description="Accéder à votre compte afin de pouvoir laisser votre commentaire"
+        title="Connectez-vous pour commenter"
+        description="Accéder à votre compte pour laisser votre commentaire"
         actions={
           <Button
             size="sm"
@@ -179,8 +188,12 @@ const CommentForm = ({
                   placeholder="Entrez votre commentaire..."
                   autoFocus={isFocused}
                   required
-                  disabled={commentMutation.isLoading}
-                  onFocus={!autoFocus ? () => setIsFocused(true) : undefined}
+                  disabled={commentMutation.isLoading || disabled}
+                  onFocus={
+                    !autoFocus && !disabled
+                      ? () => setIsFocused(true)
+                      : undefined
+                  }
                   onSuperEnter={() => form.handleSubmit(onHandleSubmit)()}
                   editorSize="md"
                   withEmoji={isFocused}

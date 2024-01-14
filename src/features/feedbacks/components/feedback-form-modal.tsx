@@ -13,7 +13,10 @@ import { toast } from '@/components/ui/toast';
 import { useUpload } from '@/components/ui/uploadthing';
 
 import { api } from '@/utils/api';
+import { gaTrackEvent } from '@/utils/ga-events';
 import { isArray } from '@/utils/type-guards';
+
+import { useCurrentUser } from '@/hooks/use-current-user';
 
 import { type FeedBackFormInput, FeedbackForm } from './feedback-form';
 
@@ -23,6 +26,7 @@ const FeedbackFormModal = ({
   context: ctx,
   id,
 }: ContextModalProps<Record<string, any>>) => {
+  const { profile } = useCurrentUser();
   const createFeedbackMutation = api.feedbacks.create.useMutation({
     onSuccess() {
       toast({
@@ -31,6 +35,14 @@ const FeedbackFormModal = ({
         title: 'Formulaire soumis avec succès !',
         description:
           'Nous vous remercions de nous avoir partagé vos commentaires.',
+      });
+    },
+    onMutate(variables) {
+      gaTrackEvent('feedback-submission', {
+        category: 'Contact',
+        message: `Sending Feedback form infos`,
+        content: variables.content,
+        userId: profile?.id || 'noop',
       });
     },
   });

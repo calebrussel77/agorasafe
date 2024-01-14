@@ -293,8 +293,12 @@ model Proposal {
     serviceRequest   ServiceRequest? @relation(fields: [serviceRequestId], references: [id], onDelete: Cascade)
     serviceRequestId String?
 
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+    serviceRequestReservation ServiceRequestReservation?
+
+    isArchived Boolean? @default(false)
+    
+    createdAt  DateTime @default(now())
+    updatedAt  DateTime @updatedAt
 
     @@index([serviceRequestId])
     @@index([authorId])
@@ -306,6 +310,9 @@ model ServiceRequestReservation {
 
     customer          Customer @relation("ServiceRequestReservationRelation", fields: [customerProfileId], references: [profileId], onDelete: Cascade)
     customerProfileId String
+
+    proposal   Proposal? @relation(fields: [proposalId], references: [id], onDelete: Cascade)
+    proposalId String?   @unique
 
     serviceRequest   ServiceRequest? @relation("ServiceRequestReservationRelation", fields: [serviceRequestId], references: [id], onDelete: Cascade)
     serviceRequestId String

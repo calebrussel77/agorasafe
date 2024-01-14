@@ -24,9 +24,7 @@ export const getFormattedDuration = (
 export const getFomattedProviderNeeded = (
   nbreProviderNeeded: number | undefined | null
 ) => {
-  if (!nbreProviderNeeded) return '1 Prestataire';
-
-  if (nbreProviderNeeded === 1) return `${nbreProviderNeeded} Prestataire`;
+  if (!nbreProviderNeeded || nbreProviderNeeded === 1) return '1 Prestataire';
 
   return `${nbreProviderNeeded} Prestataires`;
 };

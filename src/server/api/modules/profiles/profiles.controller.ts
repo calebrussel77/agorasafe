@@ -1,4 +1,5 @@
 import { USER_PROFILES_LIMIT_COUNT } from '@/constants';
+import { ProfileType } from '@prisma/client';
 
 import { toTitleCase } from '@/utils/strings';
 
@@ -16,7 +17,9 @@ import { type CompleteUserOnboardingInput as CreateProfileInput } from '../users
 import { createProfileByUserId, getProfileBySlug } from './profiles.repository';
 import {
   getProfileDetailsService,
+  getProfileStatsService,
   getProfilesByUserIdService,
+  getProfilesService,
 } from './profiles.service';
 import { getProfileCreationMessage } from './profiles.utils';
 import { type GetProfilesByUserIdValidation } from './profiles.validations';
@@ -26,6 +29,24 @@ export const getProfileDetailsController = async (
 ) => {
   try {
     return await getProfileDetailsService(inputs);
+  } catch (error) {
+    throwDbError(error);
+  }
+};
+
+export const getProfileStatsController = async (
+  inputs: GetByIdOrSlugQueryInput
+) => {
+  try {
+    return await getProfileStatsService(inputs);
+  } catch (error) {
+    throwDbError(error);
+  }
+};
+
+export const getProfilesController = async (profileType?: ProfileType) => {
+  try {
+    return await getProfilesService(profileType);
   } catch (error) {
     throwDbError(error);
   }

@@ -1,4 +1,4 @@
-import { type Prisma } from '@prisma/client';
+import { type Prisma, ProfileType } from '@prisma/client';
 
 import { prisma } from '@/server/db';
 
@@ -9,6 +9,48 @@ export const getProfileBySlug = (slug: string) => {
   return prisma.profile.findUnique({
     where: { slug },
     select: { slug: true },
+  });
+};
+
+export const getProfileStats = ({
+  input: { id, slug },
+}: {
+  input: GetByIdOrSlugQueryInput;
+}) => {
+  return prisma.profile.findUnique({
+    where: {
+      id: id ?? undefined,
+      slug: slug ?? undefined,
+    },
+    select: {
+      id: true,
+      customerInfo: {
+        select: {
+          _count: {
+            select: {
+              providersReserved: { where: { isActive: true, removedAt: null } },
+              serviceRequests: true,
+            },
+          },
+        },
+      },
+      providerInfo: {
+        select: {
+          _count: {
+            select: {
+              proposals: { where: { isArchived: false } },
+              showCaseProjects: true,
+              serviceRequestReservations: {
+                where: { isActive: true, removedAt: null },
+              },
+            },
+          },
+        },
+      },
+      _count: {
+        select: { comments: true, createdReviews: true, receivedReviews: true },
+      },
+    },
   });
 };
 
@@ -31,16 +73,8 @@ export const getAllProfileDetails = ({
       facebookUrl: true,
       linkedinUrl: true,
       phone: false,
-      customerInfo: {
-        select: {
-          _count: {
-            select: { serviceRequests: true, providersReserved: true },
-          },
-        },
-      },
       providerInfo: {
         select: {
-          _count: { select: { serviceRequestReservations: true } },
           skills: true,
           profession: true,
           showCaseProjects: {
@@ -82,8 +116,11 @@ export function updateProfileById(
   });
 }
 
-export async function getProfiles() {
-  return prisma.profile.findMany();
+export async function getProfiles(profileType?: ProfileType) {
+  return prisma.profile.findMany({
+    where: profileType ? { type: profileType } : undefined,
+    select: simpleProfileSelect,
+  });
 }
 
 export async function getProfileById(profileId: string) {

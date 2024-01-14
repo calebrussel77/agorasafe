@@ -7,15 +7,21 @@ import {
 } from '@/server/utils/error-handling';
 
 import { type Context } from '../../create-context';
-import { type GetByIdOrSlugQueryInput } from '../../validations/base.validations';
-import { createProposal, deleteProposal, updateProposal } from '../proposals';
+import {
+  type GetByIdOrSlugQueryInput,
+  GetByIdQueryInput,
+} from '../../validations/base.validations';
+import { createProposal, getProposals, updateProposal } from '../proposals';
+import { ProposalSelect } from '../proposals/proposals.select';
 import {
   createServiceRequest,
   createServiceRequestComment,
   createServiceRequestReservation,
+  deleteServiceRequest,
   getAllServiceRequests,
   getServiceRequestProposals,
   getServiceRequestReservedProviders,
+  getServiceRequestStats,
   getServiceRequestWithDetails,
   updateServiceRequest,
   updateServiceRequestReservation,
@@ -41,7 +47,8 @@ export const getServiceRequestReservedProvidersHandler = async ({
   ctx,
   input,
 }: {
-  input: GetByIdOrSlugQueryInput;
+  input: GetByIdOrSlugQueryInput &
+    Pick<GetServiceRequestInput, 'providersReserved'>;
   ctx: Context;
 }) => {
   try {
@@ -52,10 +59,20 @@ export const getServiceRequestReservedProvidersHandler = async ({
     if (!response) throwNotFoundError('Demande de service non trouvée');
 
     const reservedProviders = response?.providersReserved?.map(el => {
-      return el.provider.profile;
+      return {
+        profile: el.provider.profile,
+        proposal: el.proposal,
+        skills: el.provider.skills,
+        profession: el.provider.profession,
+      };
     });
 
-    return reservedProviders;
+    return {
+      id: response.id,
+      status: response.status,
+      author: response.author,
+      reservedProviders,
+    };
   } catch (e) {
     throwDbError(e);
   }
@@ -65,19 +82,19 @@ export const getServiceRequestProposalsHandler = async ({
   ctx,
   input,
 }: {
-  input: GetByIdOrSlugQueryInput;
+  input: GetByIdQueryInput & { isAcrhived?: boolean };
   ctx: Context;
 }) => {
   try {
-    const response = await getServiceRequestProposals({
-      input,
+    const proposals = await getProposals({
+      where: {
+        serviceRequestId: input.id,
+        isArchived: input.isAcrhived ?? false,
+      },
+      select: { ...ProposalSelect, serviceRequestId: true },
     });
 
-    if (!response) throwNotFoundError('Demande de service non trouvée');
-
-    const proposals = response?.proposals?.map(el => {
-      return el.author.profile;
-    });
+    if (!proposals) throwNotFoundError('Demande de service non trouvée');
 
     return proposals;
   } catch (e) {
@@ -134,10 +151,13 @@ export const toggleServiceRequestReservationHandler = async ({
   ctx: DeepNonNullable<Context>;
 }) => {
   try {
-    const { customerProfileId, providerProfileId, serviceRequestId } = input;
+    const authorProfileId = ctx.profile.id;
 
+    const { providerProfileId, serviceRequestId, proposalId } = input;
+
+    // Get all providers reserved list
     const serviceRequest = await getServiceRequestReservedProviders({
-      input: { id: serviceRequestId },
+      input: { id: serviceRequestId, providersReserved: 'All' },
     });
 
     if (!serviceRequest) {
@@ -148,34 +168,43 @@ export const toggleServiceRequestReservationHandler = async ({
       throwForbiddenError('Cette demande à été clôturée !');
     }
 
-    // const activeReservedProvidersCount = serviceRequest?.providersReserved.filter(
-    //   el => el.isActive && el.removedAt === null
-    // )?.length;
-    // if (
-    //   serviceRequest?.numberOfProviderNeeded === activeReservedProvidersCount
-    // ) {
-    //   throwForbiddenError(
-    //     'Vous ne pouvez plus rajouter un prestataire à votre liste de reservation !'
-    //   );
-    // }
+    const activeReservedProvidersCount =
+      serviceRequest?.providersReserved.filter(
+        el => el.isActive && el.removedAt === null
+      )?.length || 0;
+
+    if (
+      serviceRequest?.numberOfProviderNeeded === activeReservedProvidersCount
+    ) {
+      throwForbiddenError(
+        'Vous ne pouvez plus rajouter un prestataire à votre demande. Le nombre de prestataire demandé est atteint !'
+      );
+    }
+
+    if (serviceRequest?.author?.profile?.id !== authorProfileId) {
+      throwForbiddenError("Vous n'avez pas le droit d'éffectuer cette action.");
+    }
 
     const isProviderInReservations = serviceRequest.providersReserved.some(
-      el => el.providerProfileId === providerProfileId
-    );
-
-    const isProviderReservedAndActive = serviceRequest.providersReserved.some(
-      el =>
-        el.providerProfileId === providerProfileId &&
-        el.isActive &&
-        el.removedAt === null
+      el => el.provider.profile.id === providerProfileId
     );
 
     if (!isProviderInReservations) {
+      // we update the provider proposal to be archived
+      if (proposalId) {
+        await updateProposal({
+          where: { id: proposalId },
+          data: { isArchived: true },
+        });
+      }
+
+      // we update the provider info to be in the list (active and visible)
       const serviceRequestReservation = await createServiceRequestReservation({
+        authorProfileId,
         input: {
-          customerProfileId,
           providerProfileId,
           serviceRequestId,
+          proposalId,
         },
       });
       return {
@@ -186,12 +215,26 @@ export const toggleServiceRequestReservationHandler = async ({
       };
     }
 
-    if (isProviderReservedAndActive) {
+    const providerFinded = serviceRequest.providersReserved.find(
+      el => el.providerProfileId === providerProfileId
+    );
+
+    if (!providerFinded) {
+      throwForbiddenError("Une erreur inattendue s'est produite");
+    }
+
+    // we know that the provider is already on the list
+    // check if provider is active and visible
+    if (providerFinded.isActive && providerFinded.removedAt === null) {
+      //?REFLEXION : Need to know see if we want to display the provider proposal if existing here
+
+      // we update the provider info to be inactive and invisible
       const serviceRequestReservation = await updateServiceRequestReservation({
         input: {
-          customerProfileId,
+          authorProfileId,
           providerProfileId,
           serviceRequestId,
+          proposalId,
         },
         data: {
           removedAt: new Date(),
@@ -206,11 +249,21 @@ export const toggleServiceRequestReservationHandler = async ({
       };
     }
 
+    // we update the provider proposal to be archived
+    if (proposalId) {
+      await updateProposal({
+        where: { id: proposalId },
+        data: { isArchived: true },
+      });
+    }
+
+    // we update the provider info to be active and visible
     const serviceRequestReservation = await updateServiceRequestReservation({
       input: {
-        customerProfileId,
+        authorProfileId,
         providerProfileId,
         serviceRequestId,
+        proposalId,
       },
       data: {
         removedAt: null,
@@ -275,7 +328,7 @@ export const createServiceRequestHandler = async ({
 
 export const createServiceRequestProposalHandler = async ({
   ctx,
-  input,
+  input: { serviceRequestId, ...input },
 }: {
   input: CreateServiceRequestProposalInput;
   ctx: DeepNonNullable<Context>;
@@ -284,6 +337,7 @@ export const createServiceRequestProposalHandler = async ({
     const proposal = await createProposal({
       data: {
         author: { connect: { profileId: ctx.profile.id } },
+        serviceRequest: { connect: { id: serviceRequestId } },
         ...input,
       },
       select: { serviceRequest: { select: { id: true } } },
@@ -315,7 +369,7 @@ export const updateServiceRequestProposalHandler = async ({
         content: input.content,
         price: input.price,
       },
-      select: { serviceRequest: { select: { id: true } } },
+      // select: { serviceRequest: { select: { id: true } } },
     });
     return {
       proposal,
@@ -334,12 +388,35 @@ export const deleteServiceRequestProposalHandler = async ({
   ctx: DeepNonNullable<Context>;
 }) => {
   try {
-    const proposal = await deleteProposal({
-      id: input.id,
+    //Archive proposal
+    const proposal = await updateProposal({
+      where: { id: input.id },
+      data: { isArchived: true },
     });
 
     return {
       proposal,
+      success: true,
+    };
+  } catch (e) {
+    throwDbError(e);
+  }
+};
+
+export const deleteServiceRequestHandler = async ({
+  ctx,
+  input,
+}: {
+  input: { id: string };
+  ctx: DeepNonNullable<Context>;
+}) => {
+  try {
+    const deletedServiceRequest = await deleteServiceRequest({
+      id: input.id,
+    });
+
+    return {
+      deletedServiceRequest,
       success: true,
     };
   } catch (e) {
@@ -402,19 +479,42 @@ export const getServiceRequestHandler = async ({
           serviceRequestDetails?.estimatedPrice,
           'Prix non défini'
         ),
-        stats: {
-          commentCount: serviceRequestDetails?._count?.comments,
-          providersReservedCount:
-            serviceRequestDetails?._count?.providersReserved,
-          reviewCount: serviceRequestDetails?._count?.reviews,
-          photoCount: serviceRequestDetails?._count?.photos,
-          proposalCount: serviceRequestDetails?._count?.proposals,
-        },
         isProfileReserved: serviceRequestDetails?.providersReserved?.some(
           provider => provider.providerProfileId === ctx.profile?.id
         ),
+        hasProposalSubmitted: serviceRequestDetails?.proposals?.some(
+          proposal => proposal.author.profileId === ctx.profile?.id
+        ),
       },
       success: true,
+    };
+  } catch (e) {
+    throwDbError(e);
+  }
+};
+
+export const getServiceRequestStatsHandler = async ({
+  ctx,
+  input,
+}: {
+  input: GetServiceRequestInput;
+  ctx: Context;
+}) => {
+  try {
+    const serviceRequestDetails = await getServiceRequestStats({
+      input,
+    });
+
+    if (!serviceRequestDetails) {
+      throwNotFoundError('Demande de service non trouvée !');
+    }
+
+    return {
+      commentCount: serviceRequestDetails?._count?.comments,
+      providersReservedCount: serviceRequestDetails?._count?.providersReserved,
+      reviewCount: serviceRequestDetails?._count?.reviews,
+      photoCount: serviceRequestDetails?._count?.photos,
+      proposalCount: serviceRequestDetails?._count?.proposals,
     };
   } catch (e) {
     throwDbError(e);

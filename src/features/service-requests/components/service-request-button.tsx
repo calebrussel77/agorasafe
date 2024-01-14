@@ -5,6 +5,8 @@ import { openContextModal } from '@/components/ui/modal';
 
 import { LoginRedirect } from '@/features/auth';
 
+import { gaTrackEvent } from '@/utils/ga-events';
+
 import { useIsMobile } from '@/hooks/use-breakpoints';
 
 interface ServiceRequestButtonProps {
@@ -26,8 +28,16 @@ const ServiceRequestButton = ({ children }: ServiceRequestButtonProps) => {
   return (
     // TODO : Need to add a login popover before creating service request if not logged in
     <CanView allowedProfiles={['CUSTOMER']} isPublic>
-      <LoginRedirect reason="create-service-request">
-        {cloneElement(children, {onClick: handleClick  })}
+      <LoginRedirect
+        reason="create-service-request"
+        onRedirect={() =>
+          gaTrackEvent('cta-click', {
+            category: 'CTA',
+            message: 'Create service request',
+          })
+        }
+      >
+        {cloneElement(children, { onClick: handleClick })}
       </LoginRedirect>
     </CanView>
   );

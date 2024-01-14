@@ -9,7 +9,6 @@ import { ServiceRequestButton } from '@/features/service-requests';
 
 import { cn } from '@/lib/utils';
 
-import { useIsMobile } from '@/hooks/use-breakpoints';
 import { useCurrentUser } from '@/hooks/use-current-user';
 
 import { Anchor } from '../anchor';

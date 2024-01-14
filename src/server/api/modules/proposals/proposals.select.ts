@@ -7,8 +7,19 @@ export const ProposalSelect = Prisma.validator<Prisma.ProposalSelect>()({
   createdAt: true,
   updatedAt: true,
   price: true,
+  isArchived: true,
   content: true,
-  author: { select: { profile: { select: simpleProfileSelect } } },
+  serviceRequestId: true,
+  author: {
+    select: {
+      profile: {
+        select: {
+          ...simpleProfileSelect,
+          providerInfo: { select: { skills: true, profession: true } },
+        },
+      },
+    },
+  },
 });
 
 const proposalModel = Prisma.validator<Prisma.ProfileDefaultArgs>()({
