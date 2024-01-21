@@ -26,7 +26,7 @@ export const onboardProviderProfileSchema = onboardClientProfileSchema.extend({
         required_error: 'Vous devez rajouter vos compétences professionnelles.',
       })
     )
-    .length(3, 'Vous devz rajouter 03 compétences professionnelles.'),
+    .max(3, 'Vous devz rajouter au maximum 03 compétences professionnelles.'),
   isFaceToFace: z.boolean({ required_error: 'Mode de travail Requis' }),
   isRemote: z.boolean({ required_error: 'Mode de travail Requis' }),
   profession: z.string().min(3, 'Entrez une profession valide.'),

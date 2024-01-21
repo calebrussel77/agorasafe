@@ -307,10 +307,7 @@ const schema = z.discriminatedUnion('profileType', [
       .array(z.object({ label: z.string(), value: z.string() }), {
         required_error: 'Vous devez rajouter vos compétences professionnelles.',
       })
-      .length(
-        3,
-        'Vous ne pouvez rajouter que 03 compétences professionnelles.'
-      ),
+      .max(3, 'Vous ne pouvez rajouter que 03 compétences professionnelles.'),
   }),
 ]);
 
