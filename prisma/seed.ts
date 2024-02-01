@@ -1,8 +1,9 @@
 import { faker } from '@faker-js/faker';
 import { PrismaClient } from '@prisma/client';
 
-import { engagementSkills, serviceCategories, services } from '../src/data';
+import { serviceCategories, services, skills } from '../src/data';
 import { formatYearMonthDay } from '../src/lib/date-fns';
+import { makeRandomId } from '../src/utils/misc';
 import { slugit } from '../src/utils/strings';
 
 const prisma = new PrismaClient({ log: ['warn', 'error'] });
@@ -149,9 +150,12 @@ const createPhoto = async () => {
 const createLocation = async () => {
   return prisma.location.create({
     data: {
-      lat: faker.location.latitude().toFixed(),
-      long: faker.location.longitude().toFixed(),
-      name: `${faker.location.streetAddress()}`,
+      lat: faker.location.latitude(),
+      long: faker.location.longitude(),
+      address: faker.location.streetAddress(),
+      city: faker.location.city(),
+      country: faker.location.country(),
+      placeId: makeRandomId(),
     },
   });
 };
@@ -180,13 +184,14 @@ const createUserWithAdminRoleAndProfiles = async () => {
   const { profiles } = await prisma.user.create({
     data: {
       email: 'calebrussel77@gmail.com',
+      version: Number(process.env.NEXT_PUBLIC_SESSION_VERSION),
+      tos: true,
       // email: 'fake.email@gmail.fr',
       firstName: faker.person.firstName(),
       fullName: faker.person.fullName(),
       lastName: faker.person.lastName(),
       birthdate: formatYearMonthDay(faker.date.birthdate({ mode: 'year' })),
       sex: 'MALE',
-      hasBeenOnboarded: true,
       role: 'ADMIN',
       picture: faker.image.avatar(),
       profiles: {
@@ -232,77 +237,83 @@ const createUserWithAdminRoleAndProfiles = async () => {
       console.log(
         '🧹👮 Updating the CUSTOMER profile with details and create 02 service requests...'
       );
-      await prisma.profile.update({
-        where: { id: profile.id },
-        data: {
-          customerInfo: {
-            create: {
-              serviceRequests: {
-                create: [
-                  {
-                    date: faker.date.past(),
-                    title: faker.lorem.lines(5),
-                    description: faker.lorem.paragraph(4),
-                    estimatedPrice: +faker.commerce.price(),
-                    numberOfProviderNeeded: faker.number.int({
-                      min: 1,
-                      max: 5,
-                    }),
-                    nbOfHours: faker.number.int({ min: 1, max: 5 }),
-                    phoneToContact: faker.phone.number('+23769#######'),
-                    service: {
-                      connect: {
-                        name: faker.helpers.shuffle(services)[0]?.name,
-                      },
-                    },
-                    slug: slugit(faker.lorem.lines(2)),
-                    startHour: 8,
-                    location: {
-                      connectOrCreate: {
-                        where: { name: faker.location.streetAddress() },
-                        create: {
-                          lat: faker.location.latitude().toFixed(),
-                          long: faker.location.longitude().toFixed(),
-                          name: faker.location.streetAddress(),
-                        },
-                      },
-                    },
-                  },
-                  {
-                    date: faker.date.past(),
-                    title: faker.lorem.lines(2),
-                    description: faker.lorem.paragraph(4),
-                    estimatedPrice: +faker.commerce.price(),
-                    numberOfProviderNeeded: faker.number.int({
-                      min: 1,
-                      max: 5,
-                    }),
-                    nbOfHours: faker.number.int({ min: 1, max: 5 }),
-                    phoneToContact: faker.phone.number('+23765#######'),
-                    service: {
-                      connect: {
-                        name: faker.helpers.shuffle(services)[0]?.name,
-                      },
-                    },
-                    slug: slugit(faker.lorem.lines(2)),
-                    startHour: 15,
-                    location: {
-                      connectOrCreate: {
-                        where: { name: faker.location.streetAddress() },
-                        create: {
-                          lat: faker.location.latitude().toFixed(),
-                          long: faker.location.longitude().toFixed(),
-                          name: faker.location.streetAddress(),
-                        },
-                      },
-                    },
-                  },
-                ],
-              },
-            },
-          },
-        },
-      });
+      // await prisma.profile.update({
+      //   where: { id: profile.id },
+      //   data: {
+      //     customerInfo: {
+      //       create: {
+      //         serviceRequests: {
+      //           create: [
+      //             {
+      //               date: faker.date.past(),
+      //               title: faker.lorem.lines(5),
+      //               description: faker.lorem.paragraph(4),
+      //               estimatedPrice: +faker.commerce.price(),
+      //               numberOfProviderNeeded: faker.number.int({
+      //                 min: 1,
+      //                 max: 5,
+      //               }),
+      //               nbOfHours: faker.number.int({ min: 1, max: 5 }),
+      //               phoneToContact: faker.phone.number('+23769#######'),
+      //               service: {
+      //                 connect: {
+      //                   name: faker.helpers.shuffle(services)[0]?.name,
+      //                 },
+      //               },
+      //               slug: slugit(faker.lorem.lines(2)),
+      //               startHour: 8,
+      //               location: {
+      //                 connectOrCreate: {
+      //                   where: { name: faker.location.streetAddress() },
+      //                   create: {
+      //                     lat: faker.location.latitude(),
+      //                     long: faker.location.longitude(),
+      //                     address: faker.location.streetAddress(),
+      //                     city: faker.location.city(),
+      //                     country: faker.location.country(),
+      //                     placeId: makeRandomId(),
+      //                   },
+      //                 },
+      //               },
+      //             },
+      //             {
+      //               date: faker.date.past(),
+      //               title: faker.lorem.lines(2),
+      //               description: faker.lorem.paragraph(4),
+      //               estimatedPrice: +faker.commerce.price(),
+      //               numberOfProviderNeeded: faker.number.int({
+      //                 min: 1,
+      //                 max: 5,
+      //               }),
+      //               nbOfHours: faker.number.int({ min: 1, max: 5 }),
+      //               phoneToContact: faker.phone.number('+23765#######'),
+      //               service: {
+      //                 connect: {
+      //                   name: faker.helpers.shuffle(services)[0]?.name,
+      //                 },
+      //               },
+      //               slug: slugit(faker.lorem.lines(2)),
+      //               startHour: 15,
+      //               location: {
+      //                 connectOrCreate: {
+      //                   where: { name: faker.location.streetAddress() },
+      //                   create: {
+      //                     lat: faker.location.latitude(),
+      //                     long: faker.location.longitude(),
+      //                     address: faker.location.streetAddress(),
+      //                     city: faker.location.city(),
+      //                     country: faker.location.country(),
+      //                     placeId: makeRandomId(),
+      //                   },
+      //                 },
+      //               },
+      //             },
+      //           ],
+      //         },
+      //       },
+      //     },
+      //   },
+      // });
     } else {
       console.log('🧹👮 Updating the PROVIDER profile with details...');
       await prisma.profile.update({
@@ -315,8 +326,8 @@ const createUserWithAdminRoleAndProfiles = async () => {
               isRemote: false,
               skills: {
                 connect: [
-                  { name: faker.helpers.shuffle(engagementSkills)[3]?.name },
-                  { name: faker.helpers.shuffle(engagementSkills)[6]?.name },
+                  { name: faker.helpers.shuffle(skills)[3]?.name },
+                  { name: faker.helpers.shuffle(skills)[6]?.name },
                 ],
               },
               showCaseProjects: {
@@ -343,9 +354,15 @@ const createUserWithAdminRoleAndProfiles = async () => {
   }
 };
 
-const createEngamentSkills = async () => {
+// const createEngamentSkills = async () => {
+//   await prisma.skill.createMany({
+//     data: engagementSkills?.map(skill => ({ name: skill.name })),
+//   });
+// };
+
+const createSkills = async () => {
   await prisma.skill.createMany({
-    data: engagementSkills?.map(skill => ({ name: skill.name })),
+    data: skills?.map(skill => ({ name: skill.name })),
   });
 };
 
@@ -370,8 +387,8 @@ const destroyData = async () => {
   try {
     console.log('🌱 Cleaned up the database...');
 
-    console.log('🧹 Deleting service request reservations...');
-    await prisma.serviceRequestReservation.deleteMany();
+    // console.log('🧹 Deleting service request reservations...');
+    // await prisma.serviceRequestReservation.deleteMany();
 
     console.log('🧹 Deleting locations...');
     await prisma.location.deleteMany();
@@ -388,10 +405,10 @@ const destroyData = async () => {
     console.log('🧹 Deleting services...');
     await prisma.service.deleteMany();
 
-    console.log('🧹 Deleting skills...');
-    await prisma.skill.deleteMany();
+    // console.log('🧹 Deleting skills...');
+    // await prisma.skill.deleteMany();
 
-    console.log('🧹 Deleting service categories...');
+    // console.log('🧹 Deleting service categories...');
     await prisma.categoryService.deleteMany();
 
     console.log('🧹 Deleting service requests...');
@@ -416,8 +433,10 @@ const importData = async () => {
     console.log(`🧹 Creating categories with services...`);
     await createCategoriesWithServices();
 
-    console.log(`🧹 Creating engagement skills...`);
-    await createEngamentSkills();
+    console.log(`🧹 Creating skills...`);
+    await createSkills();
+
+    // await createEngamentSkills();
 
     // console.log(
     //   `🧹 Creating 01 user with 02 complete profiles with details...`

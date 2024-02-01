@@ -62,12 +62,12 @@ export const getAddProfileInfos = (profileType: ProfileType) => {
   if (profileType === ProfileType.CUSTOMER) {
     return {
       addNewProfileMessage: `Ajouter un profil Prestataire`,
-      addNewProfileHref: `/onboarding/add-new-profile?profile_type=${ProfileType.PROVIDER}`,
+      allowedProfileType: ProfileType.PROVIDER,
     };
   }
   return {
     addNewProfileMessage: `Ajouter un profil Client`,
-    addNewProfileHref: `/onboarding/add-new-profile?profile_type=${ProfileType.CUSTOMER}`,
+    allowedProfileType: ProfileType.CUSTOMER,
   };
 };
 

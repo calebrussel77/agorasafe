@@ -1,10 +1,11 @@
 /* eslint-disable no-unused-vars */
 import { forwardRef, useEffect, useState } from 'react';
 
+import { createEvent } from '@/utils/create-event';
+
+import { useDebounce } from '@/hooks/use-debounce';
 
 import { Input, type InputProps } from '../input';
-import { useDebounce } from '@/hooks/use-debounce';
-import { createEvent } from '../file-upload/create-event';
 
 // A debounced input component
 type DebouncedInputProps = {
@@ -13,12 +14,12 @@ type DebouncedInputProps = {
 } & InputProps;
 
 const DebouncedInput = forwardRef<HTMLInputElement, DebouncedInputProps>(
-  ({ value: initialValue, onChange, debounce = 500, ...props }, ref) => {
+  ({ value: initialValue, onChange, name, debounce = 500, ...props }, ref) => {
     const [value, setValue] = useState(initialValue || '');
 
     useDebounce(
       () => {
-        const event = createEvent({ value });
+        const event = createEvent({ name, value });
         onChange && onChange(event as never);
       },
       debounce,
@@ -33,6 +34,7 @@ const DebouncedInput = forwardRef<HTMLInputElement, DebouncedInputProps>(
       <Input
         ref={ref}
         {...props}
+        name={name}
         value={value}
         onChange={e => setValue(e.target.value)}
       />

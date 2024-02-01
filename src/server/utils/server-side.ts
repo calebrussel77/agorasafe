@@ -13,7 +13,6 @@ import { sentryCaptureException } from '@/lib/sentry';
 
 import { type SimpleProfile } from '../api/modules/profiles';
 import { appRouter } from '../api/root';
-import { createInnerTRPCContext } from '../api/trpc';
 import { getServerAuthSession } from '../auth';
 
 export const getServerProxySSGHelpers = (
@@ -22,12 +21,17 @@ export const getServerProxySSGHelpers = (
   profile: SimpleProfile | null
 ) => {
   const router = appRouter;
-  const innerTRPCContext = createInnerTRPCContext({ session, profile });
   const transformer = superjson;
 
   const ssg = createServerSideHelpers({
     router,
-    ctx: innerTRPCContext,
+    ctx: {
+      user: session?.user,
+      profile: profile,
+      ip: null as never,
+      res: null as never,
+      cache: null as never,
+    },
     transformer,
   });
 

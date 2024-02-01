@@ -1,6 +1,7 @@
-import React, { type ReactNode } from 'react';
+import React from 'react';
 
 import { Button } from '@/components/ui/button';
+import { LoadingOverlay } from '@/components/ui/loading-overlay';
 import {
   type ContextModalProps,
   ModalFooter,
@@ -12,13 +13,20 @@ import { toast } from '@/components/ui/toast';
 import { useUpload } from '@/components/ui/uploadthing';
 
 import { api } from '@/utils/api';
+import { gaTrackEvent } from '@/utils/ga-events';
 import { isArray } from '@/utils/type-guards';
+
+import { useCurrentUser } from '@/hooks/use-current-user';
 
 import { type FeedBackFormInput, FeedbackForm } from './feedback-form';
 
 const formId = 'feedback-form';
 
-const FeedbackFormModal = ({ context: ctx, id }: ContextModalProps<object>) => {
+const FeedbackFormModal = ({
+  context: ctx,
+  id,
+}: ContextModalProps<Record<string, any>>) => {
+  const { profile } = useCurrentUser();
   const createFeedbackMutation = api.feedbacks.create.useMutation({
     onSuccess() {
       toast({
@@ -27,6 +35,14 @@ const FeedbackFormModal = ({ context: ctx, id }: ContextModalProps<object>) => {
         title: 'Formulaire soumis avec succès !',
         description:
           'Nous vous remercions de nous avoir partagé vos commentaires.',
+      });
+    },
+    onMutate(variables) {
+      gaTrackEvent('feedback-submission', {
+        category: 'Contact',
+        message: `Sending Feedback form infos`,
+        content: variables.content,
+        userId: profile?.id || 'noop',
       });
     },
   });
@@ -54,7 +70,10 @@ const FeedbackFormModal = ({ context: ctx, id }: ContextModalProps<object>) => {
         title="😊 Partagez votre avis sur Agorasafe"
         description="Nous attachons une grande importance à votre opinion. Aidez-nous à améliorer Agorasafe en partageant vos commentaires. Votre avis compte !"
       />
-      <ModalMain>
+      <ModalMain className="relative">
+        <LoadingOverlay
+          visible={createFeedbackMutation.isLoading || isUploading}
+        />
         {createFeedbackMutation.error && (
           <SectionMessage
             description={createFeedbackMutation.error?.message}
@@ -63,7 +82,8 @@ const FeedbackFormModal = ({ context: ctx, id }: ContextModalProps<object>) => {
         )}
         {createFeedbackMutation?.isSuccess ? (
           <SectionMessage
-            description="Formulaire soumis avec succès ! Nous vous remercions de nous avoir partagé vos commentaires."
+            title="Formulaire soumis avec succès !"
+            description="Nous vous remercions de nous avoir partagé vos commentaires."
             appareance="success"
             hasCloseButton={false}
           />

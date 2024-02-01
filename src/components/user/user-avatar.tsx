@@ -16,7 +16,6 @@ const UserAvatar: FC<UserAvatarProps> = ({ profile, ...props }) => {
   return (
     <Avatar
       isBordered
-      // color={getIsCustomer(type) ? 'default' : 'primary'}
       style={{ backgroundColor: 'rgba(0,0,0,0.31)' }}
       src={profile.avatar && !isProfileDeleted ? profile.avatar : undefined}
       alt={

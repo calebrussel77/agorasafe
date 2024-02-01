@@ -18,6 +18,7 @@ import { Truncate } from '../ui/truncate';
 import { Typography } from '../ui/typography';
 import { UserAvatar } from './user-avatar';
 import { UserName } from './user-name';
+import { UserRating } from './user-rating';
 
 type ClassNames = {
   root: string;
@@ -91,7 +92,7 @@ const User: FC<UserProps> = ({
   const subTextSizeClassNames =
     classNames?.subText ?? mapAvatarTextSize[size].subTextSize;
 
-  subText = subText === null ? null : profile?.location?.name;
+  subText = subText === null ? null : subText || profile?.location?.address;
   const isProvider = profile?.type === 'PROVIDER';
 
   const user = (
@@ -117,7 +118,9 @@ const User: FC<UserProps> = ({
                   withProfileBadge={withProfileBadge}
                   withProfileBadgeInitial={withProfileBadgeInitial}
                   profile={profile}
-                  className={cn(textSizeClassNames, classNames?.text)}
+                  classNames={{
+                    text: cn(textSizeClassNames, classNames?.text),
+                  }}
                 />
                 {badge}
               </div>
@@ -140,19 +143,20 @@ const User: FC<UserProps> = ({
           )}
 
           {isProvider && withRating && (
-            <Rating readonly initialRating={1} size="xs" className="-mt-0.5" />
+            <UserRating
+              profileName={profile?.name}
+              reviewsCount={profile?._count?.receivedReviews}
+            />
           )}
         </div>
       ) : null}
     </div>
   );
 
-  console.log(user);
-
   return user;
 };
 
-const UserProfileLink = ({
+export const UserProfileLink = ({
   children,
   profile,
   canLinkToProfile,
@@ -176,4 +180,4 @@ const UserProfileLink = ({
   );
 };
 
-export { User }
+export { User };

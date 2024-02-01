@@ -151,6 +151,7 @@ const Avatar = React.forwardRef<
       size = 'sm',
       shape = 'circle',
       isDisabled,
+      onClick,
       color,
       alt,
       src,
@@ -182,6 +183,7 @@ const Avatar = React.forwardRef<
         ref={ref}
         {...{ 'data-hover': dataAttr(isHovered), ...hoverProps }}
         className={avatarClassName}
+        onClick={onClick}
       >
         <AvatarImage
           alt={alt}

@@ -17,7 +17,7 @@ export async function invalidateModeratedContent(
     await queryUtils.profileConfig.getProfileConfig.invalidate();
 
   if (hasChangedServiceRequests)
-    await queryUtils.services.getAllServiceRequests.invalidate();
+    await queryUtils.serviceRequests.getAll.invalidate();
 
   await queryUtils.conversations.invalidate();
 }

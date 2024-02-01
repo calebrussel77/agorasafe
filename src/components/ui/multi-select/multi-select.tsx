@@ -73,7 +73,7 @@ export function MultiSelect({
 
       if (query.length === 0) return true;
 
-      return option.label.toLowerCase().includes(query.toLowerCase());
+      return option?.label?.toLowerCase()?.includes(query.toLowerCase());
     });
   }, [options, query, selected]);
 

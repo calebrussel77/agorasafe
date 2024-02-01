@@ -9,10 +9,12 @@ export const truncate = (text: string, maxLength: number, ellipsis = true) => {
 };
 
 export const truncateOnWord = (
-  text = '',
+  text: string | undefined | null,
   maxLength: number,
   ellipsis = true
 ) => {
+  text ??= '';
+
   if (text?.length <= maxLength) return text;
 
   // First split on maxLength chars
@@ -60,4 +62,3 @@ export const deSerialize = <T>(jsonString: string | null) => {
 export const serialize = (object: unknown) => {
   return JSON.stringify(object);
 };
-

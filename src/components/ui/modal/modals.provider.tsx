@@ -166,7 +166,7 @@ export function ModalsProvider({
     closeAllModals: closeAll,
   });
 
-  const ctx: ModalsContextProps = {
+  const ctx = {
     modals: state.modals,
     openModal,
     openConfirmModal,
@@ -174,7 +174,7 @@ export function ModalsProvider({
     closeModal,
     closeContextModal: closeModal,
     closeAll,
-  };
+  } as ModalsContextProps;
 
   const getCurrentModal = () => {
     const currentModal = stateRef.current.current;

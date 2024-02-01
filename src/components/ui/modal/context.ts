@@ -1,5 +1,7 @@
 import { type ReactNode, createContext } from 'react';
 
+import { type MantineModalsOverride } from '@/components/ui/modal';
+
 import type { ConfirmModalProps } from './confirmModal';
 import { type ModalProps } from './modal';
 
@@ -27,13 +29,17 @@ export type ModalState =
   | { id: string; props: OpenConfirmModal; type: 'confirm' }
   | { id: string; props: OpenContextModal; type: 'context'; ctx: string };
 
+export type MantineModals = MantineModalsOverride['modals'];
+
+export type MantineModal = keyof MantineModals;
+
 export interface ModalsContextProps {
   modals: ModalState[];
   openModal: (props: ModalSettings) => string;
   openConfirmModal: (props: OpenConfirmModal) => string;
   openContextModal: <TKey extends MantineModal>(
     modal: TKey,
-    props: OpenContextModal<Parameters<MantineModals[TKey]>[0]['innerProps']>
+    props: OpenContextModal<Parameters<MantineModals[TKey]>[0]>['innerProps']
   ) => string;
   closeModal: (id: string, canceled?: boolean) => void;
   closeContextModal: <TKey extends MantineModal>(
@@ -42,20 +48,6 @@ export interface ModalsContextProps {
   ) => void;
   closeAll: () => void;
 }
-
-export type MantineModalsOverride = Record<string, never>;
-
-export type MantineModalsOverwritten = MantineModalsOverride extends {
-  modals: Record<string, React.FC<ContextModalProps<any>>>;
-}
-  ? MantineModalsOverride
-  : {
-      modals: Record<string, React.FC<ContextModalProps<any>>>;
-    };
-
-export type MantineModals = MantineModalsOverwritten['modals'];
-
-export type MantineModal = keyof MantineModals;
 
 export const ModalsContext = createContext<ModalsContextProps>(null as never);
 ModalsContext.displayName = '@agorasafe/modals/ModalsContext';

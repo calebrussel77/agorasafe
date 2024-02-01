@@ -1,12 +1,19 @@
-import { ChevronDown, LogOut, RefreshCcw, UserPlus2 } from 'lucide-react';
+import {
+  ChevronDown,
+  LogOut,
+  RefreshCcw,
+  User2,
+  UserPlus2,
+} from 'lucide-react';
 import React, { type FC } from 'react';
 
 import { Anchor } from '@/components/anchor';
 import { AutoAnimate } from '@/components/ui/auto-animate';
 import { Avatar } from '@/components/ui/avatar';
 import { Button, buttonVariants } from '@/components/ui/button';
-import { DropdownMenu } from '@/components/ui/dropdown-menu';
+import { DropdownMenu, useDropdownMenu } from '@/components/ui/dropdown-menu';
 import { ErrorWrapper, SectionError } from '@/components/ui/error';
+import { openContextModal } from '@/components/ui/modal';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Typography } from '@/components/ui/typography';
 import { User } from '@/components/user';
@@ -27,8 +34,8 @@ import { type GetProfileConfigOutput } from '../types';
 interface UserProfileDropdownProps {
   isLoading?: boolean;
   error?: { message: string };
-  isOpen?: boolean;
-  onToggle?: () => void;
+  isOpen: boolean;
+  onToggle: (value: boolean) => void;
   userProfileConfig: GetProfileConfigOutput;
   currentProfile: SimpleProfile;
   isHeaderScrolled: boolean;
@@ -45,6 +52,7 @@ const UserProfileDropdown: FC<UserProfileDropdownProps> = ({
 }) => {
   const { onSignOut } = useAuth();
   const { resetProfile } = useCurrentUser();
+  // const {} = useDropdownMenu()
 
   if (!currentProfile) return null;
 
@@ -55,7 +63,6 @@ const UserProfileDropdown: FC<UserProfileDropdownProps> = ({
         className="ml-4 hidden rounded-full lg:flex"
       >
         <button
-          onClick={onToggle}
           className={cn(
             'default__transition flex items-center px-2 py-1',
             isHeaderScrolled ? 'hover:bg-brand-50' : 'hover:bg-gray-500'
@@ -113,26 +120,29 @@ const UserProfileDropdown: FC<UserProfileDropdownProps> = ({
               <>
                 {userProfileConfig?.canAddNewProfile && (
                   <>
-                    <Anchor
-                      // onClick={resetProfile}
-                      href={userProfileConfig?.addNewProfileHref}
-                      className="w-full"
-                    >
-                      <DropdownMenu.Item
-                        className={cn(
-                          buttonVariants({
-                            size: 'sm',
-                            variant: 'ghost',
-                          }),
-                          'h-auto w-full'
-                        )}
+                    <DropdownMenu.Item asChild>
+                      <Button
+                        onClick={() => {
+                          openContextModal({
+                            modal: 'addProfile',
+                            isFullScreen: true,
+                            innerProps: {
+                              choosedProfileType:
+                                userProfileConfig?.allowedProfileType,
+                            },
+                          });
+                          onToggle(false);
+                        }}
+                        size="sm"
+                        variant="ghost"
+                        className="flex w-full"
                       >
-                        <UserPlus2 className="mr-2 h-5 w-5" />
-                        <span className="line-clamp-1">
+                        <User2 className="mr-2 h-5 w-5" />
+                        <Typography className="text-sm" truncate>
                           {userProfileConfig?.addNewProfileMessage}
-                        </span>
-                      </DropdownMenu.Item>
-                    </Anchor>
+                        </Typography>
+                      </Button>
+                    </DropdownMenu.Item>
                     <DropdownMenu.Separator />
                   </>
                 )}
@@ -166,6 +176,7 @@ const UserProfileDropdown: FC<UserProfileDropdownProps> = ({
                   return (
                     <DropdownMenu.Item
                       key={link.id}
+                      onClick={() => onToggle(false)}
                       disabled={link.disabled}
                       className={
                         isMatch ? 'mb-2 bg-zinc-100 text-primary' : 'mb-2'

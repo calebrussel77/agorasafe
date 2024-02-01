@@ -12,7 +12,7 @@ export const ourFileRouter = {
 
       if (!session) throw new Error('Unauthorized');
 
-      return { userId: session.user.id };
+      return { userId: session.user?.id };
     })
     .onUploadComplete(({ file }) => {
       console.log('file', file);
@@ -26,7 +26,7 @@ export const ourFileRouter = {
       if (!session) throw new Error('Unauthorized');
 
       // Whatever is returned here is accessible in onUploadComplete as `metadata`
-      return { userId: session.user.id };
+      return { userId: session.user?.id };
     })
     .onUploadComplete(({ file }) => {
       console.log('file', file);
@@ -49,7 +49,7 @@ export const ourFileRouter = {
       if (!session) throw new Error('Unauthorized');
 
       // Whatever is returned here is accessible in onUploadComplete as `metadata`
-      return { userId: session.user.id };
+      return { userId: session.user?.id };
     })
     .onUploadComplete(({ file }) => {
       console.log('file', file);

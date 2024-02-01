@@ -11,6 +11,7 @@ import { ActionTooltip } from '../action-tooltip';
 import { LogoSymbolIcon } from '../icons/logo-icon';
 import { Tooltip } from '../ui/tooltip';
 import { Typography } from '../ui/typography';
+import { UserProfileLink } from './user';
 import { UserBadge } from './user-badge';
 
 type ClassNames = {
@@ -26,6 +27,7 @@ interface UserAvatarProps {
   profile: Partial<SimpleProfile> | null | undefined;
   withProfileBadge?: boolean;
   withProfileBadgeInitial?: boolean;
+  canLinkToProfile?: boolean;
 }
 
 const UserName: FC<UserAvatarProps> = ({
@@ -34,6 +36,7 @@ const UserName: FC<UserAvatarProps> = ({
   className,
   classNames,
   withProfileBadgeInitial = true,
+  canLinkToProfile = false,
   ...props
 }) => {
   if (!profile) return null;
@@ -58,39 +61,45 @@ const UserName: FC<UserAvatarProps> = ({
     );
 
   return (
-    <div
-      className={cn('flex flex-nowrap items-center gap-x-1', classNames?.root)}
-    >
-      <Typography
-        as="h3"
-        truncate
-        variant="h4"
+    <UserProfileLink canLinkToProfile={canLinkToProfile} profile={profile}>
+      <div
         className={cn(
-          'line-clamp-1 text-sm font-semibold',
+          'flex flex-nowrap items-center gap-x-1',
           className,
-          classNames?.text
+          classNames?.root
         )}
       >
-        {profile?.name}
-      </Typography>
+        <Typography
+          as="h3"
+          truncate
+          variant="h4"
+          className={cn(
+            'line-clamp-1 text-sm font-semibold',
+            canLinkToProfile && 'hover:underline',
+            classNames?.text
+          )}
+        >
+          {profile?.name}
+        </Typography>
 
-      {/* //TODO: Need to fix hydratation error occuring when using a tooltip */}
-      {withProfileBadge && (
-        <UserBadge
-          size="xs"
-          type={profile.type as ProfileType}
-          withProfileBadgeInitial={withProfileBadgeInitial}
-          className={cn(classNames?.badge)}
-        />
-      )}
+        {/* //TODO: Need to fix hydratation error occuring when using a tooltip */}
+        {withProfileBadge && (
+          <UserBadge
+            size="xs"
+            type={profile.type as ProfileType}
+            withProfileBadgeInitial={withProfileBadgeInitial}
+            className={cn(classNames?.badge)}
+          />
+        )}
 
-      {/* //TODO: Need to fix hydratation error occuring when using a tooltip */}
-      {isAdmin && (
-        <LogoSymbolIcon
-          className={cn('h-4 w-4 flex-shrink-0', classNames?.badge)}
-        />
-      )}
-    </div>
+        {/* //TODO: Need to fix hydratation error occuring when using a tooltip */}
+        {isAdmin && (
+          <LogoSymbolIcon
+            className={cn('h-4 w-4 flex-shrink-0', classNames?.badge)}
+          />
+        )}
+      </div>
+    </UserProfileLink>
   );
 };
 

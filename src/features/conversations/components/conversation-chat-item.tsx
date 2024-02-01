@@ -1,4 +1,7 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+import { useMutation } from '@tanstack/react-query';
 import axios from 'axios';
+import { produce } from 'immer';
 import {
   Edit,
   LinkIcon,
@@ -11,20 +14,24 @@ import { type Session } from 'next-auth';
 import { useRouter } from 'next/router';
 import qs from 'query-string';
 import { cloneElement, useCallback, useEffect, useMemo, useState } from 'react';
+import { Controller } from 'react-hook-form';
 import * as z from 'zod';
 
-import { EmojiPicker } from '@/components/emoji-picker';
+import { RenderHtml } from '@/components/render-html';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu } from '@/components/ui/dropdown-menu';
-import { Field } from '@/components/ui/field';
 import { getFileIcon, getImageUrl } from '@/components/ui/file-upload';
 import { Form, useZodForm } from '@/components/ui/form';
 import { Image } from '@/components/ui/image';
 import { Inline } from '@/components/ui/inline';
 import { closeModal, openConfirmModal } from '@/components/ui/modal';
-import { TextareaAutosize } from '@/components/ui/textarea-autosize';
+import { Editor } from '@/components/ui/rich-text-editor';
+import { toast } from '@/components/ui/toast';
 import { Typography } from '@/components/ui/typography';
 import { UserAvatar, UserName } from '@/components/user';
+
+import { api } from '@/utils/api';
+import { removeTags } from '@/utils/strings';
 
 import { cn } from '@/lib/utils';
 
@@ -54,6 +61,16 @@ type FormDataInputs = z.infer<typeof formSchema>;
 
 const modalId = 'delete-conversation-chat-item';
 
+const updateConversationMessage = async ({
+  url,
+  formData,
+}: {
+  url: string;
+  formData: FormDataInputs;
+}) => {
+  return axios.patch(url, formData);
+};
+
 export const ConversationChatItem = ({
   id,
   content,
@@ -71,6 +88,82 @@ export const ConversationChatItem = ({
   const [isLoadingDelete, setIsLoadingDelete] = useState(false);
   const router = useRouter();
   const onHandleEscape = () => setIsEditing(false);
+  const queryUtils = api.useContext();
+
+  const updateMessage = useMutation({
+    mutationFn: updateConversationMessage,
+    async onMutate({ formData: { content } }) {
+      // Cancel any outgoing refetches
+      // (so they don't overwrite our optimistic update)
+      await queryUtils.messages.getDirectMessages.cancel();
+      await queryUtils.conversations.getConversations.cancel();
+
+      //Update the UI by adding the new message on the messages list
+      queryUtils.messages.getDirectMessages.setInfiniteData(
+        { conversationId: socketQuery.conversationId as string },
+        produce(oldData => {
+          if (!oldData || !oldData.pages || oldData.pages.length === 0) {
+            return oldData;
+          }
+
+          for (const page of oldData.pages) {
+            const index = page.directMessages.findIndex(item => item.id === id);
+            if (index !== -1) {
+              if (page.directMessages[index]) {
+                //@ts-ignore
+                page.directMessages[index].content = content;
+                //@ts-ignore
+                page.directMessages[index].updatedAt = new Date();
+              }
+            }
+          }
+        })
+      );
+
+      //Update the UI by adding the new message on the conversations list (lastMessage)
+      queryUtils.conversations.getConversations.setInfiniteData(
+        { profileId: connectedProfile?.id },
+        produce(oldData => {
+          if (!oldData) {
+            return oldData;
+          }
+          for (const page of oldData.pages) {
+            for (const item of page.conversations) {
+              const directMessage = item.directMessages.find(
+                item => item.id === id
+              );
+              if (directMessage) {
+                directMessage.content = content;
+                directMessage.updatedAt = new Date();
+              }
+            }
+          }
+        })
+      );
+
+      //Reset the form and set editing mode
+      form.reset();
+      setIsEditing(false);
+    },
+    onError(error) {
+      console.error(error);
+      toast({
+        variant: 'danger',
+        title: "Une erreur s'est produite",
+        description:
+          "Une erreur s'est produite lors de l'envoi de votre message. Rechargez votre page et reessayez.",
+      });
+    },
+    // Always refetch after error or success:
+    onSettled: async () => {
+      await queryUtils.conversations.getConversations.invalidate({
+        profileId: connectedProfile?.id,
+      });
+      await queryUtils.messages.getDirectMessages.invalidate({
+        conversationId: socketQuery?.conversationId,
+      });
+    },
+  });
 
   const onProfileClick = () => {
     if (profile.id === connectedProfile.id) {
@@ -88,24 +181,12 @@ export const ConversationChatItem = ({
 
   const isLoading = form.formState.isSubmitting;
 
-  const onSubmit = async (values: FormDataInputs) => {
-    try {
-      const url = qs.stringifyUrl({
-        url: `${socketUrl}/${id}`,
-        query: socketQuery,
-      });
-
-      await axios.patch(url, values);
-
-      form.reset();
-      setIsEditing(false);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const onHandleSubmit = (event: React.KeyboardEvent<HTMLElement>) => {
-    void form.handleSubmit(onSubmit)(event);
+  const onSubmit = (formData: FormDataInputs) => {
+    const url = qs.stringifyUrl({
+      url: `${socketUrl}/${id}`,
+      query: socketQuery,
+    });
+    updateMessage.mutate({ url, formData });
   };
 
   const onDelete = useCallback(async () => {
@@ -131,7 +212,7 @@ export const ConversationChatItem = ({
       children: (
         <Typography>
           Êtes-vous sûr de vouloir supprimer le message "
-          <span className="font-semibold">{content}</span>" ?
+          <span className="font-semibold">{removeTags(content)}</span>" ?
         </Typography>
       ),
       className: 'max-w-xl',
@@ -146,8 +227,6 @@ export const ConversationChatItem = ({
     });
   }, [content, form]);
 
-  const watchedContent = form.watch('content');
-
   const isAdmin = session?.user?.role === 'ADMIN';
   const isOwner = connectedProfile?.id === profile?.id;
   const canDeleteMessage = !isDeleted && (isAdmin || isOwner);
@@ -158,22 +237,27 @@ export const ConversationChatItem = ({
   const messageOptions = useMemo(() => {
     return [
       {
-        label: 'Supprimer',
-        canView: canDeleteMessage,
-        onClick: onOpenDeleteModal,
-        icon: <TrashIcon />,
-      },
-      {
         label: 'Modifier',
         canView: canEditMessage,
         onClick: () => setIsEditing(true),
         icon: <Edit />,
       },
+      {
+        label: 'Supprimer',
+        canView: canDeleteMessage,
+        onClick: onOpenDeleteModal,
+        icon: <TrashIcon />,
+      },
     ];
   }, [canEditMessage, onOpenDeleteModal, canDeleteMessage]);
 
   return (
-    <div className="group relative flex w-full items-start p-4 transition hover:bg-black/5">
+    <div
+      className={cn(
+        'group relative flex w-full items-start p-4 transition',
+        !isEditing && 'hover:bg-black/5'
+      )}
+    >
       <div className="group flex w-full items-start gap-x-2">
         <div
           onClick={onProfileClick}
@@ -193,6 +277,9 @@ export const ConversationChatItem = ({
               <span className="text-xs text-zinc-500 dark:text-zinc-400">
                 {timestamp}
               </span>
+              {isUpdated && !isDeleted && (
+                <span className="text-[10px] text-zinc-500">(Modifié)</span>
+              )}
             </Inline>
           </div>
           {imageUrl && (
@@ -220,57 +307,59 @@ export const ConversationChatItem = ({
             </a>
           )}
           {!isEditing && (
-            <p
-              className={cn(
-                'text-sm text-zinc-600',
-                isDeleted && 'mt-1 italic text-zinc-500',
-                fileUrl && 'mt-2'
-              )}
-            >
-              {content}
-              {isUpdated && !isDeleted && (
-                <span className="mx-2 text-[10px] text-zinc-500">
-                  (Modifié)
-                </span>
-              )}
-            </p>
+            <>
+              <RenderHtml
+                truncate
+                lines={8}
+                className={cn(
+                  'mt-1 text-sm',
+                  isDeleted && 'italic text-gray-500',
+                  fileUrl && 'mt-2'
+                )}
+                html={content}
+              />
+            </>
           )}
           {isEditing && (
             <Form
               form={form}
-              onSubmit={onSubmit}
               className="flex w-full items-start gap-x-2 space-y-0 pt-1"
               onKeyDown={getHotkeyHandler([
-                ['Enter', onHandleSubmit as never],
                 ['Escape', onHandleEscape as never],
               ])}
             >
               <div className="relative w-full flex-1">
-                <Field
-                  className="w-full"
-                  hint={`Appuyer sur "escape" ou "esc" pour annuler.`}
-                >
-                  <TextareaAutosize
-                    {...form.register('content')}
-                    disabled={isLoading}
-                    placeholder="Modifier le message"
-                    className="w-full rounded-md border-none bg-zinc-200/80 py-3 pl-3 pr-[73px] text-zinc-600 focus-visible:ring-0 focus-visible:ring-offset-0"
-                  />
-                </Field>
-                <div className="absolute bottom-8 right-4 z-20 flex items-center gap-x-2">
-                  <EmojiPicker
-                    onChange={emoji =>
-                      form.setValue('content', `${watchedContent}${emoji}`)
-                    }
-                  />
-                  <button
-                    type="submit"
-                    disabled={isLoading}
-                    className="default__transition flex h-[24px] w-[24px] items-center justify-center rounded-full bg-brand-500/90 p-1 hover:bg-brand-600"
-                  >
-                    <SendHorizonal className="text-white" />
-                  </button>
-                </div>
+                <Controller
+                  control={form.control}
+                  name="content"
+                  render={({ field: { onChange, value }, fieldState }) => {
+                    return (
+                      <Editor
+                        placeholder={`Ecrivez votre message...`}
+                        disabled={isLoading}
+                        // When we have only one input of type RTE, we need to invoke the onSuperEnter event to submit the form,
+                        // without adding extra space.
+                        autoFocus={isEditing}
+                        onSuperEnter={() => form.handleSubmit(onSubmit)()}
+                        hint={`Appuyer sur "escape" ou "esc" pour annuler.`}
+                        editorSize="sm"
+                        value={value || ''}
+                        onChange={onChange}
+                        className="rounded-lg border-none bg-gray-100 pr-20"
+                        iconRight={
+                          <button
+                            type="submit"
+                            disabled={isLoading}
+                            onClick={() => form.handleSubmit(onSubmit)()}
+                            className="default__transition flex h-[24px] w-[24px] items-center justify-center rounded-full bg-brand-500/90 p-1 hover:bg-brand-600"
+                          >
+                            <SendHorizonal className="text-white" />
+                          </button>
+                        }
+                      />
+                    );
+                  }}
+                />
               </div>
             </Form>
           )}

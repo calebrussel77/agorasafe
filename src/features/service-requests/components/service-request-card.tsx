@@ -1,165 +1,124 @@
 import { MapPin } from 'lucide-react';
 import { User2Icon } from 'lucide-react';
-import Link from 'next/link';
 import React, { type FC } from 'react';
 
 import { Anchor } from '@/components/anchor';
-import { NavigationDot } from '@/components/slide';
-import { AvatarGroup } from '@/components/ui/avatar';
+import { DaysFromNow } from '@/components/days-from-now';
+import { ImagesSlider } from '@/components/images-slider';
 import { Badge } from '@/components/ui/badge';
 import { GroupItem } from '@/components/ui/group-item';
-import { Image } from '@/components/ui/image';
 import { Inline } from '@/components/ui/inline';
 import { AbsolutePlacement } from '@/components/ui/layout';
+import { NoSSR } from '@/components/ui/no-ssr';
 import { Typography } from '@/components/ui/typography';
 import { User } from '@/components/user';
 
+import { abbreviateNumber } from '@/utils/number';
+import { removeTags } from '@/utils/strings';
 import { isEmptyArray } from '@/utils/type-guards';
 
-import { dateToReadableString } from '@/lib/date-fns';
+import { decreaseDate } from '@/lib/date-fns';
 import { cn } from '@/lib/utils';
 
-import { type SimpleProfile } from '@/server/api/modules/profiles';
-
-import { useSliderControlsImages } from '@/hooks/use-slider-controls-images';
-
-import { DEFAULT_SERVICE_REQUEST_COVER_IMAGE } from '../constants';
+import { type GetAllServiceRequestsOutput } from '../types';
+import { DEFAULT_SERVICE_REQUEST_COVER_IMAGE } from '../utils';
 
 interface ServiceRequestCardProps {
   className?: string;
-  isFeatured?: boolean;
+  serviceRequest: GetAllServiceRequestsOutput['serviceRequests'][number];
   isNew?: boolean;
-  photos: Array<{ url: string; name: string }>;
-  createdAt: Date;
-  categoryName: string | undefined;
-  categoryHref: string;
-  title: string;
-  slug: string;
-  estimatedPriceText: string;
-  location: string;
-  nbOfProviderNeededText: string;
-  description: string | null;
-  author: SimpleProfile;
-  commentAuthors: Array<{ name: string; src: string | null; href: string }>;
 }
 
+const aDayAgo = decreaseDate(new Date(), { days: 1 });
+
 const ServiceRequestCard: FC<ServiceRequestCardProps> = ({
-  photos: _photos,
-  description,
-  title,
-  categoryHref,
-  categoryName,
-  createdAt,
-  author,
+  serviceRequest,
   className,
-  nbOfProviderNeededText,
-  estimatedPriceText,
-  commentAuthors,
-  isFeatured,
-  isNew,
-  slug,
-  location,
 }) => {
-  const photos = isEmptyArray(_photos)
+  const isNew = serviceRequest.createdAt > aDayAgo;
+  const stats = serviceRequest.stats;
+
+  const serviceRequestStats = (
+    <Inline>
+      <Typography variant="small">
+        {abbreviateNumber(stats.commentCount)} Commentaires
+      </Typography>
+      <Typography variant="small">
+        {abbreviateNumber(stats.proposalCount)} Propositions
+      </Typography>
+      <Typography variant="small">
+        {abbreviateNumber(stats.providersReservedCount)} Réservés
+      </Typography>
+    </Inline>
+  );
+
+  const photos = isEmptyArray(serviceRequest?.photos)
     ? [
         {
           url: DEFAULT_SERVICE_REQUEST_COVER_IMAGE,
-          name: "Photo de couverture d'une demande de service",
+          alt: "Photo de couverture d'une demande de service",
         },
       ]
-    : _photos;
-
-  const photosCount = photos?.length || 1;
-
-  const { currentSlide, sliderRef, hasLoaded, instanceRef } =
-    useSliderControlsImages();
+    : serviceRequest?.photos?.map(el => ({ url: el.url, alt: el.name }));
 
   return (
     <article
       className={cn(
-        'relative flex flex-col items-start justify-between p-2',
+        'relative flex flex-col items-start justify-between overflow-hidden rounded-md border bg-white shadow-lg',
         className
       )}
     >
-      {photosCount > 1 ? (
-        <div ref={sliderRef} className="keen-slider relative px-1">
-          {photos.map((photo, idx) => (
-            <img
-              key={idx}
-              src={photo?.url}
-              alt={photo?.name}
-              loading="eager"
-              className="keen-slider__slide aspect-[16/9] w-full bg-gray-50 object-cover sm:aspect-[2/1] lg:aspect-[3/2]"
-            />
-          ))}
-          {hasLoaded && instanceRef?.current && (
-            <AbsolutePlacement
-              placement="bottom-center"
-              className="flex flex-nowrap items-center gap-3"
-            >
-              {[...Array(photosCount).keys()].map(idx => {
-                return (
-                  <NavigationDot
-                    key={idx}
-                    onClick={() => {
-                      instanceRef?.current?.moveToIdx(idx);
-                    }}
-                    isActive={currentSlide === idx}
-                  />
-                );
-              })}
-            </AbsolutePlacement>
-          )}
-        </div>
-      ) : (
-        <Image
-          src={photos[0]?.url as string}
-          alt={photos[0]?.name as string}
-          className="aspect-[16/9] w-full bg-gray-50 object-cover sm:aspect-[2/1] lg:aspect-[3/2]"
-        />
-      )}
+      <ImagesSlider images={photos} className="aspect-[16/9] w-full" />
       {isNew && (
-        <AbsolutePlacement placement="top-right" className="right-7 top-2">
+        <AbsolutePlacement placement="top-right" className="right-7 top-2 z-30">
           <Badge content="Nouveauté" variant="success" shape="rounded" />
         </AbsolutePlacement>
       )}
-      <div className="max-w-xl">
-        <div className="mt-8 flex items-center gap-x-3 text-xs">
-          <time dateTime={createdAt.toString()} className="text-gray-500">
-            Publiée {dateToReadableString(createdAt)}
-          </time>
-          <Anchor href={categoryHref}>
-            <Badge content={categoryName} />
-          </Anchor>
+      <div className="p-4">
+        <div className="flex items-center gap-x-1 text-xs sm:gap-x-3">
+          <User
+            profile={serviceRequest?.author?.profile}
+            classNames={{ text: 'text-sm' }}
+            avatarProps={{ size: 'xs' }}
+            subText={
+              <DaysFromNow
+                date={serviceRequest?.createdAt}
+                className="text-muted-foreground"
+              />
+            }
+          />
           <div
             aria-label="Prix estimé de la prestation"
             title="Prix estimé de la prestation"
             className="flex flex-1 items-end justify-end pl-1 font-semibold text-brand-600"
           >
-            <span>{estimatedPriceText}</span>
+            <span>{serviceRequest?.estimatedPriceFormatted}</span>
           </div>
         </div>
         <div className="group relative">
-          <Anchor href={`/service-requests/${slug}`}>
+          <Anchor
+            href={`/service-requests/${serviceRequest?.id}/${serviceRequest?.slug}`}
+            className="mt-3 flex items-center gap-2"
+          >
             <Typography
               as="h3"
-              truncate
-              lines={2}
-              className="mt-3 group-hover:text-gray-600"
+              truncate={false}
+              className="line-clamp-2 group-hover:text-gray-600"
             >
               <span className="absolute inset-0" />
-              {title}
+              {serviceRequest?.title}
             </Typography>
+            <Badge content={serviceRequest?.service?.categoryService?.name} />
           </Anchor>
           <Inline>
             <GroupItem
               isHoverDisabled
               classNames={{
                 root: 'gap-x-1.5',
-                name: 'text-sm text-muted-foreground font-normal',
+                name: 'text-sm text-muted-foreground font-normal line-clamp-1',
               }}
               iconBefore={<MapPin className="h-4 w-4" />}
-              name={location}
+              name={serviceRequest?.location?.address}
             />
             <GroupItem
               isHoverDisabled
@@ -169,31 +128,18 @@ const ServiceRequestCard: FC<ServiceRequestCardProps> = ({
                 wrapper: 'flex-nowrap',
               }}
               iconBefore={<User2Icon className="h-4 w-4" />}
-              name={nbOfProviderNeededText}
+              name={serviceRequest?.nbProviderNeededFormattedText}
             />
           </Inline>
           <Typography
-            truncate
-            lines={3}
-            className="mt-3 line-clamp-3 text-sm leading-6 text-gray-600"
+            truncate={false}
+            className="mt-2 line-clamp-3 text-sm leading-6 text-gray-600"
           >
-            {description}
+            {removeTags(serviceRequest?.description as string)}
           </Typography>
         </div>
-        <div className="relative mt-6 flex items-center justify-between gap-x-4">
-          <User
-            profile={author}
-            subText={null}
-            classNames={{ text: 'text-sm' }}
-            avatarProps={{ size: 'xs' }}
-          />
-          {commentAuthors && commentAuthors?.length > 0 && (
-            <AvatarGroup
-              maxCount={3}
-              size="xs"
-              data={commentAuthors as never}
-            />
-          )}
+        <div className="relative mt-2 flex items-center justify-between gap-x-4">
+          <div className="">{serviceRequestStats}</div>
         </div>
       </div>
     </article>

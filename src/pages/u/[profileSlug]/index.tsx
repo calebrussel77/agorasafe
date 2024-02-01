@@ -9,22 +9,23 @@ import {
 import { Linkedin } from 'lucide-react';
 import { z } from 'zod';
 
+import { RenderHtml } from '@/components/render-html';
 import { ShareButton } from '@/components/share-button/share-button';
 import { AsyncWrapper } from '@/components/ui/async-wrapper';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Image } from '@/components/ui/image';
 import { Inline } from '@/components/ui/inline';
-import { Rating } from '@/components/ui/rating';
 import { Seo } from '@/components/ui/seo';
 import { Separator } from '@/components/ui/separator';
 import { FullSpinner } from '@/components/ui/spinner';
 import { Typography } from '@/components/ui/typography';
-import { UserAvatar, UserName } from '@/components/user';
+import { UserAvatar, UserName, UserRating } from '@/components/user';
 
 import { LoginRedirect } from '@/features/auth';
 import { useGetProfileDetails } from '@/features/profiles';
 
+import { api } from '@/utils/api';
 import { getIsFaceToFaceLabel, getIsRemoteLabel } from '@/utils/profile';
 
 import { formatDateDistance } from '@/lib/date-fns';
@@ -96,6 +97,9 @@ export const getServerSideProps = createServerSideProps({
       await ssg?.profiles.getProfileDetails.prefetch({
         slug: profileSlugQuery,
       });
+      await ssg?.profiles.getStats.prefetch({
+        slug: profileSlugQuery,
+      });
     }
 
     return {
@@ -111,12 +115,16 @@ export default function ProfileDetailsPage({ profileSlugQuery }: PageProps) {
   const { data, isInitialLoading, error } = useGetProfileDetails({
     slug: profileSlugQuery,
   });
+  const { data: stats, isLoading } = api.profiles.getStats.useQuery({
+    slug: profileSlugQuery,
+  });
+
   const profileName = data?.profile?.name || '';
   const isDeleted = !!data?.profile?.deletedAt;
   const isCustomer = data?.profile?.type === 'CUSTOMER';
   const isMyProfile = data?.profile?.id === profile?.id;
 
-  if (isInitialLoading) return <FullSpinner />;
+  if (isInitialLoading || isLoading) return <FullSpinner />;
 
   if (isDeleted || !data?.profile) return <NotFound />;
 
@@ -157,17 +165,21 @@ export default function ProfileDetailsPage({ profileSlugQuery }: PageProps) {
                   />
                   <Inline className="flex flex-wrap text-sm font-normal text-muted-foreground">
                     {!isCustomer && (
-                      <Rating readonly initialRating={4} size="xs" />
+                      <UserRating
+                        className="mt-0"
+                        reviewsCount={data?.profile?._count?.receivedReviews}
+                        profileName={data?.profile?.name}
+                      />
                     )}
                     <p>Membre {formatDateDistance(data?.profile?.createdAt)}</p>
                     {isCustomer && (
-                      <p>{`${data?.profile?.customerJobPostedCount} Demande Postée(s)`}</p>
+                      <p>{`${stats?.customerServiceRequestCreatedCount} Demande Postée(s)`}</p>
                     )}
                     {isCustomer && (
-                      <p>{`${data?.profile?.customerJobProvidersReservedCount} Prestataires réservé(s)`}</p>
+                      <p>{`${stats?.customerServiceRequestProviderReservationCount} Prestataires réservé(s)`}</p>
                     )}
                     {!isCustomer && (
-                      <p>{`${data?.profile?.providerJobsReservedCount} Jobs réalisé(s)`}</p>
+                      <p>{`${stats?.providerServiceRequestReservedCount} Jobs réalisé(s)`}</p>
                     )}
                   </Inline>
                 </div>
@@ -215,17 +227,13 @@ export default function ProfileDetailsPage({ profileSlugQuery }: PageProps) {
             )}
           >
             <div>
-              <h3 className="text-skin-inverted font-sans text-lg font-medium leading-6">
-                Biographie
-              </h3>
-              <Typography
+              <h3 className="text font-sans text-lg leading-6">Biographie</h3>
+              <RenderHtml
+                className="mt-2"
                 truncate
-                lines={3}
                 hasEllipsisText
-                className="mt-2 font-normal text-muted-foreground"
-              >
-                {data?.profile?.bio || '...'}
-              </Typography>
+                html={data?.profile?.bio || '...'}
+              />
               <div className="mb-6 mt-4 flex items-center gap-x-4">
                 {data?.profile?.facebookUrl && (
                   <a
@@ -271,7 +279,7 @@ export default function ProfileDetailsPage({ profileSlugQuery }: PageProps) {
                     Localisation
                   </dt>
                   <dd className="text-skin-inverted-muted mt-1 font-normal">
-                    {data?.profile?.location?.name || '...'}
+                    {data?.profile?.location?.address || '...'}
                   </dd>
                 </div>
                 {!isCustomer && (
@@ -327,7 +335,7 @@ export default function ProfileDetailsPage({ profileSlugQuery }: PageProps) {
 
         <section className="mx-auto mt-3 w-full max-w-7xl px-4 md:mt-10">
           <div className="mt-6 space-y-1">
-            <h2 className="text-xl font-semibold">A propos de moi</h2>
+            <h2 className="text-xl font-semibold">A propos</h2>
           </div>
           <Separator className="my-4 w-full " />
           <div className="text-gray-600">{data?.profile?.aboutMe ?? '...'}</div>
@@ -336,16 +344,18 @@ export default function ProfileDetailsPage({ profileSlugQuery }: PageProps) {
         {!isCustomer && (
           <section className="mx-auto mt-3 w-full max-w-7xl px-4 md:mt-10">
             <div className="mt-6 space-y-1">
-              <h2 className="text-xl font-semibold">Mes engagements clients</h2>
+              <h2 className="text-xl font-semibold">
+                Compétences professionnelles
+              </h2>
             </div>
             <Separator className="my-4 w-full " />
-            <div className="flex w-full flex-wrap items-center gap-3">
+            <div className="flex w-full max-w-4xl flex-wrap items-center gap-3">
               {data?.profile?.providerInfo?.skills?.map(skill => (
                 <Badge
                   key={skill?.id}
-                  size="lg"
-                  variant="primary"
-                  className="w-full max-w-md py-1.5"
+                  size="md"
+                  variant="outline"
+                  className="w-full max-w-md py-1.5 text-center"
                   content={skill?.name}
                 />
               ))}
@@ -361,18 +371,18 @@ export default function ProfileDetailsPage({ profileSlugQuery }: PageProps) {
               <h2 className="text-xl font-semibold">Modes de travail</h2>
             </div>
             <Separator className="my-4 w-full " />
-            <div className="flex w-full flex-wrap items-center gap-3">
+            <div className="flex w-full max-w-3xl flex-wrap items-center gap-3">
               <Badge
-                size="lg"
-                variant="primary"
+                size="md"
+                variant="outline"
                 className="py-1.5"
                 content={getIsFaceToFaceLabel(
                   data?.profile?.providerInfo?.isFaceToFace
                 )}
               />
               <Badge
-                size="lg"
-                variant="primary"
+                size="md"
+                variant="outline"
                 className="py-1.5"
                 content={getIsRemoteLabel(
                   data?.profile?.providerInfo?.isRemote

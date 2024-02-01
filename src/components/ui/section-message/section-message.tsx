@@ -8,17 +8,21 @@ import {
   X,
 } from 'lucide-react';
 import { CheckCircle2 } from 'lucide-react';
-import React, { type ReactElement, forwardRef, useState } from 'react';
+import React, {
+  type ReactElement,
+  ReactNode,
+  forwardRef,
+  useState,
+} from 'react';
 
 import { isArray } from '@/utils/type-guards';
 
 import { cn } from '@/lib/utils';
 
-import { AutoAnimate } from '../auto-animate';
 import { Inline } from '../inline';
 import { MessageAction } from './section-message-action';
 
-const sectionMessage = cva('w-full flex justify-center items-start gap-2', {
+const sectionMessage = cva('w-full', {
   variants: {
     appareance: {
       danger: [
@@ -50,10 +54,20 @@ const sectionMessage = cva('w-full flex justify-center items-start gap-2', {
   },
 });
 
+type ClassNames = {
+  root: string;
+  icon: string;
+  wrapper: string;
+  title: string;
+  description: string;
+};
+
 type SectionMessageOptions = {
   className?: string;
+  classNames?: Partial<ClassNames>;
   isSticky?: boolean;
-  title?: string | ReactElement;
+  title?: ReactNode;
+  description?: ReactNode;
   onClose?: React.MouseEventHandler<HTMLButtonElement>;
   actions?: Array<ReactElement<unknown>> | ReactElement<unknown>;
   hasCloseButton?: boolean;
@@ -84,7 +98,7 @@ const IconAppareances = {
 };
 
 export type SectionMessageProps = VariantProps<typeof sectionMessage> &
-  SectionMessageOptions & { description?: string | JSX.Element };
+  SectionMessageOptions;
 
 const SectionMessage = forwardRef<HTMLDivElement, SectionMessageProps>(
   (
@@ -98,6 +112,7 @@ const SectionMessage = forwardRef<HTMLDivElement, SectionMessageProps>(
       isSticky = false,
       actions,
       description,
+      classNames,
       ...props
     },
     ref
@@ -110,7 +125,7 @@ const SectionMessage = forwardRef<HTMLDivElement, SectionMessageProps>(
         ? IconAppareances[appareance]['icon']
         : MailQuestion;
 
-    const ColorIcon =
+    const iconColor =
       appareance && IconAppareances[appareance]
         ? IconAppareances[appareance]['color']
         : '';
@@ -124,31 +139,55 @@ const SectionMessage = forwardRef<HTMLDivElement, SectionMessageProps>(
             ref={ref}
             role="alert"
             className={cn(
-              'mb-3 rounded-sm',
+              'relative mb-3 w-full rounded-sm',
               sectionMessage({ appareance, size, class: className }),
-              isSticky && 'sticky top-0 z-40 w-full'
+              isSticky && 'sticky top-0 z-40 w-full',
+              classNames?.root
             )}
             {...props}
           >
-            <div className="flex w-full flex-1 items-center gap-3">
-              {<Icon className={`h-6 w-6 flex-shrink-0 ${ColorIcon}`} />}
-              <div className="space-y-2">
-                {title && <h3 className="text-sm font-semibold">{title}</h3>}
-                {description && (
-                  <div className="text-sm opacity-80">{description}</div>
+            <div
+              className={cn(
+                'flex w-full items-start gap-3',
+                classNames?.wrapper
+              )}
+            >
+              <Icon
+                className={cn(
+                  'h-6 w-6 flex-shrink-0',
+                  iconColor,
+                  classNames?.icon
                 )}
+              />
+              <div
+                className={cn(
+                  'flex w-full flex-col items-start gap-3',
+                  !isActionsArray &&
+                    'flex flex-col items-start justify-center gap-3 md:flex-row md:justify-between'
+                )}
+              >
+                <div className="space-y-1">
+                  {title && (
+                    <h3
+                      className={cn('text-sm font-semibold', classNames?.title)}
+                    >
+                      {title}
+                    </h3>
+                  )}
+                  {description && (
+                    <div className={cn('text-sm', classNames?.description)}>
+                      {description}
+                    </div>
+                  )}
+                </div>
                 {isActionsArray
                   ? actions?.length > 0 && (
-                      <div className="flex flex-wrap items-center gap-1">
-                        <Inline
-                          divider={
-                            <span className="text-brand-100">&middot;</span>
-                          }
-                          className="gap-1"
-                        >
-                          {actions}
-                        </Inline>
-                      </div>
+                      <Inline
+                        divider={<span className="text-white">&middot;</span>}
+                        className="gap-1"
+                      >
+                        {actions}
+                      </Inline>
                     )
                   : actions}
               </div>
@@ -157,7 +196,7 @@ const SectionMessage = forwardRef<HTMLDivElement, SectionMessageProps>(
               <button
                 type="button"
                 onClick={onClose || toggleVisible}
-                className="transform p-1 transition duration-150 hover:scale-105"
+                className="absolute right-2 top-2 transform rounded-full bg-white/20 p-0.5 transition duration-150 hover:scale-105"
               >
                 <X className="h-4 w-4 flex-shrink-0" />
               </button>

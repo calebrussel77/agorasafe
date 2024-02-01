@@ -2,7 +2,7 @@ import { type FC } from 'react';
 
 import { cn } from '@/lib/utils';
 
-type AbsolutePlacementProps = React.HTMLProps<HTMLDivElement> & {
+export type AbsolutePlacementProps = React.HTMLProps<HTMLDivElement> & {
   placement?: keyof typeof placementMap;
 };
 

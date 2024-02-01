@@ -6,17 +6,12 @@ import { Button } from '@/components/ui/button';
 import { FadeAnimation } from '@/components/ui/fade-animation';
 import { Spinner } from '@/components/ui/spinner';
 
-import {
-  dateIsAfter,
-  dateToReadableString,
-  formatDateRelative,
-} from '@/lib/date-fns';
+import { dateIsAfter, dateToReadableString } from '@/lib/date-fns';
 
 import { socketEventsKey } from '@/server/api/constants';
 import { type SimpleProfile } from '@/server/api/modules/profiles';
 
 import { useConversationChatScroll } from '../hooks/use-conversation-chat-scroll';
-import { useConversationChatSocket } from '../hooks/use-conversation-chat-socket';
 import { useGetInfiniteDirectMessages } from '../services';
 import { ConversationChatItem } from './conversation-chat-item';
 import { ConversationChatWelcome } from './conversation-chat-welcome';
@@ -38,9 +33,6 @@ const ConversationChatMessages = ({
   bottomRef,
   socketUrl,
 }: ConversationChatMessagesProps) => {
-  const updateEventKey = socketEventsKey['updateDirectMessage'](conversationId);
-  const createEventKey = socketEventsKey['createDirectMessage'](conversationId);
-
   const chatRef = useRef<ElementRef<'div'>>(null);
 
   const {
@@ -59,8 +51,6 @@ const ConversationChatMessages = ({
     shouldLoadMore: !isFetchingNextPage && !!hasNextPage,
     count: directMessages?.length ?? 0,
   });
-
-  useConversationChatSocket({ conversationId, createEventKey, updateEventKey });
 
   if (status === 'loading') {
     return (
@@ -110,7 +100,7 @@ const ConversationChatMessages = ({
               <div className="my-4 flex w-full items-center justify-center">
                 <div className="block w-full flex-1 bg-gray-200 py-[0.5px]" />
                 <span className="border border-gray-200 bg-white px-3 py-1 text-sm">
-                  {dateToReadableString(date)}
+                  {date}
                 </span>
                 <div className="block w-full flex-1 bg-gray-200 py-[0.5px]" />
               </div>
@@ -133,7 +123,7 @@ const ConversationChatMessages = ({
                         content={message.content || ''}
                         fileUrl={message.fileUrl}
                         isDeleted={!!message.deletedAt}
-                        timestamp={dateToReadableString(message.createdAt, 'p')}
+                        timestamp={dateToReadableString(message.updatedAt, 'p')}
                         isUpdated={dateIsAfter(
                           message.updatedAt,
                           message.createdAt

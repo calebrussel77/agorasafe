@@ -1,15 +1,14 @@
 import { Menu } from 'lucide-react';
+import { useRouter } from 'next/router';
 import { type ReactNode, useState } from 'react';
 
 import { MobileNavbar, Navbar } from '@/components/navbar';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 
-import { isWindowDefined } from '@/utils/type-guards';
-
 import { cn } from '@/lib/utils';
 
 const navigations = [
-  { name: 'Explorer', href: '#', isNew: false },
+  { name: 'Explorer', href: '/service-requests', isNew: false },
   { name: 'Les mieux notés', href: '#', isNew: false },
   // { name: 'Devenir prestataire', href: '#', isNew: false },
   { name: 'Feedback', href: '', isNew: true },
@@ -17,10 +16,9 @@ const navigations = [
 
 const Header = ({ children }: { children?: ReactNode }) => {
   const [isOpenSheet, setIsOpenSheet] = useState(false);
+  const router = useRouter();
 
-  const isHomePage = isWindowDefined()
-    ? window.location.pathname === '/'
-    : false;
+  const isHomePage = router.asPath === '/';
 
   return (
     <>
@@ -43,7 +41,7 @@ const Header = ({ children }: { children?: ReactNode }) => {
             <SheetContent className="w-[75%] bg-white p-0">
               <MobileNavbar
                 navigations={navigations}
-                onNavItemClick={() => setIsOpenSheet(false)}
+                closeSideBar={() => setIsOpenSheet(false)}
               />
             </SheetContent>
           </Sheet>

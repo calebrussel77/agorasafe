@@ -7,13 +7,13 @@ import {
 } from '@/lib/sentry';
 
 import { appRouter } from '@/server/api/root';
-import { createTRPCContext } from '@/server/api/trpc';
 import { handleTRPCError } from '@/server/utils/error-handling';
+import { createContext } from '@/server/api/create-context';
 
 // export API handler
 export default createNextApiHandler({
   router: appRouter,
-  createContext: createTRPCContext,
+  createContext,
   onError: ({ path, error, ctx }) => {
     if (isDev) {
       console.error(

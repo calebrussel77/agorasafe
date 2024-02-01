@@ -8,11 +8,7 @@ import {
   Testimonials,
 } from '@/features/app-launch';
 import {
-  FeaturesSection,
-  HeroSection,
-  TestimonialSection,
-} from '@/features/home-page';
-import {
+  FeaturedProviders,
   LATEST_SERVICE_REQUESTS_COUNT,
   LatestServiceRequests,
 } from '@/features/service-requests';
@@ -25,8 +21,10 @@ const HomePage: AppPageProps['Component'] = () => {
   return (
     <>
       <Hero />
+      <PrimaryFeatures type="customer" />
       <LatestServiceRequests />
-      <PrimaryFeatures />
+      <PrimaryFeatures type="provider" />
+      <FeaturedProviders />
       <SecondaryFeatures />
       <CallToAction />
       <Testimonials />
@@ -40,8 +38,11 @@ export const getServerSideProps = createServerSideProps({
   shouldUseSSG: true,
   resolver: async ({ ctx, ssg }) => {
     if (ssg) {
-      await ssg?.services.getAllServiceRequests.prefetch({
+      await ssg?.serviceRequests.getAll.prefetch({
         limit: LATEST_SERVICE_REQUESTS_COUNT,
+      });
+      await ssg?.profiles.getProfiles.prefetch({
+        profileType: 'PROVIDER',
       });
     }
     return { props: {} };

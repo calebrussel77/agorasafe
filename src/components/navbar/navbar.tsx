@@ -1,15 +1,14 @@
-import { openContext } from '@/providers/custom-modal-provider';
-import React, { type FC, type ReactNode, useState } from 'react';
+import React, { type FC, type ReactNode } from 'react';
 
-import { LoginRedirect } from '@/features/auth';
+import { FeedbackButton } from '@/features/feedbacks';
 import {
   UserProfileDropdown,
   useGetProfileConfig,
 } from '@/features/profile-config';
+import { ServiceRequestButton } from '@/features/service-requests';
 
 import { cn } from '@/lib/utils';
 
-import { useIsMobile } from '@/hooks/use-breakpoints';
 import { useCurrentUser } from '@/hooks/use-current-user';
 
 import { Anchor } from '../anchor';
@@ -39,8 +38,6 @@ const Navbar: FC<NavbarProps> = ({
     enabled: isDropdownMenuOpen,
   });
 
-  const isMobile = useIsMobile();
-
   return (
     <nav
       className={cn('flex items-center gap-x-4 px-4 py-3.5 lg:px-8', className)}
@@ -63,29 +60,19 @@ const Navbar: FC<NavbarProps> = ({
         {navigations.map(item => {
           if (item.name.toLowerCase() === 'feedback') {
             return (
-              <button
-                title="Faire un commentaire"
-                key={item?.name}
-                onClick={() =>
-                  openContext('feedbackForm', {}, { isFullScreen: isMobile })
-                }
-                className={cn(
-                  'default__transition flex items-center rounded-md px-2 py-1 text-sm',
-                  'hover:bg-brand-50 hover:text-brand-600'
-                )}
-              >
-                {item?.isNew && (
+              <FeedbackButton key={item?.name}>
+                <button>
                   <Badge
                     content="New"
+                    variant="success"
                     size="xs"
                     placement="top-right"
-                    variant="success"
-                    className="-right-6"
+                    className="-right-4 -top-1"
                   >
                     {item.name}
                   </Badge>
-                )}
-              </button>
+                </button>
+              </FeedbackButton>
             );
           }
 
@@ -112,22 +99,9 @@ const Navbar: FC<NavbarProps> = ({
         })}
       </div>
       <div className="ml-1 flex flex-1 items-center justify-end">
-        <CanView allowedProfiles={['CUSTOMER']} isPublic>
-          <LoginRedirect reason="create-service-request">
-            <Button
-              onClick={() =>
-                openContext(
-                  'createServiceRequest',
-                  {},
-                  { isFullScreen: isMobile }
-                )
-              }
-              size="sm"
-            >
-              Demander un service
-            </Button>
-          </LoginRedirect>
-        </CanView>
+        <ServiceRequestButton>
+          <Button size="sm">Demander un service</Button>
+        </ServiceRequestButton>
         <CanView allowedProfiles={['CUSTOMER', 'PROVIDER']}>
           <UserProfileDropdown
             isHeaderScrolled={isHeaderScrolled}

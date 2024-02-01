@@ -6,67 +6,12 @@
  * TL;DR - This is where all the tRPC server stuff is created and plugged in. The pieces you will
  * need to use are documented accordingly near the end.
  */
-import { SESSION_VERSION } from '@/constants';
-import { getInitialState } from '@/stores/profile-store/initial-state';
+import { sessionVersion } from '@/constants';
 import { TRPCError, initTRPC } from '@trpc/server';
-import { type CreateNextContextOptions } from '@trpc/server/adapters/next';
-import { type Session } from 'next-auth';
 import superjson from 'superjson';
 
-import { getServerAuthSession } from '@/server/auth';
-import { prisma } from '@/server/db';
-
 import { throwForbiddenError } from '../utils/error-handling';
-import { type SimpleProfile } from './modules/profiles';
-
-/**
- * 1. CONTEXT
- *
- * This section defines the "contexts" that are available in the backend API.
- *
- * These allow you to access things when processing a request, like the database, the session, etc.
- */
-
-type CreateContextOptions = {
-  session: Session | null;
-  profile: SimpleProfile | null;
-};
-
-/**
- * This helper generates the "internals" for a tRPC context. If you need to use it, you can export
- * it from here.
- *
- * Examples of things you may need it for:
- * - testing, so we don't have to mock Next.js' req/res
- * - tRPC's `createSSGHelpers`, where we don't have req/res
- *
- * @see https://create.t3.gg/en/usage/trpc#-serverapitrpcts
- */
-export const createInnerTRPCContext = (opts: CreateContextOptions) => {
-  return {
-    session: opts.session,
-    profile: opts.profile,
-    prisma,
-  };
-};
-
-/**
- * This is the actual context you will use in your router. It will be used to process every request
- * that goes through your tRPC endpoint.
- *
- * @see https://trpc.io/docs/context
- */
-export const createTRPCContext = async (opts: CreateNextContextOptions) => {
-  const { req, res } = opts;
-
-  const session = await getServerAuthSession({ req, res });
-  const initialState = getInitialState(req.headers);
-
-  return createInnerTRPCContext({
-    session,
-    profile: initialState?.profile,
-  });
-};
+import { type Context } from './create-context';
 
 /**
  * 2. INITIALIZATION
@@ -76,7 +21,7 @@ export const createTRPCContext = async (opts: CreateNextContextOptions) => {
  * errors on the backend.
  */
 
-const t = initTRPC.context<typeof createTRPCContext>().create({
+const t = initTRPC.context<Context>().create({
   transformer: superjson,
   errorFormatter({ shape }) {
     return shape;
@@ -106,101 +51,155 @@ export const createTRPCRouter = t.router;
  */
 export const publicProcedure = t.procedure;
 
-const isAuthed = t.middleware(({ ctx, next }) => {
-  if (
-    !ctx.session?.user ||
-    (ctx.session && ctx.session.version !== SESSION_VERSION)
-  ) {
-    throw new TRPCError({ code: 'UNAUTHORIZED' });
-  }
-
-  return next({
-    ctx: {
-      session: { ...ctx.session, user: ctx.session.user },
-    },
-  });
-});
-
-const hasProfile = t.middleware(({ ctx, next }) => {
-  if (
-    !ctx.session?.user ||
-    (ctx.session && ctx.session.version !== SESSION_VERSION)
-  ) {
-    throw new TRPCError({ code: 'UNAUTHORIZED' });
-  }
-
-  if (!ctx?.profile) {
-    throwForbiddenError();
-  }
-
-  return next({
-    ctx: {
-      session: { ...ctx.session, user: ctx.session.user },
-      profile: ctx.profile,
-    },
-  });
-});
-
-const isCustomer = t.middleware(({ ctx, next }) => {
-  if (
-    !ctx.session?.user ||
-    (ctx.session && ctx.session.version !== SESSION_VERSION)
-  ) {
-    throw new TRPCError({ code: 'UNAUTHORIZED' });
-  }
-
-  if (ctx?.profile?.type !== 'CUSTOMER') {
-    throwForbiddenError();
-  }
-
-  return next({
-    ctx: {
-      session: { ...ctx.session, user: ctx.session.user },
-      profile: ctx.profile,
-    },
-  });
-});
-
-const isProvider = t.middleware(({ ctx, next }) => {
-  if (
-    !ctx.session?.user ||
-    (ctx.session && ctx.session.version !== SESSION_VERSION)
-  ) {
-    throw new TRPCError({ code: 'UNAUTHORIZED' });
-  }
-
-  if (ctx?.profile?.type !== 'PROVIDER') {
-    throwForbiddenError();
-  }
-
-  return next({
-    ctx: {
-      session: { ...ctx.session, user: ctx.session.user },
-      profile: ctx.profile,
-    },
-  });
-});
+export const { router, middleware } = t;
 
 /**
- * Protected Procedure used when the user is connected
- * but does'nt have a profile selected
+ * Protected procedure
  **/
-export const protectedProcedure = t.procedure.use(isAuthed);
+
+const isAuthed = t.middleware(({ ctx: { user, profile }, next }) => {
+  if (!user) {
+    throw new TRPCError({ code: 'UNAUTHORIZED' });
+  }
+
+  if (user?.version !== sessionVersion) {
+    throw new TRPCError({ code: 'UNAUTHORIZED' });
+  }
+
+  return next({
+    ctx: { user, profile },
+  });
+});
+
+const isMuted = t.middleware(({ ctx: { user, profile }, next }) => {
+  if (!user || !profile) {
+    throw new TRPCError({ code: 'UNAUTHORIZED' });
+  }
+
+  if (user?.version !== sessionVersion) {
+    throw new TRPCError({ code: 'UNAUTHORIZED' });
+  }
+
+  if (profile.isMuted)
+    throw new TRPCError({
+      code: 'FORBIDDEN',
+      message:
+        'Vous ne pouvez pas effectuer cette action car votre compte à été banni.',
+    });
+
+  return next({
+    ctx: { user, profile },
+  });
+});
+
+const isAdmin = t.middleware(({ ctx: { user, profile }, next }) => {
+  if (!user || !profile) {
+    throw new TRPCError({ code: 'UNAUTHORIZED' });
+  }
+
+  if (user?.version !== sessionVersion) {
+    throw new TRPCError({ code: 'UNAUTHORIZED' });
+  }
+
+  if (user.role !== 'ADMIN')
+    throw new TRPCError({
+      code: 'FORBIDDEN',
+      message: "Vous n'avez pas la permission d'effectuer cette action",
+    });
+
+  return next({
+    ctx: { user, profile },
+  });
+});
+
+const hasProfile = t.middleware(({ ctx: { user, profile }, next }) => {
+  if (!user || !profile) {
+    throw new TRPCError({ code: 'UNAUTHORIZED' });
+  }
+
+  if (user?.version !== sessionVersion) {
+    throw new TRPCError({ code: 'UNAUTHORIZED' });
+  }
+
+  if (profile.bannedAt)
+    throw new TRPCError({
+      code: 'FORBIDDEN',
+      message:
+        'Vous ne pouvez pas effectuer cette action car votre profile à été banni.',
+    });
+
+  return next({
+    ctx: { user, profile },
+  });
+});
+
+const isCustomer = t.middleware(({ ctx: { user, profile }, next }) => {
+  if (!user || !profile) {
+    throw new TRPCError({ code: 'UNAUTHORIZED' });
+  }
+
+  if (user?.version !== sessionVersion) {
+    throw new TRPCError({ code: 'UNAUTHORIZED' });
+  }
+
+  if (profile.type !== 'CUSTOMER') {
+    throwForbiddenError();
+  }
+
+  return next({
+    ctx: { user, profile },
+  });
+});
+
+const isProvider = t.middleware(({ ctx: { profile, user }, next }) => {
+  if (!user || !profile) {
+    throw new TRPCError({ code: 'UNAUTHORIZED' });
+  }
+
+  if (user?.version !== sessionVersion) {
+    throw new TRPCError({ code: 'UNAUTHORIZED' });
+  }
+
+  if (profile?.type !== 'PROVIDER') {
+    throwForbiddenError();
+  }
+
+  return next({
+    ctx: { user, profile },
+  });
+});
 
 /**
  * Protected Procedure used when the user is connected
- * and have a profile selected (could be any type of profiles)
+ * but `does'nt have a profile selected`
  **/
-export const profileProcedure = t.procedure.use(hasProfile);
+export const protectedProcedure = publicProcedure.use(isAuthed);
 
 /**
  * Protected Procedure used when the user is connected
- * with Provider profile
+ * and have a `profile selected` (could be any type of profiles)
+ **/
+export const profileProcedure = publicProcedure.use(hasProfile);
+
+/**
+ * Protected Procedure used when the user is connected
+ * with `Provider profile`
  **/
 export const providerProcedure = protectedProcedure.use(isProvider);
 
 /**
  * Protected Procedure used when the user is connected
- * with Customer profile
+ * with `Customer profile`
  **/
 export const customerProcedure = protectedProcedure.use(isCustomer);
+
+/**
+ * Guarded procedure to prevent users from making actions
+ * based on `muted/banned properties`
+ */
+export const guardedProcedure = protectedProcedure.use(isMuted);
+
+/**
+ * Admin Protected procedure
+ **/
+export const adminProcedure = protectedProcedure.use(isAdmin);

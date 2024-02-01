@@ -8,12 +8,15 @@ import { Field } from '@/components/ui/field';
 import { Form, useZodForm } from '@/components/ui/form';
 import { Label } from '@/components/ui/label';
 import { RadioGroup } from '@/components/ui/radio-group';
+import { Editor } from '@/components/ui/rich-text-editor';
 import { Textarea } from '@/components/ui/textarea';
 import { DropzoneUpload } from '@/components/ui/uploadthing';
 
+import { nonEmptyHtmlString } from '@/server/api/validations/base.validations';
+
 const feedBackFormSchema = z.object({
   type: z.nativeEnum(FeedbackType),
-  content: z.string().min(1, 'Veuillez saisir un commentaire.'),
+  content: nonEmptyHtmlString,
   image: z.array(z.unknown()).optional(),
 });
 export type FeedBackFormInput = z.infer<typeof feedBackFormSchema>;
@@ -40,12 +43,26 @@ const FeedbackForm: FC<FeedbackFormProps> = ({ id, onSubmit }) => {
 
   return (
     <Form form={form} onSubmit={onHandleSubmit} id={id}>
-      <Field label="Votre commentaire" required>
-        <Textarea
-          {...form.register('content')}
-          placeholder={`Ajouter votre commentaire...`}
-        />
-      </Field>
+      <Controller
+        control={control}
+        name="content"
+        render={({ field: { onChange, value }, fieldState }) => {
+          return (
+            <Editor
+              id="feedback-comment"
+              label="Votre commentaire"
+              placeholder="Ajouter votre commentaire..."
+              error={fieldState?.error?.message}
+              autoFocus
+              required
+              editorSize="md"
+              value={value}
+              onChange={onChange}
+            />
+          );
+        }}
+      />
+
       <Field label="Type" required>
         <Controller
           name="type"

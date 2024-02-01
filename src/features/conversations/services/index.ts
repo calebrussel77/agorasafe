@@ -44,7 +44,7 @@ export const useGetInfiniteDirectMessages = (
   sortDirectMessageByDate(directMessages).forEach(message => {
     const date = new Date(message?.createdAt).toLocaleDateString('fr', {
       year: 'numeric',
-      month: 'long',
+      month: 'short',
       day: 'numeric',
     });
     if (groupedDirectMessages.has(date)) {

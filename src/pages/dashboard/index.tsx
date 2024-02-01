@@ -26,7 +26,7 @@ DashboardPage.getLayout = function getLayout(page: ReactElement<PageProps>) {
   const profile = page?.props?.profile;
   const pageTitle = `Tableau de bord - ${profile?.name}`;
   return (
-    <MainLayout title={pageTitle}>
+    <MainLayout title={pageTitle} footer={null}>
       <Sidebar />
       {page}
     </MainLayout>

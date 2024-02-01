@@ -15,6 +15,8 @@ import { getSession } from 'next-auth/react';
 import App, { type AppContext, type AppProps } from 'next/app';
 import { GoogleAnalytics } from 'nextjs-google-analytics';
 import { type ReactElement, type ReactNode, useMemo } from 'react';
+import 'swiper/css';
+import 'swiper/css/pagination';
 
 import { DefaultSeo } from '@/components/default-seo';
 import { Meta } from '@/components/meta';
@@ -50,7 +52,6 @@ function handleExitComplete() {
 }
 
 const MyApp = (props: AppPageProps) => {
-  // useNewDeploy();
   useNotificationNetwork();
 
   const {
@@ -85,21 +86,14 @@ const MyApp = (props: AppPageProps) => {
           origin: WEBSITE_URL,
         })}
       />
-      <AnimatePresence mode="wait" onExitComplete={handleExitComplete}>
-        <AppProvider
-          {...{
-            session,
-            initialProfileState,
-          }}
-        >
-          <PageTransition>
-            {getLayout(
-              <Component {...pageProps} key={router.asPath} />,
-              router
-            )}
-          </PageTransition>
-        </AppProvider>
-      </AnimatePresence>
+      <AppProvider
+        {...{
+          session,
+          initialProfileState,
+        }}
+      >
+        {getLayout(<Component {...pageProps} key={router.asPath} />, router)}
+      </AppProvider>
     </>
   );
 };

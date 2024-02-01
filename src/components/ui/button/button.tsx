@@ -68,9 +68,8 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 
     const btn = (
       <Comp
-      
         className={cn(
-          'line-clamp-1',
+          // 'line-clamp-1',
           buttonVariants({ variant, size, className })
         )}
         ref={ref}

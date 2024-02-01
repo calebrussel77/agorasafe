@@ -1,13 +1,12 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
+import { Portal as HeadlessUIPortal } from '@headlessui/react';
 import * as DialogPrimitive from '@radix-ui/react-dialog';
 import { X } from 'lucide-react';
 import * as React from 'react';
 
 import { cn } from '@/lib/utils';
-
-import { useMergeRefs } from '@/hooks/use-merge-refs';
 
 import { Typography } from '../typography';
 
@@ -22,9 +21,10 @@ const DialogPortal = ({
   children,
   ...props
 }: DialogPrimitive.DialogPortalProps) => (
-  <DialogPrimitive.Portal {...props}>
-    <div className="fixed inset-0 z-50">{children}</div>
-  </DialogPrimitive.Portal>
+  // ! The @radix-ui `portal` component doesn't work well with ssr
+  // ! so i have to use the `headless ui portal compoent` who support ssr by avoiding me server hydratation errors
+  // ! see this issue for more: https://github.com/radix-ui/primitives/issues/1386
+  <HeadlessUIPortal>{children}</HeadlessUIPortal>
 );
 DialogPortal.displayName = DialogPrimitive.Portal.displayName;
 
@@ -49,46 +49,40 @@ const DialogContent = React.forwardRef<
     isFullScreen?: boolean;
   }
 >(({ className, children, isFullScreen = false, ...props }, ref) => {
-  const scrollRef = React.useRef<HTMLElement>(null);
-  const refs = useMergeRefs(scrollRef, ref);
-
   return (
-    <DialogPortal>
-      {!isFullScreen && <DialogOverlay />}
-      <DialogPrimitive.Content
-        ref={refs}
-        style={{
-          maxHeight: isFullScreen ? '100vh' : `calc(100vh - 4rem * 2)`,
-        }}
-        className={cn(
-          'focus:outline-none focus:ring-0 focus:ring-transparent focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-transparent',
-          className,
-          [
-            'scrollbar__custom fixed left-[50%] top-[50%] z-50 flex w-full max-w-2xl translate-x-[-50%] translate-y-[-50%] flex-col',
-            'overflow-y-auto border bg-background sm:rounded-lg',
-            'shadow-lg duration-300 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0',
-            'data-[state=open]:fade-in-0',
-          ],
-          isFullScreen
-            ? [
-                'inset-0 max-w-none translate-x-0 translate-y-0',
-                'data-[state=open]:fade-in-0',
-                'data-[state=closed]:slide-out-to-bottom-[-150%]',
-                'data-[state=open]:slide-in-from-bottom-[100%]',
-                'shadow-none duration-500',
-              ]
-            : [
-                'data-[state=closed]:slide-out-to-left-1/2 data-[state=open]:slide-in-from-left-1/2',
-                'data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95',
-                'data-[state=closed]:slide-out-to-top-[48%]',
-                'data-[state=open]:slide-in-from-top-[48%]',
-              ]
-        )}
-        {...props}
-      >
-        {children}
-      </DialogPrimitive.Content>
-    </DialogPortal>
+    <DialogPrimitive.Content
+      ref={ref}
+      style={{
+        maxHeight: isFullScreen ? '100vh' : `calc(100vh - 4rem * 2)`,
+      }}
+      className={cn(
+        'focus:outline-none focus:ring-0 focus:ring-transparent focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-transparent',
+        className,
+        [
+          'scrollbar__custom fixed left-[50%] top-[50%] z-50 flex w-full max-w-2xl translate-x-[-50%] translate-y-[-50%] flex-col',
+          'overflow-y-auto border bg-background sm:rounded-lg',
+          'shadow-lg duration-300 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0',
+          'data-[state=open]:fade-in-0',
+        ],
+        isFullScreen
+          ? [
+              'inset-0 max-w-none translate-x-0 translate-y-0',
+              'data-[state=open]:fade-in-0',
+              'data-[state=closed]:slide-out-to-bottom-[-150%]',
+              'data-[state=open]:slide-in-from-bottom-[100%]',
+              'shadow-none duration-500',
+            ]
+          : [
+              'data-[state=closed]:slide-out-to-left-1/2 data-[state=open]:slide-in-from-left-1/2',
+              'data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95',
+              'data-[state=closed]:slide-out-to-top-[48%]',
+              'data-[state=open]:slide-in-from-top-[48%]',
+            ]
+      )}
+      {...props}
+    >
+      {children}
+    </DialogPrimitive.Content>
   );
 });
 
@@ -170,7 +164,10 @@ const DialogTitle = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <DialogPrimitive.Title
     ref={ref}
-    className={cn('text-xl font-semibold tracking-tight', className)}
+    className={cn(
+      'line-clamp-1 text-xl font-semibold tracking-tight',
+      className
+    )}
     {...props}
   />
 ));
@@ -195,7 +192,7 @@ DialogDescription.displayName = DialogPrimitive.Description.displayName;
 export interface ModalProps
   extends Pick<
     React.ComponentPropsWithoutRef<typeof Dialog>,
-    'open' | 'onOpenChange' | 'children'
+    'open' | 'onOpenChange' | 'children' | 'defaultOpen'
   > {
   className?: string;
   isFullScreen?: boolean;
@@ -205,13 +202,16 @@ const Modal = React.forwardRef<React.ElementRef<typeof Dialog>, ModalProps>(
   ({ open, onOpenChange, children, className, isFullScreen, ...rest }, ref) => {
     return (
       <Dialog open={open} onOpenChange={onOpenChange} {...rest}>
-        <DialogContent
-          ref={ref}
-          isFullScreen={isFullScreen}
-          className={cn(className)}
-        >
-          {children}
-        </DialogContent>
+        <DialogPortal>
+          {!isFullScreen && <DialogOverlay />}
+          <DialogContent
+            ref={ref}
+            isFullScreen={isFullScreen}
+            className={cn(className)}
+          >
+            {children}
+          </DialogContent>
+        </DialogPortal>
       </Dialog>
     );
   }

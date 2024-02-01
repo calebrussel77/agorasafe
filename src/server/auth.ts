@@ -1,7 +1,7 @@
-import { SESSION_VERSION } from '@/constants';
+import { sessionVersion } from '@/constants';
 import { env } from '@/env.mjs';
 import { PrismaAdapter } from '@next-auth/prisma-adapter';
-import { type Role } from '@prisma/client';
+import { type Role, User } from '@prisma/client';
 import { type GetServerSidePropsContext } from 'next';
 import {
   type DefaultSession,
@@ -17,8 +17,7 @@ import { sentryCaptureException } from '@/lib/sentry';
 
 import { prisma } from '@/server/db';
 
-import { getUserByEmail } from './api/modules/users';
-import { throwDbError, throwNotFoundError } from './utils/error-handling';
+import { getSessionUser } from './api/modules/users';
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -29,20 +28,13 @@ import { throwDbError, throwNotFoundError } from './utils/error-handling';
 
 declare module 'next-auth' {
   interface Session extends DefaultSession {
-    user: {
-      id: string;
-      name: string;
-      email: string;
-      avatar: string;
-      hasBeenOnboarded: boolean;
-      role: Role;
-    };
-    version: number;
+    user: AsyncReturnType<typeof getSessionUser>;
   }
 
   interface User {
     // ...other properties
     fullName: string;
+    version: number;
     picture: string;
   }
 }
@@ -58,39 +50,19 @@ export const authOptions: NextAuthOptions = {
       session.user = (
         token.user ? token.user : session.user
       ) as Session['user'];
-      session.version = (
-        token.version ? token.version : session.version
-      ) as Session['version'];
 
-      return { ...session };
+      return session;
     },
-    async jwt({ token, user, trigger, session }) {
-      if (trigger === 'update' && session) {
-        const _session = session as Session;
-        token.user = _session.user;
+    async jwt({ token, user, trigger }) {
+      if (trigger === 'update') {
+        const userFound = await getSessionUser({ userId: token.sub });
+        token.user = userFound;
       } else {
         if (user) {
-          try {
-            const _user = await getUserByEmail(user?.email as string);
-
-            if (!_user) throwNotFoundError();
-
-            token.user = {
-              id: user?.id,
-              email: user?.email,
-              name: user?.fullName,
-              avatar: user?.picture,
-              hasBeenOnboarded: _user.hasBeenOnboarded,
-              role: _user.role,
-            };
-          } catch (e) {
-            throwDbError(e);
-          }
+          const userFound = await getSessionUser({ userId: token.sub });
+          token.user = userFound;
         }
       }
-
-      token.version = SESSION_VERSION;
-
       return token;
     },
   },
@@ -117,6 +89,7 @@ export const authOptions: NextAuthOptions = {
           email: profile?.email,
           picture: profile?.picture,
           fullName: `${profile.given_name} ${profile.family_name}`,
+          version: sessionVersion,
         };
       },
     }),

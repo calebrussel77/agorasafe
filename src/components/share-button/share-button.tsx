@@ -1,13 +1,13 @@
-import { Linkedin, Share, Twitter } from 'lucide-react';
+import { Linkedin, Share } from 'lucide-react';
 import React, { useEffect } from 'react';
 
 import { QS } from '@/lib/qs';
 
 import { useCopyText } from '@/hooks/use-copy-text';
 
+import { TwitterXIcon } from '../icons/twitter-x-icon';
 import { WhatsappIcon } from '../icons/whatsapp-icon';
 import { DropdownMenu } from '../ui/dropdown-menu';
-import { Popover } from '../ui/popover';
 import { toast } from '../ui/toast';
 import { Typography } from '../ui/typography';
 import { IconCopy } from './icon-share-copy';
@@ -77,7 +77,7 @@ export function ShareButton({
             via: 'agorasafe',
           })}`
         ),
-      render: <Twitter className="h-5 w-5 text-gray-600" />,
+      render: <TwitterXIcon className="h-5 w-5 text-gray-600" />,
     },
     {
       type: 'Autres',

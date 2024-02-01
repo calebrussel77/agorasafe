@@ -4,6 +4,8 @@ import { Button } from '@/components/ui/button';
 import { Container } from '@/components/ui/container';
 import { Tabs } from '@/components/ui/tabs';
 
+import { gaTrackEvent } from '@/utils/ga-events';
+
 import { cn } from '@/lib/utils';
 
 function SwirlyDoodle(props: React.ComponentPropsWithoutRef<'svg'>) {
@@ -105,9 +107,15 @@ function Plan({
         href={href}
         variant={featured ? 'secondary' : 'default'}
         className="mt-8"
-        aria-label={`Get started with the ${name} plan for ${price}`}
+        onClick={() =>
+          gaTrackEvent('cta-click', {
+            category: 'CTA',
+            message: `Pricing - Commencer avec le plan ${name} pour ${price}`,
+          })
+        }
+        aria-label={`Commencer avec le plan ${name} pour ${price}`}
       >
-        Get started
+        Commencer
       </Button>
     </section>
   );
@@ -134,13 +142,13 @@ export function Pricing() {
             work well for you.
           </p>
         </div>
-        <Tabs defaultValue="account" className="mt-10 w-full">
+        <Tabs defaultValue="provider" className="mt-10 w-full">
           <Tabs.List className="mx-auto grid w-[300px] grid-cols-2">
-            <Tabs.Trigger value="account">Clients</Tabs.Trigger>
-            <Tabs.Trigger value="password">Prestataires</Tabs.Trigger>
+            <Tabs.Trigger value="provider">Prestataires</Tabs.Trigger>
+            <Tabs.Trigger value="customer">Clients</Tabs.Trigger>
           </Tabs.List>
           <Tabs.Content
-            value="account"
+            value="customer"
             className="flex items-center justify-center"
           >
             <div className="-mx-4 mt-16 grid max-w-2xl grid-cols-1 gap-y-10 sm:mx-auto lg:mx-auto lg:max-w-5xl lg:grid-cols-2 xl:mx-0 xl:gap-x-8">
@@ -174,7 +182,7 @@ export function Pricing() {
             </div>
           </Tabs.Content>
           <Tabs.Content
-            value="password"
+            value="provider"
             className="flex items-center justify-center"
           >
             <div className="-mx-4 mt-16 grid max-w-2xl grid-cols-1 gap-y-10 sm:mx-auto lg:mx-auto lg:max-w-5xl lg:grid-cols-2 xl:mx-0 xl:gap-x-8">

@@ -15,47 +15,54 @@ import { useDebounce } from '@/hooks/use-debounce';
 
 import { Truncate } from '../truncate';
 
-//@TODO need to find a way to properly type this
-export type OptionItem = {
+export type OptionItem<T extends Record<string, unknown>> = {
   label: string;
   value: string;
-} & unknown;
+} & T;
 
-interface ComboBoxProps {
+type ComboBoxProps<T extends Record<string, unknown>> = {
   isLoading?: boolean;
 
   defaultOpen?: boolean;
 
-  value: OptionItem | undefined;
+  value: OptionItem<T> | null;
 
   search: string;
 
   onSearchChange: (value: string) => void;
 
-  options: OptionItem[] | undefined;
+  options: OptionItem<T>[] | undefined;
 
-  onChange: (item: never) => void;
+  onChange: (item: OptionItem<T>) => void;
 
-  itemToString?: (item: OptionItem | undefined) => string;
+  itemToString?: (item: OptionItem<T> | null) => string;
 
-  debounce?: number;
+  debounceMs?: number;
+
+  enableDebounce?: boolean;
 
   placeholder?: string;
 
   placeholderSearch?: string;
 
   renderItem?: (
-    item: OptionItem | undefined
+    item: OptionItem<T> | undefined
   ) => React.ReactElement | JSX.Element;
 
   iconAfter?: React.ReactElement | JSX.Element;
 
-  emptyState?: React.ReactElement | JSX.Element;
-}
+  emptyState?: (query?: string) => React.ReactElement | JSX.Element;
 
-function getItemLabel(
-  item: ComboBoxProps['value'],
-  itemToString: ComboBoxProps['itemToString']
+  disabled?: boolean;
+
+  className?: string;
+
+  shouldFilter?: boolean;
+};
+
+function getItemLabel<T extends Record<string, unknown>>(
+  item: ComboBoxProps<T>['value'],
+  itemToString: ComboBoxProps<T>['itemToString']
 ) {
   if (itemToString) {
     return itemToString(item);
@@ -63,26 +70,32 @@ function getItemLabel(
   return item?.label;
 }
 
-function getPlaceholder(placeholder: ComboBoxProps['placeholder']) {
+function getPlaceholder<T extends Record<string, unknown>>(
+  placeholder: ComboBoxProps<T>['placeholder']
+) {
   return placeholder ? placeholder : 'Selectionnez un element...';
 }
 
-const ComboBox: React.FC<ComboBoxProps> = ({
+const ComboBox = <T extends Record<string, unknown>>({
   value,
   isLoading,
   onChange,
   options,
   placeholder,
   renderItem,
-  debounce = 600,
+  debounceMs = 600,
+  disabled,
+  shouldFilter = false,
+  enableDebounce = true,
   search,
+  className,
   onSearchChange,
   placeholderSearch = 'Recherchez un element...',
   itemToString,
-  emptyState = 'Aucun résultats trouvés.',
+  emptyState = () => <p>Aucun résultats trouvés</p>,
   iconAfter,
   defaultOpen = false,
-}) => {
+}: ComboBoxProps<T>) => {
   const [isOpen, setIsOpen] = React.useState(defaultOpen);
   const [debounceValue, setDebounceValue] = React.useState(search || '');
 
@@ -95,7 +108,7 @@ const ComboBox: React.FC<ComboBoxProps> = ({
     () => {
       onSearchChange && onSearchChange(debounceValue);
     },
-    debounce,
+    enableDebounce ? debounceMs : 0,
     [debounceValue]
   );
 
@@ -105,11 +118,12 @@ const ComboBox: React.FC<ComboBoxProps> = ({
 
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
-      <Popover.Trigger ref={ref as never} asChild>
+      <Popover.Trigger ref={ref as never} asChild className={className}>
         <Button
           variant="outline"
           role="comboBox"
           aria-expanded={isOpen}
+          disabled={disabled}
           className="w-full justify-between"
         >
           {selectedValue && (
@@ -126,7 +140,7 @@ const ComboBox: React.FC<ComboBoxProps> = ({
         className="w-auto p-0"
         style={{ width: `${width + 26}px` }}
       >
-        <Command>
+        <Command shouldFilter={shouldFilter}>
           <Command.Input
             value={debounceValue}
             onValueChange={setDebounceValue}
@@ -135,7 +149,7 @@ const ComboBox: React.FC<ComboBoxProps> = ({
           />
 
           {!isLoading && options?.length === 0 ? (
-            <Command.Empty>{emptyState}</Command.Empty>
+            <Command.Empty>{emptyState(search)}</Command.Empty>
           ) : null}
 
           {isLoading ? <Command.Loading>Chargement...</Command.Loading> : null}

@@ -21,13 +21,57 @@ export function getUserById(userId: string) {
   });
 }
 
+export const getSessionUser = async ({ userId }: { userId?: string }) => {
+  if (!userId) return undefined;
+
+  const user = await prisma.user.findFirst({
+    where: {
+      id: userId,
+    },
+    include: {
+      _count: { select: { profiles: true } },
+      profiles: {
+        select: { name: true, id: true, type: true, avatar: true },
+      },
+    },
+  });
+
+  if (!user) return undefined;
+
+  return {
+    id: user?.id,
+    tos: user?.tos,
+    name: user?.fullName,
+    email: user?.email,
+    avatar: user?.picture,
+    role: user?.role,
+    version: user?.version,
+    onboardingComplete: user?.onboardingComplete,
+    createdProfiles: user?.profiles,
+    createdProfilesCount: user?._count?.profiles,
+  };
+};
+
 export function getUserByEmail(userEmail: string) {
   return prisma.user.findUnique({
     where: { email: userEmail },
     select: {
       id: true,
-      hasBeenOnboarded: true,
       role: true,
     },
   });
 }
+
+export const acceptTOS = ({ id }: { id: string }) => {
+  return prisma.user.update({
+    where: { id },
+    data: { tos: true },
+  });
+};
+
+export const completeOnboarding = async ({ id }: { id: string }) => {
+  return prisma.user.update({
+    where: { id },
+    data: { onboardingComplete: true },
+  });
+};

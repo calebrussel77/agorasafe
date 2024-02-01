@@ -1,28 +1,17 @@
-import { USER_PROFILES_LIMIT_COUNT } from '@/constants';
-
-import { toTitleCase } from '@/utils/strings';
-
-import { prisma } from '@/server/db';
-import { getDynamicDbSlug } from '@/server/utils/db-slug';
+import { ProfileType } from '@prisma/client';
 
 import {
   throwAuthorizationError,
-  throwBadRequestError,
   throwNotFoundError,
 } from '../../../utils/error-handling';
 import { type GetByIdOrSlugQueryInput } from '../../validations/base.validations';
-import { getUserById, updateUserById } from '../users';
 import {
-  createProfileByUserId,
   getAllProfileDetails,
-  getProfileBySlug,
-  getProfilesWithLocationByUserId,
+  getProfileStats,
+  getProfiles,
+  getProfilesByUserId,
 } from './profiles.repository';
-import { getProfileCreationMessage } from './profiles.utils';
-import {
-  type CreateProfileValidation,
-  type GetProfilesByUserIdValidation,
-} from './profiles.validations';
+import { type GetProfilesByUserIdValidation } from './profiles.validations';
 
 export const getProfilesByUserIdService = async (
   inputs: GetProfilesByUserIdValidation
@@ -30,7 +19,7 @@ export const getProfilesByUserIdService = async (
   const { userId, name } = inputs;
 
   //Get all profiles of the current user
-  const profiles = await getProfilesWithLocationByUserId(userId);
+  const profiles = await getProfilesByUserId(userId);
 
   if (!profiles) {
     throwNotFoundError('Utilisateur non trouvé !');
@@ -54,74 +43,48 @@ export const getProfileDetailsService = async (
     throwNotFoundError('Utilisateur non trouvé !');
   }
 
-  const customerJobPostedCount =
-    profile?.customerInfo?._count?.serviceRequests || 0;
-  const customerJobProvidersReservedCount =
-    profile?.customerInfo?._count?.providersReserved || 0;
-  const providerJobsReservedCount =
-    profile?.providerInfo?._count?.serviceRequestReservations || 0;
-
   return {
-    profile: {
-      ...profile,
-      customerJobPostedCount,
-      customerJobProvidersReservedCount,
-      providerJobsReservedCount,
-    },
+    profile,
     success: true,
   };
 };
 
-export const createProfileService = async (inputs: CreateProfileValidation) => {
-  const { name, profileType, userId, location, phone, avatar } = inputs;
-
-  const redirectUrl = profileType === 'PROVIDER' ? '/' : '/';
-
-  const user = await getUserById(userId);
-
-  if (!user) {
-    throwNotFoundError('Utilisateur non trouvé !');
-  }
-
-  if (user?._count.profiles === USER_PROFILES_LIMIT_COUNT) {
-    throwBadRequestError(
-      `Vous ne pouvez utliser que maximum ${USER_PROFILES_LIMIT_COUNT} Profils pour votre compte !`
-    );
-  }
-
-  const slug = await getDynamicDbSlug(name, getProfileBySlug);
-
-  const [_, profile] = await prisma.$transaction([
-    //Update the user infos by phone and location created
-    updateUserById({
-      id: userId,
-      hasBeenOnboarded: true,
-    }),
-    //Create a profile for the given user
-    createProfileByUserId({
-      userId,
-      phone,
-      avatar,
-      location: {
-        connectOrCreate: {
-          where: { name: location.name },
-          create: {
-            lat: location.lat,
-            long: location.long,
-            name: location.name,
-            wikidata: location.wikidata,
-          },
-        },
-      },
-      name: toTitleCase(name),
-      type: profileType,
-      slug,
-    }),
-  ]);
+export const getProfilesService = async (profileType?: ProfileType) => {
+  const profiles = await getProfiles(profileType);
 
   return {
-    profile,
-    redirectUrl,
-    message: getProfileCreationMessage(name),
+    profiles,
+  };
+};
+
+export const getProfileStatsService = async (
+  input: GetByIdOrSlugQueryInput
+) => {
+  const profile = await getProfileStats({ input });
+
+  if (!profile) {
+    throwNotFoundError('Utilisateur non trouvé !');
+  }
+
+  const customerServiceRequestCreatedCount =
+    profile?.customerInfo?._count?.serviceRequests || 0;
+  const customerServiceRequestProviderReservationCount =
+    profile?.customerInfo?._count?.providersReserved || 0;
+
+  const providerServiceRequestReservedCount =
+    profile?.providerInfo?._count?.serviceRequestReservations || 0;
+  const providerServiceRequestProposalsCount =
+    profile?.providerInfo?._count?.proposals || 0;
+  const receivedReviewCount = profile?._count?.receivedReviews || 0;
+  const createdReviewCount = profile?._count?.createdReviews || 0;
+
+  return {
+    profileId: profile.id,
+    customerServiceRequestCreatedCount,
+    customerServiceRequestProviderReservationCount,
+    providerServiceRequestReservedCount,
+    providerServiceRequestProposalsCount,
+    createdReviewCount,
+    receivedReviewCount,
   };
 };

@@ -33,6 +33,33 @@ model ShowCaseProject {
     @@index([providerId])
 }
 
+model Review {
+    id String @id @default(cuid())
+
+    subject ReviewSubject? @default(value: SERVICE_REQUEST)
+
+    content String @db.Text
+
+    file String?
+
+    rating Int
+
+    serviceRequest   ServiceRequest @relation("serviceRequestReview", fields: [serviceRequestId], references: [id], onDelete: Cascade)
+    serviceRequestId String
+
+    createdBy   Profile @relation("createdByReview", fields: [createdById], references: [id], onDelete: Cascade)
+    createdById String
+
+    receivedBy   Profile? @relation("receivedByReview", fields: [receivedById], references: [id], onDelete: Cascade)
+    receivedById String?
+
+    createdAt DateTime @default(now())
+
+    @@index([receivedById])
+    @@index([createdById])
+    @@index([serviceRequestId])
+}
+
 model Profile {
     id      String  @id @default(cuid())
     slug    String  @unique
@@ -40,6 +67,10 @@ model Profile {
     avatar  String?
     bio     String? @db.Text
     aboutMe String? @db.Text
+
+    createdReviews Review[] @relation("createdByReview")
+
+    receivedReviews Review[] @relation("receivedByReview")
 
     websiteUrl  String?
     facebookUrl String?
@@ -66,6 +97,10 @@ model Profile {
 
     deletedAt DateTime?
 
+    bannedAt DateTime?
+
+    isMuted Boolean? @default(false)
+
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 
@@ -84,10 +119,12 @@ model Provider {
 
     skills Skill[]
 
-    profile   Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
-    profileId String  @unique
+    proposals Proposal[]
 
     serviceRequestReservations ServiceRequestReservation[] @relation("ServiceRequestReservationRelation")
+
+    profile   Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+    profileId String  @unique
 }
 
 model Customer {
@@ -167,6 +204,10 @@ model ServiceRequest {
 
     comments Comment[]
 
+    proposals Proposal[]
+
+    reviews Review[] @relation("serviceRequestReview")
+
     providersReserved ServiceRequestReservation[] @relation("ServiceRequestReservationRelation")
 
     author   Customer @relation(fields: [authorId], references: [id], onDelete: Cascade)
@@ -241,12 +282,37 @@ model Comment {
     @@index([authorId])
 }
 
+model Proposal {
+    id      String @id @default(cuid())
+    content String @db.Text
+    price   Float?
+
+    author   Provider @relation(fields: [authorId], references: [id], onDelete: Cascade)
+    authorId String
+
+    serviceRequest   ServiceRequest? @relation(fields: [serviceRequestId], references: [id], onDelete: Cascade)
+    serviceRequestId String?
+
+    serviceRequestReservation ServiceRequestReservation?
+
+    isArchived Boolean? @default(false)
+    
+    createdAt  DateTime @default(now())
+    updatedAt  DateTime @updatedAt
+
+    @@index([serviceRequestId])
+    @@index([authorId])
+}
+
 model ServiceRequestReservation {
     provider          Provider @relation("ServiceRequestReservationRelation", fields: [providerProfileId], references: [profileId], onDelete: Cascade)
     providerProfileId String
 
     customer          Customer @relation("ServiceRequestReservationRelation", fields: [customerProfileId], references: [profileId], onDelete: Cascade)
     customerProfileId String
+
+    proposal   Proposal? @relation(fields: [proposalId], references: [id], onDelete: Cascade)
+    proposalId String?   @unique
 
     serviceRequest   ServiceRequest? @relation("ServiceRequestReservationRelation", fields: [serviceRequestId], references: [id], onDelete: Cascade)
     serviceRequestId String
@@ -296,10 +362,12 @@ model Session {
 
 model Location {
     id             String           @id @default(cuid())
-    name           String           @unique
-    lat            String
-    long           String
-    wikidata       String?
+    placeId        String           @unique
+    address        String
+    country        String?
+    city           String?
+    lat            Float
+    long           Float
     Profile        Profile[]
     ServiceRequest ServiceRequest[]
 }
@@ -314,17 +382,20 @@ model Feedback {
 }
 
 model User {
-    id               String    @id @default(cuid())
-    firstName        String
-    lastName         String
-    fullName         String
-    hasBeenOnboarded Boolean?  @default(false)
-    picture          String?
-    birthdate        String?
-    email            String    @unique
-    emailVerified    DateTime?
-    sex              Sex?      @default(value: MALE)
-    role             Role      @default(value: MEMBER)
+    id                 String    @id @default(cuid())
+    firstName          String
+    lastName           String
+    fullName           String
+    tos                Boolean?  @default(false)
+    onboardingComplete Boolean?  @default(false)
+    // onboardingSteps Json      @default("[\"MODERATION\", \"PAYMENT_INFO\"]") // TODO: Store enums as a JSON field since i'm using MySql => OnboardingStep[]
+    picture            String?
+    version            Float
+    birthdate          String?
+    email              String    @unique
+    emailVerified      DateTime?
+    sex                Sex?      @default(value: MALE)
+    role               Role      @default(value: MEMBER)
 
     accounts Account[]
     sessions Session[]
@@ -360,6 +431,16 @@ enum ServiceRequestStatus {
 enum ProfileType {
     CUSTOMER
     PROVIDER
+}
+
+enum OnboardingStep {
+    MODERATION
+    PAYMENT_INFO
+}
+
+enum ReviewSubject {
+    SERVICE_REQUEST
+    USER
 }
 
 enum FeedbackType {

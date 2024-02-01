@@ -1,10 +1,11 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
 import { zodResolver } from '@hookform/resolvers/zod';
 import { type VariantProps, cva } from 'class-variance-authority';
-import { type ComponentProps } from 'react';
+import React, { type ComponentProps } from 'react';
 import {
   type FieldValues,
   FormProvider,
+  type SubmitErrorHandler,
   type SubmitHandler,
   type UseFormProps,
   type UseFormReturn,
@@ -14,12 +15,15 @@ import { type z } from 'zod';
 
 import { cn } from '@/lib/utils';
 
-interface Props<T extends FieldValues>
-  extends Omit<ComponentProps<'form'>, 'onSubmit'>,
-    VariantProps<typeof formToken> {
+type Props<T extends FieldValues> = {
   form: UseFormReturn<T>;
-  onSubmit: SubmitHandler<T>;
-}
+  onError?: SubmitErrorHandler<T>;
+  onSubmit?: SubmitHandler<T>;
+} & VariantProps<typeof formToken> &
+  Pick<
+    React.HTMLProps<HTMLFormElement>,
+    'className' | 'children' | 'onKeyDown' | 'id'
+  >;
 
 const formToken = cva(['disabled:opacity-70 disabled:cursor-not-allowed'], {
   variants: {
@@ -42,36 +46,52 @@ const Form = <T extends FieldValues>({
   children,
   className,
   gap,
+  onError,
   ...props
-}: Props<T>) => (
-  <FormProvider {...form}>
-    <form
-      onSubmit={form.handleSubmit(onSubmit)}
-      className={cn(
-        formToken({
-          gap,
-        }),
-        className,
-        'space-y-0'
-      )}
-      {...props}
-    >
-      {/* <fieldset> passes the form's 'disabled' state to all of its elements,
-            allowing us to handle disabled style variants with just className */}
-      <fieldset
-        disabled={form?.formState?.isSubmitting}
+}: Props<T>) => {
+  const handleError: SubmitErrorHandler<T> = (errors, e) => {
+    onError?.(errors, e);
+    Object.entries(errors).forEach(([key, value]) =>
+      console.warn(`${key}: Form validation: ${value?.message as string}`, {
+        value,
+      })
+    );
+  };
+
+  const handleSubmit = onSubmit
+    ? form.handleSubmit(onSubmit, handleError)
+    : (e: React.FormEvent<HTMLFormElement>) => e.preventDefault();
+
+  return (
+    <FormProvider {...form}>
+      <form
+        onSubmit={handleSubmit}
         className={cn(
           formToken({
             gap,
           }),
-          className
+          className,
+          'space-y-0'
         )}
+        {...props}
       >
-        {children}
-      </fieldset>
-    </form>
-  </FormProvider>
-);
+        {/* <fieldset> passes the form's 'disabled' state to all of its elements,
+            allowing us to handle disabled style variants with just className */}
+        <fieldset
+          disabled={form?.formState?.isSubmitting}
+          className={cn(
+            formToken({
+              gap,
+            }),
+            className
+          )}
+        >
+          {children}
+        </fieldset>
+      </form>
+    </FormProvider>
+  );
+};
 
 interface UseZodFormProps<S extends z.ZodSchema>
   extends Exclude<UseFormProps<z.infer<S>>, 'resolver'> {

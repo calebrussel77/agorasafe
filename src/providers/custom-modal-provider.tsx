@@ -1,23 +1,30 @@
-import {
-  type ModalProps,
-  ModalsProvider,
-  closeContextModal,
-  openContextModal,
-} from '@/components/ui/modal';
+import { ModalsProvider } from '@/components/ui/modal';
 
 import { ConversationFileUploadFormModal } from '@/features/conversations';
 import { FeedbackFormModal } from '@/features/feedbacks';
+import { AddProfileModal } from '@/features/profiles';
 import {
+  CreateProposalModal,
   CreateServiceRequestModal,
   CustomServiceRequestCategoriesModal,
-} from '@/features/services';
+} from '@/features/service-requests';
 
-const modals = {
+//TODO: Need to find a way of using dynamic imports whithout typescript errors and continue having autocomplete
+export const appModals = {
   feedbackForm: FeedbackFormModal,
   customServiceRequestCategories: CustomServiceRequestCategoriesModal,
   createServiceRequest: CreateServiceRequestModal,
   conversationFileUploadForm: ConversationFileUploadFormModal,
+  addProfile: AddProfileModal,
+  createProposal: CreateProposalModal,
 };
+
+// neccessary to add type checking of the mantine context modals implementation in the app
+declare module '@/components/ui/modal' {
+  export interface MantineModalsOverride {
+    modals: typeof appModals;
+  }
+}
 
 export const CustomModalsProvider = ({
   children,
@@ -30,34 +37,9 @@ export const CustomModalsProvider = ({
         confirm: 'Confirmer',
         cancel: 'Annuler',
       }}
-      modals={modals}
+      modals={appModals}
     >
       {children}
     </ModalsProvider>
   );
 };
-
-type InnerProps<TName extends keyof typeof modals> = Prettify<
-  Pick<Parameters<(typeof modals)[TName]>[0], 'innerProps'>
->;
-
-export function openContext<TName extends keyof typeof modals>(
-  modal: TName,
-  props: Prettify<InnerProps<TName>['innerProps']>,
-  modalProps?: Prettify<
-    Omit<
-      ModalProps,
-      'open' | 'onOpenChange' | 'title' | 'description' | 'children'
-    >
-  >
-) {
-  openContextModal<TName>({
-    modal,
-    innerProps: props,
-    ...modalProps,
-  });
-}
-
-export function closeContext<TName extends keyof typeof modals>(modal: TName) {
-  closeContextModal(modal);
-}

@@ -11,7 +11,10 @@ export const loginRedirectReasons = {
     'Vous devez être connecté pour créer une demande de service',
   'make-service-request-offer':
     'Vous devez être connecté pour faire votre offre.',
-  'send-message': 'Vous devez être connecté pour envoyer un message.',
+  'create-comment': 'Connectez-vous pour faire votre commentaire.',
+  'reserve-service-request-provider':
+    'Vous devez être connecté pour réserver un prestataire.',
+  'send-message': 'Vous devez être connecté envoyer un message.',
 };
 
 export type LoginRedirectReason = keyof typeof loginRedirectReasons;

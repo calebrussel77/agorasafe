@@ -4,6 +4,13 @@ export function slugit(value: string) {
   return slugify(value, { lower: true, strict: true });
 }
 
+export function postgresSlugify(str: string) {
+  return str
+    .replace(' ', '_')
+    .replace(/[^a-zA-Z0-9_]/g, '')
+    .toLowerCase();
+}
+
 export function removeTags(str: string) {
   if (!str) return '';
 
@@ -20,6 +27,6 @@ export function removeTags(str: string) {
 export function toTitleCase(str: string) {
   return str.replace(
     /\w\S*/g,
-    txt => txt.charAt(0).toUpperCase() + txt.slice(1).toLowerCase()
+    txt => txt.charAt(0)?.toUpperCase() + txt.slice(1)?.toLowerCase()
   );
 }

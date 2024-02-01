@@ -2,7 +2,7 @@ export function isDefined<T>(argument: T | undefined | null): argument is T {
   return argument !== undefined && argument !== null;
 }
 
-export function isNumber(value: unknown) {
+export function isNumber(value: unknown): value is number {
   return isNaN(Number(value)) === false;
 }
 

@@ -4,7 +4,7 @@ import {
   getConversationsService,
   getOrCreateConversationService,
 } from './conversations.service';
-import { GetConversationsInput } from './conversations.validations';
+import { type GetConversationsInput } from './conversations.validations';
 
 export const getOrCreateConversationController = async (
   currentProfileId: string,

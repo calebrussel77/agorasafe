@@ -1,12 +1,11 @@
-import { openContext } from '@/providers/custom-modal-provider';
 import { LogOut, RefreshCcw } from 'lucide-react';
 import { UserPlus2 } from 'lucide-react';
 import React, { type FC } from 'react';
 
 import { useAuth } from '@/features/auth';
+import { FeedbackButton } from '@/features/feedbacks';
 import { useGetProfileConfig } from '@/features/profile-config';
 
-import { useIsMobile } from '@/hooks/use-breakpoints';
 import { useCurrentUser } from '@/hooks/use-current-user';
 
 import { ActiveLink } from '../active-link';
@@ -16,6 +15,7 @@ import { AsyncWrapper } from '../ui/async-wrapper';
 import { Avatar } from '../ui/avatar';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
+import { openContextModal } from '../ui/modal/events';
 import { Separator } from '../ui/separator';
 import { Typography } from '../ui/typography';
 import { User } from '../user';
@@ -23,13 +23,10 @@ import { User } from '../user';
 interface MobileNavbarProps {
   className?: string;
   navigations: Array<{ name: string; href: string; isNew: boolean }>;
-  onNavItemClick: () => void;
+  closeSideBar: () => void;
 }
 
-const MobileNavbar: FC<MobileNavbarProps> = ({
-  navigations,
-  onNavItemClick,
-}) => {
+const MobileNavbar: FC<MobileNavbarProps> = ({ navigations, closeSideBar }) => {
   const { onSignOut } = useAuth();
   const { profile, resetProfile } = useCurrentUser();
 
@@ -39,7 +36,6 @@ const MobileNavbar: FC<MobileNavbarProps> = ({
     error,
     refetch,
   } = useGetProfileConfig({ enabled: !!profile?.id });
-  const isMobile = useIsMobile();
 
   return (
     <>
@@ -65,7 +61,17 @@ const MobileNavbar: FC<MobileNavbarProps> = ({
                   {userProfileConfig?.canAddNewProfile && (
                     <>
                       <Button
-                        href={userProfileConfig?.addNewProfileHref}
+                        onClick={() => {
+                          openContextModal({
+                            modal: 'addProfile',
+                            isFullScreen: true,
+                            innerProps: {
+                              choosedProfileType:
+                                userProfileConfig?.allowedProfileType,
+                            },
+                          });
+                          closeSideBar();
+                        }}
                         size="sm"
                         className="my-1 w-full px-2"
                         variant="ghost"
@@ -82,7 +88,10 @@ const MobileNavbar: FC<MobileNavbarProps> = ({
                   {userProfileConfig?.canSwitchToOtherProfile && (
                     <>
                       <Button
-                        onClick={resetProfile}
+                        onClick={() => {
+                          resetProfile();
+                          closeSideBar();
+                        }}
                         size="sm"
                         variant="ghost"
                         className="my-1 w-full px-6"
@@ -108,7 +117,7 @@ const MobileNavbar: FC<MobileNavbarProps> = ({
                       return (
                         <ActiveLink
                           key={link.id}
-                          onClick={onNavItemClick}
+                          onClick={closeSideBar}
                           href={url}
                           activeClassName="bg-zinc-100 text-primary"
                           className="-mx-3 flex items-center gap-x-3 px-3 py-2"
@@ -142,31 +151,27 @@ const MobileNavbar: FC<MobileNavbarProps> = ({
                     {navigations.map(item => {
                       if (item.name.toLowerCase() === 'feedback') {
                         return (
-                          <button
+                          <FeedbackButton
+                            onHandleClick={closeSideBar}
                             key={item?.name}
-                            onClick={() =>
-                              openContext(
-                                'feedbackForm',
-                                {},
-                                { isFullScreen: isMobile }
-                              )
-                            }
-                            className="-mx-3 flex items-center rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
                           >
-                            {item.name}
-                            {item?.isNew && (
-                              <Badge
-                                content="New"
-                                size="xs"
-                                className="ml-0.5"
-                                variant="success"
-                              />
-                            )}
-                          </button>
+                            <button className="-mx-3 flex items-center rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50">
+                              {item.name}
+                              {item?.isNew && (
+                                <Badge
+                                  content="New"
+                                  size="xs"
+                                  className="ml-0.5"
+                                  variant="success"
+                                />
+                              )}
+                            </button>
+                          </FeedbackButton>
                         );
                       }
                       return (
                         <Anchor
+                          onClick={closeSideBar}
                           key={item.name}
                           href={item.href}
                           className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
@@ -202,21 +207,19 @@ const MobileNavbar: FC<MobileNavbarProps> = ({
                   {navigations.map(item => {
                     if (item.name.toLowerCase() === 'feedback') {
                       return (
-                        <button
-                          key={item?.name}
-                          onClick={() => openContext('feedbackForm', {})}
-                          className="-mx-3 flex items-center rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
-                        >
-                          {item.name}
-                          {item?.isNew && (
-                            <Badge
-                              content="New"
-                              size="xs"
-                              className="ml-0.5"
-                              variant="success"
-                            />
-                          )}
-                        </button>
+                        <FeedbackButton key={item?.name}>
+                          <button className="-mx-3 flex items-center rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50">
+                            {item.name}
+                            {item?.isNew && (
+                              <Badge
+                                content="New"
+                                size="xs"
+                                className="ml-0.5"
+                                variant="success"
+                              />
+                            )}
+                          </button>
+                        </FeedbackButton>
                       );
                     }
 
