@@ -27,7 +27,7 @@ import { BackButton } from '@/components/back-button/back-button';
 import { CanView } from '@/components/can-view';
 import { CommentForm } from '@/components/comment-form';
 import { RenderHtml } from '@/components/render-html';
-import { ShareButton } from '@/components/share-button/share-button';
+import { ShareButton } from '@/components/share-button';
 import { AsyncWrapper } from '@/components/ui/async-wrapper';
 import { AutoAnimate } from '@/components/ui/auto-animate';
 import { Badge } from '@/components/ui/badge';
@@ -61,7 +61,11 @@ import { formatPhoneNumber } from '@/utils/misc';
 import { formatPrice } from '@/utils/number';
 import { isEmptyArray } from '@/utils/type-guards';
 
-import { dateToReadableString, formatDateDistance } from '@/lib/date-fns';
+import {
+  dateIsAfter,
+  dateToReadableString,
+  formatDateDistance,
+} from '@/lib/date-fns';
 import { cn } from '@/lib/utils';
 
 import { createServerSideProps } from '@/server/utils/server-side';
@@ -237,7 +241,7 @@ const ServiceRequestPublicationPage = ({ profile, id }: PageProps) => {
           >
             <BackButton href="/" label="Accueil" className="mb-3" />
             <ImageGridGallery
-              className="h-64 w-full bg-gray-100 md:h-80"
+              className="h-64 w-full md:h-80"
               images={
                 isEmptyArray(images)
                   ? [
@@ -348,56 +352,60 @@ const ServiceRequestPublicationPage = ({ profile, id }: PageProps) => {
                     Partager
                   </Button>
                 </ShareButton>
-                <DropdownMenu>
-                  <DropdownMenu.Trigger asChild>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className="w-full sm:w-auto"
-                    >
-                      <MoreHorizontal className="h-5 w-5" />
-                    </Button>
-                  </DropdownMenu.Trigger>
-                  <DropdownMenu.Content className="min-w-[270px]">
-                    <div className="flex flex-col space-y-1">
-                      <DropdownMenu.Item
-                        className={cn(
-                          'default__transition flex cursor-pointer items-center gap-2.5 rounded-md px-3 py-2.5 text-sm text-gray-900 hover:bg-gray-100'
-                        )}
-                        onClick={() =>
-                          mutate({
-                            serviceRequestId: id,
-                            status: isStatusOpen ? 'CLOSED' : 'OPEN',
-                          })
-                        }
-                        disabled={isLoadingUpdate}
+                {isServiceRequestOwner && (
+                  <DropdownMenu>
+                    <DropdownMenu.Trigger asChild>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="w-full sm:w-auto"
                       >
-                        {isStatusOpen ? (
-                          <LockIcon className="h-5 w-5" />
-                        ) : (
-                          <ArrowUpRight className="h-5 w-5" />
-                        )}
-                        {isStatusOpen
-                          ? 'Fermer ma demande'
-                          : 'Republier ma demande'}
-                      </DropdownMenu.Item>
-                      <DropdownMenu.Item
-                        className={cn(
-                          'default__transition flex cursor-pointer items-center gap-2.5 rounded-md px-3 py-2.5 text-sm text-red-600 hover:bg-red-100'
-                        )}
-                        onClick={() =>
-                          deleteServiceRequestMutation.mutate({
-                            id,
-                          })
-                        }
-                        disabled={deleteServiceRequestMutation.isLoading}
-                      >
-                        <Trash className="h-5 w-5" />
-                        Supprimer
-                      </DropdownMenu.Item>
-                    </div>
-                  </DropdownMenu.Content>
-                </DropdownMenu>
+                        <MoreHorizontal className="h-5 w-5" />
+                      </Button>
+                    </DropdownMenu.Trigger>
+                    <DropdownMenu.Content className="min-w-[270px]">
+                      <div className="flex flex-col space-y-1">
+                        <>
+                          <DropdownMenu.Item
+                            className={cn(
+                              'default__transition flex cursor-pointer items-center gap-2.5 rounded-md px-3 py-2.5 text-sm text-gray-900 hover:bg-gray-100'
+                            )}
+                            onClick={() =>
+                              mutate({
+                                serviceRequestId: id,
+                                status: isStatusOpen ? 'CLOSED' : 'OPEN',
+                              })
+                            }
+                            disabled={isLoadingUpdate}
+                          >
+                            {isStatusOpen ? (
+                              <LockIcon className="h-5 w-5" />
+                            ) : (
+                              <ArrowUpRight className="h-5 w-5" />
+                            )}
+                            {isStatusOpen
+                              ? 'Fermer ma demande'
+                              : 'Republier ma demande'}
+                          </DropdownMenu.Item>
+                          <DropdownMenu.Item
+                            className={cn(
+                              'default__transition flex cursor-pointer items-center gap-2.5 rounded-md px-3 py-2.5 text-sm text-red-600 hover:bg-red-100'
+                            )}
+                            onClick={() =>
+                              deleteServiceRequestMutation.mutate({
+                                id,
+                              })
+                            }
+                            disabled={deleteServiceRequestMutation.isLoading}
+                          >
+                            <Trash className="h-5 w-5" />
+                            Supprimer
+                          </DropdownMenu.Item>
+                        </>
+                      </div>
+                    </DropdownMenu.Content>
+                  </DropdownMenu>
+                )}
               </div>
             </div>
             <div className="mt-3">
@@ -610,6 +618,10 @@ const ServiceRequestPublicationPage = ({ profile, id }: PageProps) => {
               <div className="mt-6 flex w-full flex-wrap items-center gap-3">
                 {proposalsData?.map(proposal => {
                   const isOwner = profile?.id === proposal?.author?.profile?.id;
+                  const isUpdated = dateIsAfter(
+                    proposal.updatedAt,
+                    proposal.createdAt
+                  );
 
                   return (
                     <div
@@ -618,11 +630,18 @@ const ServiceRequestPublicationPage = ({ profile, id }: PageProps) => {
                     >
                       <div className="flex w-full flex-nowrap items-start justify-between">
                         <div>
-                          <User
-                            profile={proposal?.author?.profile}
-                            avatarProps={{ size: 'md' }}
-                            size="lg"
-                          />
+                          <Inline>
+                            <User
+                              profile={proposal?.author?.profile}
+                              avatarProps={{ size: 'md' }}
+                              size="lg"
+                            />
+                            {isUpdated && !proposal.isArchived && (
+                              <span className="text-[10px] text-zinc-500">
+                                (Modifié)
+                              </span>
+                            )}
+                          </Inline>
                           <Badge
                             content={
                               proposal?.price

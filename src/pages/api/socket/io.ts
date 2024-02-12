@@ -3,24 +3,16 @@ import { Server } from 'socket.io';
 
 import type { NextApiResponseServerIo } from '@/types/socket-io';
 
+import { socketEventsKey } from '@/server/api/constants';
+import { type SimpleProfile } from '@/server/api/modules/profiles';
+
 export const config = {
   api: {
     bodyParser: false,
   },
 };
 
-const onError = (error: Error) => {
-  console.log(`[SERVER]: server error : ${error?.message}`);
-};
-
-const onListenning = () => {
-  console.log(`[SERVER]: server listening...`);
-};
-
 const SocketHandler = (req: NextApiRequest, res: NextApiResponseServerIo) => {
-  res?.socket?.server?.on('error', onError);
-  res?.socket?.server?.on('listening', onListenning);
-
   if (!res?.socket?.server?.io) {
     const io = new Server(res.socket.server as never, {
       path: '/api/socket/io',
@@ -28,10 +20,18 @@ const SocketHandler = (req: NextApiRequest, res: NextApiResponseServerIo) => {
     });
 
     io.on('connection', socket => {
-      console.log(`[SOCKET-SERVER]: user connected: ${socket.id}`);
+      socket.on(
+        socketEventsKey.newUserConnected(),
+        (profile: SimpleProfile) => {
+          console.log(
+            `[New connected profile] : ${profile?.name} with socketId : ${socket.id}`
+          );
+        }
+      );
 
       socket.on('disconnect', () => {
         console.log(`[SOCKET-SERVER]: user disconnected: ${socket.id}`);
+        //Remove connected users
       });
 
       socket.on('error', error => {

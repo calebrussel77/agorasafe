@@ -49,8 +49,11 @@ export const getServiceRequestReservedProviders = ({
       slug: slug ?? undefined,
     },
     select: {
-      id: true,
+      id: true, // needed for check
+      slug: true, // needed for check
+      title: true, // needed for check
       status: true, // needed for check
+      photos: true,
       author: { select: { profile: { select: { id: true } } } }, // needed for check
       numberOfProviderNeeded: true, // needed for check
       providersReserved: {
@@ -299,6 +302,7 @@ export function createServiceRequestComment({
       },
       serviceRequest: { connect: { slug: serviceRequestSlug } },
     },
+    include: { author: { select: { name: true, avatar: true, slug: true } } },
   });
 }
 
@@ -436,6 +440,11 @@ export function createServiceRequestReservation({
         },
       },
     },
+    include: {
+      providersReserved: {
+        select: { proposal: true, provider: { select: { profile: true } } },
+      },
+    },
   });
 }
 
@@ -465,10 +474,15 @@ export function updateServiceRequestReservation({
         },
       },
     },
+    include: {
+      providersReserved: {
+        select: { proposal: true, provider: { select: { profile: true } } },
+      },
+    },
   });
 }
 
-//TODO : in the future, we should archived service request
+//TODO : in the future, we should maybe archive service requests
 export const deleteServiceRequest = ({ id }: { id: string }) => {
   return prisma.serviceRequest.delete({
     where: { id },

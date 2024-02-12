@@ -1,5 +1,9 @@
+import { createNextPageApiHandler } from 'uploadthing/next-legacy';
+
 import { Anchor } from '@/components/anchor';
+import { SoonBadge } from '@/components/soon-button';
 import { Avatar } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
 import { ErrorWrapper, SectionError } from '@/components/ui/error';
 import { GroupItem } from '@/components/ui/group-item';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -9,6 +13,8 @@ import { useGetProfileConfig } from '@/features/profile-config';
 
 import { generateArray } from '@/utils/misc';
 import { isPathMatchRoute } from '@/utils/routing';
+
+import { cn } from '@/lib/utils';
 
 import { useCurrentUser } from '@/hooks/use-current-user';
 import { useHeaderHeight } from '@/hooks/use-header-height';
@@ -48,14 +54,20 @@ const Sidebar = () => {
         ) : (
           <div className="flex flex-col space-y-4">
             {userProfileConfig?.appProfileLinks?.map(link => {
-              const isProfileLink = link.id === 5;
+              const isProfileLink =
+                userProfileConfig?.appProfileLinks?.at(-1)?.id === link?.id;
+
               const url = isProfileLink
                 ? `/u/${currentProfile?.slug}`
                 : link.href;
               const isMatch = isPathMatchRoute(url);
 
               return (
-                <Anchor href={url} key={link.id} className="w-full">
+                <Anchor
+                  key={link.id}
+                  href={link.isSoon ? '#' : url}
+                  className={cn('w-full', link.isSoon && 'opacity-60')}
+                >
                   <GroupItem
                     iconBefore={
                       <Avatar
@@ -66,9 +78,12 @@ const Sidebar = () => {
                       />
                     }
                     name={
-                      <Typography as="h3" variant="paragraph">
-                        {link.title}
-                      </Typography>
+                      <div className="flex items-center gap-2">
+                        <Typography as="h3" variant="paragraph">
+                          {link.title}
+                        </Typography>
+                        {link.isSoon && <SoonBadge />}
+                      </div>
                     }
                     description={
                       <Typography

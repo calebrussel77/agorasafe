@@ -6,6 +6,8 @@ import { z } from 'zod';
 
 import { EmptyState } from '@/components/ui/empty-state';
 import { Icons } from '@/components/ui/icons';
+import { CenterContent } from '@/components/ui/layout';
+import { Spinner } from '@/components/ui/spinner';
 import { User } from '@/components/user';
 
 import {
@@ -17,21 +19,40 @@ import {
 } from '@/features/conversations';
 import { MainContent, Sidebar } from '@/features/user-dashboard';
 
-import { getOrCreateConversation } from '@/server/api/modules/conversations';
+import { api } from '@/utils/api';
+
 import { createServerSideProps } from '@/server/utils/server-side';
 
 type PageProps = Prettify<InferNextProps<typeof getServerSideProps>>;
 
 const InboxPage = ({
-  profile,
-  otherProfile,
   session,
-  conversationId,
-  profileId,
+  profile,
+  profileOneId,
+  profileTwoId,
 }: PageProps) => {
-  const canDisplayConversationDetails =
-    profileId && otherProfile && conversationId;
   const bottomRef = useRef<ElementRef<'div'>>(null);
+
+  const { data, isInitialLoading } = api.conversations.getOrCreate.useQuery(
+    {
+      profileOneId,
+      profileTwoId: profileTwoId ?? '',
+    },
+    { enabled: !!profileTwoId }
+  );
+
+  const otherProfile =
+    data?.profileOne?.id === profile?.id ? data.profileTwo : data?.profileOne;
+
+  const canDisplayConversationDetails =
+    profileTwoId && otherProfile && data?.id;
+
+  if (isInitialLoading)
+    return (
+      <CenterContent>
+        <Spinner variant="ghost" />
+      </CenterContent>
+    );
 
   return (
     <>
@@ -43,18 +64,18 @@ const InboxPage = ({
             socketUrl={`${SOCKET_API_BASE_URL}/direct-messages`}
             name={otherProfile?.name}
             profile={profile}
-            conversationId={conversationId}
+            conversationId={data?.id}
             bottomRef={bottomRef}
           />
           <ConversationChatFooter
             name={otherProfile?.name}
             bottomRef={bottomRef}
             socketUrl={`${SOCKET_API_BASE_URL}/direct-messages`}
-            query={{ conversationId }}
+            query={{ conversationId: data?.id }}
           />
         </>
       )}
-      {!profileId && (
+      {!isInitialLoading && (!profileTwoId || !data) && (
         <EmptyState
           className="px-3"
           icon={<Icons.message />}
@@ -69,7 +90,7 @@ const InboxPage = ({
 InboxPage.getLayout = function getLayout(page: ReactElement<PageProps>) {
   const profile = page?.props?.profile;
   const session = page?.props?.session;
-  const profileId = page?.props?.profileId;
+  const profileId = page?.props?.profileTwoId;
   const pageTitle = `Messagerie personnelle - ${profile?.name}`;
 
   return (
@@ -98,39 +119,29 @@ const querySchema = z.object({
 export const getServerSideProps = createServerSideProps({
   shouldUseSSG: true,
   shouldUseSession: true,
-  resolver: async ({ ctx, profile, session }) => {
+  resolver: async ({ ctx, profile, session, ssg }) => {
     if (!session || !profile)
       return { redirect: { destination: '/', permanent: false } };
 
     const result = querySchema.safeParse(ctx.query);
-    let otherProfile = null;
-    let conversationId = null;
-    let profileTwoId = null;
 
-    if (result?.success && result.data.profileId) {
-      profileTwoId = result.data.profileId;
+    if (!result?.success) {
+      return { redirect: { destination: '/', permanent: false } };
+    }
 
-      const conversation = await getOrCreateConversation({
-        inputs: { profileOneId: profile.id, profileTwoId },
+    if (ssg && result?.data?.profileId) {
+      await ssg.conversations.getOrCreate.prefetch({
+        profileOneId: profile.id,
+        profileTwoId: result?.data?.profileId,
       });
-
-      if (!conversation) {
-        return { redirect: { destination: '/', permanent: false } };
-      }
-
-      const { profileOne, profileTwo, id } = conversation;
-
-      otherProfile = profileOne?.id === profile?.id ? profileTwo : profileOne;
-      conversationId = id;
     }
 
     return {
       props: {
         profile,
         session,
-        otherProfile,
-        conversationId,
-        profileId: profileTwoId,
+        profileOneId: profile.id,
+        profileTwoId: result?.data?.profileId || null,
       },
     };
   },

@@ -1,6 +1,5 @@
-import { Loader2, ServerCrash } from 'lucide-react';
+import { ServerCrash } from 'lucide-react';
 import { type Session } from 'next-auth';
-import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 import { useInView } from 'react-intersection-observer';
@@ -22,7 +21,7 @@ import { ConversationListItem } from './conversation-list-item';
 type ConversationListProps = React.PropsWithChildren<{
   profile: SimpleProfile;
   session: Session;
-  profileId: string | null;
+  profileId?: string | null;
 }>;
 
 const ConversationList = ({
@@ -31,6 +30,8 @@ const ConversationList = ({
   profileId,
 }: ConversationListProps) => {
   const { ref, inView: isInView } = useInView();
+  const router = useRouter();
+  const profileIdQuery = profileId || router?.query?.profileId;
 
   const {
     conversations,
@@ -77,15 +78,15 @@ const ConversationList = ({
 
           const lastMessage = conversation?.directMessages[0];
           const isLastMessageDeleted = !!lastMessage?.deletedAt;
-          const lastMessageUser =
-            lastMessage?.profileId === profile.id
-              ? 'Vous:'
-              : `${otherProfile?.name}:`;
+          // const lastMessageUser =
+          //   lastMessage?.profileId === profile.id
+          //     ? 'Vous:'
+          //     : `${otherProfile?.name}:`;
 
           const lastMessageContent = !lastMessage?.content
             ? '...'
             : !isLastMessageDeleted
-            ? `${lastMessageUser} ${lastMessage?.content}`
+            ? `${lastMessage?.content}`
             : lastMessage?.content;
 
           return (
@@ -94,7 +95,7 @@ const ConversationList = ({
               href={`/dashboard/inbox?profileId=${otherProfile?.id}`}
               className={cn(
                 'block w-full',
-                otherProfile?.id === profileId && 'bg-black/5'
+                otherProfile?.id === profileIdQuery && 'bg-black/5'
               )}
             >
               <ConversationListItem

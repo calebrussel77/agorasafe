@@ -80,26 +80,28 @@ function Badge({
   return (
     <Comp className="relative w-fit">
       {children}
-      <div
-        className={cn(
-          badgeVariants({
-            variant,
-            placement: children ? placement : null,
-            size,
-            shape,
-            class:
-              placement &&
-              children &&
-              'absolute z-10 flex items-center justify-center',
-          }),
-          !shouldDisableOutline && 'border-2 border-white',
-          content === '' && 'h-3 w-3 p-0',
-          className
-        )}
-        {...props}
-      >
-        {content}
-      </div>
+      {content ? (
+        <div
+          className={cn(
+            badgeVariants({
+              variant,
+              placement: children ? placement : null,
+              size,
+              shape,
+              class:
+                placement &&
+                children &&
+                'absolute z-10 flex items-center justify-center',
+            }),
+            !shouldDisableOutline && 'border-2 border-white',
+            content === '' && 'h-3 w-3 p-0',
+            className
+          )}
+          {...props}
+        >
+          {content}
+        </div>
+      ) : null}
     </Comp>
   );
 }

@@ -14,6 +14,8 @@ import { useCurrentUser } from '@/hooks/use-current-user';
 import { Anchor } from '../anchor';
 import { CanView } from '../can-view';
 import { LogoSymbolIcon } from '../icons/logo-icon';
+import { NotificationBell } from '../notifications';
+import { SoonButton } from '../soon-button';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import { useDropdownMenu } from '../ui/dropdown-menu';
@@ -21,7 +23,12 @@ import { useDropdownMenu } from '../ui/dropdown-menu';
 interface NavbarProps {
   className?: string;
   isHeaderScrolled: boolean;
-  navigations: Array<{ name: string; href: string; isNew: boolean }>;
+  navigations: Array<{
+    name: string;
+    href: string;
+    isNew: boolean;
+    isSoon: boolean;
+  }>;
   children?: ReactNode;
 }
 
@@ -48,11 +55,11 @@ const Navbar: FC<NavbarProps> = ({
         <Anchor href="/" className="-m-1.5 flex items-start gap-x-1.5 p-1.5">
           <LogoSymbolIcon className="h-7 w-auto md:h-8" />
           <Badge
-            content="Alpha"
+            content="BETA"
             size="sm"
             variant="warning"
             shape="rounded"
-            title="Ce projet est encore en cours de developpement."
+            title="Ce projet est en cours de developpement."
           />
         </Anchor>
       </div>
@@ -76,6 +83,20 @@ const Navbar: FC<NavbarProps> = ({
             );
           }
 
+          if (item?.isSoon) {
+            return (
+              <SoonButton
+                key={item.name}
+                variant="ghost"
+                className={cn(
+                  'default__transition font- rounded-md px-2 py-1 text-sm',
+                  'flex items-center hover:bg-brand-50 hover:text-brand-600'
+                )}
+              >
+                {item.name}
+              </SoonButton>
+            );
+          }
           return (
             <Anchor
               key={item.name}
@@ -98,10 +119,13 @@ const Navbar: FC<NavbarProps> = ({
           );
         })}
       </div>
-      <div className="ml-1 flex flex-1 items-center justify-end">
+      <div className="ml-1 flex flex-1 items-center justify-end gap-3">
         <ServiceRequestButton>
           <Button size="sm">Demander un service</Button>
         </ServiceRequestButton>
+        <CanView allowedProfiles={['CUSTOMER', 'PROVIDER']}>
+          <NotificationBell />
+        </CanView>
         <CanView allowedProfiles={['CUSTOMER', 'PROVIDER']}>
           <UserProfileDropdown
             isHeaderScrolled={isHeaderScrolled}

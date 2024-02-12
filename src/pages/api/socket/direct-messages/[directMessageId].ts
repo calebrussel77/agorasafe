@@ -92,7 +92,7 @@ export default async function handler(
       directMessage = await updateDirectMessage({ directMessageId, content });
     }
 
-    const eventKey = socketEventsKey['updateDirectMessage'](conversation.id);
+    const eventKey = socketEventsKey['directMessageUpdate'](conversation.id);
 
     res?.socket?.server?.io?.emit(eventKey, directMessage);
 

@@ -62,7 +62,7 @@ const PublishPage = ({ modeQuery }: PageProps) => {
           <EmptyState
             classNames={{ root: 'my-24', icon: 'h-36 w-auto' }}
             icon={<Welcome2Icon />}
-            name="🎉🥳 Votre demande publiée avec succès"
+            name="🎉🥳 Demande publiée avec succès"
             description={`Votre demande " ${data?.serviceRequest?.title} " a bien été publiée au près des prestataires !`}
           />
         ),

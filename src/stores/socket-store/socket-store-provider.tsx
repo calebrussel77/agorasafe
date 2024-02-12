@@ -7,6 +7,8 @@ import { io } from 'socket.io-client';
 import type { Socket } from 'socket.io-client';
 import { type StoreApi, createStore, useStore } from 'zustand';
 
+import { SocketSubscriptions } from '@/components/socket-subscriptions';
+
 // define types for state values and actions separately
 export type PersistedState = {
   isConnected: boolean;
@@ -46,15 +48,14 @@ const SocketStoreProvider = ({ children }: React.PropsWithChildren) => {
     });
 
     socketInstance.on('error', err => {
-      console.error({ err });
+      console.debug({ err });
     });
 
     socketInstance.on('connect_error', err => {
-      console.error('Failed to connect with websocket.', err);
+      console.debug('Failed to connect with websocket.', err);
     });
 
     socketInstance.on('connect', () => {
-      console.log('Connected on the client');
       storeRef.current?.setState({ isConnected: true });
     });
 
@@ -71,6 +72,7 @@ const SocketStoreProvider = ({ children }: React.PropsWithChildren) => {
 
   return (
     <StoreContext.Provider value={storeRef.current}>
+      <SocketSubscriptions />
       {children}
     </StoreContext.Provider>
   );

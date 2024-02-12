@@ -8,10 +8,10 @@ import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { cn } from '@/lib/utils';
 
 const navigations = [
-  { name: 'Explorer', href: '/service-requests', isNew: false },
-  { name: 'Les mieux notés', href: '#', isNew: false },
+  { name: 'Explorer', href: '/service-requests', isNew: false, isSoon: false },
+  { name: 'Les mieux notés', href: '#', isNew: false, isSoon: true },
   // { name: 'Devenir prestataire', href: '#', isNew: false },
-  { name: 'Feedback', href: '', isNew: true },
+  { name: 'Feedback', href: '', isNew: true, isSoon: false },
 ];
 
 const Header = ({ children }: { children?: ReactNode }) => {

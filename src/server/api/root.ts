@@ -5,6 +5,7 @@ import { contentsRouter } from './routers/contents.router';
 import { conversationsRouter } from './routers/conversations.router';
 import { feedbacksRouter } from './routers/feedbacks.router';
 import { messagesRouter } from './routers/messages.router';
+import { notificationsRouter } from './routers/notifications.router';
 import { profileConfigRouter } from './routers/profile-config.router';
 import { profilesRouter } from './routers/profiles.router';
 import { serviceRequestsRouter } from './routers/service-requests.router';
@@ -29,6 +30,7 @@ export const appRouter = createTRPCRouter({
   skills: skillsRouter,
   serviceRequests: serviceRequestsRouter,
   comments: commentsRouter,
+  notifications: notificationsRouter,
 });
 
 // export type definition of API

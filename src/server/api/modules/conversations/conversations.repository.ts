@@ -38,7 +38,6 @@ function getConversationBetweenTwoProfiles(
     });
   } catch (e) {
     console.log({ e });
-
     return null;
   }
 }
@@ -58,7 +57,6 @@ function createNewConversation(profileOneId: string, profileTwoId: string) {
     });
   } catch (e) {
     console.log({ e });
-
     return null;
   }
 }

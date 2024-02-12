@@ -8,8 +8,10 @@ import {
 import React, { type FC } from 'react';
 
 import { Anchor } from '@/components/anchor';
+import { SoonBadge } from '@/components/soon-button';
 import { AutoAnimate } from '@/components/ui/auto-animate';
 import { Avatar } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { DropdownMenu, useDropdownMenu } from '@/components/ui/dropdown-menu';
 import { ErrorWrapper, SectionError } from '@/components/ui/error';
@@ -58,10 +60,7 @@ const UserProfileDropdown: FC<UserProfileDropdownProps> = ({
 
   return (
     <DropdownMenu open={isOpen} onOpenChange={onToggle}>
-      <DropdownMenu.Trigger
-        asChild
-        className="ml-4 hidden rounded-full lg:flex"
-      >
+      <DropdownMenu.Trigger asChild className="hidden rounded-full lg:flex">
         <button
           className={cn(
             'default__transition flex items-center px-2 py-1',
@@ -167,7 +166,8 @@ const UserProfileDropdown: FC<UserProfileDropdownProps> = ({
                 )}
 
                 {userProfileConfig?.appProfileLinks?.map(link => {
-                  const isProfileLink = link.id === 5;
+                  const isProfileLink =
+                    userProfileConfig?.appProfileLinks?.at(-1)?.id === link?.id;
                   const url = isProfileLink
                     ? `/u/${currentProfile.slug}`
                     : link.href;
@@ -177,13 +177,13 @@ const UserProfileDropdown: FC<UserProfileDropdownProps> = ({
                     <DropdownMenu.Item
                       key={link.id}
                       onClick={() => onToggle(false)}
-                      disabled={link.disabled}
+                      disabled={link.isSoon}
                       className={
                         isMatch ? 'mb-2 bg-zinc-100 text-primary' : 'mb-2'
                       }
                     >
                       <Anchor
-                        href={url}
+                        href={link.isSoon ? '#' : url}
                         className="mt-1 flex w-full items-center justify-start gap-x-3 text-left"
                       >
                         <Avatar
@@ -193,9 +193,12 @@ const UserProfileDropdown: FC<UserProfileDropdownProps> = ({
                           className="mr-2 h-5 w-5 flex-shrink-0"
                         />
                         <div className="flex flex-col items-start justify-start">
-                          <Typography as="h3" variant="paragraph">
-                            {link.title}
-                          </Typography>
+                          <div className="flex items-center gap-2">
+                            <Typography as="h3" variant="paragraph">
+                              {link.title}
+                            </Typography>
+                            {link.isSoon && <SoonBadge />}
+                          </div>
                           <Typography
                             variant="small"
                             className="text-muted-foreground"
