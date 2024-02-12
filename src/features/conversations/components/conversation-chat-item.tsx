@@ -258,30 +258,28 @@ export const ConversationChatItem = ({
         !isEditing && 'hover:bg-black/5'
       )}
     >
-      <div className="group flex w-full items-start gap-x-2">
+      <div className="group flex w-full items-start gap-x-3">
         <div
           onClick={onProfileClick}
           className="cursor-pointer transition hover:drop-shadow-md"
         >
           <UserAvatar profile={profile} />
         </div>
-        <div className="flex w-full flex-col">
-          <div className="flex items-center gap-x-2">
-            <Inline>
-              <UserName
-                profile={profile}
-                onClick={onProfileClick}
-                className="text-sm"
-                withProfileBadgeInitial
-              />
-              <span className="text-xs text-zinc-500 dark:text-zinc-400">
-                {timestamp}
-              </span>
-              {isUpdated && !isDeleted && (
-                <span className="text-[10px] text-zinc-500">(Modifié)</span>
-              )}
-            </Inline>
-          </div>
+        <div className="w-full flex-1">
+          <Inline>
+            <UserName
+              profile={profile}
+              onClick={onProfileClick}
+              className="text-sm"
+              withProfileBadgeInitial
+            />
+            <span className="text-xs text-zinc-500 dark:text-zinc-400">
+              {timestamp}
+            </span>
+            {isUpdated && !isDeleted && (
+              <span className="text-[10px] text-zinc-500">(Modifié)</span>
+            )}
+          </Inline>
           {imageUrl && (
             <a
               href={imageUrl}
@@ -312,9 +310,9 @@ export const ConversationChatItem = ({
                 truncate
                 lines={8}
                 className={cn(
-                  'mt-1 text-sm',
+                  'mt-0.5 text-sm',
                   isDeleted && 'italic text-gray-500',
-                  fileUrl && 'mt-2'
+                  fileUrl && 'mt-1.5'
                 )}
                 html={content}
               />
@@ -323,7 +321,7 @@ export const ConversationChatItem = ({
           {isEditing && (
             <Form
               form={form}
-              className="flex w-full items-start gap-x-2 space-y-0 pt-1"
+              className="flex w-full items-start gap-x-3 space-y-0 pt-1"
               onKeyDown={getHotkeyHandler([
                 ['Escape', onHandleEscape as never],
               ])}
@@ -376,7 +374,7 @@ export const ConversationChatItem = ({
         </Button>
       )}
       {canDeleteMessage && !isEditing && (
-        <div className="">
+        <div>
           <DropdownMenu>
             <DropdownMenu.Trigger asChild>
               <Button

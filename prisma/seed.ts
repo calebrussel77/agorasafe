@@ -184,6 +184,7 @@ const createUserWithAdminRoleAndProfiles = async () => {
   const { profiles } = await prisma.user.create({
     data: {
       email: 'calebrussel77@gmail.com',
+      onboardingComplete: true,
       version: Number(process.env.NEXT_PUBLIC_SESSION_VERSION),
       tos: true,
       // email: 'fake.email@gmail.fr',
@@ -436,12 +437,10 @@ const importData = async () => {
     console.log(`🧹 Creating skills...`);
     await createSkills();
 
-    // await createEngamentSkills();
-
-    // console.log(
-    //   `🧹 Creating 01 user with 02 complete profiles with details...`
-    // );
-    // await createUserWithAdminRoleAndProfiles();
+    console.log(
+      `🧹 Creating 01 user with 02 complete profiles with details...`
+    );
+    await createUserWithAdminRoleAndProfiles();
 
     console.log(`🌱 Database has been seeded`);
     process.exit();

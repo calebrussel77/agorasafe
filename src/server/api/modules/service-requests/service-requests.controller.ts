@@ -1,5 +1,6 @@
 import { formatPhoneNumber } from '@/utils/misc';
 
+import { prisma } from '@/server/db';
 import {
   throwDbError,
   throwForbiddenError,
@@ -9,8 +10,9 @@ import {
 import { type Context } from '../../create-context';
 import {
   type GetByIdOrSlugQueryInput,
-  GetByIdQueryInput,
+  type GetByIdQueryInput,
 } from '../../validations/base.validations';
+import { createNotification } from '../notifications';
 import { createProposal, getProposals, updateProposal } from '../proposals';
 import { ProposalSelect } from '../proposals/proposals.select';
 import {
@@ -19,7 +21,6 @@ import {
   createServiceRequestReservation,
   deleteServiceRequest,
   getAllServiceRequests,
-  getServiceRequestProposals,
   getServiceRequestReservedProviders,
   getServiceRequestStats,
   getServiceRequestWithDetails,
@@ -207,6 +208,7 @@ export const toggleServiceRequestReservationHandler = async ({
           proposalId,
         },
       });
+
       return {
         serviceRequestReservation,
         message:
@@ -226,7 +228,7 @@ export const toggleServiceRequestReservationHandler = async ({
     // we know that the provider is already on the list
     // check if provider is active and visible
     if (providerFinded.isActive && providerFinded.removedAt === null) {
-      //?REFLEXION : Need to know see if we want to display the provider proposal if existing here
+      //?REFLEXION : Need to know if we want to display the previous provider proposal here
 
       // we update the provider info to be inactive and invisible
       const serviceRequestReservation = await updateServiceRequestReservation({
@@ -241,6 +243,26 @@ export const toggleServiceRequestReservationHandler = async ({
           isActive: false,
         },
       });
+
+      if (providerProfileId !== ctx.profile.id) {
+        const reservedProvider =
+          serviceRequestReservation?.providersReserved?.find(
+            el => el.provider.profile.id === providerProfileId
+          );
+
+        if (!reservedProvider)
+          throwForbiddenError("Une erreur inattendue s'est produite.");
+
+        await createNotification('cancel-service-request-reservation', {
+          profileId: providerProfileId,
+          serviceRequestImageUrl: serviceRequest?.photos[0]?.url,
+          profileName: ctx?.profile?.name,
+          serviceRequestId: serviceRequest?.id,
+          serviceRequestSlug: serviceRequest?.slug,
+          serviceRequestTitle: serviceRequest?.title,
+        });
+      }
+
       return {
         serviceRequestReservation,
         message:
@@ -271,6 +293,25 @@ export const toggleServiceRequestReservationHandler = async ({
       },
     });
 
+    if (providerProfileId !== ctx.profile.id) {
+      const reservedProvider =
+        serviceRequestReservation?.providersReserved?.find(
+          el => el.provider.profile.id === providerProfileId
+        );
+
+      if (!reservedProvider)
+        throwForbiddenError("Une erreur inattendue s'est produite.");
+
+      await createNotification('new-service-request-reservation', {
+        profileId: providerProfileId,
+        serviceRequestImageUrl: serviceRequest?.photos[0]?.url,
+        profileName: ctx?.profile?.name,
+        serviceRequestId: serviceRequest?.id,
+        serviceRequestSlug: serviceRequest?.slug,
+        serviceRequestTitle: serviceRequest?.title,
+      });
+    }
+
     return {
       serviceRequestReservation,
       message:
@@ -290,13 +331,43 @@ export const createServiceRequestCommentHandler = async ({
   ctx: DeepNonNullable<Context>;
 }) => {
   try {
-    const serviceRequestOffer = await createServiceRequestComment({
+    const comment = await createServiceRequestComment({
       input,
       profileId: ctx.profile.id,
     });
 
+    const serviceRequest = await prisma.serviceRequest.findUnique({
+      where: { id: comment?.serviceRequestId },
+      select: {
+        author: { select: { profileId: true } },
+        id: true,
+        slug: true,
+        title: true,
+      },
+    });
+
+    if (!serviceRequest) {
+      throwNotFoundError('Demande de service non trouvée !');
+    }
+
+    const serviceRequestOwnerId = serviceRequest.author.profileId;
+
+    // Ne pas notifier si l'utilisateur commente sa propre demande de service
+    // Créer une notification pour l'auteur de la demande de service
+    if (serviceRequestOwnerId !== ctx.profile.id) {
+      await createNotification('new-service-request-comment', {
+        profileId: serviceRequestOwnerId,
+        profileAvatar: comment?.author?.avatar,
+        profileName: comment?.author?.name,
+        serviceRequestId: serviceRequest?.id,
+        serviceRequestSlug: serviceRequest?.slug,
+        serviceRequestTitle: serviceRequest?.title,
+        commentText: input.text,
+      });
+    }
+
     return {
-      serviceRequestOffer,
+      comment,
       success: true,
     };
   } catch (e) {
@@ -340,8 +411,48 @@ export const createServiceRequestProposalHandler = async ({
         serviceRequest: { connect: { id: serviceRequestId } },
         ...input,
       },
-      select: { serviceRequest: { select: { id: true } } },
+      select: {
+        serviceRequest: { select: { id: true } },
+        author: {
+          select: { profile: { select: { avatar: true, name: true } } },
+        },
+      },
     });
+
+    const serviceRequest = await prisma.serviceRequest.findUnique({
+      where: { id: serviceRequestId },
+      select: {
+        author: { select: { profileId: true } },
+        id: true,
+        slug: true,
+        title: true,
+        status: true,
+      },
+    });
+
+    if (!serviceRequest) {
+      throwNotFoundError('Demande de service non trouvée !');
+    }
+
+    if (serviceRequest.status === 'CLOSED') {
+      throwForbiddenError('Cette demande à été clôturée !');
+    }
+
+    const serviceRequestOwnerId = serviceRequest.author.profileId;
+
+    // Ne pas notifier si l'utilisateur fait une proposition sur sa propre demande de service
+    // Créer une notification pour l'auteur de la demande de service
+    if (serviceRequestOwnerId !== ctx.profile.id) {
+      await createNotification('new-service-request-proposal', {
+        profileId: serviceRequestOwnerId,
+        profileAvatar: proposal?.author?.profile?.avatar,
+        profileName: proposal?.author?.profile?.name,
+        serviceRequestId: serviceRequest?.id,
+        serviceRequestSlug: serviceRequest?.slug,
+        serviceRequestTitle: serviceRequest?.title,
+        proposalText: input.content,
+      });
+    }
 
     return {
       proposal,

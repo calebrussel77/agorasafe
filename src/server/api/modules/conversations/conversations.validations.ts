@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { getAllQuerySchema } from '../../validations/base.validations';
 
 export const getOrCreateConversationSchema = z.object({
+  profileOneId: z.string().trim(),
   profileTwoId: z.string().trim(),
 });
 

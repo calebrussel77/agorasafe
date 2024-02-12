@@ -8,7 +8,6 @@ import { AppProvider } from '@/providers/app-provider';
 import { type ProfileStore } from '@/stores/profile-store';
 import { getInitialState } from '@/stores/profile-store/initial-state';
 import { getCookies } from 'cookies-next';
-import { AnimatePresence } from 'framer-motion';
 import { type NextPage } from 'next';
 import { type Session } from 'next-auth';
 import { getSession } from 'next-auth/react';
@@ -20,7 +19,6 @@ import 'swiper/css/pagination';
 
 import { DefaultSeo } from '@/components/default-seo';
 import { Meta } from '@/components/meta';
-import { PageTransition } from '@/components/page-transition';
 
 import { api } from '@/utils/api';
 import { isWindowDefined } from '@/utils/type-guards';

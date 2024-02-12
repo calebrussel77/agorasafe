@@ -1,5 +1,5 @@
 import NextLink, { type LinkProps as NextLinkProps } from 'next/link';
-import { type FC, type ReactElement, type ReactNode } from 'react';
+import { type FC, type ReactNode } from 'react';
 
 import { isString } from '@/utils/type-guards';
 

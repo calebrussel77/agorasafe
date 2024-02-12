@@ -1,5 +1,8 @@
+import { prisma } from '@/server/db';
+
 import {
   throwDbError,
+  throwForbiddenError,
   throwNotFoundError,
 } from '../../../utils/error-handling';
 import { type Context } from '../../create-context';
@@ -14,6 +17,7 @@ import {
   getComments,
   upsertComment,
 } from '../comments';
+import { createNotification } from '../notifications';
 import { CommentSelect } from './comments.select';
 
 export const getInfiniteCommentsHandler = async ({
@@ -69,8 +73,50 @@ export const upsertCommentHandler = async ({
   input: UpsertCommentInput;
 }) => {
   try {
-    const result = await upsertComment({ ...input, profileId: ctx.profile.id });
-    return result;
+    if (input.entityType === 'service-request') {
+      const serviceRequest = await prisma.serviceRequest.findUnique({
+        where: { id: input.entityId },
+        select: {
+          author: { select: { profileId: true } },
+          id: true,
+          slug: true,
+          title: true,
+          status: true,
+        },
+      });
+
+      if (!serviceRequest) {
+        throwNotFoundError('Demande de service non trouvée !');
+      }
+
+      if (serviceRequest.status === 'CLOSED') {
+        throwForbiddenError('Cette demande à été clôturée !');
+      }
+
+      const serviceRequestOwnerId = serviceRequest.author.profileId;
+
+      const comment = await upsertComment({
+        ...input,
+        profileId: ctx.profile.id,
+      });
+
+      // Ne pas notifier si l'utilisateur commente sa propre demande de service
+      // Créer une notification pour l'auteur de la demande de service
+      if (serviceRequestOwnerId !== ctx.profile.id) {
+        await createNotification('new-service-request-comment', {
+          profileId: serviceRequestOwnerId,
+          profileAvatar: comment?.author?.avatar,
+          profileName: comment?.author?.name,
+          serviceRequestId: serviceRequest?.id,
+          serviceRequestSlug: serviceRequest?.slug,
+          serviceRequestTitle: serviceRequest?.title,
+          commentText: input.text,
+        });
+      }
+      return comment;
+    }
+
+    return null;
   } catch (error) {
     throw throwDbError(error);
   }

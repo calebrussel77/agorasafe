@@ -1,4 +1,4 @@
-import { type Element, attributesToProps } from 'html-react-parser';
+import { type Element, attributesToProps, domToReact } from 'html-react-parser';
 import { useMemo } from 'react';
 
 import { htmlParse, needsColorSwap } from '@/lib/html-helper';
@@ -31,7 +31,7 @@ export function RenderHtml({
     () =>
       htmlParse(html, {
         replace(domNode) {
-          const { attribs, tagName, children } = domNode as Element;
+          const { attribs, tagName } = domNode as Element;
 
           if (!attribs) {
             return;
@@ -57,7 +57,7 @@ export function RenderHtml({
                 href={`/u/${attribs['data-label'] ?? attribs['data-id']}`}
               />
             ) : (
-              <span {...props} />
+              domNode
             );
           }
         },

@@ -49,7 +49,7 @@ export const upsertComment = async ({
 };
 
 export const getComment = async ({ id }: GetByIdQueryInput) => {
-  const comment = await prisma.comment.findFirst({
+  const comment = await prisma.comment.findUnique({
     where: { id },
     select: CommentSelect,
   });

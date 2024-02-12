@@ -32,18 +32,18 @@ const AppProvider: FC<PropsWithChildren<AppPagePropsWithChildren>> = ({
         refetchWhenOffline={false}
         refetchInterval={5 * 60}
       >
-        <SocketStoreProvider>
-          <ProfileStoreProvider
-            {...((initialProfileState as ProfileStore) ?? undefined)}
-          >
+        <ProfileStoreProvider
+          {...((initialProfileState as ProfileStore) ?? undefined)}
+        >
+          <SocketStoreProvider>
             <CustomModalsProvider>
               <UserOnboardingProvider>
                 <ChangeProfileProvider>{children}</ChangeProfileProvider>
               </UserOnboardingProvider>
               <Toaster />
             </CustomModalsProvider>
-          </ProfileStoreProvider>
-        </SocketStoreProvider>
+          </SocketStoreProvider>
+        </ProfileStoreProvider>
       </SessionProvider>
     </ErrorBoundary>
   );

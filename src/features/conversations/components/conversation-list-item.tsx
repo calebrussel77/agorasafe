@@ -26,27 +26,23 @@ export const ConversationListItem = ({
   timestamp,
 }: ConversationListItemProps) => {
   return (
-    <div className="group flex w-full items-center p-4 transition hover:bg-black/5">
-      <div className="group flex w-full items-start gap-x-2">
-        <div className="cursor-pointer transition hover:drop-shadow-md">
-          <UserAvatar profile={profile} />
+    <div className="flex w-full items-center gap-3 p-4 transition hover:bg-gray-100">
+      <UserAvatar profile={profile} />
+      <div className="flex w-full flex-1 flex-col">
+        <div className="flex items-center gap-x-2">
+          <UserName profile={profile} withProfileBadgeInitial />
+          <span className="text-xs text-zinc-500">{timestamp}</span>
         </div>
-        <div className="flex w-full flex-col">
-          <div className="flex items-center gap-x-2">
-            <UserName profile={profile} withProfileBadgeInitial />
-            <span className="text-xs text-zinc-500">{timestamp}</span>
-          </div>
-          <RenderHtml
-            truncate
-            lines={1}
-            hasEllipsisText={false}
-            className={cn(
-              'not-prose text-sm text-zinc-500',
-              isLastMessageDeleted && 'mt-1 italic text-zinc-500'
-            )}
-            html={removeTags(lastMessage)}
-          />
-        </div>
+        <RenderHtml
+          truncate
+          lines={1}
+          hasEllipsisText={false}
+          className={cn(
+            'not-prose text-sm text-zinc-500',
+            isLastMessageDeleted && 'mt-1 italic text-zinc-500'
+          )}
+          html={removeTags(lastMessage)}
+        />
       </div>
     </div>
   );

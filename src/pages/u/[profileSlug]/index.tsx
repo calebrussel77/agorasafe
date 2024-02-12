@@ -10,7 +10,8 @@ import { Linkedin } from 'lucide-react';
 import { z } from 'zod';
 
 import { RenderHtml } from '@/components/render-html';
-import { ShareButton } from '@/components/share-button/share-button';
+import { ShareButton } from '@/components/share-button';
+import { SoonBadge } from '@/components/soon-button';
 import { AsyncWrapper } from '@/components/ui/async-wrapper';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -186,12 +187,14 @@ export default function ProfileDetailsPage({ profileSlugQuery }: PageProps) {
                 <div className="mt-6 flex w-full flex-row items-center space-x-4 sm:w-auto sm:justify-stretch">
                   {isMyProfile && (
                     <Button
-                      href="/dashboard/settings"
+                      // href="/dashboard/settings"
                       size="sm"
+                      disabled
                       className="w-full sm:w-auto"
                     >
                       <Pencil className="h-4 w-4" />
-                      Modifier le profil
+                      Modifier
+                      <SoonBadge />
                     </Button>
                   )}
                   {!isMyProfile && (

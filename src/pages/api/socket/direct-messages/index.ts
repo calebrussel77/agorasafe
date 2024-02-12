@@ -83,7 +83,7 @@ export default async function handler(
       profileId: user.id,
     });
 
-    const eventKey = socketEventsKey['createDirectMessage'](conversationId);
+    const eventKey = socketEventsKey['directMessageCreate'](conversationId);
 
     res?.socket?.server?.io?.emit(eventKey, directMessage);
 
@@ -92,4 +92,4 @@ export default async function handler(
     console.error(e);
     throwDbError(e);
   }
-}
+} 

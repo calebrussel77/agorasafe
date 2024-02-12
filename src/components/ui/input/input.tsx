@@ -4,6 +4,9 @@ import { type Variant, getVariantBorderColor } from '@/utils/variants';
 
 import { cn } from '@/lib/utils';
 
+import { useMergeRefs } from '@/hooks/use-merge-refs';
+
+import { CloseButton } from '../close-button';
 import { Spinner } from '../spinner';
 
 type ClassNames = {
@@ -18,7 +21,9 @@ export type InputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   iconBefore?: React.ReactNode;
   iconAfter?: React.ReactNode;
   isFullWidth?: boolean;
+  isClearable?: boolean;
   classNames?: Partial<ClassNames>;
+  onClear?: () => void;
 };
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
@@ -33,12 +38,34 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
       loading,
       classNames,
       isFullWidth = true,
+      isClearable = true,
+      onClear,
       ...props
     },
     ref
   ) => {
-    const hasElementAfter = iconAfter || loading;
+    const hasElementAfter = iconAfter || loading || isClearable;
     const hasError = variant === 'danger';
+    const inputRef = React.useRef<HTMLInputElement>(null);
+    const mergedRef = useMergeRefs(ref, inputRef) as unknown;
+
+    const closeButton = props.value && type !== 'hidden' && (
+      <CloseButton
+        variant="transparent"
+        onClick={() => {
+          // eslint-disable-next-line @typescript-eslint/unbound-method
+          const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
+            window.HTMLInputElement.prototype,
+            'value'
+          )?.set;
+          nativeInputValueSetter?.call(inputRef.current, '');
+
+          const ev2 = new Event('input', { bubbles: true });
+          inputRef.current?.dispatchEvent(ev2);
+          onClear?.();
+        }}
+      />
+    );
 
     return (
       <div
@@ -66,7 +93,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             classNames?.input,
             className
           )}
-          ref={ref}
+          ref={mergedRef as React.RefObject<HTMLInputElement>}
           {...props}
         />
 
@@ -75,7 +102,10 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             {loading ? (
               <Spinner variant="ghost" size="md" aria-hidden="true" />
             ) : (
-              iconAfter
+              <div className="flex items-center gap-4">
+                {isClearable && closeButton}
+                {iconAfter}
+              </div>
             )}
           </div>
         )}

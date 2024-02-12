@@ -50,18 +50,18 @@ export const getProposalCount = async <
   });
 };
 
-export function createProposal({
-  data,
-  select,
-}: {
+export async function createProposal<
+  TSelect extends Prisma.ProposalSelect
+>(args: {
   data: Prisma.ProposalCreateInput;
-  select?: Prisma.ProposalSelect;
-}) {
+  select?: TSelect;
+}): Promise<Prisma.ProposalGetPayload<{ select: TSelect }>> {
+  const { data, select } = args;
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  //@ts-ignore
   return prisma.proposal.create({
-    data: {
-      ...data,
-    },
-    select: { ...ProposalSelect, ...select },
+    data,
+    select: select as Prisma.ProposalSelect,
   });
 }
 

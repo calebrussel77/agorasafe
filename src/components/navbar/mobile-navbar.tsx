@@ -6,11 +6,16 @@ import { useAuth } from '@/features/auth';
 import { FeedbackButton } from '@/features/feedbacks';
 import { useGetProfileConfig } from '@/features/profile-config';
 
+import { noop } from '@/utils/misc';
+
+import { cn } from '@/lib/utils';
+
 import { useCurrentUser } from '@/hooks/use-current-user';
 
 import { ActiveLink } from '../active-link';
 import { Anchor } from '../anchor';
 import { LogoIcon } from '../icons/logo-icon';
+import { SoonBadge, SoonButton } from '../soon-button';
 import { AsyncWrapper } from '../ui/async-wrapper';
 import { Avatar } from '../ui/avatar';
 import { Badge } from '../ui/badge';
@@ -22,7 +27,12 @@ import { User } from '../user';
 
 interface MobileNavbarProps {
   className?: string;
-  navigations: Array<{ name: string; href: string; isNew: boolean }>;
+  navigations: Array<{
+    name: string;
+    href: string;
+    isNew: boolean;
+    isSoon: boolean;
+  }>;
   closeSideBar: () => void;
 }
 
@@ -43,7 +53,7 @@ const MobileNavbar: FC<MobileNavbarProps> = ({ navigations, closeSideBar }) => {
         <Anchor href="#" className="-m-1.5 flex items-center gap-x-1 p-1.5">
           <span className="sr-only">Agorasafe</span>
           <LogoIcon className="h-5 w-auto" />
-          <Badge content="Alpha" size="xs" variant="warning" />
+          <Badge content="BETA" size="xs" variant="warning" />
         </Anchor>
       </div>
       <div className="mt-2 flow-root">
@@ -114,13 +124,45 @@ const MobileNavbar: FC<MobileNavbarProps> = ({ navigations, closeSideBar }) => {
                         ? `/u/${profile?.slug}`
                         : link.href;
 
+                      // if (link.isSoon) {
+                      //   return (
+                      //     <ActiveLink
+                      //       key={link.id}
+                      //       onClick={closeSideBar}
+                      //       href={url}
+                      //       activeClassName="bg-zinc-100 text-primary"
+                      //       className="-mx-3 flex items-center gap-x-3 px-3 py-2"
+                      //     >
+                      //       <Avatar
+                      //         src={link.iconUrl}
+                      //         alt={link.title}
+                      //         shape="square"
+                      //         className="mr-2 h-5 w-5 flex-shrink-0"
+                      //       />
+                      //       <div className="flex w-full flex-col items-start justify-start text-left">
+                      //         <Typography as="h3" variant="paragraph">
+                      //           {link.title}
+                      //         </Typography>
+                      //         <Typography
+                      //           variant="small"
+                      //           className="text-muted-foreground"
+                      //         >
+                      //           {link.description}
+                      //         </Typography>
+                      //       </div>
+                      //     </ActiveLink>
+                      //   );
+                      // }
                       return (
                         <ActiveLink
                           key={link.id}
-                          onClick={closeSideBar}
-                          href={url}
+                          onClick={link.isSoon ? noop : closeSideBar}
+                          href={link.isSoon ? '#' : url}
                           activeClassName="bg-zinc-100 text-primary"
-                          className="-mx-3 flex items-center gap-x-3 px-3 py-2"
+                          className={cn(
+                            '-mx-3 flex items-center gap-x-3 px-3 py-2',
+                            link.isSoon && 'opacity-60'
+                          )}
                         >
                           <Avatar
                             src={link.iconUrl}
@@ -129,9 +171,12 @@ const MobileNavbar: FC<MobileNavbarProps> = ({ navigations, closeSideBar }) => {
                             className="mr-2 h-5 w-5 flex-shrink-0"
                           />
                           <div className="flex w-full flex-col items-start justify-start text-left">
-                            <Typography as="h3" variant="paragraph">
-                              {link.title}
-                            </Typography>
+                            <div className="flex items-center gap-2">
+                              <Typography as="h3" variant="paragraph">
+                                {link.title}
+                              </Typography>
+                              {link.isSoon && <SoonBadge />}
+                            </div>
                             <Typography
                               variant="small"
                               className="text-muted-foreground"
@@ -155,7 +200,7 @@ const MobileNavbar: FC<MobileNavbarProps> = ({ navigations, closeSideBar }) => {
                             onHandleClick={closeSideBar}
                             key={item?.name}
                           >
-                            <button className="-mx-3 flex items-center rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50">
+                            <button className="-mx-3 flex w-full items-center rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50">
                               {item.name}
                               {item?.isNew && (
                                 <Badge
@@ -169,15 +214,32 @@ const MobileNavbar: FC<MobileNavbarProps> = ({ navigations, closeSideBar }) => {
                           </FeedbackButton>
                         );
                       }
+                      if (item?.isSoon) {
+                        return (
+                          <SoonButton
+                            key={item.name}
+                            variant="ghost"
+                            className={cn(
+                              '-mx-3 flex w-full justify-start px-3 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50'
+                            )}
+                          >
+                            {item.name}
+                          </SoonButton>
+                        );
+                      }
+
                       return (
-                        <Anchor
+                        <Button
                           onClick={closeSideBar}
                           key={item.name}
                           href={item.href}
-                          className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
+                          variant="ghost"
+                          className={cn(
+                            '-mx-3 flex w-full justify-start px-3 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50'
+                          )}
                         >
                           {item.name}
-                        </Anchor>
+                        </Button>
                       );
                     })}
                   </section>

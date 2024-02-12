@@ -10,7 +10,7 @@ import { cn } from '@/lib/utils';
 import { Spinner } from '../spinner';
 
 const buttonVariants = cva(
-  'inline-flex items-center gap-1.5 justify-center rounded-md font-medium transition duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background',
+  'inline-flex flex-nowrap overflow-hidden whitespace-nowrap items-center gap-1.5 justify-center rounded-md font-medium transition duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background',
   {
     variants: {
       variant: {

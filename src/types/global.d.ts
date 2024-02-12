@@ -21,3 +21,5 @@ type Prettify<T> = {
 type InferNextProps<T extends (args: any) => any> = Awaited<
   Extract<Awaited<ReturnType<T>>, { props: any }>['props']
 >;
+
+type MixedObject = Record<string, any>;

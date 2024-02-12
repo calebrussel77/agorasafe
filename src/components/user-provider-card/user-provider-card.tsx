@@ -1,5 +1,3 @@
-import { MapPin } from 'lucide-react';
-import { User2Icon } from 'lucide-react';
 import React, { type FC } from 'react';
 
 import { api } from '@/utils/api';
@@ -10,8 +8,6 @@ import { cn } from '@/lib/utils';
 
 import { type SimpleProfile } from '@/server/api/modules/profiles';
 
-import { DaysFromNow } from '../days-from-now';
-import { ImagesSlider } from '../images-slider';
 import { Badge } from '../ui/badge';
 import { Image } from '../ui/image';
 import { Typography } from '../ui/typography';
@@ -27,7 +23,7 @@ const aDayAgo = decreaseDate(new Date(), { days: 1 });
 const StatItem = ({ label, count }: { label: string; count: number }) => {
   return (
     <div className="flex flex-col items-center justify-center space-y-1 px-3">
-      <Typography className="text-sm font-light text-gray-600">
+      <Typography className="text-sm font-light text-gray-600" truncate>
         {label}
       </Typography>
       <Typography className="font-bold">{abbreviateNumber(count)}</Typography>

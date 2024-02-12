@@ -60,6 +60,23 @@ model Review {
     @@index([serviceRequestId])
 }
 
+model Notification {
+    id       String   @id @default(cuid())
+    type     String
+    isRead   Boolean? @default(false)
+    imageUrl String? // URL de l'image associée à la notification
+    title    String
+    message  String   @db.Text
+    url      String? // URL optionnelle pour rediriger l'utilisateur
+
+    profile   Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+    profileId String
+
+    createdAt DateTime @default(now())
+
+    @@index([profileId, createdAt])
+}
+
 model Profile {
     id      String  @id @default(cuid())
     slug    String  @unique
@@ -87,6 +104,7 @@ model Profile {
 
     comments       Comment[]
     directMessages DirectMessage[]
+    notifications  Notification[]
 
     conversationsInitiated Conversation[] @relation("ProfileOne")
     conversationsReceived  Conversation[] @relation("ProfileTwo")
@@ -296,9 +314,9 @@ model Proposal {
     serviceRequestReservation ServiceRequestReservation?
 
     isArchived Boolean? @default(false)
-    
-    createdAt  DateTime @default(now())
-    updatedAt  DateTime @updatedAt
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 
     @@index([serviceRequestId])
     @@index([authorId])
@@ -442,6 +460,13 @@ enum ReviewSubject {
     SERVICE_REQUEST
     USER
 }
+
+// enum NotificationType {
+//     SERVICE_REQUEST
+//     SYSTEM
+//     REVIEW
+//     COMMENT
+// }
 
 enum FeedbackType {
     Bug
