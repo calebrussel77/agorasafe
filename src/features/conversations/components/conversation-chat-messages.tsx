@@ -1,14 +1,14 @@
-import { Loader2, ServerCrash } from 'lucide-react';
+import { ServerCrash } from 'lucide-react';
 import { type Session } from 'next-auth';
-import { type ElementRef, Fragment, RefObject, useRef } from 'react';
+import { type ElementRef, Fragment, type RefObject, useRef } from 'react';
 
-import { Button } from '@/components/ui/button';
+import { InViewLoader } from '@/components/in-view/in-view-loader';
 import { FadeAnimation } from '@/components/ui/fade-animation';
+import { CenterContent } from '@/components/ui/layout';
 import { Spinner } from '@/components/ui/spinner';
 
 import { dateIsAfter, dateToReadableString } from '@/lib/date-fns';
 
-import { socketEventsKey } from '@/server/api/constants';
 import { type SimpleProfile } from '@/server/api/modules/profiles';
 
 import { useConversationChatScroll } from '../hooks/use-conversation-chat-scroll';
@@ -41,6 +41,7 @@ const ConversationChatMessages = ({
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
+    isRefetching,
     status,
   } = useGetInfiniteDirectMessages({ conversationId });
 
@@ -78,19 +79,15 @@ const ConversationChatMessages = ({
       {!hasNextPage && <div className="flex-1" />}
       {!hasNextPage && <ConversationChatWelcome name={name} />}
       {hasNextPage && (
-        <div className="flex justify-center">
-          {isFetchingNextPage ? (
-            <Loader2 className="my-4 h-6 w-6 animate-spin text-zinc-500" />
-          ) : (
-            <Button
-              onClick={() => void fetchNextPage()}
-              variant="ghost"
-              className="my-4 text-xs text-zinc-500 hover:text-zinc-600"
-            >
-              Charger les messages précédents
-            </Button>
-          )}
-        </div>
+        <InViewLoader
+          loadFn={fetchNextPage}
+          loadCondition={!isRefetching}
+          className="w-full"
+        >
+          <CenterContent className="my-3">
+            <Spinner variant="ghost" />
+          </CenterContent>
+        </InViewLoader>
       )}
       <div className="mt-auto">
         {Array.from(groupedDirectMessages).map(([date, messages]) => {

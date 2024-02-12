@@ -9,7 +9,6 @@ import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/ui/empty-state';
 import { CenterContent } from '@/components/ui/layout';
 import { Spinner } from '@/components/ui/spinner';
-import { Typography } from '@/components/ui/typography';
 
 import { ContentTitle, MainContent, Sidebar } from '@/features/user-dashboard';
 
@@ -87,7 +86,7 @@ const NotificationsPage = ({ profile, session }: PageProps) => {
                     loadCondition={!isRefetching}
                     className="w-full"
                   >
-                    <CenterContent className="mt-3">
+                    <CenterContent className="my-3">
                       <Spinner variant="primary" />
                     </CenterContent>
                   </InViewLoader>

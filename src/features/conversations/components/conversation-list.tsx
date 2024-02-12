@@ -5,6 +5,7 @@ import { useEffect } from 'react';
 import { useInView } from 'react-intersection-observer';
 
 import { Anchor } from '@/components/anchor';
+import { InViewLoader } from '@/components/in-view/in-view-loader';
 import { EmptyState } from '@/components/ui/empty-state';
 import { Icons } from '@/components/ui/icons';
 import { CenterContent } from '@/components/ui/layout';
@@ -33,21 +34,8 @@ const ConversationList = ({
   const router = useRouter();
   const profileIdQuery = profileId || router?.query?.profileId;
 
-  const {
-    conversations,
-    fetchNextPage,
-    hasNextPage,
-    isLoading,
-    isRefetching,
-    isFetchingNextPage,
-    status,
-  } = useGetInfiniteConversations({ profileId: profile?.id });
-
-  useEffect(() => {
-    if (isInView && !isFetchingNextPage) {
-      void fetchNextPage();
-    }
-  }, [fetchNextPage, isInView, isFetchingNextPage]);
+  const { conversations, fetchNextPage, hasNextPage, isRefetching, status } =
+    useGetInfiniteConversations({ profileId: profile?.id });
 
   if (status === 'loading') {
     return (
@@ -109,10 +97,12 @@ const ConversationList = ({
             </Anchor>
           );
         })}
-        {hasNextPage && !isLoading && !isRefetching && (
-          <CenterContent ref={ref} className="mt-3">
-            {isInView && <Spinner variant="ghost" />}
-          </CenterContent>
+        {hasNextPage && (
+          <InViewLoader loadFn={fetchNextPage} loadCondition={!isRefetching}>
+            <CenterContent className="my-3">
+              <Spinner variant="ghost" />
+            </CenterContent>
+          </InViewLoader>
         )}
         {conversations?.length === 0 && (
           <EmptyState

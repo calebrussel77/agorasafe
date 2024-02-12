@@ -7,11 +7,11 @@ import { simpleProfileSelect } from '../profiles';
 import { type GetConversationsInput } from './conversations.validations';
 
 export async function getOrCreateConversation({
-  inputs,
+  input,
 }: {
-  inputs: { profileOneId: string; profileTwoId: string };
+  input: { profileOneId: string; profileTwoId: string };
 }) {
-  const { profileOneId, profileTwoId } = inputs;
+  const { profileOneId, profileTwoId } = input;
   let conversation =
     (await getConversationBetweenTwoProfiles(profileOneId, profileTwoId)) ||
     (await getConversationBetweenTwoProfiles(profileTwoId, profileOneId));
@@ -61,14 +61,14 @@ function createNewConversation(profileOneId: string, profileTwoId: string) {
   }
 }
 
-export function getConversations(inputs: GetConversationsInput) {
+export function getConversations(input: GetConversationsInput) {
   const {
     limit = CONVERSATIONS_CHUNK,
     orderBy = 'desc',
     query,
     profileId,
     cursor,
-  } = inputs;
+  } = input;
 
   const OR: Prisma.ConversationWhereInput[] | undefined = [];
 
