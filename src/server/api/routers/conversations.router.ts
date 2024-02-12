@@ -1,7 +1,7 @@
 import { createTRPCRouter, profileProcedure } from '@/server/api/trpc';
 
 import {
-  getConversationsController,
+  getConversationsHandler,
   getOrCreateConversationHandler,
 } from '../modules/conversations';
 import {
@@ -16,7 +16,5 @@ export const conversationsRouter = createTRPCRouter({
 
   getConversations: profileProcedure
     .input(getConversationsSchema)
-    .query(({ ctx: { profile }, input }) =>
-      getConversationsController({ ...input })
-    ),
+    .query(getConversationsHandler),
 });
