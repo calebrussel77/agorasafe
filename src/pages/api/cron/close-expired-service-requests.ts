@@ -1,24 +1,21 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 
-import { formatYearMonthDay } from '@/lib/date-fns';
+import { increaseDate } from '@/lib/date-fns';
 
 import { createNotification } from '@/server/api/modules/notifications';
 import { prisma } from '@/server/db';
-import { throwDbError } from '@/server/utils/error-handling';
 
 export default async function handler(
-  request: NextApiRequest,
-  response: NextApiResponse
+  req: NextApiRequest,
+  res: NextApiResponse
 ) {
   try {
     const now = new Date();
 
-    //TODO : improve this by using batch updates
-
     const expiredServiceRequests = await prisma.serviceRequest.findMany({
       where: {
         date: {
-          lte: formatYearMonthDay(now),
+          lte: increaseDate(now, { days: 3 }), // Add two days before closing the expired service requests
         },
         status: {
           not: 'CLOSED',
@@ -33,31 +30,30 @@ export default async function handler(
     });
 
     if (expiredServiceRequests.length > 0) {
-      await Promise.all(
-        expiredServiceRequests.map(async serviceRequest => {
-          //Send notifications to author
-          await createNotification('close-service-request-expired', {
-            profileId: serviceRequest?.author?.profileId,
-            serviceRequestId: serviceRequest?.id,
-            serviceRequestSlug: serviceRequest?.slug,
-            serviceRequestTitle: serviceRequest?.title,
-          });
+      const updateOperations = expiredServiceRequests.map(serviceRequest => {
+        // Notification creation is a side-effect and doesn't need to be part of the transaction
+        void createNotification('close-service-request-expired', {
+          profileId: serviceRequest.author.profileId,
+          serviceRequestId: serviceRequest.id,
+          serviceRequestSlug: serviceRequest.slug,
+          serviceRequestTitle: serviceRequest.title,
+        });
 
-          return prisma.serviceRequest.update({
-            where: {
-              id: serviceRequest.id,
-            },
-            data: {
-              status: 'CLOSED',
-            },
-            select: { id: true },
-          });
-        })
-      );
+        // Update operation for transaction
+        return prisma.serviceRequest.update({
+          where: { id: serviceRequest.id },
+          data: { status: 'CLOSED' },
+        });
+      });
+
+      // Execute all update operations in a transaction
+      await prisma.$transaction(updateOperations);
     }
-  } catch (e) {
-    throwDbError(e);
-  }
 
-  response.status(200).json({ success: true });
+    res.status(200).json({ success: true });
+  } catch (err) {
+    const error = err as Error;
+    console.error(`Error updating expired service requests: ${error.message}`);
+    res.status(500).json({ error: 'Error updating expired service requests' });
+  }
 }
