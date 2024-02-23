@@ -1,12 +1,11 @@
 import { profilesDescription } from '@/constants';
-import { imageSchema } from '@/validations';
+import { getSanitizedStringSchema, imageSchema } from '@/validations';
 import { ProfileType } from '@prisma/client';
 import { CameraIcon } from 'lucide-react';
 import React, { type PropsWithChildren, ReactNode } from 'react';
 import { Controller } from 'react-hook-form';
 import { z } from 'zod';
 
-import { PlacesAutocomplete } from '@/components/agorasafe-map';
 import { Welcome2Icon } from '@/components/icons/welcome2-icon';
 import { Avatar } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
@@ -38,7 +37,6 @@ import { isArrayOfFile } from '@/utils/type-guards';
 import { htmlParse } from '@/lib/html-helper';
 
 import { SimpleProfile } from '@/server/api/modules/profiles';
-import { getSanitizedStringSchema } from '@/server/api/validations/base.validations';
 
 import { useCurrentUser } from '@/hooks/use-current-user';
 import { useToastOnPageReload } from '@/hooks/use-toast-on-page-reload';

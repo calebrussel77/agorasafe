@@ -373,19 +373,13 @@ const ServiceRequestPublicationPage = ({ profile, id }: PageProps) => {
                             onClick={() =>
                               mutate({
                                 serviceRequestId: id,
-                                status: isStatusOpen ? 'CLOSED' : 'OPEN',
+                                status: 'CLOSED',
                               })
                             }
                             disabled={isLoadingUpdate}
                           >
-                            {isStatusOpen ? (
-                              <LockIcon className="h-5 w-5" />
-                            ) : (
-                              <ArrowUpRight className="h-5 w-5" />
-                            )}
-                            {isStatusOpen
-                              ? 'Fermer ma demande'
-                              : 'Republier ma demande'}
+                            <LockIcon className="h-5 w-5" />
+                            Fermer ma demande
                           </DropdownMenu.Item>
                           <DropdownMenu.Item
                             className={cn(

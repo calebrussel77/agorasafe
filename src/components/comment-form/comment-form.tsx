@@ -1,3 +1,4 @@
+import { nonEmptyHtmlString } from '@/validations';
 import { produce } from 'immer';
 import { SendHorizonal } from 'lucide-react';
 import { useRef, useState } from 'react';
@@ -19,7 +20,6 @@ import { cn } from '@/lib/utils';
 
 import { type CommentConnectorInput } from '@/server/api/modules/comments';
 import { type SimpleProfile } from '@/server/api/modules/profiles';
-import { nonEmptyHtmlString } from '@/server/api/validations/base.validations';
 
 import { useCurrentUser } from '@/hooks/use-current-user';
 

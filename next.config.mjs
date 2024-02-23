@@ -12,9 +12,6 @@ await import('./src/env.mjs');
 
 const config = {
   reactStrictMode: true,
-  // experimental: {
-  //   esmExternals: false, // THIS IS THE FLAG THAT MATTERS
-  // },
   images: {
     domains: [
       'agorasafe.up.railway.app',

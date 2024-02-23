@@ -107,7 +107,7 @@ export function NotificationList({
                 src={notification.imageUrl as string}
                 size="lg"
                 shape={isSquared ? 'square' : 'circle'}
-                isBordered
+                isBordered={!isSquared}
                 alt={notification.title}
               />
             </div>
@@ -140,7 +140,7 @@ export function NotificationList({
             className: className,
             onClick: (e: never) => {
               onHandleClick(e);
-              !notification.isRead ? onItemClick(notification) : undefined;
+              onItemClick(notification);
             },
           });
         }
@@ -152,7 +152,7 @@ export function NotificationList({
             className={className}
             onClick={e => {
               onHandleClick(e as never);
-              !notification.isRead ? onItemClick(notification) : undefined;
+              onItemClick(notification);
             }}
           >
             {item}

@@ -1,9 +1,10 @@
-import { type Prisma, ProfileType } from '@prisma/client';
+import { type Prisma, type ProfileType } from '@prisma/client';
 
 import { prisma } from '@/server/db';
 
 import { type GetByIdOrSlugQueryInput } from '../../validations/base.validations';
 import { simpleProfileSelect } from './profiles.select';
+import { type GetProfileServiceRequestReservationsInput } from './profiles.validations';
 
 export const getProfileBySlug = (slug: string) => {
   return prisma.profile.findUnique({
@@ -48,7 +49,7 @@ export const getProfileStats = ({
         },
       },
       _count: {
-        select: { comments: true, createdReviews: true, receivedReviews: true },
+        select: { comments: true, receivedReviews: true },
       },
     },
   });
@@ -116,13 +117,6 @@ export function updateProfileById(
   });
 }
 
-export async function getProfiles(profileType?: ProfileType) {
-  return prisma.profile.findMany({
-    where: profileType ? { type: profileType } : undefined,
-    select: simpleProfileSelect,
-  });
-}
-
 export async function getProfileById(profileId: string) {
   return prisma.profile.findUnique({
     where: { id: profileId },
@@ -138,3 +132,27 @@ export async function getProfilesByUserId(userId: string) {
     select: simpleProfileSelect,
   });
 }
+
+export const getProfileServiceRequestReservations = ({
+  input: { isActive = true, providerProfileId, customerProfileId },
+}: {
+  input: GetProfileServiceRequestReservationsInput;
+}) => {
+  return prisma.serviceRequestReservation.findMany({
+    where: { isActive, providerProfileId, customerProfileId },
+    select: {
+      createdAt: true,
+      serviceRequest: {
+        select: {
+          title: true,
+          id: true,
+          date: true,
+          startHour: true,
+          nbOfHours: true,
+          location: { select: { address: true } },
+          author: { select: { profile: { select: simpleProfileSelect } } },
+        },
+      },
+    },
+  });
+};

@@ -91,7 +91,7 @@ const LoginPage = () => {
             <Anchor href="/" className="ml-1 flex items-center gap-x-1.5">
               <LogoSymbolIcon className="h-7 w-auto md:h-8" />
               <Badge
-                content="Alpha"
+                content="BETA"
                 size="sm"
                 variant="warning"
                 shape="rounded"

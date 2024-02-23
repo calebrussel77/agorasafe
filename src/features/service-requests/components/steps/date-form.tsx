@@ -7,6 +7,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { Field } from '@/components/ui/field';
 import { Form, useZodForm } from '@/components/ui/form';
 import { HelperMessage } from '@/components/ui/helper-message';
+import { SectionMessage } from '@/components/ui/section-message';
 
 import { dateToReadableString, increaseDate } from '@/lib/date-fns';
 import { cn } from '@/lib/utils';
@@ -40,6 +41,7 @@ const DateForm = ({ nextStep, prevStep }: DateFormProps) => {
   const { control } = form;
 
   const watchedDate = form.watch('date') as Date;
+  const expiredDate = increaseDate(watchedDate, { days: 3 });
 
   const onHandleSubmit = (formData: DateFormType) => {
     updateServiceRequest(formData, categorySlugQuery);
@@ -49,6 +51,16 @@ const DateForm = ({ nextStep, prevStep }: DateFormProps) => {
 
   return (
     <>
+      {watchedDate && (
+        <SectionMessage
+          hasCloseButton={false}
+          appareance="info"
+          title={`Votre demande sera automatiquement clôturée le ${dateToReadableString(
+            expiredDate
+          )}`}
+          description="Nous clôturons automatiquement les demandes ouvertes, 03 jours après la date souhaitée de réalisation."
+        />
+      )}
       <Form form={form} onSubmit={onHandleSubmit}>
         <div className="">
           <Controller

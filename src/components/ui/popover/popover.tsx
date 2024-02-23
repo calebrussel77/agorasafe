@@ -12,10 +12,7 @@ const PopoverContent = React.forwardRef<
   React.ElementRef<typeof PopoverPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof PopoverPrimitive.Content>
 >(({ className, align = 'end', sideOffset = 4, ...props }, ref) => (
-  // ! The @radix-ui `portal` component doesn't work well with ssr
-  // ! so i have to use the `headless ui portal compoent` who support ssr by avoiding me server hydratation errors
-  // ! see this issue for more: https://github.com/radix-ui/primitives/issues/1386
-  <HeadlessUIPortal>
+  <PopoverPrimitive.Portal>
     <PopoverPrimitive.Content
       ref={ref}
       align={align}
@@ -26,7 +23,7 @@ const PopoverContent = React.forwardRef<
       )}
       {...props}
     />
-  </HeadlessUIPortal>
+  </PopoverPrimitive.Portal>
 ));
 PopoverContent.displayName = PopoverPrimitive.Content.displayName;
 
@@ -37,7 +34,7 @@ const PopoverRoot: React.FC<
 };
 
 // Nested exports
-export const Popover = Object.assign(PopoverRoot, {
+export const Popover = Object.assign(PopoverComponent, {
   Trigger: PopoverTrigger,
   Content: PopoverContent,
 });

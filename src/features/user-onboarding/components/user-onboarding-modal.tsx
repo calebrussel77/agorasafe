@@ -64,9 +64,9 @@ interface UserOnboardingModalProps {
 
 const onboardingSteps = [
   {
-    title: "Politique de Confidentialité et Conditions d'utilisation",
+    title: "Conditions d'utilisation et Politique de Confidentialité",
     description:
-      "Veuillez prendre le temps de lire et d'accepter nos conditions d'utilisation.",
+      "Veuillez prendre le temps de lire et d'accepter nos conditions d'utilisation et notre politique.",
     isBeta: false,
   },
   {
@@ -74,6 +74,8 @@ const onboardingSteps = [
     description:
       'Choisissez le type de profil avec lequel vous souhaitez démarrer.',
     isBeta: false,
+    infoMessage:
+      'Vous pourrez rajouter un autre profil une fois le processus terminé.',
   },
   {
     title: 'Informations du profil',
@@ -127,14 +129,14 @@ const UserOnboardingModal: FC<UserOnboardingModalProps> = () => {
           </Typography>
           <Typography
             variant="subtle"
-            className="pb-2 text-center md:text-left"
+            className="pb-1 text-center md:text-left"
           >
             {onboardingSteps[currentIdx]?.description}
           </Typography>
         </CenterContent>
       </div>
       <ScrollArea className="h-full flex-1 pb-20 pt-2">
-        <CenterContent className="container w-full max-w-3xl lg:min-w-[38rem]">
+        <CenterContent className="container my-3 w-full max-w-3xl lg:min-w-[38rem]">
           <div className="w-full">
             {onboardingSteps[currentIdx]?.infoMessage && (
               <SectionMessage
@@ -187,7 +189,6 @@ const TermsSection = ({ nextStep }: { nextStep: () => void }) => {
     api.users.acceptTOS.useMutation();
 
   const { updateUser } = useCurrentUser();
-  const { ref, inView: isInView } = useInView();
 
   const handleAcceptTOS = () => {
     acceptTOSMutate(undefined, {
@@ -206,12 +207,10 @@ const TermsSection = ({ nextStep }: { nextStep: () => void }) => {
         <ReactMarkdown rehypePlugins={[rehypeRaw]} className="prose prose-sm">
           {terms?.content}
         </ReactMarkdown>
-        <div ref={ref} className="h-12 w-full" />
         <FixedFooterContainer className="items-start">
           <CancelButton showWarning>Je refuse</CancelButton>
           <Button
             size="sm"
-            disabled={!isInView}
             isLoading={isAcceptTOSLoading}
             onClick={handleAcceptTOS}
           >
@@ -335,6 +334,7 @@ const ProfileDetailsSection = ({
       // await invalidateModeratedContent(queryUtils);
       updateProfile(data?.profile);
       modals.open({
+        closeOnClickOutside: false,
         children: (
           <div className="flex flex-col justify-center p-10">
             <WelcomeIcon className="h-36 w-auto" />
@@ -346,10 +346,17 @@ const ProfileDetailsSection = ({
                 Nous sommes content de vous compter parmi nous, sur Agorasafe.
                 N'hésitez pas à nous faire vos retours via l'onglet{' '}
                 <strong>feedback</strong> afin que nous puissions améliorer
-                votre expérence.
+                votre expérence sur Agorasafe.
               </Typography>
               <Button
-                onClick={() => modals.closeAll()}
+                onClick={() => {
+                  modals.closeAll();
+                  toast({
+                    delay: 4_000,
+                    title: htmlParse(data?.message),
+                    variant: 'success',
+                  });
+                }}
                 className="mt-10 w-auto"
               >
                 D'accord, j'ai compris
@@ -357,11 +364,6 @@ const ProfileDetailsSection = ({
             </div>
           </div>
         ),
-      });
-      toast({
-        delay: 4_000,
-        title: htmlParse(data?.message),
-        variant: 'success',
       });
     },
   });
@@ -454,7 +456,7 @@ const ProfileDetailsSection = ({
                         placement="bottom-right"
                       >
                         <Avatar
-                          className="h-20 w-20 cursor-pointer"
+                          className="h-20 w-20 cursor-pointer object-top"
                           onClick={openFile}
                           alt={session?.user?.name || 'preview avatar'}
                           src={
@@ -663,7 +665,7 @@ const ProfileDetailsSection = ({
             Retour
           </Button>
           <Button type="submit" isLoading={isLoading}>
-            Enregistrer
+            Terminer
           </Button>
         </FixedFooterContainer>
       </Form>
@@ -676,11 +678,11 @@ const CancelButton = ({
   showWarning,
   ...props
 }: ButtonProps & { showWarning?: boolean }) => {
-  const handleCancelOnboarding = () => void signOut();
+  const handleCancelOnboarding = () => void signOut({ callbackUrl: '/' });
   const isMobile = useIsMobile();
 
   return (
-    <div className="">
+    <div>
       <Button
         {...props}
         variant="outline"

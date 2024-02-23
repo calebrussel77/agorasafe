@@ -15,6 +15,8 @@ export const loginRedirectReasons = {
   'reserve-service-request-provider':
     'Vous devez être connecté pour réserver un prestataire.',
   'send-message': 'Vous devez être connecté envoyer un message.',
+  'create-provider-review':
+    'Vous devez être connecté pour ajouter votre avis pour ce prestataire.',
 };
 
 export type LoginRedirectReason = keyof typeof loginRedirectReasons;

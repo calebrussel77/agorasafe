@@ -1,11 +1,13 @@
-import { dateSchema, locationSchema, phoneSchema } from '@/validations';
+import {
+  dateSchema,
+  locationSchema,
+  nonEmptyHtmlString,
+  phoneSchema,
+} from '@/validations';
 import { ServiceRequestStatus } from '@prisma/client';
 import { z } from 'zod';
 
-import {
-  getAllQuerySchema,
-  nonEmptyHtmlString,
-} from '../../validations/base.validations';
+import { getAllQuerySchema } from '../../validations/base.validations';
 
 export const getAllServiceRequestsSchema = getAllQuerySchema.extend({
   providersReserved: z.enum(['Active', 'Inactive', 'All']).optional(),

@@ -1,5 +1,17 @@
-import { ArrowRight, LucideDoorClosed } from 'lucide-react';
+import { ProfileType } from '@prisma/client';
+import {
+  ArrowLeftCircle,
+  ArrowRight,
+  ArrowRightCircleIcon,
+  LucideDoorClosed,
+} from 'lucide-react';
+import { Autoplay } from 'swiper/modules';
 
+import {
+  SwiperButton,
+  SwiperCarousel,
+  useSwiperRef,
+} from '@/components/swiper-carousel';
 import { AsyncWrapper } from '@/components/ui/async-wrapper';
 import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/ui/empty-state';
@@ -7,16 +19,37 @@ import { UserProviderCard } from '@/components/user-provider-card';
 
 import { api } from '@/utils/api';
 
+const breakpoints = {
+  600: {
+    slidesPerView: 2,
+  },
+  720: {
+    slidesPerView: 3,
+  },
+  1024: {
+    slidesPerView: 4,
+  },
+  1480: {
+    slidesPerView: 4,
+  },
+};
+
 export function FeaturedProviders() {
-  const { data, error, refetch, isLoading } = api.profiles.getProfiles.useQuery(
-    {
-      profileType: 'PROVIDER',
-    }
-  );
+  const { swiperRef, onHandleNextSlide, onHandlePrevSlide } = useSwiperRef();
+
+  const {
+    data: profiles,
+    error,
+    refetch,
+    isLoading,
+  } = api.profiles.getAll.useQuery({
+    type: ProfileType.PROVIDER,
+    limit: 8,
+  });
 
   return (
     <div className="bg-gray-50 py-12">
-      <div className="mx-auto max-w-screen-xl px-6 lg:px-8">
+      <div className="mx-auto max-w-screen-2xl px-6 lg:px-8">
         <div className="mx-auto max-w-2xl text-center">
           <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
             Nos meilleurs prestataires
@@ -30,7 +63,7 @@ export function FeaturedProviders() {
           error={error}
           onRetryError={refetch}
         >
-          {data?.profiles && data?.profiles?.length === 0 && (
+          {profiles && profiles?.length === 0 && (
             <EmptyState
               icon={<LucideDoorClosed />}
               className="my-8"
@@ -42,9 +75,9 @@ export function FeaturedProviders() {
               }
             />
           )}
-          {data?.profiles && data?.profiles?.length > 0 && (
+          {profiles && profiles?.length > 0 && (
             <div className="mx-auto mt-8 max-w-2xl lg:mx-0 lg:max-w-none">
-              {data?.profiles?.length > 3 && (
+              {profiles?.length > 3 && (
                 <div className="flex w-full justify-end">
                   <Button
                     size="sm"
@@ -57,16 +90,33 @@ export function FeaturedProviders() {
                   </Button>
                 </div>
               )}
-              <div className="mt-2 grid w-full grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
-                {data?.profiles?.slice(0, 2)?.map(profile => {
-                  return (
+              <div className="flex w-full flex-col gap-3">
+                <SwiperCarousel
+                  options={profiles}
+                  autoplay={{
+                    delay: 2000,
+                    disableOnInteraction: false,
+                  }}
+                  breakpoints={breakpoints}
+                  modules={[Autoplay]}
+                  renderItem={({ item: profile }) => (
                     <UserProviderCard
                       key={profile?.id}
                       className="w-full"
-                      profile={profile}
+                      profile={profile as never}
                     />
-                  );
-                })}
+                  )}
+                  swiperRef={swiperRef}
+                  className="h-full w-full"
+                />
+                <div className="flex w-full items-center justify-end gap-3">
+                  <SwiperButton mode="prev" onClick={onHandlePrevSlide}>
+                    <ArrowLeftCircle className="h-6 w-6" />
+                  </SwiperButton>
+                  <SwiperButton mode="next" onClick={onHandleNextSlide}>
+                    <ArrowRightCircleIcon className="h-6 w-6" />
+                  </SwiperButton>
+                </div>
               </div>
             </div>
           )}

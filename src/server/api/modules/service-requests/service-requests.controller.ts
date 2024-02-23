@@ -337,7 +337,7 @@ export const createServiceRequestCommentHandler = async ({
     });
 
     const serviceRequest = await prisma.serviceRequest.findUnique({
-      where: { id: comment?.serviceRequestId },
+      where: { id: comment?.serviceRequestId  ?? ""},
       select: {
         author: { select: { profileId: true } },
         id: true,
@@ -356,7 +356,7 @@ export const createServiceRequestCommentHandler = async ({
     // Créer une notification pour l'auteur de la demande de service
     if (serviceRequestOwnerId !== ctx.profile.id) {
       await createNotification('new-service-request-comment', {
-        profileId: serviceRequestOwnerId,
+        profileId: serviceRequestOwnerId ?? '',
         profileAvatar: comment?.author?.avatar,
         profileName: comment?.author?.name,
         serviceRequestId: serviceRequest?.id,

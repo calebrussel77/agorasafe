@@ -1,15 +1,21 @@
-import { MapPin } from 'lucide-react';
+import { ChevronLeft, ChevronRight, MapPin } from 'lucide-react';
 import { User2Icon } from 'lucide-react';
-import React, { type FC } from 'react';
+import React, { type FC, useMemo } from 'react';
+import { Autoplay } from 'swiper/modules';
 
 import { Anchor } from '@/components/anchor';
 import { DaysFromNow } from '@/components/days-from-now';
 import { ImagesSlider } from '@/components/images-slider';
+import {
+  SwiperButton,
+  SwiperCarousel,
+  useSwiperRef,
+} from '@/components/swiper-carousel';
 import { Badge } from '@/components/ui/badge';
 import { GroupItem } from '@/components/ui/group-item';
+import { Image } from '@/components/ui/image';
 import { Inline } from '@/components/ui/inline';
 import { AbsolutePlacement } from '@/components/ui/layout';
-import { NoSSR } from '@/components/ui/no-ssr';
 import { Typography } from '@/components/ui/typography';
 import { User } from '@/components/user';
 
@@ -26,15 +32,35 @@ import { DEFAULT_SERVICE_REQUEST_COVER_IMAGE } from '../utils';
 interface ServiceRequestCardProps {
   className?: string;
   serviceRequest: GetAllServiceRequestsOutput['serviceRequests'][number];
-  isNew?: boolean;
+  idx: number;
 }
 
 const aDayAgo = decreaseDate(new Date(), { days: 1 });
 
+const activeStyles =
+  'active:scale-[0.97] grid opacity-100 hover:scale-105 absolute top-1/2 -translate-y-1/2 aspect-square h-8 w-8 z-30 place-items-center rounded-full border-2 bg-white border-zinc-300';
+
+const pagination = {
+  clickable: true,
+  renderBullet: function (index: number, className: string) {
+    return `<span class="rounded-full bg-brand-600 transition ${className}"></span>`;
+  },
+};
+
+const defaultPhotoArray = [
+  {
+    url: DEFAULT_SERVICE_REQUEST_COVER_IMAGE,
+    alt: "Photo de couverture d'une demande de service",
+  },
+];
+
 const ServiceRequestCard: FC<ServiceRequestCardProps> = ({
   serviceRequest,
   className,
+  idx,
 }) => {
+  const { swiperRef, onHandleNextSlide, onHandlePrevSlide } = useSwiperRef();
+
   const isNew = serviceRequest.createdAt > aDayAgo;
   const stats = serviceRequest.stats;
 
@@ -52,14 +78,12 @@ const ServiceRequestCard: FC<ServiceRequestCardProps> = ({
     </Inline>
   );
 
-  const photos = isEmptyArray(serviceRequest?.photos)
-    ? [
-        {
-          url: DEFAULT_SERVICE_REQUEST_COVER_IMAGE,
-          alt: "Photo de couverture d'une demande de service",
-        },
-      ]
-    : serviceRequest?.photos?.map(el => ({ url: el.url, alt: el.name }));
+  const photos = useMemo(() => {
+    if (!isEmptyArray(serviceRequest?.photos)) {
+      return serviceRequest?.photos?.map(el => ({ url: el.url, alt: el.name }));
+    }
+    return defaultPhotoArray;
+  }, [serviceRequest?.photos]);
 
   return (
     <article
@@ -68,7 +92,34 @@ const ServiceRequestCard: FC<ServiceRequestCardProps> = ({
         className
       )}
     >
-      <ImagesSlider images={photos} className="aspect-[16/9] w-full" />
+      <div
+        className={cn(
+          'group relative aspect-[16/9] w-full overflow-hidden bg-zinc-100'
+        )}
+      >
+        <SwiperCarousel
+          pagination={pagination}
+          options={photos}
+          autoplay={{
+            delay: 2000 + (2 * idx + 1),
+            disableOnInteraction: true,
+          }}
+          slidesPerView={1}
+          breakpoints={undefined}
+          modules={[Autoplay]}
+          renderItem={({ item: image }) => (
+            <Image
+              fill
+              loading="eager"
+              className="absolute inset-0 h-full w-full overflow-hidden object-cover object-center"
+              src={image.url}
+              alt={image.alt}
+            />
+          )}
+          swiperRef={swiperRef}
+          className="h-full w-full"
+        />
+      </div>
       {isNew && (
         <AbsolutePlacement placement="top-right" className="right-7 top-2 z-30">
           <Badge content="Nouveauté" variant="success" shape="rounded" />

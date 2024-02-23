@@ -95,6 +95,7 @@ function Badge({
             }),
             !shouldDisableOutline && 'border-2 border-white',
             content === '' && 'h-3 w-3 p-0',
+            'truncate',
             className
           )}
           {...props}

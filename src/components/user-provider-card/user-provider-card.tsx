@@ -15,7 +15,7 @@ import { UserAvatar, UserName, UserRating } from '../user';
 
 interface UserProviderCardProps {
   className?: string;
-  profile: Partial<SimpleProfile> | null | undefined;
+  profile: SimpleProfile;
 }
 
 const aDayAgo = decreaseDate(new Date(), { days: 1 });
@@ -55,13 +55,13 @@ const UserProviderCard: FC<UserProviderCardProps> = ({
     <div className="-mx-3 mt-3 flex w-full items-start divide-x divide-gray-300 px-4 pb-2">
       <StatItem
         label="Propositions"
-        count={stats?.providerServiceRequestProposalsCount}
+        count={stats?.providerServiceRequestProposalCount}
       />
       <StatItem
         label="Réservations"
         count={stats?.providerServiceRequestReservedCount}
       />
-      <StatItem label="Avis client" count={stats?.receivedReviewCount} />
+      <StatItem label="Avis client" count={stats?.reviewCount} />
     </div>
   ) : null;
 

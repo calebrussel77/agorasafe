@@ -1,4 +1,6 @@
-import { ProfileType } from '@prisma/client';
+import { type Prisma, type ProfileType } from '@prisma/client';
+
+import { prisma } from '@/server/db';
 
 import {
   throwAuthorizationError,
@@ -8,10 +10,14 @@ import { type GetByIdOrSlugQueryInput } from '../../validations/base.validations
 import {
   getAllProfileDetails,
   getProfileStats,
-  getProfiles,
   getProfilesByUserId,
 } from './profiles.repository';
-import { type GetProfilesByUserIdValidation } from './profiles.validations';
+import { simpleProfileSelect } from './profiles.select';
+import {
+  type GetProfilesByUserIdValidation,
+  type GetProfilesInfiniteInput,
+  GetProfilesInput,
+} from './profiles.validations';
 
 export const getProfilesByUserIdService = async (
   inputs: GetProfilesByUserIdValidation
@@ -49,10 +55,65 @@ export const getProfileDetailsService = async (
   };
 };
 
-export const getProfilesService = async (profileType?: ProfileType) => {
-  const profiles = await getProfiles(profileType);
+export const getProfiles = async <TSelect extends Prisma.ProfileSelect>({
+  input: { type, limit, page, query },
+  select,
+}: {
+  input: GetProfilesInput;
+  select?: TSelect;
+}) => {
+  const skip = page ? (page - 1) * limit : undefined;
+
+  let OR: Prisma.ProfileWhereInput[] | undefined = undefined;
+  const orderBy: Prisma.Enumerable<Prisma.ProfileOrderByWithRelationInput> = [];
+
+  orderBy.push({ createdAt: 'asc' });
+
+  if (query) {
+    OR = [{ name: { contains: query } }, { bio: { contains: query } }];
+  }
+
+  return await prisma.profile.findMany({
+    where: { type, OR },
+    orderBy,
+    select: { ...simpleProfileSelect, ...select },
+    skip,
+    take: limit,
+  });
+};
+
+export const getProfilesInfinite = async ({
+  limit,
+  cursor,
+  type,
+}: GetProfilesInfiniteInput) => {
+  const AND: Prisma.Enumerable<Prisma.ProfileWhereInput> = [];
+  const orderBy: Prisma.Enumerable<Prisma.ProfileOrderByWithRelationInput> = [];
+
+  if (type) {
+    AND.push({ type });
+  }
+
+  orderBy.push({ createdAt: 'desc' });
+
+  const profiles = await prisma.profile.findMany({
+    take: limit + 1,
+    cursor: cursor ? { id: cursor } : undefined,
+    where: { AND },
+    orderBy,
+    select: {
+      ...simpleProfileSelect,
+    },
+  });
+
+  let nextCursor: string | undefined;
+  if (profiles.length > limit) {
+    const nextItem = profiles.pop();
+    nextCursor = nextItem?.id;
+  }
 
   return {
+    nextCursor,
     profiles,
   };
 };
@@ -73,18 +134,16 @@ export const getProfileStatsService = async (
 
   const providerServiceRequestReservedCount =
     profile?.providerInfo?._count?.serviceRequestReservations || 0;
-  const providerServiceRequestProposalsCount =
+  const providerServiceRequestProposalCount =
     profile?.providerInfo?._count?.proposals || 0;
-  const receivedReviewCount = profile?._count?.receivedReviews || 0;
-  const createdReviewCount = profile?._count?.createdReviews || 0;
+  const reviewCount = profile?._count?.receivedReviews || 0;
 
   return {
     profileId: profile.id,
     customerServiceRequestCreatedCount,
     customerServiceRequestProviderReservationCount,
     providerServiceRequestReservedCount,
-    providerServiceRequestProposalsCount,
-    createdReviewCount,
-    receivedReviewCount,
+    providerServiceRequestProposalCount,
+    reviewCount,
   };
 };

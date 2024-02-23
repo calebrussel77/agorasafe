@@ -221,6 +221,8 @@ export const getServerSideProps = createServerSideProps({
 
     if (!profile || !result.success) return { notFound: true };
 
+    if (profile.type === 'PROVIDER') return { notFound: true };
+
     const modeQuery = result.data.mode;
 
     return { props: { modeQuery } };

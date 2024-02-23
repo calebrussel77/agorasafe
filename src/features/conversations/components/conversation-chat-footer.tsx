@@ -1,3 +1,4 @@
+import { nonEmptyHtmlString } from '@/validations';
 import { useMutation } from '@tanstack/react-query';
 import axios from 'axios';
 import { produce } from 'immer';
@@ -23,8 +24,6 @@ import { makeRandomId } from '@/utils/misc';
 import { isArrayOfFile } from '@/utils/type-guards';
 
 import { QS } from '@/lib/qs';
-
-import { nonEmptyHtmlString } from '@/server/api/validations/base.validations';
 
 import { useIsMobile } from '@/hooks/use-breakpoints';
 import { useCurrentUser } from '@/hooks/use-current-user';

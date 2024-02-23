@@ -53,7 +53,7 @@ const buildSeoMeta = (pageProps: {
           url: image,
           width: 800,
           height: 400,
-          alt: 'Agorasafe',
+          alt: title,
           type: 'image/png',
         },
       ],

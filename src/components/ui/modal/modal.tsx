@@ -88,6 +88,16 @@ const DialogContent = React.forwardRef<
 
 DialogContent.displayName = DialogPrimitive.Content.displayName;
 
+export type ModalHeaderProps = Omit<
+  React.HTMLAttributes<HTMLDivElement>,
+  'title'
+> & {
+  withCloseIcon?: boolean;
+  title?: React.ReactNode;
+  description?: React.ReactNode;
+  classNames?: Pick<ClassNames, 'title' | 'description'>;
+};
+
 const DialogHeader = ({
   className,
   title,
@@ -95,12 +105,7 @@ const DialogHeader = ({
   classNames,
   description,
   ...props
-}: Omit<React.HTMLAttributes<HTMLDivElement>, 'title'> & {
-  withCloseIcon?: boolean;
-  title?: React.ReactNode;
-  description?: React.ReactNode;
-  classNames?: Pick<ClassNames, 'title' | 'description'>;
-}) => (
+}: ModalHeaderProps) => (
   <div
     className={cn(
       'sticky inset-x-0 top-0 flex w-full flex-row items-start justify-between bg-background bg-white px-4 py-4 sm:px-6',
@@ -137,7 +142,7 @@ const DialogFooter = ({
   return (
     <div
       className={cn(
-        'sticky inset-x-0 bottom-0 flex flex-col-reverse bg-background bg-white px-4 py-3 sm:flex-row sm:justify-end sm:space-x-2 sm:px-6',
+        'sticky inset-x-0 bottom-0 flex flex-col-reverse gap-3 bg-background bg-white px-4 py-3 sm:flex-row sm:justify-end sm:space-x-2 sm:px-6',
         'z-30 border-t',
         className
       )}
@@ -195,19 +200,46 @@ export interface ModalProps
     'open' | 'onOpenChange' | 'children' | 'defaultOpen'
   > {
   className?: string;
+  style?: React.CSSProperties;
   isFullScreen?: boolean;
+  closeOnClickOutside?: boolean;
+  onClose?: () => void;
 }
 
 const Modal = React.forwardRef<React.ElementRef<typeof Dialog>, ModalProps>(
-  ({ open, onOpenChange, children, className, isFullScreen, ...rest }, ref) => {
+  (
+    {
+      open,
+      onOpenChange,
+      children,
+      className,
+      isFullScreen,
+      style,
+      closeOnClickOutside = true,
+      onClose,
+      ...rest
+    },
+    ref
+  ) => {
+    const handleInteractOutside = (event: Event) => {
+      if (!closeOnClickOutside) {
+        event?.preventDefault();
+      } else {
+        onOpenChange?.(false);
+        onClose?.();
+      }
+    };
+
     return (
       <Dialog open={open} onOpenChange={onOpenChange} {...rest}>
         <DialogPortal>
           {!isFullScreen && <DialogOverlay />}
           <DialogContent
             ref={ref}
+            onInteractOutside={handleInteractOutside}
             isFullScreen={isFullScreen}
             className={cn(className)}
+            style={style}
           >
             {children}
           </DialogContent>

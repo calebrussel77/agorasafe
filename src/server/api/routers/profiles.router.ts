@@ -11,9 +11,14 @@ import {
 import {
   createProfileHandler,
   getProfileDetailsController,
+  getProfileServiceRequestReservationsHandler,
+  getProfileServiceRequestReservationsSchema,
   getProfileStatsController,
   getProfilesByUserIdController,
-  getProfilesController,
+  getProfilesHandler,
+  getProfilesInfinite,
+  getProfilesInfiniteSchema,
+  getProfilesSchema,
 } from '../modules/profiles';
 import { completeUserOnboardingSchema as createProfileSchema } from '../modules/users/users.validations';
 import { getByIdOrSlugQuerySchema } from '../validations/base.validations';
@@ -31,6 +36,10 @@ export const profilesRouter = createTRPCRouter({
     .input(createProfileSchema)
     .mutation(createProfileHandler),
 
+  getServiceRequestReservations: profileProcedure
+    .input(getProfileServiceRequestReservationsSchema)
+    .query(getProfileServiceRequestReservationsHandler),
+
   getProfileDetails: publicProcedure
     .input(getByIdOrSlugQuerySchema)
     .query(({ input }) => getProfileDetailsController(input)),
@@ -39,7 +48,9 @@ export const profilesRouter = createTRPCRouter({
     .input(getByIdOrSlugQuerySchema)
     .query(({ input }) => getProfileStatsController(input)),
 
-  getProfiles: publicProcedure
-    .input(z.object({ profileType: z.nativeEnum(ProfileType).optional() }))
-    .query(({ input }) => getProfilesController(input?.profileType)),
+  getAll: publicProcedure.input(getProfilesSchema).query(getProfilesHandler),
+
+  getInfinite: publicProcedure
+    .input(getProfilesInfiniteSchema)
+    .query(({ input }) => getProfilesInfinite(input)),
 });

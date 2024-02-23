@@ -1,12 +1,12 @@
 import { useCallback, useEffect, useState } from 'react';
 import {
-  DeepPartial,
-  FieldValues,
-  UnpackNestedValue,
+  type DeepPartial,
+  type FieldValues,
+  type UnpackNestedValue,
   useFormContext,
 } from 'react-hook-form';
 
-import { useDidUpdate } from '../hooks/use-did-update';
+import { useDidUpdate } from '@/hooks/use-did-update';
 
 type WatcherBaseProps = {
   visible?: (values: Record<string, unknown>) => boolean;

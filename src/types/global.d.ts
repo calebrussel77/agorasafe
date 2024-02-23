@@ -23,3 +23,6 @@ type InferNextProps<T extends (args: any) => any> = Awaited<
 >;
 
 type MixedObject = Record<string, any>;
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+let navigation: { currentEntry: { index: number } };

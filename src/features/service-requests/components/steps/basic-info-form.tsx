@@ -1,3 +1,4 @@
+import { nonEmptyHtmlString } from '@/validations';
 import { useRouter } from 'next/router';
 import { Controller } from 'react-hook-form';
 import { z } from 'zod';
@@ -9,9 +10,6 @@ import { Form, useZodForm } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Editor } from '@/components/ui/rich-text-editor';
 import { Switch } from '@/components/ui/switch';
-import { Textarea } from '@/components/ui/textarea';
-
-import { nonEmptyHtmlString } from '@/server/api/validations/base.validations';
 
 import { usePublishServiceRequest } from '../../stores';
 
@@ -128,7 +126,7 @@ const BasicInfoForm = ({ nextStep }: BasicInfoFormProps) => {
                 autoFocus
                 required
                 editorSize="lg"
-                value={value}
+                value={value as never}
                 onChange={onChange}
               />
             );

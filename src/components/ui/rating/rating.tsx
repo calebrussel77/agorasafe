@@ -11,8 +11,8 @@ const sizeClasses = {
   sm: 'h-4 w-4',
   md: 'h-5 w-5',
   lg: 'h-8 w-8',
-  xl: 'h-10 w-10',
-  xxl: 'h-12 w-12',
+  xl: 'h-12 w-10',
+  xxl: 'h-16 w-16',
 };
 
 type ClassNames = {
@@ -41,7 +41,7 @@ const Rating: FC<RatingProps> = ({
       emptySymbol={
         <StarSolidIcon
           className={cn(
-            'text-gray-500',
+            'text-gray-300',
             sizeClasses[size],
             classNames?.icon,
             classNames?.emptyIcon

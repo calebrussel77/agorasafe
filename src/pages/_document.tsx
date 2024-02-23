@@ -9,6 +9,7 @@ export default function Document() {
         <NextScript />
         <script
           defer
+          async
           src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY}&libraries=places`}
         ></script>
       </body>

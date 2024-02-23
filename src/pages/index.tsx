@@ -1,3 +1,5 @@
+import { ProfileType } from '@prisma/client';
+
 import {
   CallToAction,
   Faqs,
@@ -41,8 +43,9 @@ export const getServerSideProps = createServerSideProps({
       await ssg?.serviceRequests.getAll.prefetch({
         limit: LATEST_SERVICE_REQUESTS_COUNT,
       });
-      await ssg?.profiles.getProfiles.prefetch({
-        profileType: 'PROVIDER',
+      await ssg?.profiles.getAll.prefetch({
+        type: ProfileType.PROVIDER,
+        limit: 8,
       });
     }
     return { props: {} };

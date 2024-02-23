@@ -1,164 +1,16 @@
-import { faker } from '@faker-js/faker';
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
+
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import { PrismaClient } from '@prisma/client';
 
 import { serviceCategories, services, skills } from '../src/data';
-import { formatYearMonthDay } from '../src/lib/date-fns';
+import { formatYearMonthDay, increaseDate } from '../src/lib/date-fns';
+import { faker } from '../src/lib/faker';
+import { shuffle } from '../src/utils/arrays';
 import { makeRandomId } from '../src/utils/misc';
 import { slugit } from '../src/utils/strings';
 
 const prisma = new PrismaClient({ log: ['warn', 'error'] });
-
-// import fs from 'fs'
-// import { faker } from '@faker-js/faker'
-// import { createPassword, createUser } from 'tests/db-utils.ts'
-// import { prisma } from '~/utils/db.server.ts'
-// import { deleteAllData } from 'tests/setup/utils.ts'
-// import { getPasswordHash } from '~/utils/auth.server.ts'
-
-// async function seed() {
-// 	console.log('🌱 Seeding...')
-// 	console.time(`🌱 Database has been seeded`)
-
-// 	console.time('🧹 Cleaned up the database...')
-// 	deleteAllData()
-// 	console.timeEnd('🧹 Cleaned up the database...')
-
-// 	console.time(`👑 Created admin role/permission...`)
-// 	const adminRole = await prisma.role.create({
-// 		data: {
-// 			name: 'admin',
-// 			permissions: {
-// 				create: { name: 'admin' },
-// 			},
-// 		},
-// 	})
-// 	console.timeEnd(`👑 Created admin role/permission...`)
-// 	const totalUsers = 40
-// 	console.time(`👤 Created ${totalUsers} users...`)
-// 	const users = await Promise.all(
-// 		Array.from({ length: totalUsers }, async (_, index) => {
-// 			const userData = createUser()
-// 			const user = await prisma.user.create({
-// 				data: {
-// 					...userData,
-// 					password: {
-// 						create: createPassword(userData.username),
-// 					},
-// 					image: {
-// 						create: {
-// 							contentType: 'image/jpeg',
-// 							file: {
-// 								create: {
-// 									blob: await fs.promises.readFile(
-// 										`./tests/fixtures/images/user/${index % 10}.jpg`,
-// 									),
-// 								},
-// 							},
-// 						},
-// 					},
-// 					notes: {
-// 						create: Array.from({
-// 							length: faker.number.int({ min: 0, max: 10 }),
-// 						}).map(() => ({
-// 							title: faker.lorem.sentence(),
-// 							content: faker.lorem.paragraphs(),
-// 						})),
-// 					},
-// 				},
-// 			})
-// 			return user
-// 		}),
-// 	)
-// 	console.timeEnd(`👤 Created ${totalUsers} users...`)
-
-// 	console.time(
-// 		`🐨 Created user "kody" with the password "kodylovesyou" and admin role`,
-// 	)
-// 	await prisma.user.create({
-// 		data: {
-// 			email: 'kody@kcd.dev',
-// 			username: 'kody',
-// 			name: 'Kody',
-// 			roles: { connect: { id: adminRole.id } },
-// 			image: {
-// 				create: {
-// 					contentType: 'image/png',
-// 					file: {
-// 						create: {
-// 							blob: await fs.promises.readFile(
-// 								'./tests/fixtures/images/user/kody.png',
-// 							),
-// 						},
-// 					},
-// 				},
-// 			},
-// 			password: {
-// 				create: {
-// 					hash: await getPasswordHash('kodylovesyou'),
-// 				},
-// 			},
-// 			notes: {
-// 				create: [
-// 					{
-// 						title: 'Basic Koala Facts',
-// 						content:
-// 							'Koalas are found in the eucalyptus forests of eastern Australia. They have grey fur with a cream-coloured chest, and strong, clawed feet, perfect for living in the branches of trees!',
-// 					},
-// 					{
-// 						title: 'Koalas like to cuddle',
-// 						content:
-// 							'Cuddly critters, koalas measure about 60cm to 85cm long, and weigh about 14kg.',
-// 					},
-// 					{
-// 						title: 'Not bears',
-// 						content:
-// 							"Although you may have heard people call them koala 'bears', these awesome animals aren’t bears at all – they are in fact marsupials. A group of mammals, most marsupials have pouches where their newborns develop.",
-// 					},
-// 				],
-// 			},
-// 		},
-// 	})
-// 	console.timeEnd(
-// 		`🐨 Created user "kody" with the password "kodylovesyou" and admin role`,
-// 	)
-
-// 	console.timeEnd(`🌱 Database has been seeded`)
-// }
-
-// seed()
-// 	.catch(e => {
-// 		console.error(e)
-// 		process.exit(1)
-// 	})
-// 	.finally(async () => {
-// 		await prisma.$disconnect()
-// 	})
-
-const createPhoto = async () => {
-  return prisma.file.create({
-    data: {
-      name: faker.person.firstName(),
-      url: faker.image.urlLoremFlickr({
-        category: 'food',
-        height: 500,
-        width: 500,
-      }),
-    },
-  });
-};
-
-const createLocation = async () => {
-  return prisma.location.create({
-    data: {
-      lat: faker.location.latitude(),
-      long: faker.location.longitude(),
-      address: faker.location.streetAddress(),
-      city: faker.location.city(),
-      country: faker.location.country(),
-      placeId: makeRandomId(),
-    },
-  });
-};
 
 const groupedServices = serviceCategories.map(category => {
   const categoryServices = services
@@ -171,254 +23,87 @@ const groupedServices = serviceCategories.map(category => {
   };
 });
 
-const createUserWithAdminRoleAndProfiles = async () => {
-  console.log('🧹👮 Creation of the user locations...');
-  const { id: locationId } = await createLocation();
-  const { id: locationId2 } = await createLocation();
-
-  console.log('🧹👮 Creation of the user service requests photos...');
-  const { id: photoId } = await createPhoto();
-  const { id: photoId2 } = await createPhoto();
-
-  console.log('🧹👮 Creation of the user with profiles...');
-  const { profiles } = await prisma.user.create({
-    data: {
-      email: 'calebrussel77@gmail.com',
-      onboardingComplete: true,
-      version: Number(process.env.NEXT_PUBLIC_SESSION_VERSION),
-      tos: true,
-      // email: 'fake.email@gmail.fr',
-      firstName: faker.person.firstName(),
-      fullName: faker.person.fullName(),
-      lastName: faker.person.lastName(),
-      birthdate: formatYearMonthDay(faker.date.birthdate({ mode: 'year' })),
-      sex: 'MALE',
-      role: 'ADMIN',
-      picture: faker.image.avatar(),
-      profiles: {
-        createMany: {
-          data: [
-            {
-              name: 'Cesar Kamdem J.',
-              websiteUrl: faker.internet.url(),
-              aboutMe: faker.lorem.paragraph(4),
-              facebookUrl: `https://facebook.com/${faker.internet.userName()}`,
-              linkedinUrl: `https://linkedin.com/${faker.internet.userName()}`,
-              XUrl: `https://x.com/${faker.internet.userName()}`,
-              avatar: faker.image.avatar(),
-              bio: faker.person.bio(),
-              phone: faker.phone.number('+23769#######'),
-              slug: 'cesar-kamdem-20029',
-              type: 'PROVIDER',
-              locationId,
-            },
-            {
-              name: 'Jules Masango K.',
-              websiteUrl: faker.internet.url(),
-              bio: faker.person.bio(),
-              aboutMe: faker.lorem.paragraph(4),
-              facebookUrl: `https://facebook.com/${faker.internet.userName()}`,
-              linkedinUrl: `https://linkedin.com/${faker.internet.userName()}`,
-              XUrl: `https://x.com/${faker.internet.userName()}`,
-              avatar: faker.image.avatar(),
-              phone: faker.phone.number('+23765#######'),
-              slug: 'jules-masango-keneth-20030',
-              type: 'CUSTOMER',
-              locationId: locationId2,
-            },
-          ],
-        },
-      },
-    },
-    select: { profiles: true },
-  });
-
-  for (const profile of profiles) {
-    if (profile?.type === 'CUSTOMER') {
-      console.log(
-        '🧹👮 Updating the CUSTOMER profile with details and create 02 service requests...'
-      );
-      // await prisma.profile.update({
-      //   where: { id: profile.id },
-      //   data: {
-      //     customerInfo: {
-      //       create: {
-      //         serviceRequests: {
-      //           create: [
-      //             {
-      //               date: faker.date.past(),
-      //               title: faker.lorem.lines(5),
-      //               description: faker.lorem.paragraph(4),
-      //               estimatedPrice: +faker.commerce.price(),
-      //               numberOfProviderNeeded: faker.number.int({
-      //                 min: 1,
-      //                 max: 5,
-      //               }),
-      //               nbOfHours: faker.number.int({ min: 1, max: 5 }),
-      //               phoneToContact: faker.phone.number('+23769#######'),
-      //               service: {
-      //                 connect: {
-      //                   name: faker.helpers.shuffle(services)[0]?.name,
-      //                 },
-      //               },
-      //               slug: slugit(faker.lorem.lines(2)),
-      //               startHour: 8,
-      //               location: {
-      //                 connectOrCreate: {
-      //                   where: { name: faker.location.streetAddress() },
-      //                   create: {
-      //                     lat: faker.location.latitude(),
-      //                     long: faker.location.longitude(),
-      //                     address: faker.location.streetAddress(),
-      //                     city: faker.location.city(),
-      //                     country: faker.location.country(),
-      //                     placeId: makeRandomId(),
-      //                   },
-      //                 },
-      //               },
-      //             },
-      //             {
-      //               date: faker.date.past(),
-      //               title: faker.lorem.lines(2),
-      //               description: faker.lorem.paragraph(4),
-      //               estimatedPrice: +faker.commerce.price(),
-      //               numberOfProviderNeeded: faker.number.int({
-      //                 min: 1,
-      //                 max: 5,
-      //               }),
-      //               nbOfHours: faker.number.int({ min: 1, max: 5 }),
-      //               phoneToContact: faker.phone.number('+23765#######'),
-      //               service: {
-      //                 connect: {
-      //                   name: faker.helpers.shuffle(services)[0]?.name,
-      //                 },
-      //               },
-      //               slug: slugit(faker.lorem.lines(2)),
-      //               startHour: 15,
-      //               location: {
-      //                 connectOrCreate: {
-      //                   where: { name: faker.location.streetAddress() },
-      //                   create: {
-      //                     lat: faker.location.latitude(),
-      //                     long: faker.location.longitude(),
-      //                     address: faker.location.streetAddress(),
-      //                     city: faker.location.city(),
-      //                     country: faker.location.country(),
-      //                     placeId: makeRandomId(),
-      //                   },
-      //                 },
-      //               },
-      //             },
-      //           ],
-      //         },
-      //       },
-      //     },
-      //   },
-      // });
-    } else {
-      console.log('🧹👮 Updating the PROVIDER profile with details...');
-      await prisma.profile.update({
-        where: { id: profile.id },
-        data: {
-          providerInfo: {
-            create: {
-              isFaceToFace: true,
-              profession: faker.person.jobTitle(),
-              isRemote: false,
-              skills: {
-                connect: [
-                  { name: faker.helpers.shuffle(skills)[3]?.name },
-                  { name: faker.helpers.shuffle(skills)[6]?.name },
-                ],
-              },
-              showCaseProjects: {
-                createMany: {
-                  data: [
-                    {
-                      photoId: photoId,
-                      title: faker.lorem.sentence(),
-                      description: faker.lorem.sentence(3),
-                    },
-                    {
-                      photoId: photoId2,
-                      title: faker.lorem.sentence(),
-                      description: faker.lorem.sentence(4),
-                    },
-                  ],
-                },
-              },
-            },
-          },
-        },
-      });
-    }
-  }
-};
-
-// const createEngamentSkills = async () => {
-//   await prisma.skill.createMany({
-//     data: engagementSkills?.map(skill => ({ name: skill.name })),
-//   });
-// };
-
 const createSkills = async () => {
-  await prisma.skill.createMany({
-    data: skills?.map(skill => ({ name: skill.name })),
-  });
-};
+  const skillsCount = skills.length;
 
-const createCategoriesWithServices = async () => {
-  for (const el of groupedServices) {
-    await prisma.categoryService.create({
-      data: {
-        name: el.categoryName,
-        slug: slugit(el.categoryName),
-        services: {
-          connectOrCreate: el.services.map(name => ({
-            create: { name, slug: slugit(name) },
-            where: { name },
-          })),
-        },
-      },
-    });
-  }
+  console.log(`🧹 Creating ${skillsCount} new skills...`);
+  return Promise.all(
+    skills.map(skill =>
+      prisma.skill.create({
+        data: { name: skill.name },
+      })
+    )
+  );
 };
 
 const destroyData = async () => {
   try {
     console.log('🌱 Cleaned up the database...');
 
-    // console.log('🧹 Deleting service request reservations...');
-    // await prisma.serviceRequestReservation.deleteMany();
-
-    console.log('🧹 Deleting locations...');
-    await prisma.location.deleteMany();
-
-    console.log('🧹 Deleting accounts...');
-    await prisma.account.deleteMany();
-
-    console.log('🧹 Deleting users...');
-    await prisma.user.deleteMany();
-
-    console.log('🧹 Deleting sessions...');
-    await prisma.session.deleteMany();
-
-    console.log('🧹 Deleting services...');
-    await prisma.service.deleteMany();
+    // await prisma.$transaction(
+    //   async (prisma): Promise<void> => {
 
     // console.log('🧹 Deleting skills...');
     // await prisma.skill.deleteMany();
 
-    // console.log('🧹 Deleting service categories...');
+    console.log('🧹 Deleting accounts...');
+    await prisma.account.deleteMany();
+
+    console.log('🧹 Deleting sessions...');
+    await prisma.session.deleteMany();
+
+    console.log('🧹 Deleting providers...');
+    await prisma.provider.deleteMany();
+
+    console.log('🧹 Deleting customers...');
+    await prisma.customer.deleteMany();
+
+    console.log('🧹 Deleting services...');
+    await prisma.service.deleteMany();
+
+    console.log('🧹 Deleting service categories...');
     await prisma.categoryService.deleteMany();
 
     console.log('🧹 Deleting service requests...');
     await prisma.serviceRequest.deleteMany();
 
+    console.log('🧹 Deleting show case projects...');
+    await prisma.showCaseProject.deleteMany();
+
+    console.log('🧹 Deleting conversations...');
+    await prisma.conversation.deleteMany();
+
+    console.log('🧹 Deleting messages...');
+    await prisma.directMessage.deleteMany();
+
+    console.log('🧹 Deleting proposals...');
+    await prisma.proposal.deleteMany();
+
+    console.log('🧹 Deleting service request reservations...');
+    await prisma.serviceRequestReservation.deleteMany();
+
+    console.log('🧹 Deleting notifications...');
+    await prisma.notification.deleteMany();
+
+    console.log('🧹 Deleting reviews...');
+    await prisma.review.deleteMany();
+
+    console.log('🧹 Deleting comments...');
+    await prisma.comment.deleteMany();
+
+    console.log('🧹 Deleting locations...');
+    await prisma.location.deleteMany();
+
     console.log('🧹 Deleting profiles...');
     await prisma.profile.deleteMany();
 
-    console.log(`🌱 Database has been cleaned up`);
+    console.log('🧹 Deleting users...');
+    await prisma.user.deleteMany();
+    //   },
+    //   { timeout: 200_000 }
+    // );
+
+    console.log(`🌱 Database has been cleaned up.`);
 
     process.exit();
   } catch (error) {
@@ -429,26 +114,232 @@ const destroyData = async () => {
 
 const importData = async () => {
   try {
-    console.log('🌱 Seeding...');
+    console.log('🌱 Seeding the database..');
 
-    console.log(`🧹 Creating categories with services...`);
-    await createCategoriesWithServices();
+    const locationsCount = 10;
+    const photosCount = 10;
+    const usersCount = 10;
+    const categorySevicesCount = groupedServices.length;
 
-    console.log(`🧹 Creating skills...`);
-    await createSkills();
+    // await prisma.$transaction(
+    //   async prisma => {
+    // console.log(`🧹 Creating ${skillsCount} new skills...`);
+    // const createdSkills = await Promise.all(
+    //   skills.map(skill =>
+    //     prisma.skill.create({
+    //       data: { name: skill.name },
+    //     })
+    //   )
+    // );
 
-    console.log(
-      `🧹 Creating 01 user with 02 complete profiles with details...`
+    console.log(`🧹 Creating ${locationsCount} new locations...`);
+    const createdLocations = await Promise.all(
+      new Array(locationsCount).fill(null).map(() =>
+        prisma.location.create({
+          data: {
+            lat: faker.location.latitude(),
+            long: faker.location.longitude(),
+            address: faker.location.streetAddress(),
+            city: faker.location.city(),
+            country: faker.location.country(),
+            placeId: makeRandomId(),
+          },
+        })
+      )
     );
-    await createUserWithAdminRoleAndProfiles();
 
-    console.log(`🌱 Database has been seeded`);
-    process.exit();
+    console.log(`🧹 Creating ${categorySevicesCount} new category services...`);
+    const createdCategoryServices = await Promise.all(
+      groupedServices.map(group =>
+        prisma.categoryService.create({
+          data: {
+            name: group.categoryName,
+            slug: slugit(group.categoryName),
+            services: {
+              connectOrCreate: group.services.map(name => ({
+                create: { name, slug: slugit(name) },
+                where: { name },
+              })),
+            },
+          },
+          include: { services: { select: { slug: true, id: true } } },
+        })
+      )
+    );
+
+    console.log(`🧹 Creating ${photosCount} new photos...`);
+    const createdPhotos = await Promise.all(
+      new Array(photosCount).fill(null).map(() =>
+        prisma.file.create({
+          data: {
+            name: faker.person.firstName(),
+            url: faker.image.urlLoremFlickr({
+              category: 'food',
+              height: 500,
+              width: 500,
+            }),
+            key: makeRandomId(),
+          },
+        })
+      )
+    );
+
+    // Création des utilisateurs et des profils en parallèle
+    console.log(`👷🏿‍♂️👦🏽 Creating ${usersCount} new users...`);
+    await Promise.all(
+      new Array(usersCount).fill(null).map(async (_, i) => {
+        const fullName = `${faker.person.firstName()} ${faker.person.lastName()}`;
+        const PROFILE_TYPE = i % 2 === 0 ? 'CUSTOMER' : 'PROVIDER';
+
+        console.log(`🚀 Creating new user ${i} with name : ${fullName}...`);
+        const user = await prisma.user.create({
+          data: {
+            email: faker.internet.email(),
+            firstName: faker.person.firstName(),
+            lastName: faker.person.lastName(),
+            onboardingComplete: true,
+            tos: true,
+            sex: i % 2 === 0 ? 'MALE' : 'FEMALE',
+            picture: faker.image.urlLoremFlickr({
+              category: 'person',
+              height: 500,
+              width: 500,
+            }),
+            fullName,
+            role: 'MEMBER',
+            version: parseFloat(process.env.NEXT_PUBLIC_SESSION_VERSION || '1'),
+            birthdate: formatYearMonthDay(faker.date.past({ years: 20 })),
+          },
+        });
+
+        console.log(
+          `🚀 Creating new profile for ${fullName} of type ${PROFILE_TYPE}...`
+        );
+        const profile = await prisma.profile.create({
+          data: {
+            userId: user.id,
+            name: user.fullName,
+            slug: slugit(user.fullName),
+            locationId: shuffle(
+              createdLocations.map(location => location.id)
+            )[0],
+            websiteUrl: faker.internet.url(),
+            bio: faker.person.bio(),
+            aboutMe: faker.lorem.paragraph(),
+            facebookUrl: `https://facebook.com/${slugit(user.fullName)}`,
+            linkedinUrl: `https://linkedin.com/${slugit(user.fullName)}`,
+            XUrl: `https://x.com/${slugit(user.fullName)}`,
+            avatar: faker.image.urlLoremFlickr({
+              category: 'person',
+              height: 500,
+              width: 500,
+            }),
+            phone: faker.phone.number(),
+            type: PROFILE_TYPE,
+          },
+        });
+
+        // Logique pour les prestataires
+        if (profile.type === 'PROVIDER') {
+          console.log(
+            `🚀 Complete ${PROFILE_TYPE} profile infos for ${fullName}...`
+          );
+          const provider = await prisma.provider.create({
+            data: {
+              profileId: profile.id,
+              isFaceToFace: i % 2 === 0,
+              isRemote: i % 2 !== 0,
+              profession: faker.person.jobTitle(),
+              skills: {
+                connect: shuffle(
+                  skills.map(skill => ({ name: skill.name }))
+                )!.slice(0, 2),
+              },
+            },
+          });
+
+          // Création de projets vitrine pour les prestataires
+          console.log(`🚀 Creating 3 show case projects for ${fullName}...`);
+          await Promise.all(
+            new Array(3).fill(null).map(async () => {
+              await prisma.showCaseProject.create({
+                data: {
+                  title: faker.commerce.productName(),
+                  description: faker.commerce.productDescription(),
+                  photo: {
+                    connect: {
+                      id: shuffle(createdPhotos.map(photo => photo.id))[0],
+                    },
+                  },
+                  providerId: provider.id,
+                },
+              });
+            })
+          );
+        }
+
+        // Logique pour les clients
+        if (profile.type === 'CUSTOMER') {
+          console.log(
+            `🚀 Complete ${PROFILE_TYPE} profile infos for ${fullName}...`
+          );
+          const customer = await prisma.customer.create({
+            data: {
+              profileId: profile.id,
+            },
+          });
+
+          // Création des demandes de service pour les clients
+          console.log(`🚀 Creating 3 service requests for ${fullName}...`);
+          await Promise.all(
+            new Array(3).fill(null).map(async () => {
+              const serviceCategory = shuffle(createdCategoryServices)[0]!;
+              const service = shuffle(serviceCategory.services)[0]!;
+
+              await prisma.serviceRequest.create({
+                data: {
+                  title: faker.commerce.productName(),
+                  slug: slugit(faker.commerce.productName()),
+                  description: faker.lorem.paragraph(5),
+                  phoneToContact: faker.phone.number(),
+                  locationId: shuffle(
+                    createdLocations.map(location => location.id)
+                  )[0]!,
+                  authorId: customer.id,
+                  serviceId: service.id,
+                  date: increaseDate(new Date(), { days: 2 }),
+                  photos: {
+                    connect: shuffle(
+                      createdPhotos.map(photo => ({ id: photo.id }))
+                    ).slice(0, 3),
+                  },
+                  estimatedPrice: parseFloat(
+                    faker.commerce.price({ min: 6000, max: 25000 })
+                  ),
+                  numberOfProviderNeeded: faker.number.int({
+                    min: 1,
+                    max: 5,
+                  }),
+                  nbOfHours: faker.number.int({ min: 1, max: 8 }),
+                  startHour: faker.number.int({ min: 8, max: 16 }),
+                },
+              });
+            })
+          );
+        }
+      })
+    );
+
+    // ...
+    console.log(`🚀🤗 ${usersCount} users created.`);
+    console.log('🌱 Database has been seeded');
+    // }
   } catch (error) {
-    console.log(error);
+    console.error(error);
     process.exit(1);
   }
 };
+
 const load = async () => {
   try {
     //check the flag of the script and
