@@ -43,11 +43,6 @@ export type AppPageProps = {
   shouldDisableAnalytics?: boolean;
 }>;
 
-function handleExitComplete() {
-  if (isWindowDefined()) {
-    window.scrollTo({ top: 0 });
-  }
-}
 
 const MyApp = (props: AppPageProps) => {
   useNotificationNetwork();
