@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-import { WEBSITE_URL } from '@/constants';
+import { APP_URL } from '@/constants';
 import { createContext, useContext, useEffect, useRef } from 'react';
 import { io } from 'socket.io-client';
 import type { Socket } from 'socket.io-client';
@@ -43,7 +43,7 @@ const SocketStoreProvider = ({ children }: React.PropsWithChildren) => {
   }
 
   useEffect(() => {
-    const socketInstance = io(window.location.origin || WEBSITE_URL, {
+    const socketInstance = io(window.location.origin || APP_URL, {
       path: '/api/socket/io',
     });
 

@@ -20,22 +20,28 @@ import {
 import { getByIdQuerySchema } from '../validations/base.validations';
 
 const isOwnerOrAdmin = middleware(async ({ ctx, next, input = {} }) => {
-  if (!ctx.user) throw throwAuthorizationError();
+  if (!ctx.user || !ctx.profile) throw throwAuthorizationError();
 
   const { id } = input as { id: string };
 
-  const userId = ctx.user.id;
+  const profileId = ctx.profile.id;
   const isAdmin = ctx?.user.role === 'ADMIN';
   if (!isAdmin && !!id) {
     const ownerId =
-      (await prisma.comment.findUnique({ where: { id } }))?.authorId ?? 0;
-    if (ownerId !== userId) throw throwAuthorizationError();
+      (
+        await prisma.review.findUnique({
+          where: { id },
+          select: { authorId: true },
+        })
+      )?.authorId ?? 0;
+    if (ownerId !== profileId) throw throwAuthorizationError();
   }
 
   return next({
     ctx: {
       // infers the `user` as non-nullable
       user: ctx.user,
+      ownerId: profileId,
     },
   });
 });

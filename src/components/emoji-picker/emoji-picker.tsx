@@ -35,7 +35,7 @@ const EmojiPicker: FC<EmojiPickerProps> = ({
       <Popover.Content
         side="top"
         className={cn(
-          'mb-3 min-w-[352px] rounded-lg bg-white p-0 shadow-lg',
+          'z-[99999] mb-3 min-w-[352px] rounded-lg bg-white p-0 shadow-lg',
           className
         )}
       >

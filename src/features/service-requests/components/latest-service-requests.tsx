@@ -1,5 +1,16 @@
-import { ArrowRight, LucideDoorClosed } from 'lucide-react';
+import {
+  ArrowLeftCircle,
+  ArrowRight,
+  ArrowRightCircleIcon,
+  LucideDoorClosed,
+} from 'lucide-react';
+import { Autoplay } from 'swiper/modules';
 
+import {
+  SwiperButton,
+  SwiperCarousel,
+  useSwiperRef,
+} from '@/components/swiper-carousel';
 import { AsyncWrapper } from '@/components/ui/async-wrapper';
 import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/ui/empty-state';
@@ -10,7 +21,24 @@ import { LATEST_SERVICE_REQUESTS_COUNT } from '../utils';
 import { ServiceRequestButton } from './service-request-button';
 import { ServiceRequestCard } from './service-request-card';
 
+const breakpoints = {
+  600: {
+    slidesPerView: 2,
+  },
+  720: {
+    slidesPerView: 3,
+  },
+  1024: {
+    slidesPerView: 4,
+  },
+  1480: {
+    slidesPerView: 4,
+  },
+};
+
 export function LatestServiceRequests() {
+  const { swiperRef, onHandleNextSlide, onHandlePrevSlide } = useSwiperRef();
+
   const { data, error, refetch, isLoading } =
     api.serviceRequests.getAll.useQuery({
       limit: LATEST_SERVICE_REQUESTS_COUNT,
@@ -18,7 +46,7 @@ export function LatestServiceRequests() {
 
   return (
     <div className="bg-gray-50 py-12">
-      <div className="mx-auto max-w-screen-xl px-6 lg:px-8">
+      <div className="mx-auto max-w-screen-2xl px-6 lg:px-8">
         <div className="mx-auto max-w-2xl text-center">
           <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
             Les dernières demandes
@@ -46,7 +74,7 @@ export function LatestServiceRequests() {
           )}
           {data?.serviceRequests && data?.serviceRequests?.length > 0 && (
             <div className="mx-auto mt-8 max-w-2xl lg:mx-0 lg:max-w-none">
-              {data?.totalCount > 1 && (
+              {data?.totalCount > 3 && (
                 <div className="flex w-full justify-end">
                   <Button
                     size="sm"
@@ -59,17 +87,29 @@ export function LatestServiceRequests() {
                   </Button>
                 </div>
               )}
-              <div className="mt-2 grid w-full grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
-                {data?.serviceRequests?.map(serviceRequest => {
-                  return (
+              <div className="flex w-full flex-col gap-3">
+                <SwiperCarousel
+                  options={data?.serviceRequests}
+                  breakpoints={breakpoints}
+                  renderItem={({ item: serviceRequest, idx }) => (
                     <ServiceRequestCard
                       key={serviceRequest?.id}
                       className="w-full"
+                      idx={idx}
                       serviceRequest={serviceRequest}
-                      isNew
                     />
-                  );
-                })}
+                  )}
+                  swiperRef={swiperRef}
+                  className="h-full w-full"
+                />
+                <div className="flex w-full items-center justify-end gap-3">
+                  <SwiperButton mode="prev" onClick={onHandlePrevSlide}>
+                    <ArrowLeftCircle className="h-6 w-6" />
+                  </SwiperButton>
+                  <SwiperButton mode="next" onClick={onHandleNextSlide}>
+                    <ArrowRightCircleIcon className="h-6 w-6" />
+                  </SwiperButton>
+                </div>
               </div>
             </div>
           )}

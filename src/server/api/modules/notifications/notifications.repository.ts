@@ -10,7 +10,7 @@ import { NotificationSelect } from './notifications.select';
 import { notificationConfigs } from './notifications.utils';
 import {
   type GetNotificationsInput,
-  MarkReadNotificationInput,
+  type MarkReadNotificationInput,
   type NotificationConnectorInput,
 } from './notifications.validations';
 

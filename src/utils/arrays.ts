@@ -1,4 +1,4 @@
-
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 /**
  * Removes duplicate elements from an array using a custom comparator function.
  * @param array - The input array to remove duplicates from.
@@ -46,4 +46,25 @@ export function sortAlphabeticallyBy<T>(array: T[], fn: (item: T) => string) {
     if (a > b) return 1;
     return 0;
   });
+}
+
+export function shuffle<T>(array: T[]): T[] {
+  let currentIndex = array.length,
+    randomIndex;
+
+  // Tant qu'il reste des éléments à mélanger...
+  while (currentIndex !== 0) {
+    // Choisissez un élément restant...
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex--;
+
+    // Et échangez-le avec l'élément actuel.
+    //@ts-ignore
+    [array[currentIndex], array[randomIndex]] = [
+      array[randomIndex],
+      array[currentIndex],
+    ];
+  }
+
+  return array;
 }

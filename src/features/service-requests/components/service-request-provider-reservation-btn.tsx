@@ -89,7 +89,7 @@ const ServiceRequestProviderReservationBtn = ({
     //             isMuted: null,
     //             user: { id: '', role: 'MEMBER' },
     //             location: null,
-    //             _count: { receivedReviews: 0 },
+    //             _count: { reviews: 0 },
     //           },
     //           skills: [],
     //         });

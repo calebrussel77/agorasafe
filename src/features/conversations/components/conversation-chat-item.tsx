@@ -12,7 +12,6 @@ import {
 } from 'lucide-react';
 import { type Session } from 'next-auth';
 import { useRouter } from 'next/router';
-import qs from 'query-string';
 import { cloneElement, useCallback, useEffect, useMemo, useState } from 'react';
 import { Controller } from 'react-hook-form';
 import * as z from 'zod';
@@ -33,6 +32,7 @@ import { UserAvatar, UserName } from '@/components/user';
 import { api } from '@/utils/api';
 import { removeTags } from '@/utils/strings';
 
+import { QS } from '@/lib/qs';
 import { cn } from '@/lib/utils';
 
 import { type SimpleProfile } from '@/server/api/modules/profiles';
@@ -182,20 +182,15 @@ export const ConversationChatItem = ({
   const isLoading = form.formState.isSubmitting;
 
   const onSubmit = (formData: FormDataInputs) => {
-    const url = qs.stringifyUrl({
-      url: `${socketUrl}/${id}`,
-      query: socketQuery,
-    });
+    const url = QS.stringifyUrl(`${socketUrl}/${id}`, socketQuery);
+
     updateMessage.mutate({ url, formData });
   };
 
   const onDelete = useCallback(async () => {
     setIsLoadingDelete(true);
     try {
-      const url = qs.stringifyUrl({
-        url: `${socketUrl}/${id}`,
-        query: socketQuery,
-      });
+      const url = QS.stringifyUrl(`${socketUrl}/${id}`, socketQuery);
       await axios.delete(url);
       closeModal(modalId);
     } catch (error) {

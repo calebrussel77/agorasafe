@@ -66,6 +66,7 @@ import {
   dateToReadableString,
   formatDateDistance,
 } from '@/lib/date-fns';
+import { buildImageUrl } from '@/lib/og-images';
 import { cn } from '@/lib/utils';
 
 import { createServerSideProps } from '@/server/utils/server-side';
@@ -197,7 +198,12 @@ const ServiceRequestPublicationPage = ({ profile, id }: PageProps) => {
 
   const isServiceRequestOwner =
     profile?.id === serviceRequest?.author?.profile?.id;
-  const authorName = serviceRequest?.author?.profile?.name;
+
+  const ogInfo = {
+    authorName: serviceRequest?.author?.profile?.name,
+    authorAvatar: serviceRequest?.author?.profile?.avatar,
+    title: serviceRequest?.title,
+  };
 
   const isStatusOpen = serviceRequest?.status === 'OPEN';
   const isReserved = serviceRequest?.isProfileReserved;
@@ -205,26 +211,26 @@ const ServiceRequestPublicationPage = ({ profile, id }: PageProps) => {
 
   const serviceRequestAuthorId = serviceRequest?.author?.profile?.id;
 
-  const coverBg = isEmptyArray(serviceRequest?.photos)
-    ? DEFAULT_SERVICE_REQUEST_COVER_IMAGE
-    : serviceRequest?.photos?.[0]?.url;
+  // const coverBg = isEmptyArray(serviceRequest?.photos)
+  //   ? DEFAULT_SERVICE_REQUEST_COVER_IMAGE
+  //   : serviceRequest?.photos?.[0]?.url;
 
   const images = serviceRequest?.photos?.map(el => ({
     name: el.name,
     url: el.url,
   }));
 
-  const meta = (
-    <Seo
-      title={`${authorName} - ${serviceRequest?.title}`}
-      image={coverBg}
-      description={serviceRequest?.description}
-    />
-  );
-
   if (isInitialLoading) return <FullSpinner isFullPage />;
 
   if (!serviceRequest) return <NotFound />;
+
+  const meta = (
+    <Seo
+      title={`${ogInfo?.authorName} - ${ogInfo?.title}`}
+      image={buildImageUrl('serviceRequest', ogInfo as never)}
+      description={serviceRequest?.description}
+    />
+  );
 
   return (
     <>
@@ -366,27 +372,23 @@ const ServiceRequestPublicationPage = ({ profile, id }: PageProps) => {
                     <DropdownMenu.Content className="min-w-[270px]">
                       <div className="flex flex-col space-y-1">
                         <>
-                          <DropdownMenu.Item
-                            className={cn(
-                              'default__transition flex cursor-pointer items-center gap-2.5 rounded-md px-3 py-2.5 text-sm text-gray-900 hover:bg-gray-100'
-                            )}
-                            onClick={() =>
-                              mutate({
-                                serviceRequestId: id,
-                                status: isStatusOpen ? 'CLOSED' : 'OPEN',
-                              })
-                            }
-                            disabled={isLoadingUpdate}
-                          >
-                            {isStatusOpen ? (
+                          {isStatusOpen && (
+                            <DropdownMenu.Item
+                              className={cn(
+                                'default__transition flex cursor-pointer items-center gap-2.5 rounded-md px-3 py-2.5 text-sm text-gray-900 hover:bg-gray-100'
+                              )}
+                              onClick={() =>
+                                mutate({
+                                  serviceRequestId: id,
+                                  status: 'CLOSED',
+                                })
+                              }
+                              disabled={isLoadingUpdate}
+                            >
                               <LockIcon className="h-5 w-5" />
-                            ) : (
-                              <ArrowUpRight className="h-5 w-5" />
-                            )}
-                            {isStatusOpen
-                              ? 'Fermer ma demande'
-                              : 'Republier ma demande'}
-                          </DropdownMenu.Item>
+                              Fermer ma demande
+                            </DropdownMenu.Item>
+                          )}
                           <DropdownMenu.Item
                             className={cn(
                               'default__transition flex cursor-pointer items-center gap-2.5 rounded-md px-3 py-2.5 text-sm text-red-600 hover:bg-red-100'
@@ -829,7 +831,6 @@ export const getServerSideProps = createServerSideProps({
 
     const { id } = result.data;
 
-    //Prefetch queries so it is already on the client side cache
     if (ssg) {
       await ssg?.serviceRequests.get.prefetch({
         id,

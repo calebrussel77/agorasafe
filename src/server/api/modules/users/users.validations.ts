@@ -1,11 +1,10 @@
-import { locationSchema, phoneSchema } from '@/validations';
+import {
+  getSanitizedStringSchema,
+  locationSchema,
+  phoneSchema,
+} from '@/validations';
 import { ProfileType } from '@prisma/client';
 import { z } from 'zod';
-
-import { getSanitizedStringSchema } from '../../validations/base.validations';
-
-// This file need to be exported on the client -
-// We can't export it on the index file because trpc will throw error
 
 export const onboardClientProfileSchema = z.object({
   avatar: z.string().trim().nullish(),

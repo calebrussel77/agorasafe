@@ -3,54 +3,58 @@ title: Conditions d'utilisation
 description: Conditions d'utilisation de la plateforme Agorasafe
 ---
 
-# Politique de Confidentialité et Conditions d'utilisation
+Bienvenue sur Agorasafe !😊
 
-**Dernière mise à jour : 05 Nov. 2023**
+Nous sommes engagés à protéger votre vie privée et vos données personnelles. Cette politique explique comment nous collectons, utilisons, partageons et protégeons vos informations. En utilisant notre plateforme, vous acceptez les termes de cette politique et de nos conditions d'utilisation.
 
-Bienvenue sur Agorasafe !
+# Conditions d'utilisation
 
-Nous sommes engagés à protéger votre vie privée et vos données personnelles. Cette politique explique comment nous collectons, utilisons, partageons et protégeons vos informations. En utilisant notre plateforme, vous acceptez les termes de cette politique.
+## Acceptation des Conditions
 
-## Consentement
+En accédant à la plateforme Agorasafe et en l'utilisant, vous acceptez d'être lié par ces Conditions d'Utilisation. Si vous n'acceptez pas toutes les Conditions énoncées ici, vous ne pouvez pas utiliser ou accéder aux services offerts par Agorasafe.
 
-L'utilisation de notre application pour faire autre chose que d'accéder aux liens vers la présente page "Conditions d'utilisation" ou d'accéder à toute page de notre site web autre que notre page d'accueil et la présente page "Conditions d'utilisation" constitue votre consentement à ces conditions d'utilisation. Si vous n'y consentez pas, n'utilisez pas notre site web.
+## Modification des Conditions
 
-Votre utilisation de notre site web pour faire quoi que ce soit d'autre que le simple fait de le consulter (c'est-à-dire charger, télécharger, commenter, etc.) constitue non seulement votre consentement, mais aussi votre signature électronique, ce qui signifie que vous êtes contractuellement lié par les présentes conditions d'utilisation.
+Agorasafe se réserve le droit de modifier ou de remplacer ces Conditions à tout moment. Il est de votre responsabilité de vérifier périodiquement ces Conditions pour vous assurer que vous êtes d'accord avec les modifications. Votre utilisation continue de la plateforme après la publication de modifications signifie que vous acceptez et consentez aux changements.
 
-## Collecte d'Informations
+## Utilisation de la Plateforme
 
-Nous collectons des informations que vous nous fournissez directement, telles que votre nom, votre adresse e-mail, et d'autres données lorsque vous vous inscrivez, créez un profil, publiez des demandes de service, ou communiquez avec d'autres utilisateurs.
+Vous vous engagez à utiliser la plateforme Agorasafe uniquement pour des fins légales et conformément aux Conditions énoncées. Vous vous engagez à ne pas utiliser la plateforme pour des activités frauduleuses ou illégales.
 
-Nous pouvons également collecter des informations automatiquement, y compris des données d'utilisation, des informations de connexion, et des données de géolocalisation.
+## Contenu
 
-## Utilisation des Informations
+Vous êtes seul responsable du contenu que vous fournissez sur la plateforme Agorasafe, y compris les informations de votre profil, les publications, les commentaires et tout autre contenu que vous partagez.
 
-Nous utilisons vos informations pour fournir, maintenir et améliorer notre plateforme. Cela comprend la personnalisation de votre expérience, la gestion de vos demandes de service, et la communication avec d'autres utilisateurs.
+## Droits d'Auteur et Propriété Intellectuelle
 
-## Partage des Informations
+Le contenu publié sur Agorasafe, y compris les textes, les graphiques, les logos et les images, est protégé par le droit d'auteur et appartient à Agorasafe ou à ses concédants de licence. Vous vous engagez à ne pas copier, modifier, distribuer ou utiliser ce contenu sans l'autorisation écrite préalable d'Agorasafe.
 
-Nous pouvons partager vos informations avec d'autres utilisateurs dans le cadre de la mise en relation pour les demandes de service. Votre nom, photo de profil, et les informations pertinentes peuvent être visibles par d'autres utilisateurs.
+# Politique de Confidentialité
 
-Nous ne vendons pas vos informations à des tiers. Cependant, nous pouvons partager des données agrégées et anonymisées à des fins de recherche et d'analyse.
+## Collecte de Données
 
-## Protection des Données
+Agorasafe collecte des informations personnelles lorsque vous vous inscrivez sur la plateforme, utilisez ses services ou participez à ses activités. Les types d'informations collectées peuvent inclure votre nom, adresse e-mail, numéro de téléphone, informations de paiement et toute autre information que vous choisissez de fournir.
 
-Nous prenons des mesures de sécurité pour protéger vos informations. Cependant, aucune méthode de transmission sur Internet ou de stockage électronique n'est totalement sécurisée.
+## Utilisation des Données
 
-## Vos Choix
+Les informations collectées par Agorasafe sont utilisées pour fournir et améliorer les services offerts, traiter les transactions, communiquer avec vous, répondre à vos demandes et vous informer des offres, des services et des événements.
 
-Vous pouvez accéder, modifier ou supprimer vos informations personnelles via les paramètres de votre compte. Vous pouvez également demander la suppression de votre compte à tout moment.
+## Partage des Données
 
-## Cookies et Technologies Similaires
+Agorasafe ne partage pas vos informations personnelles avec des tiers, sauf dans le cadre de la fourniture de services ou lorsque cela est exigé par la loi.
 
-Nous utilisons des cookies et des technologies similaires pour collecter des informations sur votre utilisation de la plateforme.
+## Sécurité
 
-## Modifications de la Politique
+Agorasafe prend des mesures raisonnables pour protéger vos informations personnelles contre l'accès non autorisé, l'utilisation, la modification et la divulgation.
 
-Nous pouvons mettre à jour cette politique de temps à autre. Nous vous informerons des changements importants par e-mail ou via la plateforme.
+## Modifications de la Politique de Confidentialité
+
+Agorasafe peut modifier cette Politique de Confidentialité de temps à autre. Nous vous informerons de tout changement en publiant la nouvelle Politique de Confidentialité sur notre site.
 
 ## Contact
 
-Si vous avez des questions sur cette politique, veuillez nous contacter à **support@agorasafe.com**.
+Si vous avez des questions sur ces Conditions d'Utilisation ou sur la Politique de Confidentialité, veuillez nous contacter à **support@agorasafe.com**.
 
 Merci de faire partie de la communauté Agorasafe !
+
+**Dernière mise à jour : 06 Janv. 2024**

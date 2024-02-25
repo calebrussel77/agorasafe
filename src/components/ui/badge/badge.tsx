@@ -3,6 +3,8 @@ import * as React from 'react';
 
 import { cn } from '@/lib/utils';
 
+import { Typography } from '../typography';
+
 /**
  * Usage of the component 
  *  <Badge content="99+" variant="danger" size="xs" placement="top-right">
@@ -21,6 +23,13 @@ const badgeVariants = cva(
         sm: 'px-1.5 font-semibold',
         md: 'px-2 font-semibold',
         lg: 'px-2.5 text-base font-semibold',
+      },
+      maxWidth: {
+        xxs: 'max-w-[250px]',
+        xs: 'max-w-xs',
+        sm: 'max-w-sm',
+        md: 'max-w-md',
+        lg: 'max-w-lg',
       },
       shape: {
         rounded: 'rounded-md',
@@ -50,6 +59,7 @@ const badgeVariants = cva(
     },
     defaultVariants: {
       variant: 'default',
+      maxWidth: 'xxs',
       shape: 'circle',
     },
   }
@@ -61,6 +71,7 @@ export interface BadgeProps
   content: React.ReactNode;
   as?: keyof JSX.IntrinsicElements | React.ComponentType<any>;
   shouldDisableOutline?: boolean;
+  truncate?: boolean;
 }
 
 function Badge({
@@ -69,6 +80,8 @@ function Badge({
   content,
   variant,
   shouldDisableOutline,
+  truncate = false,
+  maxWidth = 'xxs',
   shape,
   size = 'md',
   placement = 'bottom-right',
@@ -88,6 +101,7 @@ function Badge({
               placement: children ? placement : null,
               size,
               shape,
+              maxWidth,
               class:
                 placement &&
                 children &&
@@ -99,7 +113,19 @@ function Badge({
           )}
           {...props}
         >
-          {content}
+          {truncate ? (
+            <Typography
+              as="p"
+              className={cn('whitespace-normal text-xs')}
+              hasEllipsisText={false}
+              truncate={truncate}
+              isTooltipDisabled={false}
+            >
+              {content}
+            </Typography>
+          ) : (
+            content
+          )}
         </div>
       ) : null}
     </Comp>

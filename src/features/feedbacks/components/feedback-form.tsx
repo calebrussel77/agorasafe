@@ -1,3 +1,4 @@
+import { nonEmptyHtmlString } from '@/validations';
 import { FeedbackType } from '@prisma/client';
 import { Camera } from 'lucide-react';
 import React, { type FC } from 'react';
@@ -9,10 +10,7 @@ import { Form, useZodForm } from '@/components/ui/form';
 import { Label } from '@/components/ui/label';
 import { RadioGroup } from '@/components/ui/radio-group';
 import { Editor } from '@/components/ui/rich-text-editor';
-import { Textarea } from '@/components/ui/textarea';
 import { DropzoneUpload } from '@/components/ui/uploadthing';
-
-import { nonEmptyHtmlString } from '@/server/api/validations/base.validations';
 
 const feedBackFormSchema = z.object({
   type: z.nativeEnum(FeedbackType),

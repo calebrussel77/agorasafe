@@ -30,3 +30,15 @@ export function toTitleCase(str: string) {
     txt => txt.charAt(0)?.toUpperCase() + txt.slice(1)?.toLowerCase()
   );
 }
+
+export function extractDomainName(url: string): string {
+  // Utilisation de l'API URL pour parser l'URL fournie
+  try {
+    const urlParsed = new URL(url);
+    // Extraction de l'hôte (nom de domaine + extension)
+    return urlParsed.hostname;
+  } catch (error) {
+    console.error('URL invalide :', error);
+    return 'URL invalide';
+  }
+}

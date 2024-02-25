@@ -15,6 +15,7 @@ import { SoonBadge } from '@/components/soon-button';
 import { AsyncWrapper } from '@/components/ui/async-wrapper';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { triggerRoutedDialog } from '@/components/ui/dialog';
 import { Image } from '@/components/ui/image';
 import { Inline } from '@/components/ui/inline';
 import { Seo } from '@/components/ui/seo';
@@ -30,6 +31,7 @@ import { api } from '@/utils/api';
 import { getIsFaceToFaceLabel, getIsRemoteLabel } from '@/utils/profile';
 
 import { formatDateDistance } from '@/lib/date-fns';
+import { buildImageUrl } from '@/lib/og-images';
 import { cn } from '@/lib/utils';
 
 import { createServerSideProps } from '@/server/utils/server-side';
@@ -72,7 +74,8 @@ const ProjectShowCaseItem = ({
           truncate
           lines={2}
           hasEllipsisText
-          className="text-xs text-muted-foreground"
+          variant="small"
+          className="font-normal"
         >
           {description || '...'}
         </Typography>
@@ -113,28 +116,38 @@ type PageProps = Prettify<InferNextProps<typeof getServerSideProps>>;
 
 export default function ProfileDetailsPage({ profileSlugQuery }: PageProps) {
   const { profile } = useCurrentUser();
-  const { data, isInitialLoading, error } = useGetProfileDetails({
-    slug: profileSlugQuery,
-  });
+
+  const { data, isInitialLoading, error } =
+    api.profiles.getProfileDetails.useQuery({
+      slug: profileSlugQuery,
+    });
+
   const { data: stats, isLoading } = api.profiles.getStats.useQuery({
     slug: profileSlugQuery,
   });
 
-  const profileName = data?.profile?.name || '';
   const isDeleted = !!data?.profile?.deletedAt;
-  const isCustomer = data?.profile?.type === 'CUSTOMER';
-  const isMyProfile = data?.profile?.id === profile?.id;
 
   if (isInitialLoading || isLoading) return <FullSpinner />;
 
   if (isDeleted || !data?.profile) return <NotFound />;
 
+  const profileName = data?.profile?.name ?? '';
+  const isCustomer = data?.profile?.type === 'CUSTOMER';
+  const isMine = data?.profile?.id === profile?.id;
+
+  const ogInfo = {
+    profileName: profileName,
+    profileAvatar: data?.profile?.avatar,
+    title: `${profileName} sur Agorasafe`,
+  };
+
   return (
     <>
       <Seo
-        title={meta.title(profileName)}
-        description={meta.description(data?.profile?.bio || '')}
-        image={data?.profile?.avatar || undefined}
+        title={ogInfo.title}
+        image={buildImageUrl('publicProfile', ogInfo as never)}
+        description={data?.profile?.bio || data?.profile?.aboutMe || undefined}
       />
       <AsyncWrapper isLoading={isInitialLoading} error={error}>
         <section>
@@ -168,7 +181,7 @@ export default function ProfileDetailsPage({ profileSlugQuery }: PageProps) {
                     {!isCustomer && (
                       <UserRating
                         className="mt-0"
-                        reviewsCount={data?.profile?._count?.receivedReviews}
+                        reviewsCount={stats?.reviewCount}
                         profileName={data?.profile?.name}
                       />
                     )}
@@ -185,7 +198,7 @@ export default function ProfileDetailsPage({ profileSlugQuery }: PageProps) {
                   </Inline>
                 </div>
                 <div className="mt-6 flex w-full flex-row items-center space-x-4 sm:w-auto sm:justify-stretch">
-                  {isMyProfile && (
+                  {isMine && (
                     <Button
                       // href="/dashboard/settings"
                       size="sm"
@@ -197,7 +210,7 @@ export default function ProfileDetailsPage({ profileSlugQuery }: PageProps) {
                       <SoonBadge />
                     </Button>
                   )}
-                  {!isMyProfile && (
+                  {!isMine && (
                     <LoginRedirect reason="send-message">
                       <Button
                         href={`/dashboard/inbox?profileId=${data?.profile?.id}`}
@@ -322,12 +335,12 @@ export default function ProfileDetailsPage({ profileSlugQuery }: PageProps) {
         {!isCustomer &&
           data?.profile?.providerInfo?.showCaseProjects &&
           data?.profile?.providerInfo?.showCaseProjects?.length > 0 && (
-            <section className="mx-auto mt-3 w-full max-w-7xl px-4 md:mt-10">
-              <div className="mx-auto flex w-auto items-center justify-center gap-6">
+            <section className="mx-auto mt-6 w-full max-w-7xl px-4 md:mt-10">
+              <div className="flex w-auto items-start justify-start gap-6">
                 {data?.profile?.providerInfo?.showCaseProjects?.map(project => (
                   <ProjectShowCaseItem
                     key={project?.id}
-                    imageUrl={project?.photo?.url}
+                    imageUrl={project?.photo?.url || ''}
                     description={project?.description}
                     title={project?.title}
                   />
@@ -336,9 +349,37 @@ export default function ProfileDetailsPage({ profileSlugQuery }: PageProps) {
             </section>
           )}
 
+        {!isCustomer && (
+          <section className="mx-auto mt-6 flex w-full max-w-7xl flex-wrap items-center justify-between gap-3 px-4 md:mt-10">
+            <div>
+              <Typography as="h2">Noter {data?.profile?.name}</Typography>
+              <Typography variant="subtle">
+                Donnez votre avis aux utilisateurs.
+              </Typography>
+            </div>
+            <LoginRedirect reason="create-provider-review">
+              <Button
+                onClick={() =>
+                  triggerRoutedDialog({
+                    name: 'reviewForm',
+                    state: {
+                      profileName: data?.profile?.name,
+                      profileAvatar: data?.profile?.avatar,
+                      profileId: data?.profile?.id,
+                      rating: stats?.reviewCount || 1,
+                    },
+                  })
+                }
+              >
+                Rediger un avis
+              </Button>
+            </LoginRedirect>
+          </section>
+        )}
+
         <section className="mx-auto mt-3 w-full max-w-7xl px-4 md:mt-10">
           <div className="mt-6 space-y-1">
-            <h2 className="text-xl font-semibold">A propos</h2>
+            <Typography as="h2">A propos</Typography>
           </div>
           <Separator className="my-4 w-full " />
           <div className="text-gray-600">{data?.profile?.aboutMe ?? '...'}</div>
@@ -347,9 +388,7 @@ export default function ProfileDetailsPage({ profileSlugQuery }: PageProps) {
         {!isCustomer && (
           <section className="mx-auto mt-3 w-full max-w-7xl px-4 md:mt-10">
             <div className="mt-6 space-y-1">
-              <h2 className="text-xl font-semibold">
-                Compétences professionnelles
-              </h2>
+              <Typography as="h2">Compétences professionnelles</Typography>
             </div>
             <Separator className="my-4 w-full " />
             <div className="flex w-full max-w-4xl flex-wrap items-center gap-3">
@@ -371,7 +410,7 @@ export default function ProfileDetailsPage({ profileSlugQuery }: PageProps) {
         {!isCustomer && (
           <section className="mx-auto mt-3 w-full max-w-7xl px-4 md:mt-10">
             <div className="mt-6 space-y-1">
-              <h2 className="text-xl font-semibold">Modes de travail</h2>
+              <Typography as="h2">Modes de travail</Typography>
             </div>
             <Separator className="my-4 w-full " />
             <div className="flex w-full max-w-3xl flex-wrap items-center gap-3">

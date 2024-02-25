@@ -1,5 +1,5 @@
 import { USER_PROFILES_LIMIT_COUNT } from '@/constants';
-import { ProfileType } from '@prisma/client';
+import { type ProfileType } from '@prisma/client';
 
 import { toTitleCase } from '@/utils/strings';
 
@@ -12,17 +12,26 @@ import {
 } from '../../../utils/error-handling';
 import { type Context } from '../../create-context';
 import { type GetByIdOrSlugQueryInput } from '../../validations/base.validations';
+import { getFormattedDatePeriod } from '../service-requests/service-requests.utils';
 import { getUserById } from '../users';
 import { type CompleteUserOnboardingInput as CreateProfileInput } from '../users/users.validations';
-import { createProfileByUserId, getProfileBySlug } from './profiles.repository';
+import {
+  createProfileByUserId,
+  getProfileBySlug,
+  getProfileServiceRequestReservations,
+} from './profiles.repository';
 import {
   getProfileDetailsService,
   getProfileStatsService,
+  getProfiles,
   getProfilesByUserIdService,
-  getProfilesService,
 } from './profiles.service';
 import { getProfileCreationMessage } from './profiles.utils';
-import { type GetProfilesByUserIdValidation } from './profiles.validations';
+import {
+  type GetProfileServiceRequestReservationsInput,
+  type GetProfilesByUserIdValidation,
+  type GetProfilesInput,
+} from './profiles.validations';
 
 export const getProfileDetailsController = async (
   inputs: GetByIdOrSlugQueryInput
@@ -44,11 +53,52 @@ export const getProfileStatsController = async (
   }
 };
 
-export const getProfilesController = async (profileType?: ProfileType) => {
+export const getProfileServiceRequestReservationsHandler = async ({
+  ctx,
+  input,
+}: {
+  input: GetProfileServiceRequestReservationsInput;
+  ctx: DeepNonNullable<Context>;
+}) => {
   try {
-    return await getProfilesService(profileType);
+    if (ctx.profile.type === 'CUSTOMER') {
+      input.customerProfileId = ctx.profile.id;
+    }
+
+    if (ctx.profile.type === 'PROVIDER') {
+      input.providerProfileId = ctx.profile.id;
+    }
+
+    const serviceRequestReservations =
+      await getProfileServiceRequestReservations({
+        input,
+      });
+    return serviceRequestReservations?.map(el => ({
+      ...el,
+      serviceRequest: {
+        ...el?.serviceRequest,
+        datePeriodFormattedText: getFormattedDatePeriod(
+          el?.serviceRequest?.date,
+          el?.serviceRequest?.startHour
+        ),
+      },
+    }));
+  } catch (e) {
+    throwDbError(e);
+  }
+};
+
+export const getProfilesHandler = async ({
+  ctx,
+  input,
+}: {
+  ctx: Context;
+  input: GetProfilesInput;
+}) => {
+  try {
+    return await getProfiles({ input });
   } catch (error) {
-    throwDbError(error);
+    throw throwDbError(error);
   }
 };
 

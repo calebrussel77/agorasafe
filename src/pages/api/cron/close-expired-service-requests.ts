@@ -12,10 +12,10 @@ export default async function handler(
   try {
     const now = new Date();
 
-    const expiredServiceRequests = await prisma.serviceRequest.findMany({
+    const serviceRequestsToClose = await prisma.serviceRequest.findMany({
       where: {
         date: {
-          lte: increaseDate(now, { days: 3 }), // Add two days before closing the expired service requests
+          lte: increaseDate(now, { days: 3 }), // Add 03 days before closing the expired service requests
         },
         status: {
           not: 'CLOSED',
@@ -29,28 +29,28 @@ export default async function handler(
       },
     });
 
-    if (expiredServiceRequests.length > 0) {
-      const updateOperations = expiredServiceRequests.map(serviceRequest => {
-        // Notification creation is a side-effect and doesn't need to be part of the transaction
-        void createNotification('close-service-request-expired', {
+    // Prépare les opérations de mise à jour et d'envoi de notifications dans une transaction
+    const transactionActions = serviceRequestsToClose.map(serviceRequest => {
+      return prisma.$transaction([
+        prisma.serviceRequest.update({
+          where: { id: serviceRequest.id },
+          data: { status: 'CLOSED' },
+        }),
+        createNotification('close-service-request-expired', {
           profileId: serviceRequest.author.profileId,
           serviceRequestId: serviceRequest.id,
           serviceRequestSlug: serviceRequest.slug,
           serviceRequestTitle: serviceRequest.title,
-        });
+        }),
+      ]);
+    });
 
-        // Update operation for transaction
-        return prisma.serviceRequest.update({
-          where: { id: serviceRequest.id },
-          data: { status: 'CLOSED' },
-        });
-      });
+    // Exécute toutes les transactions
+    await Promise.all(transactionActions);
 
-      // Execute all update operations in a transaction
-      await prisma.$transaction(updateOperations);
-    }
-
-    res.status(200).json({ success: true });
+    res
+      .status(200)
+      .json({ message: 'Service requests updated and notifications sent' });
   } catch (err) {
     const error = err as Error;
     console.error(`Error updating expired service requests: ${error.message}`);

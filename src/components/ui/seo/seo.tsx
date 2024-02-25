@@ -1,20 +1,22 @@
-import { WEBSITE_URL } from '@/constants';
+import {
+  APP_URL,
+  DEFAULT_APP_IMAGE,
+  DEFAULT_APP_TITLE,
+  OG_HEIGHT,
+  OG_WIDTH,
+} from '@/constants';
 import type { NextSeoProps } from 'next-seo';
 import { NextSeo } from 'next-seo';
 import { useRouter } from 'next/router';
 
 import { truncateOnWord } from '@/utils/text';
 
-import {
-  DEFAULT_APP_IMAGE_PREVIEW,
-  buildCanonical,
-  seoConfig,
-} from '@/lib/next-seo-config';
+import { buildCanonical, seoConfig } from '@/lib/next-seo-config';
 
 export type SeoProps = {
-  title: string;
-  description?: string | null;
+  title?: string;
   image?: string;
+  description?: string | null;
   siteName?: string;
   url?: string;
   canonical?: string;
@@ -25,9 +27,9 @@ export type SeoProps = {
  * Build full seo tags from title, desc, canonical and url
  */
 const buildSeoMeta = (pageProps: {
-  title: string;
+  title?: string;
   description: string;
-  image: string;
+  image?: string;
   siteName?: string;
   url?: string;
   canonical?: string;
@@ -39,8 +41,9 @@ const buildSeoMeta = (pageProps: {
     canonical,
     siteName = seoConfig.headSeo.siteName,
   } = pageProps;
+
   return {
-    title: title || undefined,
+    title: title,
     canonical: canonical,
     description,
     openGraph: {
@@ -50,10 +53,10 @@ const buildSeoMeta = (pageProps: {
       description: description,
       images: [
         {
-          url: image,
-          width: 800,
-          height: 400,
-          alt: 'Agorasafe',
+          url: image ?? DEFAULT_APP_IMAGE,
+          width: OG_WIDTH,
+          height: OG_HEIGHT,
+          alt: title,
           type: 'image/png',
         },
       ],
@@ -73,7 +76,7 @@ const buildSeoMeta = (pageProps: {
       },
       {
         property: 'name',
-        content: title,
+        content: title ?? DEFAULT_APP_TITLE,
       },
       {
         name: 'description',
@@ -81,7 +84,7 @@ const buildSeoMeta = (pageProps: {
       },
       {
         property: 'image',
-        content: image,
+        content: image ?? DEFAULT_APP_IMAGE,
       },
     ],
   };
@@ -93,13 +96,13 @@ const Seo = (props: SeoProps): JSX.Element => {
   // Get the router's path
   const defaultUrl = buildCanonical({
     path: router?.asPath,
-    origin: WEBSITE_URL,
+    origin: APP_URL,
   });
 
   const {
     title,
     description,
-    image,
+    image = '',
     siteName,
     canonical = defaultUrl,
     nextSeoProps = {},
@@ -109,7 +112,7 @@ const Seo = (props: SeoProps): JSX.Element => {
 
   const seoObject = buildSeoMeta({
     title,
-    image: image || DEFAULT_APP_IMAGE_PREVIEW,
+    image,
     description: truncatedDescription,
     canonical,
     siteName,

@@ -1,17 +1,13 @@
-import { Bell, BellOff, ListChecks, MessageSquare } from 'lucide-react';
+import { Bell, BellOff, ListChecks } from 'lucide-react';
 import React, { useState } from 'react';
 
 import { api } from '@/utils/api';
 
-import { htmlParse } from '@/lib/html-helper';
 import { cn } from '@/lib/utils';
 
-import { type NotificationConfigTypes } from '@/server/api/modules/notifications';
+import { useCurrentUser } from '@/hooks/use-current-user';
 
 import { ActionTooltip } from '../action-tooltip';
-import { Anchor } from '../anchor';
-import { DaysFromNow } from '../days-from-now';
-import { Avatar } from '../ui/avatar';
 import { Badge } from '../ui/badge';
 import { Button, buttonVariants } from '../ui/button';
 import { DropdownMenu } from '../ui/dropdown-menu';
@@ -25,10 +21,14 @@ import { NotificationList } from './notification-list';
 
 export function NotificationBell() {
   const [isOpen, setIsOpen] = useState(false);
+  const { isAuthWithProfile } = useCurrentUser();
   const queryUtils = api.useContext();
 
   const { data: notificationCount, isLoading: isLoadingCheck } =
-    api.notifications.getCount.useQuery({}, { refetchInterval: 1_000 * 2 });
+    api.notifications.getCount.useQuery(
+      {},
+      { refetchInterval: isAuthWithProfile ? 1_000 * 2 : false }
+    );
 
   const { data: notificationsData, isInitialLoading: isLoadingNotifications } =
     api.notifications.getInfinite.useQuery({ limit: 10 }, { enabled: isOpen });
@@ -95,7 +95,9 @@ export function NotificationBell() {
                   items={notificationsData.notifications}
                   isOnDropdownMenu
                   onItemClick={notification => {
-                    handleMarkAsRead({ id: notification.id });
+                    !notification.isRead
+                      ? handleMarkAsRead({ id: notification.id })
+                      : undefined;
                     setIsOpen(false);
                   }}
                 />

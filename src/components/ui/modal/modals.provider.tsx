@@ -3,8 +3,6 @@ import React, { useCallback, useReducer, useRef } from 'react';
 
 import { makeRandomId } from '@/utils/misc';
 
-import { cn } from '@/lib/utils';
-
 import { ConfirmModal } from './confirmModal';
 import {
   type ConfirmLabels,

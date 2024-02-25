@@ -1,4 +1,4 @@
-import { WEBSITE_URL } from '@/constants';
+import { APP_URL } from '@/constants';
 import type { useRouter } from 'next/router';
 
 const replaceStrategies = ['push', 'replace'] as const;
@@ -29,8 +29,8 @@ export const handleRouteBack = ({
   void router.push(to);
 };
 
-const getAbsoluteUrl = (baseURL: string) => {
-  return new URL(baseURL, WEBSITE_URL);
+export const getAbsoluteUrl = (baseURL: string) => {
+  return new URL(baseURL, APP_URL);
 };
 
 export const getAbsoluteHrefUrl = (baseUrl: string) =>

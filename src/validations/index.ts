@@ -1,6 +1,9 @@
+import { type Config } from 'isomorphic-dompurify';
 import { z } from 'zod';
 
-import { isArrayOfFile } from '@/utils/type-guards';
+import { isArrayOfFile, isString } from '@/utils/type-guards';
+
+import { sanitizeHTML } from '@/lib/html-helper';
 
 export type PhoneInput = z.infer<typeof phoneSchema>;
 export const phoneSchema = z
@@ -36,3 +39,29 @@ export const profilePreferencesSchema = z
     excludedServiceRequestIds: z.array(z.number()),
   })
   .partial();
+
+export const getSanitizedStringSchema = (config?: Config) =>
+  z.preprocess(val => {
+    if (!val) return '';
+
+    const str = String(val);
+    const result = sanitizeHTML(str, config);
+
+    if (isString(result) && result?.length === 0) return '';
+
+    return result;
+  }, z.string());
+
+export const nonEmptyHtmlString = getSanitizedStringSchema({
+  ALLOWED_TAGS: ['div', 'strong', 'p', 'em', 'u', 's', 'a', 'br'],
+}).refine(data => {
+  return data && data.length > 0 && data !== '<p></p>';
+}, 'Ce champs est requis.');
+
+export const rsOptionSchema = z.object(
+  { label: z.string(), value: z.string() },
+  {
+    required_error: 'Ce champ est requis',
+    invalid_type_error: 'Ce champ est requis',
+  }
+);

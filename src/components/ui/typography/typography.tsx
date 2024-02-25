@@ -19,8 +19,8 @@ export const typographyVariants = cva('', {
       h4: 'text-lg font-semibold',
       h5: 'text-lg font-semibold leading-snug',
       paragraph: 'text-base',
-      subtle: 'text-base leading-7 text-gray-600',
-      small: 'text-sm text-muted-foreground leading-5',
+      subtle: 'text-base leading-7 text-gray-600 font-normal',
+      small: 'text-sm text-muted-foreground leading-5 font-normal',
     },
   },
   defaultVariants: {

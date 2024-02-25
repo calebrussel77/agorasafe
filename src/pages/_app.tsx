@@ -2,7 +2,7 @@
 
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 import '@/assets/styles/globals.css';
-import { WEBSITE_URL, isMaintenanceMode } from '@/constants';
+import { APP_URL, isMaintenanceMode } from '@/constants';
 import { MainLayout } from '@/layouts';
 import { AppProvider } from '@/providers/app-provider';
 import { type ProfileStore } from '@/stores/profile-store';
@@ -81,7 +81,7 @@ const MyApp = (props: AppPageProps) => {
       <DefaultSeo
         canonical={buildCanonical({
           path: router.asPath ?? '/',
-          origin: WEBSITE_URL,
+          origin: APP_URL,
         })}
       />
       <AppProvider

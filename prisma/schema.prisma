@@ -24,10 +24,9 @@ model ShowCaseProject {
     title       String
     description String? @db.Text
 
-    photo   File   @relation(fields: [photoId], references: [id])
-    photoId String @unique
+    photo File?
 
-    provider   Provider? @relation(fields: [providerId], references: [id], onDelete: Cascade)
+    provider   Provider? @relation(fields: [providerId], references: [id], onDelete: SetNull)
     providerId String?
 
     @@index([providerId])
@@ -36,27 +35,29 @@ model ShowCaseProject {
 model Review {
     id String @id @default(cuid())
 
-    subject ReviewSubject? @default(value: SERVICE_REQUEST)
-
-    content String @db.Text
-
-    file String?
+    details String? @db.Text
 
     rating Int
 
-    serviceRequest   ServiceRequest @relation("serviceRequestReview", fields: [serviceRequestId], references: [id], onDelete: Cascade)
-    serviceRequestId String
+    serviceRequest   ServiceRequest? @relation("serviceRequestReview", fields: [serviceRequestId], references: [id], onDelete: SetNull)
+    serviceRequestId String?
 
-    createdBy   Profile @relation("createdByReview", fields: [createdById], references: [id], onDelete: Cascade)
-    createdById String
+    reviewedProfile   Profile? @relation("receivedByReview", fields: [reviewedProfileId], references: [id], onDelete: SetNull)
+    reviewedProfileId String?
 
-    receivedBy   Profile? @relation("receivedByReview", fields: [receivedById], references: [id], onDelete: Cascade)
-    receivedById String?
+    author   Profile @relation("createdByReview", fields: [authorId], references: [id], onDelete: Cascade)
+    authorId String
+
+    // Champs pour l'audit et la modération des avis
+    isVerified Boolean @default(false) // Indique si l'avis a été vérifié
+    isPublic   Boolean @default(true) // Indique si l'avis est public
 
     createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 
-    @@index([receivedById])
-    @@index([createdById])
+    @@unique([reviewedProfileId, authorId, serviceRequestId])
+    @@index([authorId])
+    @@index([reviewedProfileId])
     @@index([serviceRequestId])
 }
 
@@ -85,8 +86,7 @@ model Profile {
     bio     String? @db.Text
     aboutMe String? @db.Text
 
-    createdReviews Review[] @relation("createdByReview")
-
+    createdReviews  Review[] @relation("createdByReview")
     receivedReviews Review[] @relation("receivedByReview")
 
     websiteUrl  String?
@@ -99,8 +99,8 @@ model Profile {
     user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
     userId String
 
-    location   Location? @relation(fields: [locationId], references: [id], onDelete: Cascade)
-    locationId String
+    location   Location? @relation(fields: [locationId], references: [id], onDelete: SetNull)
+    locationId String?
 
     comments       Comment[]
     directMessages DirectMessage[]
@@ -174,7 +174,7 @@ model Service {
 
     serviceRequests ServiceRequest[]
 
-    categoryService   CategoryService? @relation(fields: [categoryServiceId], references: [id], onDelete: Cascade)
+    categoryService   CategoryService? @relation(fields: [categoryServiceId], references: [id], onDelete: SetNull)
     categoryServiceId String?
 
     createdAt DateTime @default(now())
@@ -189,10 +189,11 @@ model File {
     url  String
     key  String? @unique
 
-    serviceRequest   ServiceRequest? @relation(fields: [serviceRequestId], references: [id], onDelete: Cascade)
+    serviceRequest   ServiceRequest? @relation(fields: [serviceRequestId], references: [id], onDelete: SetNull)
     serviceRequestId String?
 
-    showCaseProject ShowCaseProject?
+    showCaseProject   ShowCaseProject? @relation(fields: [showCaseProjectId], references: [id], onDelete: SetNull)
+    showCaseProjectId String?          @unique
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
@@ -289,8 +290,8 @@ model Comment {
     author   Profile @relation(fields: [authorId], references: [id])
     authorId String
 
-    serviceRequest   ServiceRequest @relation(fields: [serviceRequestId], references: [id], onDelete: Cascade)
-    serviceRequestId String
+    serviceRequest   ServiceRequest? @relation(fields: [serviceRequestId], references: [id], onDelete: SetNull)
+    serviceRequestId String?
 
     deletedAt DateTime?
     createdAt DateTime  @default(now())
@@ -308,7 +309,7 @@ model Proposal {
     author   Provider @relation(fields: [authorId], references: [id], onDelete: Cascade)
     authorId String
 
-    serviceRequest   ServiceRequest? @relation(fields: [serviceRequestId], references: [id], onDelete: Cascade)
+    serviceRequest   ServiceRequest? @relation(fields: [serviceRequestId], references: [id], onDelete: SetNull)
     serviceRequestId String?
 
     serviceRequestReservation ServiceRequestReservation?
@@ -455,18 +456,6 @@ enum OnboardingStep {
     MODERATION
     PAYMENT_INFO
 }
-
-enum ReviewSubject {
-    SERVICE_REQUEST
-    USER
-}
-
-// enum NotificationType {
-//     SERVICE_REQUEST
-//     SYSTEM
-//     REVIEW
-//     COMMENT
-// }
 
 enum FeedbackType {
     Bug

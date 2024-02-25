@@ -59,9 +59,10 @@ const ServiceRequestsPage: AppPageProps['Component'] = () => {
         >
           {data?.serviceRequests && data?.serviceRequests?.length > 0 && (
             <div className="grid w-full grid-cols-1 gap-x-4 gap-y-6 lg:grid-cols-2 xl:grid-cols-3">
-              {data?.serviceRequests?.map(serviceRequest => {
+              {data?.serviceRequests?.map((serviceRequest, idx) => {
                 return (
                   <ServiceRequestCard
+                    idx={idx}
                     key={serviceRequest?.id}
                     className="w-full"
                     serviceRequest={serviceRequest}
