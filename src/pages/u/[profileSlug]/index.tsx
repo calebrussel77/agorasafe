@@ -126,12 +126,6 @@ export default function ProfileDetailsPage({ profileSlugQuery }: PageProps) {
     slug: profileSlugQuery,
   });
 
-  const isDeleted = !!data?.profile?.deletedAt;
-
-  if (isInitialLoading || isLoading) return <FullSpinner />;
-
-  if (isDeleted || !data?.profile) return <NotFound />;
-
   const profileName = data?.profile?.name ?? '';
   const isCustomer = data?.profile?.type === 'CUSTOMER';
   const isMine = data?.profile?.id === profile?.id;
@@ -142,13 +136,23 @@ export default function ProfileDetailsPage({ profileSlugQuery }: PageProps) {
     title: `${profileName} sur Agorasafe`,
   };
 
+  const isDeleted = !!data?.profile?.deletedAt;
+
+  const meta = (
+    <Seo
+      title={ogInfo?.title}
+      image={buildImageUrl('publicProfile', ogInfo as never)}
+      description={data?.profile?.bio || data?.profile?.aboutMe || undefined}
+    />
+  );
+
+  if (isInitialLoading || isLoading) return <FullSpinner />;
+
+  if (isDeleted || !data?.profile) return <NotFound />;
+
   return (
     <>
-      <Seo
-        title={ogInfo.title}
-        image={buildImageUrl('publicProfile', ogInfo as never)}
-        description={data?.profile?.bio || data?.profile?.aboutMe || undefined}
-      />
+      {meta}
       <AsyncWrapper isLoading={isInitialLoading} error={error}>
         <section>
           <div className="relative overflow-hidden">

@@ -220,17 +220,21 @@ const ServiceRequestPublicationPage = ({ profile, id }: PageProps) => {
     url: el.url,
   }));
 
-  if (isInitialLoading) return <FullSpinner isFullPage />;
-
-  if (!serviceRequest) return <NotFound />;
-
   const meta = (
     <Seo
-      title={`${ogInfo?.authorName} - ${ogInfo?.title}`}
+      title={
+        ogInfo?.authorName
+          ? `${ogInfo?.authorName} - ${ogInfo?.title}`
+          : undefined
+      }
       image={buildImageUrl('serviceRequest', ogInfo as never)}
       description={serviceRequest?.description}
     />
   );
+
+  if (isInitialLoading) return <FullSpinner isFullPage />;
+
+  if (!serviceRequest) return <NotFound />;
 
   return (
     <>
