@@ -219,6 +219,7 @@ const ServiceRequestPublicationPage = ({ profile, id }: PageProps) => {
       title={`${authorName} - ${serviceRequest?.title}`}
       image={coverBg}
       description={serviceRequest?.description}
+      
     />
   );
 
@@ -366,21 +367,23 @@ const ServiceRequestPublicationPage = ({ profile, id }: PageProps) => {
                     <DropdownMenu.Content className="min-w-[270px]">
                       <div className="flex flex-col space-y-1">
                         <>
-                          <DropdownMenu.Item
-                            className={cn(
-                              'default__transition flex cursor-pointer items-center gap-2.5 rounded-md px-3 py-2.5 text-sm text-gray-900 hover:bg-gray-100'
-                            )}
-                            onClick={() =>
-                              mutate({
-                                serviceRequestId: id,
-                                status: 'CLOSED',
-                              })
-                            }
-                            disabled={isLoadingUpdate}
-                          >
-                            <LockIcon className="h-5 w-5" />
-                            Fermer ma demande
-                          </DropdownMenu.Item>
+                          {isStatusOpen && (
+                            <DropdownMenu.Item
+                              className={cn(
+                                'default__transition flex cursor-pointer items-center gap-2.5 rounded-md px-3 py-2.5 text-sm text-gray-900 hover:bg-gray-100'
+                              )}
+                              onClick={() =>
+                                mutate({
+                                  serviceRequestId: id,
+                                  status: 'CLOSED',
+                                })
+                              }
+                              disabled={isLoadingUpdate}
+                            >
+                              <LockIcon className="h-5 w-5" />
+                              Fermer ma demande
+                            </DropdownMenu.Item>
+                          )}
                           <DropdownMenu.Item
                             className={cn(
                               'default__transition flex cursor-pointer items-center gap-2.5 rounded-md px-3 py-2.5 text-sm text-red-600 hover:bg-red-100'

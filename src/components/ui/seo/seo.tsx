@@ -5,16 +5,12 @@ import { useRouter } from 'next/router';
 
 import { truncateOnWord } from '@/utils/text';
 
-import {
-  DEFAULT_APP_IMAGE_PREVIEW,
-  buildCanonical,
-  seoConfig,
-} from '@/lib/next-seo-config';
+import { buildCanonical, seoConfig } from '@/lib/next-seo-config';
 
 export type SeoProps = {
-  title: string;
-  description?: string | null;
+  title?: string;
   image?: string;
+  description?: string | null;
   siteName?: string;
   url?: string;
   canonical?: string;
@@ -25,9 +21,9 @@ export type SeoProps = {
  * Build full seo tags from title, desc, canonical and url
  */
 const buildSeoMeta = (pageProps: {
-  title: string;
+  title?: string;
   description: string;
-  image: string;
+  image?: string;
   siteName?: string;
   url?: string;
   canonical?: string;
@@ -39,8 +35,9 @@ const buildSeoMeta = (pageProps: {
     canonical,
     siteName = seoConfig.headSeo.siteName,
   } = pageProps;
+
   return {
-    title: title || undefined,
+    title: title,
     canonical: canonical,
     description,
     openGraph: {
@@ -50,7 +47,7 @@ const buildSeoMeta = (pageProps: {
       description: description,
       images: [
         {
-          url: image,
+          url: image ?? '',
           width: 800,
           height: 400,
           alt: title,
@@ -73,7 +70,7 @@ const buildSeoMeta = (pageProps: {
       },
       {
         property: 'name',
-        content: title,
+        content: title ?? '',
       },
       {
         name: 'description',
@@ -81,7 +78,7 @@ const buildSeoMeta = (pageProps: {
       },
       {
         property: 'image',
-        content: image,
+        content: image ?? '',
       },
     ],
   };
@@ -99,7 +96,7 @@ const Seo = (props: SeoProps): JSX.Element => {
   const {
     title,
     description,
-    image,
+    image = '',
     siteName,
     canonical = defaultUrl,
     nextSeoProps = {},
@@ -109,7 +106,7 @@ const Seo = (props: SeoProps): JSX.Element => {
 
   const seoObject = buildSeoMeta({
     title,
-    image: image || DEFAULT_APP_IMAGE_PREVIEW,
+    image,
     description: truncatedDescription,
     canonical,
     siteName,

@@ -5,6 +5,8 @@ import { api } from '@/utils/api';
 
 import { cn } from '@/lib/utils';
 
+import { useCurrentUser } from '@/hooks/use-current-user';
+
 import { ActionTooltip } from '../action-tooltip';
 import { Badge } from '../ui/badge';
 import { Button, buttonVariants } from '../ui/button';
@@ -19,10 +21,14 @@ import { NotificationList } from './notification-list';
 
 export function NotificationBell() {
   const [isOpen, setIsOpen] = useState(false);
+  const { isAuthWithProfile } = useCurrentUser();
   const queryUtils = api.useContext();
 
   const { data: notificationCount, isLoading: isLoadingCheck } =
-    api.notifications.getCount.useQuery({}, { refetchInterval: 1_000 * 2 });
+    api.notifications.getCount.useQuery(
+      {},
+      { refetchInterval: isAuthWithProfile ? 1_000 * 2 : false }
+    );
 
   const { data: notificationsData, isInitialLoading: isLoadingNotifications } =
     api.notifications.getInfinite.useQuery({ limit: 10 }, { enabled: isOpen });

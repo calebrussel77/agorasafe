@@ -109,7 +109,11 @@ const SwiperCarousel = <T extends unknown>({
         nextEl: `.${nextClass}`,
         prevEl: `.${prevClass}`,
       }}
-      autoplay={autoplay}
+      autoplay={
+        autoplay
+          ? { pauseOnMouseEnter: true, disableOnInteraction: true }
+          : false
+      }
       modules={[Pagination, Navigation, ...modules]}
       {...rest}
     >
