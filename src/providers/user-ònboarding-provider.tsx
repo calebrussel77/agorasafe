@@ -25,7 +25,7 @@ const UserOnboardingProvider: FC<UserOnboardingProviderProps> = ({
     !profile &&
     (!session?.user?.tos || !session?.user?.onboardingComplete);
 
-  if (status === 'loading') return <FullSpinner isFullPage />;
+  // if (status === 'loading') return <FullSpinner isFullPage />;
 
   return isOpened ? (
     <Modal defaultOpen={true} isFullScreen>
