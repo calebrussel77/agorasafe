@@ -66,6 +66,7 @@ import {
   dateToReadableString,
   formatDateDistance,
 } from '@/lib/date-fns';
+import { buildImageUrl } from '@/lib/og-images';
 import { cn } from '@/lib/utils';
 
 import { createServerSideProps } from '@/server/utils/server-side';
@@ -197,7 +198,12 @@ const ServiceRequestPublicationPage = ({ profile, id }: PageProps) => {
 
   const isServiceRequestOwner =
     profile?.id === serviceRequest?.author?.profile?.id;
-  const authorName = serviceRequest?.author?.profile?.name;
+
+  const ogInfo = {
+    authorName: serviceRequest?.author?.profile?.name,
+    authorAvatar: serviceRequest?.author?.profile?.avatar,
+    title: serviceRequest?.title,
+  };
 
   const isStatusOpen = serviceRequest?.status === 'OPEN';
   const isReserved = serviceRequest?.isProfileReserved;
@@ -205,27 +211,26 @@ const ServiceRequestPublicationPage = ({ profile, id }: PageProps) => {
 
   const serviceRequestAuthorId = serviceRequest?.author?.profile?.id;
 
-  const coverBg = isEmptyArray(serviceRequest?.photos)
-    ? DEFAULT_SERVICE_REQUEST_COVER_IMAGE
-    : serviceRequest?.photos?.[0]?.url;
+  // const coverBg = isEmptyArray(serviceRequest?.photos)
+  //   ? DEFAULT_SERVICE_REQUEST_COVER_IMAGE
+  //   : serviceRequest?.photos?.[0]?.url;
 
   const images = serviceRequest?.photos?.map(el => ({
     name: el.name,
     url: el.url,
   }));
 
-  const meta = (
-    <Seo
-      title={`${authorName} - ${serviceRequest?.title}`}
-      image={coverBg}
-      description={serviceRequest?.description}
-      
-    />
-  );
-
   if (isInitialLoading) return <FullSpinner isFullPage />;
 
   if (!serviceRequest) return <NotFound />;
+
+  const meta = (
+    <Seo
+      title={`${ogInfo?.authorName} - ${ogInfo?.title}`}
+      image={buildImageUrl('serviceRequest', ogInfo as never)}
+      description={serviceRequest?.description}
+    />
+  );
 
   return (
     <>
@@ -826,7 +831,6 @@ export const getServerSideProps = createServerSideProps({
 
     const { id } = result.data;
 
-    //Prefetch queries so it is already on the client side cache
     if (ssg) {
       await ssg?.serviceRequests.get.prefetch({
         id,

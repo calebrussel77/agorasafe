@@ -2,7 +2,7 @@
 
 /** @type {import('next-sitemap').IConfig} */
 const NextSitemapConfig = {
-  siteUrl: process.env.NEXT_PUBLIC_APP_URL || 'https://agorasafe.vercel.app',
+  siteUrl: process.env.NEXT_PUBLIC_APP_URL || 'https://agorasafe.com',
   exclude: ['/404'],
   generateRobotsTxt: process.env.NEXT_PUBLIC_VERCEL_ENV === 'production',
   robotsTxtOptions: {

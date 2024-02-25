@@ -4,7 +4,7 @@
  *
  * We also create a few inference helpers for input and output types.
  */
-import { WEBSITE_URL } from '@/constants';
+import { APP_URL } from '@/constants';
 import { initializeProfileStore } from '@/stores/profile-store';
 import { TRPCClientError, httpLink, loggerLink, splitLink } from '@trpc/client';
 import { createTRPCNext } from '@trpc/next';
@@ -48,7 +48,7 @@ const handleUnauthorizedErrorsOnClient = (error: unknown) => {
   return true;
 };
 
-const url = `${WEBSITE_URL}/api/trpc`;
+const url = `${APP_URL}/api/trpc`;
 
 /** A set of type-safe react-query hooks for your tRPC API. */
 export const api = createTRPCNext<AppRouter>({

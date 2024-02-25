@@ -31,6 +31,7 @@ import { api } from '@/utils/api';
 import { getIsFaceToFaceLabel, getIsRemoteLabel } from '@/utils/profile';
 
 import { formatDateDistance } from '@/lib/date-fns';
+import { buildImageUrl } from '@/lib/og-images';
 import { cn } from '@/lib/utils';
 
 import { createServerSideProps } from '@/server/utils/server-side';
@@ -131,16 +132,22 @@ export default function ProfileDetailsPage({ profileSlugQuery }: PageProps) {
 
   if (isDeleted || !data?.profile) return <NotFound />;
 
-  const profileName = data?.profile?.name || '';
+  const profileName = data?.profile?.name ?? '';
   const isCustomer = data?.profile?.type === 'CUSTOMER';
   const isMine = data?.profile?.id === profile?.id;
+
+  const ogInfo = {
+    profileName: profileName,
+    profileAvatar: data?.profile?.avatar,
+    title: `${profileName} sur Agorasafe`,
+  };
 
   return (
     <>
       <Seo
-        title={meta.title(profileName)}
-        description={meta.description(data?.profile?.bio || '')}
-        image={data?.profile?.avatar || ''}
+        title={ogInfo.title}
+        image={buildImageUrl('publicProfile', ogInfo as never)}
+        description={data?.profile?.bio || data?.profile?.aboutMe || undefined}
       />
       <AsyncWrapper isLoading={isInitialLoading} error={error}>
         <section>

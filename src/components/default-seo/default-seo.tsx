@@ -1,10 +1,12 @@
-import { APP_NAME, WEBSITE_URL } from '@/constants';
-import { DefaultSeo as DefaultNextSeo, type DefaultSeoProps } from 'next-seo';
-
 import {
+  APP_NAME,
+  APP_URL,
   DEFAULT_APP_DESCRIPTION,
-  DEFAULT_APP_IMAGE_PREVIEW,
-} from '@/lib/next-seo-config';
+  DEFAULT_APP_IMAGE,
+  OG_HEIGHT,
+  OG_WIDTH,
+} from '@/constants';
+import { DefaultSeo as DefaultNextSeo, type DefaultSeoProps } from 'next-seo';
 
 const DefaultSeo = (props: DefaultSeoProps) => {
   return (
@@ -13,19 +15,19 @@ const DefaultSeo = (props: DefaultSeoProps) => {
         defaultTitle="Agorasafe - Connectez vos besoins aux meilleurs talents de votre région"
         titleTemplate="%s | Agorasafe"
         languageAlternates={[
-          { href: `${WEBSITE_URL}`, hrefLang: 'en' },
-          { href: `${WEBSITE_URL}/fr`, hrefLang: 'fr' },
+          { href: `${APP_URL}`, hrefLang: 'en' },
+          { href: `${APP_URL}/fr`, hrefLang: 'fr' },
         ]}
         description={DEFAULT_APP_DESCRIPTION}
         openGraph={{
           type: 'website',
           locale: 'fr_FR',
-          url: `${WEBSITE_URL}/`,
+          url: `${APP_URL}/`,
           images: [
             {
-              url: DEFAULT_APP_IMAGE_PREVIEW,
-              width: 800,
-              height: 400,
+              url: DEFAULT_APP_IMAGE,
+              width: OG_WIDTH,
+              height:  OG_HEIGHT,
               alt: 'Agorasafe.com',
               type: 'image/png',
             },

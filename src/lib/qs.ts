@@ -26,6 +26,7 @@ export abstract class QS {
         skipEmptyString: true,
         skipNull: true,
         sort: false,
+        encode: false,
         ...options,
       }
     );
