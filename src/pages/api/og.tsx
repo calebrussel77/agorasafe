@@ -9,6 +9,10 @@ import { z } from 'zod';
 
 import { sanitizeHTML } from '@/lib/html-helper';
 
+export const config = {
+  runtime: 'nodejs',
+};
+
 const imageReq = z.object({
   layoutName: z.string(),
 });

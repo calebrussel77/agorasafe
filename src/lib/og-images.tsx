@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/alt-text */
 
 /* eslint-disable @next/next/no-img-element */
-import { APP_URL } from '@/constants';
+import { env } from '@/env.mjs';
 import {
   type GenericLayoutInput,
   genericLayout,
@@ -25,7 +25,7 @@ declare module 'react' {
   }
 }
 
-const BASE_OG_URL = `${APP_URL}/api/og`;
+const BASE_OG_URL = `${env.NEXT_PUBLIC_APP_URL}/api/og`;
 
 export const buildGenericOgImageUrl = (config: GenericLayoutInput) => {
   return QS.stringifyUrl(BASE_OG_URL, {
