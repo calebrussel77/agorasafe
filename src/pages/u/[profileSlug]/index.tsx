@@ -25,13 +25,12 @@ import { Typography } from '@/components/ui/typography';
 import { UserAvatar, UserName, UserRating } from '@/components/user';
 
 import { LoginRedirect } from '@/features/auth';
-import { useGetProfileDetails } from '@/features/profiles';
 
 import { api } from '@/utils/api';
 import { getIsFaceToFaceLabel, getIsRemoteLabel } from '@/utils/profile';
 
 import { formatDateDistance } from '@/lib/date-fns';
-import { buildImageUrl } from '@/lib/og-images';
+import { buildPublicProfileOgImageUrl } from '@/lib/og-images';
 import { cn } from '@/lib/utils';
 
 import { createServerSideProps } from '@/server/utils/server-side';
@@ -141,7 +140,7 @@ export default function ProfileDetailsPage({ profileSlugQuery }: PageProps) {
   const meta = (
     <Seo
       title={ogInfo?.title}
-      image={buildImageUrl('publicProfile', ogInfo as never)}
+      image={buildPublicProfileOgImageUrl(ogInfo as never)}
       description={data?.profile?.bio || data?.profile?.aboutMe || undefined}
     />
   );

@@ -2,7 +2,18 @@
 
 /* eslint-disable @next/next/no-img-element */
 import { APP_URL } from '@/constants';
-import { ImageParamsMap } from '@/og-layouts/types';
+import {
+  type GenericLayoutInput,
+  genericLayout,
+} from '@/og-layouts/generic-layout';
+import {
+  type PublicProfileLayoutConfigInput,
+  publicProfileLayout,
+} from '@/og-layouts/public-profile-layout';
+import {
+  type ServiceRequestLayoutConfigInput,
+  serviceRequestLayout,
+} from '@/og-layouts/service-request-layout';
 import React from 'react';
 
 import { QS } from './qs';
@@ -14,60 +25,31 @@ declare module 'react' {
   }
 }
 
-export interface AppImageProps {
-  name: string;
-  description: string;
-  slug: string;
-}
+const BASE_OG_URL = `${APP_URL}/api/og`;
 
-export interface GenericImageProps {
-  title: string;
-  description: string;
-}
-
-export const buildImageUrl = <TName extends keyof ImageParamsMap>(
-  imageType: TName,
-  params: Omit<ImageParamsMap[TName], 'imageType'>
-) => {
-  const url = QS.stringifyUrl(`${APP_URL}/api/og`, {
-    type: imageType,
-    ...params,
+export const buildGenericOgImageUrl = (config: GenericLayoutInput) => {
+  return QS.stringifyUrl(BASE_OG_URL, {
+    layoutName: genericLayout.name,
+    ...config,
   });
-
-  return url;
 };
 
-/**
- * Test url:
- * http://localhost:3000/api/social/og/image?type=app&name=Huddle01&slug=/api/app-store/huddle01video/icon.svg&description=Huddle01%20is%20a%20new%20video%20conferencing%20software%20native%20to%20Web3%20and%20is%20comparable%20to%20a%20decentralized%20version%20of%20Zoom.%20It%20supports%20conversations%20for...
- */
-export const constructAppImage = (
-  { name, slug, description }: AppImageProps,
-  encodeUri = true
-): string => {
-  const url = [
-    `?type=app`,
-    `&name=${encodeURIComponent(name)}`,
-    `&slug=${encodeURIComponent(slug)}`,
-    `&description=${encodeURIComponent(description)}`,
-    // Joining a multiline string for readability.
-  ].join('');
-
-  return encodeUri ? encodeURIComponent(url) : url;
-};
-
-export const constructGenericImage = (
-  { title, description }: GenericImageProps,
-  encodeUri = true
+export const buildPublicProfileOgImageUrl = (
+  config: PublicProfileLayoutConfigInput
 ) => {
-  const url = [
-    `?type=generic`,
-    `&title=${encodeURIComponent(title)}`,
-    `&description=${encodeURIComponent(description)}`,
-    // Joining a multiline string for readability.
-  ].join('');
+  return QS.stringifyUrl(BASE_OG_URL, {
+    layoutName: publicProfileLayout.name,
+    ...config,
+  });
+};
 
-  return encodeUri ? encodeURIComponent(url) : url;
+export const buildServiceRequestOgImageUrl = (
+  config: ServiceRequestLayoutConfigInput
+) => {
+  return QS.stringifyUrl(BASE_OG_URL, {
+    layoutName: serviceRequestLayout.name,
+    ...config,
+  });
 };
 
 export const AgorasafeLogo: React.FC<{

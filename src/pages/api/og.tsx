@@ -1,119 +1,80 @@
 import { OG_HEIGHT, OG_WIDTH } from '@/constants';
-import { GenericOg, genericOgSchema } from '@/og-layouts/generic-og';
-import {
-  PublicProfileOg,
-  publicProfileOgSchema,
-} from '@/og-layouts/public-profile-og';
-import {
-  ServiceRequestOg,
-  serviceRequestOgSchema,
-} from '@/og-layouts/service-request-og';
-import { ImageResponse } from '@vercel/og';
-import type { NextApiRequest } from 'next';
-import type { SatoriOptions } from 'satori';
+import { getLayoutAndConfig } from '@/og-layouts';
+import { type ILayout, type ILayoutConfig } from '@/og-layouts/types';
+import fs from 'fs';
+import type { NextApiHandler } from 'next';
+import { type SatoriOptions } from 'satori';
+import satori from 'satori';
+import { z } from 'zod';
 
-import { getAbsoluteUrl } from '@/utils/routing';
+import { sanitizeHTML } from '@/lib/html-helper';
 
-export const config = {
-  runtime: 'experimental-edge',
-};
+const imageReq = z.object({
+  layoutName: z.string(),
+});
 
-const interVarFont = fetch(
-  new URL('../../../public/fonts/Inter-Regular.ttf', import.meta.url)
-).then(res => res.arrayBuffer());
+const fonts: SatoriOptions['fonts'] = [
+  {
+    name: 'Inter',
+    style: 'normal',
+    weight: 400,
+    data: fs.readFileSync('public/fonts/Inter-Regular.ttf'),
+  },
+  {
+    name: 'Inter',
+    style: 'bold' as never,
+    weight: 800,
+    data: fs.readFileSync('public/fonts/Inter-Bold.ttf'),
+  },
+];
 
-const interVarFontBold = fetch(
-  new URL('../../../public/fonts/Inter-Bold.ttf', import.meta.url)
-).then(res => res.arrayBuffer());
+export const renderLayoutToSVG = async ({
+  layout,
+  config,
+}: {
+  layout: ILayout;
+  config: ILayoutConfig;
+}) => {
+  const Component = layout.Component;
 
-export default async function handler(req: NextApiRequest) {
-  const { searchParams } = getAbsoluteUrl(req.url ?? '');
-  const imageType = searchParams.get('type');
-
-  const [interVarFontData, interVarFontBoldData] = await Promise.all([
-    interVarFont,
-    interVarFontBold,
-  ]);
-
-  const ogConfig = {
+  const svg = await satori(<Component config={config} />, {
     width: OG_WIDTH,
     height: OG_HEIGHT,
-    fonts: [
-      { name: 'Inter var', data: interVarFontData, weight: 400 },
-      { name: 'Inter var', data: interVarFontBoldData, weight: 900 },
-    ] as SatoriOptions['fonts'],
-  };
+    fonts,
+  });
 
-  switch (imageType) {
-    case 'serviceRequest': {
-      const { title, authorAvatar, authorName, theme } =
-        serviceRequestOgSchema.parse({
-          title: searchParams.get('title'),
-          authorAvatar: searchParams.get('authorAvatar'),
-          authorName: searchParams.get('authorName'),
-          theme: searchParams.get('theme'),
-          imageType,
-        });
+  return svg;
+};
 
-      const img = new ImageResponse(
-        (
-          <ServiceRequestOg
-            title={title}
-            authorAvatar={authorAvatar}
-            authorName={authorName}
-            theme={theme ?? 'dark'}
-          />
-        ),
-        ogConfig
-      );
+const handler: NextApiHandler = async (req, res) => {
+  try {
+    const { layoutName } = await imageReq.parseAsync(req.query);
 
-      return img;
-    }
+    const { layout, config } = await getLayoutAndConfig(
+      layoutName.toLowerCase(),
+      req.query
+    );
+    const view = await renderLayoutToSVG({ layout, config });
 
-    case 'generic': {
-      const { title, url, theme } = genericOgSchema.parse({
-        title: searchParams.get('title'),
-        url: searchParams.get('url'),
-        theme: searchParams.get('theme'),
-        imageType,
-      });
-
-      const img = new ImageResponse(
-        <GenericOg title={title} url={url} theme={theme ?? 'dark'} />,
-        ogConfig
-      );
-
-      return img;
-    }
-
-    case 'publicProfile': {
-      const { title, profileName, profileAvatar, theme } =
-        publicProfileOgSchema.parse({
-          title: searchParams.get('title'),
-          profileName: searchParams.get('profileName'),
-          profileAvatar: searchParams.get('profileAvatar'),
-          theme: searchParams.get('theme'),
-          imageType,
-        });
-
-      const img = new ImageResponse(
-        (
-          <PublicProfileOg
-            title={title}
-            profileName={profileName}
-            profileAvatar={profileAvatar}
-            theme={theme ?? 'dark'}
-          />
-        ),
-        ogConfig
-      );
-
-      return img;
-    }
-
-    default:
-      return new Response("What you're looking for is not here..", {
-        status: 404,
-      });
+    res.statusCode = 200;
+    res.setHeader('Content-Type', 'image/svg+xml');
+    res.setHeader(
+      'Cache-Control',
+      `public, immutable, no-transform, s-maxage=31536000, max-age=31536000`
+    );
+    res.end(view);
+  } catch (e) {
+    res.statusCode = 500;
+    const error = e as Error;
+    res.setHeader('Content-Type', 'text/html');
+    res.end(
+      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+      `<h1>Internal Error</h1><pre><code>${sanitizeHTML(
+        error.message
+      )}</code></pre>`
+    );
+    console.error(e);
   }
-}
+};
+
+export default handler;

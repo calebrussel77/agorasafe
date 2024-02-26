@@ -66,7 +66,7 @@ import {
   dateToReadableString,
   formatDateDistance,
 } from '@/lib/date-fns';
-import { buildImageUrl } from '@/lib/og-images';
+import { buildServiceRequestOgImageUrl } from '@/lib/og-images';
 import { cn } from '@/lib/utils';
 
 import { createServerSideProps } from '@/server/utils/server-side';
@@ -227,7 +227,7 @@ const ServiceRequestPublicationPage = ({ profile, id }: PageProps) => {
           ? `${ogInfo?.authorName} - ${ogInfo?.title}`
           : undefined
       }
-      image={buildImageUrl('serviceRequest', ogInfo as never)}
+      image={buildServiceRequestOgImageUrl(ogInfo as never)}
       description={serviceRequest?.description}
     />
   );
