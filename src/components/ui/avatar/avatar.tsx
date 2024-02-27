@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
+import { DEFAULT_AVATAR_URL } from '@/constants';
 import * as AvatarPrimitive from '@radix-ui/react-avatar';
 import NextImage from 'next/future/image';
 import * as React from 'react';
@@ -9,8 +10,6 @@ import { cn, dataAttr } from '@/lib/utils';
 
 import { useImageOnLoad } from '@/hooks/use-image-on-load';
 import { useHover } from '@/hooks/use-react-aria-hover';
-
-import defaultAvatarIcon from '@public/images/avatar.svg';
 
 export type AvatarSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxl';
 
@@ -200,7 +199,7 @@ const Avatar = React.forwardRef<
               priority
               fill={fill}
               alt={alt || 'default avatar'}
-              src={defaultAvatarIcon}
+              src={DEFAULT_AVATAR_URL}
               className="data-[loaded=true]:animate-pulse"
             />
           )}

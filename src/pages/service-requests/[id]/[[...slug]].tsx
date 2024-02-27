@@ -1,3 +1,4 @@
+import { DEFAULT_AVATAR_URL } from '@/constants';
 import { NotFound } from '@/layouts/not-found';
 import { produce } from 'immer';
 import {
@@ -199,11 +200,13 @@ const ServiceRequestPublicationPage = ({ profile, id }: PageProps) => {
   const isServiceRequestOwner =
     profile?.id === serviceRequest?.author?.profile?.id;
 
-  const ogInfo = {
-    authorName: serviceRequest?.author?.profile?.name,
-    authorAvatar: serviceRequest?.author?.profile?.avatar,
-    title: serviceRequest?.title,
-  };
+  const ogImage = buildServiceRequestOgImageUrl({
+    authorName: serviceRequest?.author?.profile?.name ?? '',
+    authorAvatar: serviceRequest?.author?.profile?.avatar ?? DEFAULT_AVATAR_URL,
+    title: serviceRequest?.title ?? '',
+  });
+
+  const ogTitle = serviceRequest?.title ?? undefined;
 
   const isStatusOpen = serviceRequest?.status === 'OPEN';
   const isReserved = serviceRequest?.isProfileReserved;
@@ -222,12 +225,8 @@ const ServiceRequestPublicationPage = ({ profile, id }: PageProps) => {
 
   const meta = (
     <Seo
-      title={
-        ogInfo?.authorName
-          ? `${ogInfo?.authorName} - ${ogInfo?.title}`
-          : undefined
-      }
-      image={buildServiceRequestOgImageUrl(ogInfo as never)}
+      title={ogTitle}
+      image={ogImage}
       description={serviceRequest?.description}
     />
   );

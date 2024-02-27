@@ -1,6 +1,12 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+
+/* eslint-disable @typescript-eslint/require-await */
+
+/* eslint-disable testing-library/render-result-naming-convention */
 import { OG_HEIGHT, OG_WIDTH } from '@/constants';
 import { getLayoutAndConfig } from '@/og-layouts';
 import { type ILayout, type ILayoutConfig } from '@/og-layouts/types';
+import { Resvg, type ResvgRenderOptions } from '@resvg/resvg-js';
 import fs from 'fs';
 import type { NextApiHandler } from 'next';
 import { type SatoriOptions } from 'satori';
@@ -8,10 +14,6 @@ import satori from 'satori';
 import { z } from 'zod';
 
 import { sanitizeHTML } from '@/lib/html-helper';
-
-export const config = {
-  runtime: 'nodejs',
-};
 
 const imageReq = z.object({
   layoutName: z.string(),
@@ -50,6 +52,26 @@ export const renderLayoutToSVG = async ({
   return svg;
 };
 
+const resvgOpts: ResvgRenderOptions = {
+  fitTo: {
+    mode: 'width',
+    value: OG_WIDTH,
+  },
+  shapeRendering: 2,
+  textRendering: 2,
+  imageRendering: 0,
+};
+
+export const renderSVGToPNG = async (svg: string) => {
+  const resvg = new Resvg(svg, resvgOpts);
+  const pngData = resvg.render();
+  const pngBuffer = pngData.asPng();
+
+  return pngBuffer;
+};
+
+const fileType: 'svg' | 'png' = 'png';
+
 const handler: NextApiHandler = async (req, res) => {
   try {
     const { layoutName } = await imageReq.parseAsync(req.query);
@@ -58,15 +80,25 @@ const handler: NextApiHandler = async (req, res) => {
       layoutName.toLowerCase(),
       req.query
     );
-    const view = await renderLayoutToSVG({ layout, config });
+    const svg = await renderLayoutToSVG({ layout, config });
 
     res.statusCode = 200;
-    res.setHeader('Content-Type', 'image/svg+xml');
+    res.setHeader(
+      'Content-Type',
+      // @ts-ignore
+      fileType === 'svg' ? 'image/svg+xml' : `image/${fileType}`
+    );
     res.setHeader(
       'Cache-Control',
       `public, immutable, no-transform, s-maxage=31536000, max-age=31536000`
     );
-    res.end(view);
+
+    if (fileType === 'png') {
+      const png = await renderSVGToPNG(svg);
+      res.end(png);
+    } else {
+      res.end(svg);
+    }
   } catch (e) {
     res.statusCode = 500;
     const error = e as Error;
