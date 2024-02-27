@@ -1,7 +1,6 @@
 /* eslint-disable jsx-a11y/alt-text */
 
 /* eslint-disable @next/next/no-img-element */
-import { env } from '@/env.mjs';
 import {
   type GenericLayoutInput,
   genericLayout,
@@ -18,14 +17,14 @@ import React from 'react';
 
 import { QS } from './qs';
 
-// Ensures tw prop is typed.
+// Ensures tw prop is typed.// Ensures tw prop is typed.
 declare module 'react' {
   interface HTMLAttributes<T> extends DOMAttributes<T> {
     tw?: string;
   }
 }
 
-const BASE_OG_URL = `${env.NEXT_PUBLIC_APP_URL}/api/og`;
+const BASE_OG_URL = `${process.env.NEXT_PUBLIC_APP_URL}/api/og`;
 
 export const buildGenericOgImageUrl = (config: GenericLayoutInput) => {
   return QS.stringifyUrl(BASE_OG_URL, {
