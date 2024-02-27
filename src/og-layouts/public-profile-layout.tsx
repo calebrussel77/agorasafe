@@ -2,7 +2,7 @@
 
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import { APP_URL } from '@/constants';
-import React, { type PropsWithChildren } from 'react';
+import React from 'react';
 import { z } from 'zod';
 
 import { DocsIllustration } from '@/components/ui/docs-illustration';
@@ -12,27 +12,31 @@ import { truncateOnWord } from '@/utils/text';
 
 import { AgorasafeLogo, GradientBackground } from '@/lib/og-images';
 
-export const publicProfileOgSchema = z.object({
-  imageType: z.literal('publicProfile'),
+import { ILayout } from './types';
+
+export const publicProfileLayoutConfigSchema = z.object({
   title: z.string(),
   profileName: z.string(),
   profileAvatar: z.string(),
-  theme: z.enum(['light', 'dark']).default('light').nullable().optional(),
+  theme: z
+    .preprocess(
+      v => v?.toString().toLowerCase(),
+      z.enum(['light', 'dark']).default('dark')
+    )
+    .nullable()
+    .optional(),
 });
 
-export type PublicProfileOgInput = Omit<
-  z.infer<typeof publicProfileOgSchema>,
-  'imageType'
+export type PublicProfileLayoutConfigInput = z.infer<
+  typeof publicProfileLayoutConfigSchema
 >;
 
-const PublicProfileOg = ({
-  title,
-  profileName,
-  profileAvatar,
-  theme = 'dark',
-}: PropsWithChildren<PublicProfileOgInput>) => {
-  const length = title.length;
+const Component: React.FC<{ config: PublicProfileLayoutConfigInput }> = ({
+  config,
+}) => {
+  const length = config.title.length;
   const url = extractDomainName(APP_URL);
+  const theme = config.theme ?? 'dark';
 
   return (
     <div tw="relative flex justify-start items-end w-full h-full">
@@ -62,13 +66,13 @@ const PublicProfileOg = ({
           tw="font-bold"
           style={{ lineHeight: 1.4, fontSize: length > 50 ? 48 : 60 }}
         >
-          {truncateOnWord(title, 120)}
+          {truncateOnWord(config.title, 120)}
         </p>
 
         <div tw="flex items-center mt-6">
           <img
-            src={profileAvatar}
-            alt={profileName}
+            src={config.profileAvatar}
+            alt={config.profileName}
             style={{
               borderRadius: '100%',
               width: 56,
@@ -76,7 +80,9 @@ const PublicProfileOg = ({
               boxShadow: '0 0 0 3px #E5E7EB, 12px',
             }}
           />
-          <p tw="text-3xl opacity-60 ml-7">{truncateOnWord(profileName, 90)}</p>
+          <p tw="text-3xl opacity-60 ml-7">
+            {truncateOnWord(config.profileName, 90)}
+          </p>
         </div>
       </div>
 
@@ -99,4 +105,10 @@ const PublicProfileOg = ({
   );
 };
 
-export { PublicProfileOg };
+export const publicProfileLayout: ILayout<
+  typeof publicProfileLayoutConfigSchema
+> = {
+  name: 'public-profile',
+  config: publicProfileLayoutConfigSchema,
+  Component,
+};

@@ -21,7 +21,8 @@
     "test": "jest --watchAll",
     "pre-commit": "lint-staged",
     "prettier": "prettier --ignore-path .gitignore --write --ignore-unknown \"**/*.{ts,tsx,css,scss}\"",
-    "test:ci": "jest --coverage --silent --ci"
+    "test:ci": "jest --coverage --silent --ci",
+    "clean": "rm -rf .next yarn-error.log"
   },
   "dependencies": {
     "@badrap/bar-of-progress": "^0.2.2",
@@ -80,7 +81,6 @@
     "@trpc/react-query": "^10.26.0",
     "@trpc/server": "^10.26.0",
     "@uploadthing/react": "^5.5.0",
-    "@vercel/og": "^0.6.2",
     "ai": "^2.2.22",
     "axios": "^1.4.0",
     "class-variance-authority": "^0.6.0",

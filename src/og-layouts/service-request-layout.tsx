@@ -2,7 +2,7 @@
 
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import { APP_URL } from '@/constants';
-import React, { type PropsWithChildren } from 'react';
+import React from 'react';
 import { z } from 'zod';
 
 import { DocsIllustration } from '@/components/ui/docs-illustration';
@@ -12,27 +12,32 @@ import { truncateOnWord } from '@/utils/text';
 
 import { AgorasafeLogo, GradientBackground } from '@/lib/og-images';
 
-export const serviceRequestOgSchema = z.object({
-  imageType: z.literal('serviceRequest'),
+import { type ILayout } from './types';
+
+export const serviceRequestLayoutConfigSchema = z.object({
   title: z.string(),
   authorName: z.string(),
   authorAvatar: z.string(),
-  theme: z.enum(['light', 'dark']).default('light').nullable().optional(),
+  theme: z
+    .preprocess(
+      v => v?.toString().toLowerCase(),
+      z.enum(['light', 'dark']).default('dark')
+    )
+    .nullable()
+    .optional(),
 });
 
-export type ServiceRequestOgInput = Omit<
-  z.infer<typeof serviceRequestOgSchema>,
+export type ServiceRequestLayoutConfigInput = Omit<
+  z.infer<typeof serviceRequestLayoutConfigSchema>,
   'imageType'
 >;
 
-const ServiceRequestOg = ({
-  title,
-  authorName,
-  authorAvatar,
-  theme = 'dark',
-}: PropsWithChildren<ServiceRequestOgInput>) => {
-  const length = title.length;
+const Component: React.FC<{ config: ServiceRequestLayoutConfigInput }> = ({
+  config,
+}) => {
+  const length = config.title.length;
   const url = extractDomainName(APP_URL);
+  const theme = config.theme ?? 'dark';
 
   return (
     <div tw="relative flex justify-start items-end w-full h-full">
@@ -62,13 +67,13 @@ const ServiceRequestOg = ({
           tw="font-bold"
           style={{ lineHeight: 1.4, fontSize: length > 50 ? 48 : 60 }}
         >
-          {truncateOnWord(title, 120)}
+          {truncateOnWord(config.title, 120)}
         </p>
 
         <div tw="flex items-center mt-6">
           <img
-            src={authorAvatar}
-            alt={authorName}
+            src={config.authorAvatar}
+            alt={config.authorName}
             style={{
               borderRadius: '100%',
               width: 56,
@@ -76,7 +81,9 @@ const ServiceRequestOg = ({
               boxShadow: '0 0 0 3px #E5E7EB, 12px',
             }}
           />
-          <p tw="text-3xl opacity-60 ml-7">{truncateOnWord(authorName, 90)}</p>
+          <p tw="text-3xl opacity-60 ml-7">
+            {truncateOnWord(config.authorName, 90)}
+          </p>
         </div>
       </div>
 
@@ -99,4 +106,10 @@ const ServiceRequestOg = ({
   );
 };
 
-export { ServiceRequestOg };
+export const serviceRequestLayout: ILayout<
+  typeof serviceRequestLayoutConfigSchema
+> = {
+  name: 'service-request',
+  config: serviceRequestLayoutConfigSchema,
+  Component,
+};
