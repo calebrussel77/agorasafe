@@ -26,29 +26,42 @@ declare module 'react' {
 
 const BASE_OG_URL = `${process.env.NEXT_PUBLIC_APP_URL}/api/og`;
 
+const buildOgQuery = (config: Record<never, never>) => {
+  const searchParams = new URLSearchParams();
+  for (const [key, value] of Object.entries({
+    ...config,
+  })) {
+    if (value != null) {
+      searchParams.set(key, value as string);
+    }
+  }
+
+  return searchParams.toString();
+};
+
 export const buildGenericOgImageUrl = (config: GenericLayoutInput) => {
-  return QS.stringifyUrl(BASE_OG_URL, {
+  return `${BASE_OG_URL}?${buildOgQuery({
     layoutName: genericLayout.name,
     ...config,
-  });
+  })}`;
 };
 
 export const buildPublicProfileOgImageUrl = (
   config: PublicProfileLayoutConfigInput
 ) => {
-  return QS.stringifyUrl(BASE_OG_URL, {
+  return `${BASE_OG_URL}?${buildOgQuery({
     layoutName: publicProfileLayout.name,
     ...config,
-  });
+  })}`;
 };
 
 export const buildServiceRequestOgImageUrl = (
   config: ServiceRequestLayoutConfigInput
 ) => {
-  return QS.stringifyUrl(BASE_OG_URL, {
+  return `${BASE_OG_URL}?${buildOgQuery({
     layoutName: serviceRequestLayout.name,
     ...config,
-  });
+  })}`;
 };
 
 export const AgorasafeLogo: React.FC<{

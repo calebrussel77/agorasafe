@@ -102,7 +102,7 @@ const Seo = (props: SeoProps): JSX.Element => {
   const {
     title,
     description,
-    image = '',
+    image,
     siteName,
     canonical = defaultUrl,
     nextSeoProps = {},
