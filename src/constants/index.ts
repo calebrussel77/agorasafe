@@ -36,6 +36,8 @@ export const REDIRECT_QUERY_KEY = 'redirectUrl';
 
 export const DEFAULT_APP_TITLE = `Agorasafe - Connectez vos besoins aux meilleurs talents de votre région`;
 
+export const DEFAULT_AVATAR_URL = `${APP_URL}/images/avatar.svg`;
+
 export const DEFAULT_APP_IMAGE = buildGenericOgImageUrl({
   title: DEFAULT_APP_TITLE,
   url: extractDomainName(APP_URL),

@@ -1,3 +1,4 @@
+import { DEFAULT_AVATAR_URL } from '@/constants';
 import { NotFound } from '@/layouts/not-found';
 import {
   ExternalLink,
@@ -128,19 +129,20 @@ export default function ProfileDetailsPage({ profileSlugQuery }: PageProps) {
   const profileName = data?.profile?.name ?? '';
   const isCustomer = data?.profile?.type === 'CUSTOMER';
   const isMine = data?.profile?.id === profile?.id;
+  const ogTitle = `${profileName} sur Agorasafe`;
 
-  const ogInfo = {
+  const ogImage = buildPublicProfileOgImageUrl({
     profileName: profileName,
-    profileAvatar: data?.profile?.avatar,
-    title: `${profileName} sur Agorasafe`,
-  };
+    profileAvatar: data?.profile?.avatar ?? DEFAULT_AVATAR_URL,
+    title: ogTitle,
+  });
 
   const isDeleted = !!data?.profile?.deletedAt;
 
   const meta = (
     <Seo
-      title={ogInfo?.title}
-      image={buildPublicProfileOgImageUrl(ogInfo as never)}
+      title={ogTitle}
+      image={ogImage}
       description={data?.profile?.bio || data?.profile?.aboutMe || undefined}
     />
   );
