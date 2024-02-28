@@ -10,6 +10,7 @@ import {
 
 import {
   createProfileHandler,
+  getProfileByIdOrSlugHandler,
   getProfileDetailsController,
   getProfileServiceRequestReservationsHandler,
   getProfileServiceRequestReservationsSchema,
@@ -49,6 +50,10 @@ export const profilesRouter = createTRPCRouter({
     .query(({ input }) => getProfileStatsController(input)),
 
   getAll: publicProcedure.input(getProfilesSchema).query(getProfilesHandler),
+
+  getByIdOrSlug: publicProcedure
+    .input(getByIdOrSlugQuerySchema)
+    .query(getProfileByIdOrSlugHandler),
 
   getInfinite: publicProcedure
     .input(getProfilesInfiniteSchema)

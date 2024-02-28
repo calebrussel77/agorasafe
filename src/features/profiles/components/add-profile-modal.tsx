@@ -69,7 +69,10 @@ const schema = z.discriminatedUnion('profileType', [
       .array(z.object({ label: z.string(), value: z.string() }), {
         required_error: 'Vous devez rajouter vos compétences.',
       })
-      .length(3, 'Vous ne pouvez rajouter que 03 compétences professionnelles.'),
+      .length(
+        3,
+        'Vous ne pouvez rajouter que 03 compétences professionnelles.'
+      ),
   }),
 ]);
 
@@ -160,11 +163,12 @@ const AddProfileModal = ({
       context.closeModal(id);
       reset();
       toast({
-        delay: 3_000,
+        delay: 4_000,
         title: htmlParse(data?.message),
         variant: 'success',
       });
       modals.open({
+        closeOnClickOutside: false,
         children: <RenderSuccessMessage createdProfile={data?.profile} />,
       });
     },
@@ -353,7 +357,7 @@ const AddProfileModal = ({
                     )}
                   />
                 </Field>
-                <Field label="Vos compétences professionnelles (Max. 03)" required>
+                <Field label="Compétences professionnelles (Max. 03)" required>
                   <Controller
                     name="skills"
                     control={control}

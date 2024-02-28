@@ -22,7 +22,7 @@ type ClassNames = {
   fillIcon: string;
 };
 
-interface RatingProps extends Omit<RatingComponentProps, 'size'> {
+export interface RatingProps extends Omit<RatingComponentProps, 'size'> {
   className?: string;
   size?: keyof typeof sizeClasses;
   classNames?: ClassNames;

@@ -52,12 +52,30 @@ export const getReviews = async <TSelect extends Prisma.ReviewSelect>({
   });
 };
 
+export const getReview = async <TSelect extends Prisma.ReviewSelect>({
+  where,
+  select,
+}: {
+  select?: TSelect;
+  where?: Prisma.ReviewWhereInput | undefined;
+}) => {
+  return await prisma.review.findFirst({
+    where,
+    select: select ?? {
+      id: true,
+      serviceRequestId: true,
+      rating: true,
+      details: true,
+    },
+  });
+};
+
 export const getReviewsInfinite = async ({
   limit,
   cursor,
   serviceRequestId,
   authorId,
-  include,
+  include = ['serviceRequest'],
   profileSlug,
 }: GetReviewsInfiniteInput) => {
   const AND: Prisma.Enumerable<Prisma.ReviewWhereInput> = [];
@@ -97,7 +115,7 @@ export const getReviewsInfinite = async ({
     select: {
       ...ReviewSelect,
       serviceRequest: include?.includes('serviceRequest')
-        ? { select: { title: true, photos: true, id: true } }
+        ? { select: { title: true, photos: true, id: true, slug: true } }
         : undefined,
     },
   });

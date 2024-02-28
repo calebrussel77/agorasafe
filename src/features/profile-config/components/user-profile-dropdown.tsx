@@ -130,7 +130,7 @@ const UserProfileDropdown: FC<UserProfileDropdownProps> = ({
                                 userProfileConfig?.allowedProfileType,
                             },
                           });
-                          onToggle(false);
+                          // onToggle(false);
                         }}
                         size="sm"
                         variant="ghost"

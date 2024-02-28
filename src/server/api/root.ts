@@ -8,7 +8,7 @@ import { messagesRouter } from './routers/messages.router';
 import { notificationsRouter } from './routers/notifications.router';
 import { profileConfigRouter } from './routers/profile-config.router';
 import { profilesRouter } from './routers/profiles.router';
-import { reviewsRouter } from './routers/resource-reviews.router';
+import { reviewsRouter } from './routers/reviews.router';
 import { serviceRequestsRouter } from './routers/service-requests.router';
 import { servicesRouter } from './routers/services.router';
 import { skillsRouter } from './routers/skills.router';

@@ -149,12 +149,13 @@ const ServiceRequestCard: FC<ServiceRequestCardProps> = ({
         <div className="group relative">
           <Anchor
             href={`/service-requests/${serviceRequest?.id}/${serviceRequest?.slug}`}
-            className="mt-3 flex items-center gap-2"
+            className="mt-3 flex flex-col gap-0.5"
           >
             <Typography
               as="h3"
               truncate={false}
-              className="line-clamp-2 group-hover:text-gray-600"
+              title={serviceRequest?.title}
+              className="line-clamp-1 group-hover:text-gray-600"
             >
               <span className="absolute inset-0" />
               {serviceRequest?.title}

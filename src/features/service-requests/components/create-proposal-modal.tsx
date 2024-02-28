@@ -56,61 +56,6 @@ const schema = z.object({
 
 type FormDataInput = z.infer<typeof schema>;
 
-const RenderSuccessMessage = ({
-  createdProfile,
-}: {
-  createdProfile: SimpleProfile;
-}) => {
-  const { updateProfile } = useCurrentUser();
-
-  const { reloadWithToast } = useToastOnPageReload(() =>
-    createdProfile
-      ? toast({
-          delay: 3_000,
-          icon: <UserAvatar className="h-10 w-10" profile={createdProfile} />,
-          variant: 'success',
-          description: (
-            <p className="text-sm">
-              Vous interagissez maintenant en tant que{' '}
-              <span className="font-semibold">{createdProfile?.name}</span>
-            </p>
-          ),
-        })
-      : null
-  );
-
-  return (
-    <div className="flex flex-col justify-center p-10">
-      <Welcome2Icon className="h-36 w-auto" />
-      <div className="mt-6 flex flex-col items-center justify-center text-center">
-        <Typography variant="h2">Profil ajouté avec succès !🎉🥳</Typography>
-        <Typography variant="subtle" className="mt-2">
-          Le profil {createdProfile?.name} à été créé avec succès. Profitez
-          d'une expérence unique en basculant facilement entre vos différents
-          profils ajoutés.
-        </Typography>
-        <div className="mt-10 flex items-center justify-center gap-2">
-          <Button
-            onClick={() => modals.closeAll()}
-            className="w-auto"
-            variant="ghost"
-          >
-            Ok, j'ai compris
-          </Button>
-          <Button
-            onClick={() => {
-              updateProfile(createdProfile);
-              reloadWithToast();
-            }}
-            className="w-auto"
-          >
-            Basculer sur le profil créé
-          </Button>
-        </div>
-      </div>
-    </div>
-  );
-};
 
 const CreateProposalModal = ({
   context,

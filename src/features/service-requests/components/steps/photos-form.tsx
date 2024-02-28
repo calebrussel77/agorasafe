@@ -117,7 +117,7 @@ const PhotosForm = ({ prevStep, onSubmit, isLoading }: PhotosFormProps) => {
             Retour
           </Button>
           <Button size="lg" disabled={isLoading || isUploading}>
-            Publier ma demande
+            Terminer
           </Button>
         </FixedFooterContainer>
       </Form>

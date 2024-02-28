@@ -5,6 +5,7 @@ import { simpleProfileSelect } from '../profiles';
 export const ReviewSelect = Prisma.validator<Prisma.ReviewSelect>()({
   id: true,
   createdAt: true,
+  updatedAt: true,
   details: true,
   rating: true,
   isVerified: true,

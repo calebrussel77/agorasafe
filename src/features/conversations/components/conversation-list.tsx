@@ -30,7 +30,6 @@ const ConversationList = ({
   session,
   profileId,
 }: ConversationListProps) => {
-  const { ref, inView: isInView } = useInView();
   const router = useRouter();
   const profileIdQuery = profileId || router?.query?.profileId;
 

@@ -32,9 +32,9 @@ function createDialogDictionary<T extends Record<string, unknown>>(
 export const dialogs = createDialogDictionary({
   reviewForm: {
     component: ReviewFormModal,
-    resolve: (query, { reviewId, ...state }) => ({
-      query: { ...query, reviewId },
-      state: state,
+    resolve: (query, { reviewId, profileId, ...rest }) => ({
+      query: { ...query, reviewId, profileId },
+      state: { reviewId, profileId, ...rest },
     }),
   },
   // postDetail: {
