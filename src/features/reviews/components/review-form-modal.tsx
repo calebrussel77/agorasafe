@@ -1,6 +1,7 @@
 import { getSanitizedStringSchema, rsOptionSchema } from '@/validations';
+import { produce } from 'immer';
 import { MapPinIcon } from 'lucide-react';
-import React, { type PropsWithChildren } from 'react';
+import React, { type PropsWithChildren, useEffect, useMemo } from 'react';
 import { Controller } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -17,8 +18,11 @@ import { Modal, ModalFooter } from '@/components/ui/modal';
 import { ModalHeader, ModalMain } from '@/components/ui/modal';
 import { Rating } from '@/components/ui/rating';
 import { Editor } from '@/components/ui/rich-text-editor';
+import { SectionMessage } from '@/components/ui/section-message';
 import { Select } from '@/components/ui/select';
+import { Skeleton } from '@/components/ui/skeleton';
 import { Spinner } from '@/components/ui/spinner';
+import { toast } from '@/components/ui/toast';
 import { Typography } from '@/components/ui/typography';
 import { VariantMessage } from '@/components/ui/variant-message';
 
@@ -35,23 +39,29 @@ const reviewFormSchema = z.object({
 export type ReviewFormInput = z.infer<typeof reviewFormSchema>;
 
 interface ReviewFormModalProps {
-  profileName: string | null;
-  profileAvatar: string | null;
   profileId: string;
-  rating: number;
+  rating?: number;
+  details?: string;
   reviewId?: string;
+  serviceRequestId?: string;
 }
 
 const ReviewFormModal = ({
   reviewId,
-  profileAvatar,
   profileId,
-  profileName,
-  rating: initialRating,
+  serviceRequestId,
+  details,
+  rating,
 }: PropsWithChildren<ReviewFormModalProps>) => {
   const dialog = useDialogContext();
   const queryUtils = api.useContext();
   const isMobile = useIsMobile();
+
+  const { isInitialLoading: isLoadingProfile, data: profileData } =
+    api.profiles.getByIdOrSlug.useQuery(
+      { id: profileId },
+      { enabled: !!profileId }
+    );
 
   const {
     isInitialLoading: isLoadingServiceRequestReservation,
@@ -65,8 +75,21 @@ const ReviewFormModal = ({
 
   const form = useZodForm({
     schema: reviewFormSchema,
-    defaultValues: {
-      rating: initialRating === 0 ? undefined : initialRating,
+  });
+
+  const upsertReviewMutation = api.reviews.upsert.useMutation({
+    onSuccess: async (data, variables) => {
+      await queryUtils.reviews.getInfinite.invalidate({
+        profileSlug: profileData?.slug,
+      });
+      form.reset();
+      toast({
+        variant: 'success',
+        title: variables.id
+          ? 'Avis mise à jour avec succès'
+          : 'Avis crée avec succès',
+      });
+      dialog.handleClose();
     },
   });
 
@@ -76,12 +99,37 @@ const ReviewFormModal = ({
     serviceRequestReservationsData &&
     serviceRequestReservationsData?.length > 0;
 
-  const onHandleSubmit = (formData: ReviewFormInput) => {
-    if (!profileId || !profileName || !formData.rating) return;
-    console.log({ formData });
+  const options = useMemo(() => {
+    return serviceRequestReservationsData?.map(el => ({
+      value: el.serviceRequest?.id,
+      label: el.serviceRequest?.title,
+      location: el.serviceRequest?.location?.address,
+      datePeriodFormattedText: el.serviceRequest?.datePeriodFormattedText,
+    }));
+  }, [serviceRequestReservationsData]);
 
-    // form.reset();
+  const onHandleSubmit = (formData: ReviewFormInput) => {
+    if (!profileId || !formData.rating) return;
+    upsertReviewMutation.mutate({
+      id: reviewId,
+      rating: formData?.rating,
+      serviceRequestId: formData?.serviceRequestId?.value ?? serviceRequestId,
+      details: formData?.content,
+      reviewedProfileId: profileId,
+    });
   };
+
+  console.log({ reviewId });
+
+  useEffect(() => {
+    if (reviewId) {
+      form.reset({
+        rating: rating ?? 1,
+        content: details ?? '',
+        serviceRequestId: options?.find(el => el.value === serviceRequestId),
+      });
+    }
+  }, [details, form, form.reset, options, rating, reviewId, serviceRequestId]);
 
   return (
     <Modal
@@ -94,23 +142,39 @@ const ReviewFormModal = ({
       <ModalHeader
         title={
           <div className="flex items-center gap-3">
-            <Avatar
-              size="md"
-              src={profileAvatar || ''}
-              alt={profileName || ''}
-            />
-            <div>
-              <Typography as="h4">{profileName}</Typography>
-              <Typography variant="small" className="font-normal">
-                {!reviewId ? 'Ajouter une note à ' : 'Modifier la note de '}
-                ce prestataire
-              </Typography>
+            <Skeleton
+              isVisible={isLoadingProfile}
+              shape="circle"
+              circleSize="md"
+            >
+              <Avatar
+                size="md"
+                src={profileData?.avatar ?? ''}
+                alt={profileData?.name ?? ''}
+              />
+            </Skeleton>
+            <div className="w-full flex-1">
+              <Skeleton isVisible={isLoadingProfile} className="h-4 w-1/3">
+                <Typography as="h4">{profileData?.name}</Typography>
+              </Skeleton>
+              <Skeleton isVisible={isLoadingProfile} className="mt-2 h-4 w-1/2">
+                <Typography variant="small" className="font-normal">
+                  {!reviewId ? 'Ajouter une note à ' : 'Modifier la note de '}
+                  ce prestataire
+                </Typography>
+              </Skeleton>
             </div>
           </div>
         }
       />
       <ModalMain className="relative">
-        {isLoadingServiceRequestReservation ? (
+        {upsertReviewMutation.error && (
+          <SectionMessage
+            title={upsertReviewMutation.error?.message}
+            appareance="danger"
+          />
+        )}
+        {isLoadingServiceRequestReservation || isLoadingProfile ? (
           <CenterContent className="my-16">
             <Spinner variant="primary" />
           </CenterContent>
@@ -123,7 +187,7 @@ const ReviewFormModal = ({
                 return (
                   <div className="mx-auto flex flex-col justify-center">
                     <Rating
-                      onChange={field.onChange}
+                      onClick={field.onChange}
                       initialRating={field.value}
                       size="xxl"
                     />
@@ -136,10 +200,10 @@ const ReviewFormModal = ({
                 );
               }}
             />
-
             <Field
               label="Demande de service sur laquelle vous avez collaboré"
               required
+              disabled={!!reviewId}
             >
               <Controller
                 name="serviceRequestId"
@@ -149,6 +213,7 @@ const ReviewFormModal = ({
                     isLoading={isLoadingServiceRequestReservation}
                     placeholder="Choisissez le projet..."
                     variant={error ? 'danger' : undefined}
+                    isDisabled={!!reviewId}
                     autoFocus
                     onChange={field.onChange}
                     value={field.value as never}
@@ -197,13 +262,7 @@ const ReviewFormModal = ({
                         </span>
                       );
                     }}
-                    options={serviceRequestReservationsData?.map(el => ({
-                      value: el.serviceRequest?.id,
-                      label: el.serviceRequest?.title,
-                      location: el.serviceRequest?.location?.address,
-                      datePeriodFormattedText:
-                        el.serviceRequest?.datePeriodFormattedText,
-                    }))}
+                    options={options}
                   />
                 )}
               />
@@ -215,8 +274,10 @@ const ReviewFormModal = ({
                 return (
                   <Editor
                     label="Détails (facultatif)"
-                    placeholder={`Que pensez-vous de ${profileName} ?`}
+                    placeholder={`Que pensez-vous de ${profileData?.name} ?`}
                     error={fieldState?.error?.message}
+                    value={value}
+                    // defaultValue={}
                     editorSize="md"
                     onChange={onChange}
                   />
@@ -234,10 +295,19 @@ const ReviewFormModal = ({
       </ModalMain>
       {hasCommonProjects && (
         <ModalFooter>
-          <Button type="button" variant="outline" onClick={dialog.handleClose}>
+          <Button
+            type="button"
+            disabled={upsertReviewMutation.isLoading}
+            variant="outline"
+            onClick={dialog.handleClose}
+          >
             Annuler
           </Button>
-          <Button type="submit" onClick={form.handleSubmit(onHandleSubmit)}>
+          <Button
+            type="submit"
+            isLoading={upsertReviewMutation.isLoading}
+            onClick={form.handleSubmit(onHandleSubmit)}
+          >
             Envoyer
           </Button>
         </ModalFooter>

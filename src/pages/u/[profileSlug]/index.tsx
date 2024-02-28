@@ -3,6 +3,7 @@ import { NotFound } from '@/layouts/not-found';
 import {
   ExternalLink,
   Facebook,
+  InfoIcon,
   Pencil,
   Share2Icon,
   Twitter,
@@ -26,6 +27,7 @@ import { Typography } from '@/components/ui/typography';
 import { UserAvatar, UserName, UserRating } from '@/components/user';
 
 import { LoginRedirect } from '@/features/auth';
+import { ReviewList } from '@/features/reviews';
 
 import { api } from '@/utils/api';
 import { getIsFaceToFaceLabel, getIsRemoteLabel } from '@/utils/profile';
@@ -37,11 +39,6 @@ import { cn } from '@/lib/utils';
 import { createServerSideProps } from '@/server/utils/server-side';
 
 import { useCurrentUser } from '@/hooks/use-current-user';
-
-const meta = {
-  title: (str: string) => `${str} sur Agorasafe`,
-  description: (str: string) => str,
-};
 
 const ProjectShowCaseItem = ({
   imageUrl,
@@ -58,16 +55,20 @@ const ProjectShowCaseItem = ({
         <div className="relative overflow-hidden rounded-md">
           <Image
             alt={title}
-            fill={false}
-            width="280"
-            height="300"
-            className="h-auto w-auto object-cover transition-all hover:scale-105"
+            fill
+            className="h-[280px] w-[300px] object-cover transition-all hover:scale-105"
             src={imageUrl}
           />
         </div>
       </span>
       <div className="space-y-1 text-sm">
-        <Typography as="h3" truncate lines={2} className="font-semibold">
+        <Typography
+          as="h3"
+          truncate
+          lines={1}
+          title={title}
+          className="font-semibold"
+        >
           {title}
         </Typography>
         <Typography
@@ -186,6 +187,7 @@ export default function ProfileDetailsPage({ profileSlugQuery }: PageProps) {
                     {!isCustomer && (
                       <UserRating
                         className="mt-0"
+                        size="md"
                         reviewsCount={stats?.reviewCount}
                         profileName={data?.profile?.name}
                       />
@@ -355,30 +357,40 @@ export default function ProfileDetailsPage({ profileSlugQuery }: PageProps) {
           )}
 
         {!isCustomer && (
-          <section className="mx-auto mt-6 flex w-full max-w-7xl flex-wrap items-center justify-between gap-3 px-4 md:mt-10">
-            <div>
-              <Typography as="h2">Noter {data?.profile?.name}</Typography>
-              <Typography variant="subtle">
-                Donnez votre avis aux utilisateurs.
+          <section className="mx-auto mt-6 flex w-full max-w-7xl flex-col gap-8 px-4 md:mt-10">
+            <div className="flex w-full flex-wrap items-center justify-between gap-3">
+              <div>
+                <Typography as="h2">Noter {data?.profile?.name}</Typography>
+                <Typography variant="subtle">
+                  Donnez votre avis aux utilisateurs.
+                </Typography>
+              </div>
+              <LoginRedirect reason="create-provider-review">
+                <Button
+                  onClick={() =>
+                    triggerRoutedDialog({
+                      name: 'reviewForm',
+                      state: {
+                        profileId: data?.profile?.id,
+                        rating: stats?.reviewCount || 1,
+                      },
+                    })
+                  }
+                >
+                  Rediger un avis
+                </Button>
+              </LoginRedirect>
+            </div>
+            <div className="flex w-full flex-wrap items-center justify-between gap-3">
+              <Typography as="h3" className="font-normal">
+                Notes et avis ({stats?.reviewCount || 0})
+              </Typography>
+              <Typography variant="small" className="flex items-center gap-1">
+                <InfoIcon className="h-5 w-5" />
+                Les notes et les avis sont vérifiés
               </Typography>
             </div>
-            <LoginRedirect reason="create-provider-review">
-              <Button
-                onClick={() =>
-                  triggerRoutedDialog({
-                    name: 'reviewForm',
-                    state: {
-                      profileName: data?.profile?.name,
-                      profileAvatar: data?.profile?.avatar,
-                      profileId: data?.profile?.id,
-                      rating: stats?.reviewCount || 1,
-                    },
-                  })
-                }
-              >
-                Rediger un avis
-              </Button>
-            </LoginRedirect>
+            <ReviewList profileSlug={profileSlugQuery} />
           </section>
         )}
 

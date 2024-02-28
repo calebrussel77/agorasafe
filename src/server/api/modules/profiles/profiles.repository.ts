@@ -1,4 +1,4 @@
-import { type Prisma, type ProfileType } from '@prisma/client';
+import { type Prisma } from '@prisma/client';
 
 import { prisma } from '@/server/db';
 
@@ -117,9 +117,13 @@ export function updateProfileById(
   });
 }
 
-export async function getProfileById(profileId: string) {
+export async function getProfileByIdOrSlug({
+  input,
+}: {
+  input: GetByIdOrSlugQueryInput;
+}) {
   return prisma.profile.findUnique({
-    where: { id: profileId },
+    where: { id: input?.id ?? undefined, slug: input?.slug ?? undefined },
     select: simpleProfileSelect,
   });
 }

@@ -44,6 +44,7 @@ export type TypographyProps<
 > = {
   as?: T;
   className?: string;
+  title?: string;
   children?: React.ReactNode;
   onClick?: React.MouseEventHandler<T> | undefined;
 } & VariantProps<typeof typographyVariants> &

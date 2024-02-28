@@ -4,9 +4,9 @@ import { cn } from '@/lib/utils';
 
 import { ActionTooltip } from '../action-tooltip';
 import { Inline } from '../ui/inline';
-import { Rating } from '../ui/rating';
+import { Rating, RatingProps } from '../ui/rating';
 
-interface UserRatingProps {
+interface UserRatingProps extends RatingProps {
   className?: string;
   ratingCount?: number; //TODO - Makes it required on the future
   reviewsCount?: number; //TODO - Makes it required on the future
@@ -20,9 +20,10 @@ const UserRating = ({
   ratingCount = 1,
   profileName,
   withReviews = false,
+  ...rest
 }: PropsWithChildren<UserRatingProps>) => {
   return (
-    <Inline className={cn('-mt-0.5 flex items-baseline', className)}>
+    <Inline className={cn('flex items-baseline', className)}>
       {reviewsCount && withReviews && (
         <ActionTooltip
           label={`Nombre d'avis reçu ${
@@ -35,7 +36,7 @@ const UserRating = ({
           </span>
         </ActionTooltip>
       )}
-      <Rating readonly initialRating={ratingCount} size="xs" />
+      <Rating readonly initialRating={ratingCount} size="xs" {...rest} />
     </Inline>
   );
 };

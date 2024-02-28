@@ -222,7 +222,7 @@ const Modal = React.forwardRef<React.ElementRef<typeof Dialog>, ModalProps>(
     ref
   ) => {
     const handleInteractOutside = (event: Event) => {
-      if (!closeOnClickOutside) {
+      if (!closeOnClickOutside || isFullScreen) {
         event?.preventDefault();
       } else {
         onOpenChange?.(false);

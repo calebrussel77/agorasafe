@@ -70,8 +70,6 @@ export const renderSVGToPNG = async (svg: string) => {
   return pngBuffer;
 };
 
-const fileType: 'svg' | 'png' = 'png';
-
 const handler: NextApiHandler = async (req, res) => {
   try {
     const { layoutName } = await imageReq.parseAsync(req.query);
@@ -80,25 +78,18 @@ const handler: NextApiHandler = async (req, res) => {
       layoutName.toLowerCase(),
       req.query
     );
+
     const svg = await renderLayoutToSVG({ layout, config });
 
     res.statusCode = 200;
-    res.setHeader(
-      'Content-Type',
-      // @ts-ignore
-      fileType === 'svg' ? 'image/svg+xml' : `image/${fileType}`
-    );
+    res.setHeader('Content-Type', 'image/png');
     res.setHeader(
       'Cache-Control',
       `public, immutable, no-transform, s-maxage=31536000, max-age=31536000`
     );
 
-    if (fileType === 'png') {
-      const png = await renderSVGToPNG(svg);
-      res.end(png);
-    } else {
-      res.end(svg);
-    }
+    const png = await renderSVGToPNG(svg);
+    res.end(png);
   } catch (e) {
     res.statusCode = 500;
     const error = e as Error;

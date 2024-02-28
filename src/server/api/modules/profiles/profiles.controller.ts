@@ -17,6 +17,7 @@ import { getUserById } from '../users';
 import { type CompleteUserOnboardingInput as CreateProfileInput } from '../users/users.validations';
 import {
   createProfileByUserId,
+  getProfileByIdOrSlug,
   getProfileBySlug,
   getProfileServiceRequestReservations,
 } from './profiles.repository';
@@ -97,6 +98,20 @@ export const getProfilesHandler = async ({
 }) => {
   try {
     return await getProfiles({ input });
+  } catch (error) {
+    throw throwDbError(error);
+  }
+};
+
+export const getProfileByIdOrSlugHandler = async ({
+  ctx,
+  input,
+}: {
+  ctx: Context;
+  input: GetByIdOrSlugQueryInput;
+}) => {
+  try {
+    return await getProfileByIdOrSlug({ input });
   } catch (error) {
     throw throwDbError(error);
   }

@@ -9,14 +9,14 @@ export const getIsCustomer = (profileType: ProfileType) =>
 
 export const getIsFaceToFaceLabel = (isFaceToFace?: boolean | null) => {
   if (isFaceToFace === true) {
-    return 'Peut se déplacer en face à face';
+    return 'Je peux me déplacer en face à face';
   }
-  return 'Ne se déplace pas';
+  return 'Je ne me déplace pas';
 };
 
 export const getIsRemoteLabel = (isRemote?: boolean | null) => {
   if (isRemote === true) {
-    return 'Travail à distance';
+    return 'Je travail à distance';
   }
-  return 'Ne travail pas à distance';
+  return 'Je ne travail pas à distance';
 };
