@@ -23,7 +23,7 @@ export const getReviewsInfiniteSchema = z.object({
 
 export type UpsertReviewInput = z.infer<typeof upsertReviewSchema>;
 export const upsertReviewSchema = z.object({
-  id: z.string().optional(),
+  reviewId: z.string().optional(),
   serviceRequestId: z.string(),
   reviewedProfileId: z.string(),
   rating: z.number(),

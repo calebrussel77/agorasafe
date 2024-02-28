@@ -2,9 +2,7 @@ import dynamic from 'next/dynamic';
 import { type ComponentProps, type ComponentType } from 'react';
 import { type UrlObject } from 'url';
 
-const ReviewFormModal = dynamic(() =>
-  import('@/features/reviews').then(el => el.ReviewFormModal)
-);
+import { ReviewFormModal } from '@/features/reviews';
 
 type Url = UrlObject | string;
 type DialogItem<T> = {
@@ -32,9 +30,9 @@ function createDialogDictionary<T extends Record<string, unknown>>(
 export const dialogs = createDialogDictionary({
   reviewForm: {
     component: ReviewFormModal,
-    resolve: (query, { reviewId, profileId, ...rest }) => ({
-      query: { ...query, reviewId, profileId },
-      state: { reviewId, profileId, ...rest },
+    resolve: (query, { profileId, reviewId, ...state }) => ({
+      query: { ...query, profileId, reviewId },
+      state,
     }),
   },
   // postDetail: {

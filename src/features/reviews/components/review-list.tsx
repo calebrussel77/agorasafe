@@ -85,22 +85,24 @@ const ReviewList = ({ profileSlug }: PropsWithChildren<ReviewListProps>) => {
           const href = `/service-requests/${review?.serviceRequest?.id}/${review?.serviceRequest?.slug}`;
           const isModified = dateIsAfter(review.updatedAt, review.createdAt);
 
+          console.log({ REVIEW_ID: review }, 'NEW STATE');
+
           const reviewOptions = [
             {
               label: 'Modifier',
               canView: canEditReview,
-              onClick: () =>
-                //TODO: Fix this ! it does'nt add the reviewId on the query
+              onClick: () => {
                 triggerRoutedDialog({
                   name: 'reviewForm',
                   state: {
                     profileId: review?.reviewedProfile?.id as string,
                     rating: review.rating,
                     details: review.details as string,
+                    reviewId: review.id,
                     serviceRequestId: review?.serviceRequest?.id as string,
-                    reviewId: review?.id,
                   },
-                }),
+                });
+              },
               icon: <Edit />,
             },
             {
@@ -129,35 +131,37 @@ const ReviewList = ({ profileSlug }: PropsWithChildren<ReviewListProps>) => {
                       </Inline>
                     }
                   />
-                  <DropdownMenu>
-                    <DropdownMenu.Trigger asChild>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="w-full sm:w-auto"
-                      >
-                        <MoreHorizontal className="h-5 w-5" />
-                      </Button>
-                    </DropdownMenu.Trigger>
-                    <DropdownMenu.Content>
-                      <div className="flex flex-col space-y-1">
-                        {reviewOptions
-                          .filter(el => el.canView)
-                          .map(({ label, onClick, icon }) => (
-                            <DropdownMenu.Item
-                              key={label}
-                              className="default__transition flex cursor-pointer items-center gap-2.5 rounded-md px-3 py-2 text-sm text-gray-900 hover:bg-gray-100"
-                              onClick={onClick}
-                            >
-                              {cloneElement(icon, {
-                                className: 'h-4 w-4 md:h-5 md:w-5',
-                              })}
-                              {label}
-                            </DropdownMenu.Item>
-                          ))}
-                      </div>
-                    </DropdownMenu.Content>
-                  </DropdownMenu>
+                  {canEditReview || canDeleteReview ? (
+                    <DropdownMenu>
+                      <DropdownMenu.Trigger asChild>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="w-full sm:w-auto"
+                        >
+                          <MoreHorizontal className="h-5 w-5" />
+                        </Button>
+                      </DropdownMenu.Trigger>
+                      <DropdownMenu.Content>
+                        <div className="flex flex-col space-y-1">
+                          {reviewOptions
+                            .filter(el => el.canView)
+                            .map(({ label, onClick, icon }) => (
+                              <DropdownMenu.Item
+                                key={label}
+                                className="default__transition flex cursor-pointer items-center gap-2.5 rounded-md px-3 py-2 text-sm text-gray-900 hover:bg-gray-100"
+                                onClick={onClick}
+                              >
+                                {cloneElement(icon, {
+                                  className: 'h-4 w-4 md:h-5 md:w-5',
+                                })}
+                                {label}
+                              </DropdownMenu.Item>
+                            ))}
+                        </div>
+                      </DropdownMenu.Content>
+                    </DropdownMenu>
+                  ) : null}
                 </div>
                 <Rating
                   readonly

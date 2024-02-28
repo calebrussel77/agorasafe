@@ -139,12 +139,15 @@ export default function ProfileDetailsPage({ profileSlugQuery }: PageProps) {
   });
 
   const isDeleted = !!data?.profile?.deletedAt;
+  const defaultDescription = `${profileName} est sur Agorasafe. Inscrivez-vous sur Agorasafe pour collaborer avec ${profileName}.`;
 
   const meta = (
     <Seo
       title={ogTitle}
       image={ogImage}
-      description={data?.profile?.bio || data?.profile?.aboutMe || undefined}
+      description={
+        data?.profile?.aboutMe || data?.profile?.bio || defaultDescription
+      }
     />
   );
 
@@ -372,7 +375,6 @@ export default function ProfileDetailsPage({ profileSlugQuery }: PageProps) {
                       name: 'reviewForm',
                       state: {
                         profileId: data?.profile?.id,
-                        rating: stats?.reviewCount || 1,
                       },
                     })
                   }

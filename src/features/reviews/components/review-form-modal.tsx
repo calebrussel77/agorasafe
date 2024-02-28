@@ -52,7 +52,7 @@ const ReviewFormModal = ({
   serviceRequestId,
   details,
   rating,
-}: PropsWithChildren<ReviewFormModalProps>) => {
+}: ReviewFormModalProps) => {
   const dialog = useDialogContext();
   const queryUtils = api.useContext();
   const isMobile = useIsMobile();
@@ -85,7 +85,7 @@ const ReviewFormModal = ({
       form.reset();
       toast({
         variant: 'success',
-        title: variables.id
+        title: variables.reviewId
           ? 'Avis mise à jour avec succès'
           : 'Avis crée avec succès',
       });
@@ -111,15 +111,13 @@ const ReviewFormModal = ({
   const onHandleSubmit = (formData: ReviewFormInput) => {
     if (!profileId || !formData.rating) return;
     upsertReviewMutation.mutate({
-      id: reviewId,
+      reviewId: reviewId ?? undefined,
       rating: formData?.rating,
       serviceRequestId: formData?.serviceRequestId?.value ?? serviceRequestId,
       details: formData?.content,
       reviewedProfileId: profileId,
     });
   };
-
-  console.log({ reviewId });
 
   useEffect(() => {
     if (reviewId) {

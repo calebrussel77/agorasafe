@@ -5,6 +5,7 @@ import {
 
 import { type Context } from '../../create-context';
 import { type GetByIdQueryInput } from '../../validations/base.validations';
+import { createNotification } from '../notifications';
 import { deleteReview, getReview, upsertReview } from './reviews.repository';
 import { type UpsertReviewInput } from './reviews.validations';
 
@@ -16,7 +17,11 @@ export const upsertReviewHandler = async ({
   ctx: DeepNonNullable<Context>;
 }) => {
   try {
-    if (!input.id) {
+    if (ctx.profile.id === input.reviewedProfileId) {
+      throwBadRequestError("Vous n'avez pas le droit de faire cette action");
+    }
+
+    if (!input.reviewId) {
       const review = await getReview({
         where: {
           serviceRequestId: input?.serviceRequestId,
@@ -30,7 +35,21 @@ export const upsertReviewHandler = async ({
         );
       }
     }
-    return await upsertReview({ ...input, profileId: ctx.profile.id });
+    const createdReview = await upsertReview({
+      ...input,
+      profileId: ctx.profile.id,
+    });
+    //Send notification to the reviewed profile
+    await createNotification('new-service-request-profile-review', {
+      profileId: input.reviewedProfileId,
+      authorName: ctx.profile.name,
+      reviewText: input.details ?? '',
+      authorAvatar: ctx.profile.avatar,
+      serviceRequestTitle: createdReview.serviceRequest?.title ?? '',
+      targetSlug: createdReview.reviewedProfile?.slug ?? '',
+    });
+
+    return createdReview;
   } catch (error) {
     throw throwDbError(error);
   }

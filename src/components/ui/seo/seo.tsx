@@ -9,6 +9,7 @@ import type { NextSeoProps } from 'next-seo';
 import { NextSeo } from 'next-seo';
 import { useRouter } from 'next/router';
 
+import { removeTags } from '@/utils/strings';
 import { truncateOnWord } from '@/utils/text';
 
 import { buildCanonical, seoConfig } from '@/lib/next-seo-config';
@@ -108,7 +109,10 @@ const Seo = (props: SeoProps): JSX.Element => {
     nextSeoProps = {},
   } = props;
 
-  const truncatedDescription = truncateOnWord(description, 158);
+  const truncatedDescription = truncateOnWord(
+    removeTags(description ?? ''),
+    158
+  );
 
   const seoObject = buildSeoMeta({
     title,

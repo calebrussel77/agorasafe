@@ -168,18 +168,27 @@ export function updateReview({
 }
 
 export const upsertReview = ({
+  reviewId,
   profileId,
   ...data
 }: UpsertReviewInput & { profileId: string }) => {
-  if (!data.id)
+  if (!reviewId)
     return prisma.review.create({
       data: { ...data, authorId: profileId },
-      select: ReviewSelect,
+      select: {
+        id: true,
+        reviewedProfile: { select: { slug: true } },
+        serviceRequest: { select: { title: true } },
+      },
     });
   else
     return prisma.review.update({
-      where: { id: data.id },
+      where: { id: reviewId },
       data,
-      select: { id: true },
+      select: {
+        id: true,
+        reviewedProfile: { select: { slug: true } },
+        serviceRequest: { select: { title: true } },
+      },
     });
 };
