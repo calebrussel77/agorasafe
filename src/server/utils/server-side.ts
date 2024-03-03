@@ -1,4 +1,3 @@
-import { type ProfileStore } from '@/stores/profile-store';
 import { getInitialState } from '@/stores/profile-store/initial-state';
 import { createServerSideHelpers } from '@trpc/react-query/server';
 import {
@@ -14,6 +13,7 @@ import { sentryCaptureException } from '@/lib/sentry';
 import { type SimpleProfile } from '../api/modules/profiles';
 import { appRouter } from '../api/root';
 import { getServerAuthSession } from '../auth';
+import { Tracker } from './tracker';
 
 export const getServerProxySSGHelpers = (
   ctx: GetServerSidePropsContext,
@@ -26,6 +26,7 @@ export const getServerProxySSGHelpers = (
   const ssg = createServerSideHelpers({
     router,
     ctx: {
+      track: new Tracker(),
       user: session?.user,
       profile: profile,
       ip: null as never,

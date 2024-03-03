@@ -1,5 +1,6 @@
 import { createTRPCRouter } from '@/server/api/trpc';
 
+import { analyticsRouter } from './routers/analytics.router';
 import { commentsRouter } from './routers/comments.router';
 import { contentsRouter } from './routers/contents.router';
 import { conversationsRouter } from './routers/conversations.router';
@@ -12,6 +13,7 @@ import { reviewsRouter } from './routers/reviews.router';
 import { serviceRequestsRouter } from './routers/service-requests.router';
 import { servicesRouter } from './routers/services.router';
 import { skillsRouter } from './routers/skills.router';
+import { trackRouter } from './routers/track.router';
 import { usersRouter } from './routers/users.router';
 
 /**
@@ -33,6 +35,8 @@ export const appRouter = createTRPCRouter({
   comments: commentsRouter,
   notifications: notificationsRouter,
   reviews: reviewsRouter,
+  track: trackRouter,
+  analytics: analyticsRouter,
 });
 
 // export type definition of API

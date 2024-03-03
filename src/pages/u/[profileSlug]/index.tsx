@@ -11,9 +11,12 @@ import {
 import { Linkedin } from 'lucide-react';
 import { z } from 'zod';
 
+import { CanView } from '@/components/can-view';
+import { ProfileView } from '@/components/profile-view';
 import { RenderHtml } from '@/components/render-html';
 import { ShareButton } from '@/components/share-button';
 import { SoonBadge } from '@/components/soon-button';
+import { TrackView } from '@/components/track-view/track-view';
 import { AsyncWrapper } from '@/components/ui/async-wrapper';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -158,6 +161,7 @@ export default function ProfileDetailsPage({ profileSlugQuery }: PageProps) {
   return (
     <>
       {meta}
+      <ProfileView profileId={data?.profile.id} />
       <AsyncWrapper isLoading={isInitialLoading} error={error}>
         <section>
           <div className="relative overflow-hidden">
@@ -362,26 +366,33 @@ export default function ProfileDetailsPage({ profileSlugQuery }: PageProps) {
         {!isCustomer && (
           <section className="mx-auto mt-6 flex w-full max-w-7xl flex-col gap-8 px-4 md:mt-10">
             <div className="flex w-full flex-wrap items-center justify-between gap-3">
-              <div>
-                <Typography as="h2">Noter {data?.profile?.name}</Typography>
-                <Typography variant="subtle">
-                  Donnez votre avis aux utilisateurs.
-                </Typography>
-              </div>
-              <LoginRedirect reason="create-provider-review">
-                <Button
-                  onClick={() =>
-                    triggerRoutedDialog({
-                      name: 'reviewForm',
-                      state: {
-                        profileId: data?.profile?.id,
-                      },
-                    })
-                  }
-                >
-                  Rediger un avis
-                </Button>
-              </LoginRedirect>
+              <CanView
+                allowedProfiles={['CUSTOMER']}
+                accessCheck={() => !isMine}
+              >
+                <>
+                  <div>
+                    <Typography as="h2">Noter {data?.profile?.name}</Typography>
+                    <Typography variant="subtle">
+                      Donnez votre avis aux utilisateurs.
+                    </Typography>
+                  </div>
+                  <LoginRedirect reason="create-provider-review">
+                    <Button
+                      onClick={() =>
+                        triggerRoutedDialog({
+                          name: 'reviewForm',
+                          state: {
+                            profileId: data?.profile?.id,
+                          },
+                        })
+                      }
+                    >
+                      Rediger un avis
+                    </Button>
+                  </LoginRedirect>
+                </>
+              </CanView>
             </div>
             <div className="flex w-full flex-wrap items-center justify-between gap-3">
               <Typography as="h3" className="font-normal">

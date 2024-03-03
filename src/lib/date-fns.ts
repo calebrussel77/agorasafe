@@ -7,11 +7,18 @@ import {
   isBefore,
   parseISO,
   sub,
+  subDays,
 } from 'date-fns';
 import { fr } from 'date-fns/locale';
 
 import { invariant } from '../utils/misc';
 import { isString } from '../utils/type-guards';
+
+export const getSubDate = (sub = 0) => {
+  const dateXDaysAgo = subDays(new Date(), sub);
+
+  return formatYearMonthDay(dateXDaysAgo);
+};
 
 export const formatYearMonthDay = (
   date: Date | number | string,

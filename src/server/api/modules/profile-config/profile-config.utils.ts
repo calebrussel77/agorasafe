@@ -5,7 +5,7 @@ export const APP_PROFILE_LINKS = [
   {
     id: 1,
     iconUrl: '/icons/home.svg',
-    isSoon: true,
+    isSoon: false,
     type: COMMON_PROFILE_TYPE,
     title: 'Tableau de bord',
     description: 'Accéder à mon tableau de bord personnel',
@@ -32,7 +32,7 @@ export const APP_PROFILE_LINKS = [
   {
     id: 4,
     iconUrl: '/icons/clipboard-paste.svg',
-    isSoon: false,
+    isSoon: true,
     title: 'Services postulés',
     type: ProfileType.PROVIDER,
     description: "Accéder aux services auxquels j'ai postulé",

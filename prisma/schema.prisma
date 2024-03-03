@@ -61,6 +61,23 @@ model Review {
     @@index([serviceRequestId])
 }
 
+model ProfileView {
+    id String @id @default(cuid())
+
+    viewer   Profile? @relation("viewerProfileView", fields: [viewerId], references: [id])
+    viewerId String?
+
+    profile   Profile @relation("authorProfileView", fields: [profileId], references: [id])
+    profileId String
+
+    // viewType String // Direct, Indirect, Self, Search
+
+    createdAt DateTime @default(now())
+
+    @@unique([viewerId, profileId])
+    @@index([profileId, viewerId])
+}
+
 model Notification {
     id       String   @id @default(cuid())
     type     String
@@ -118,6 +135,9 @@ model Profile {
     bannedAt DateTime?
 
     isMuted Boolean? @default(false)
+
+    viewedProfileViews ProfileView[] @relation("viewerProfileView")
+    profileViewers     ProfileView[] @relation("authorProfileView")
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt

@@ -72,6 +72,7 @@ export interface BadgeProps
   as?: keyof JSX.IntrinsicElements | React.ComponentType<any>;
   shouldDisableOutline?: boolean;
   truncate?: boolean;
+  onClick?: () => void;
 }
 
 function Badge({
@@ -80,6 +81,7 @@ function Badge({
   content,
   variant,
   shouldDisableOutline,
+  onClick,
   truncate = false,
   maxWidth = 'xxs',
   shape,
@@ -91,7 +93,7 @@ function Badge({
   const Comp = as;
 
   return (
-    <Comp className="relative w-fit">
+    <Comp onClick={onClick} className="relative w-fit">
       {children}
       {content ? (
         <div

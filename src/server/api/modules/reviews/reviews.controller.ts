@@ -18,7 +18,7 @@ export const upsertReviewHandler = async ({
 }) => {
   try {
     if (ctx.profile.id === input.reviewedProfileId) {
-      throwBadRequestError("Vous n'avez pas le droit de faire cette action");
+      throwBadRequestError('Vous ne pouvez pas vous noté vous même !');
     }
 
     if (!input.reviewId) {

@@ -29,6 +29,7 @@ import { CanView } from '@/components/can-view';
 import { CommentForm } from '@/components/comment-form';
 import { RenderHtml } from '@/components/render-html';
 import { ShareButton } from '@/components/share-button';
+import { TrackView } from '@/components/track-view/track-view';
 import { AsyncWrapper } from '@/components/ui/async-wrapper';
 import { AutoAnimate } from '@/components/ui/auto-animate';
 import { Badge } from '@/components/ui/badge';
@@ -238,6 +239,11 @@ const ServiceRequestPublicationPage = ({ profile, id }: PageProps) => {
   return (
     <>
       {meta}
+      <TrackView
+        entityId={serviceRequest.id}
+        entityType="ServiceRequest"
+        type="ServiceRequestView"
+      />
       <CenterContent className="mt-6 max-w-5xl space-y-10">
         <AsyncWrapper
           isLoading={isInitialLoading}

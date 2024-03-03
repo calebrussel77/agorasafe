@@ -1,3 +1,4 @@
+import { useTrackEvent } from '@/services/track';
 import { Linkedin, Share } from 'lucide-react';
 import React, { useEffect } from 'react';
 
@@ -21,6 +22,8 @@ export function ShareButton({
   url?: string;
   title?: string;
 }) {
+  const { trackShare } = useTrackEvent();
+
   const url =
     typeof window === 'undefined'
       ? ''
@@ -43,40 +46,49 @@ export function ShareButton({
   const shareLinks = [
     {
       type: isCopied ? 'Copié' : 'Copier le lien',
-      onClick: copy,
+      onClick: async () => {
+        await trackShare({ platform: 'clipboard', url });
+        copy();
+      },
       render: <IconCopy copied={!!isCopied} />,
     },
     {
       type: 'Whatsapp',
-      onClick: () =>
+      onClick: async () => {
+        await trackShare({ platform: 'whatsapp', url });
         window.open(
           `https://wa.me/send?${QS.stringify({
             text: url,
           })}`
-        ),
+        );
+      },
       render: <WhatsappIcon className="h-[18px] w-[18px] text-gray-600" />,
     },
     {
-      type: 'Linkedin',
-      onClick: () =>
+      type: 'LinkedIn',
+      onClick: async () => {
+        await trackShare({ platform: 'linkedIn', url });
         window.open(
           `https://linkedin.com/shareArticle?${QS.stringify({
             url,
             title,
           })}`
-        ),
+        );
+      },
       render: <Linkedin className="h-5 w-5 text-gray-600" />,
     },
     {
       type: 'X (Twitter)',
-      onClick: () =>
+      onClick: async () => {
+        await trackShare({ platform: 'twitter', url });
         window.open(
           `https://twitter.com/intent/tweet?${QS.stringify({
             url,
             text: title,
             via: 'agorasafe',
           })}`
-        ),
+        );
+      },
       render: <TwitterXIcon className="h-5 w-5 text-gray-600" />,
     },
     {

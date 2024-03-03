@@ -4,7 +4,10 @@ import { prisma } from '@/server/db';
 
 import { type GetByIdOrSlugQueryInput } from '../../validations/base.validations';
 import { simpleProfileSelect } from './profiles.select';
-import { type GetProfileServiceRequestReservationsInput } from './profiles.validations';
+import {
+  AddProfileViewInput,
+  type GetProfileServiceRequestReservationsInput,
+} from './profiles.validations';
 
 export const getProfileBySlug = (slug: string) => {
   return prisma.profile.findUnique({
@@ -160,3 +163,16 @@ export const getProfileServiceRequestReservations = ({
     },
   });
 };
+
+export function addProfileView({
+  input: { profileId, viewerId },
+}: {
+  input: AddProfileViewInput;
+}) {
+  return prisma.profileView.create({
+    data: {
+      profileId,
+      viewerId,
+    },
+  });
+}

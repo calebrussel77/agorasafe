@@ -1,4 +1,5 @@
-import { Edit, MoreHorizontal, ServerCrash, Trash } from 'lucide-react';
+import { Edit, Link, MoreHorizontal, ServerCrash, Trash } from 'lucide-react';
+import { useRouter } from 'next/router';
 import React, { type PropsWithChildren, cloneElement } from 'react';
 
 import { DaysFromNow } from '@/components/days-from-now';
@@ -34,6 +35,7 @@ interface ReviewListProps {
 const ReviewList = ({ profileSlug }: PropsWithChildren<ReviewListProps>) => {
   const { session, profile } = useCurrentUser();
   const queryUtils = api.useContext();
+  const router = useRouter();
 
   const { reviews, fetchNextPage, hasNextPage, isRefetching, status } =
     useGetInfiniteReviews({ profileSlug });
@@ -84,8 +86,6 @@ const ReviewList = ({ profileSlug }: PropsWithChildren<ReviewListProps>) => {
           const canEditReview = isOwner;
           const href = `/service-requests/${review?.serviceRequest?.id}/${review?.serviceRequest?.slug}`;
           const isModified = dateIsAfter(review.updatedAt, review.createdAt);
-
-          console.log({ REVIEW_ID: review }, 'NEW STATE');
 
           const reviewOptions = [
             {
@@ -169,11 +169,17 @@ const ReviewList = ({ profileSlug }: PropsWithChildren<ReviewListProps>) => {
                   size="md"
                 />
                 <Badge
-                  content={review?.serviceRequest?.title ?? ''}
+                  content={
+                    <div className="flex items-center gap-2">
+                      <Link className="h-5 w-5" />
+                      {review?.serviceRequest?.title}
+                    </div>
+                  }
                   maxWidth="lg"
                   size="lg"
                   truncate
-                  className="px-3 py-2"
+                  onClick={() => router.push(href)}
+                  className="cursor-pointer px-3 py-2 hover:opacity-60"
                 />
                 {review?.details ? (
                   <Truncate lines={3} hasEllipsisText>
@@ -183,14 +189,6 @@ const ReviewList = ({ profileSlug }: PropsWithChildren<ReviewListProps>) => {
                   '...'
                 )}
               </div>
-              <Button
-                size="sm"
-                href={href}
-                variant="link"
-                className="-mx-1 mt-3"
-              >
-                Voir la demande
-              </Button>
             </div>
           );
         })}

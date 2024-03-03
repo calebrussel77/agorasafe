@@ -8,6 +8,7 @@ import { type NextApiRequest, type NextApiResponse } from 'next';
 import requestIp from 'request-ip';
 
 import { getServerAuthSession } from '../auth';
+import { Tracker } from '../utils/tracker';
 
 type CacheSettings = {
   browserTTL?: number;
@@ -26,7 +27,7 @@ export const createContext = async ({
 }) => {
   const session = await getServerAuthSession({ req, res });
   const initialState = getInitialState(req.headers);
-
+  const track = new Tracker(req, res);
   const ip = requestIp.getClientIp(req) ?? '';
 
   const cache: CacheSettings | null = {
@@ -39,6 +40,7 @@ export const createContext = async ({
   return {
     user: session?.user,
     profile: initialState?.profile,
+    track,
     ip,
     cache,
     res,

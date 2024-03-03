@@ -9,6 +9,8 @@ import {
 } from '@/server/api/trpc';
 
 import {
+  addProfileViewHandler,
+  addProfileViewSchema,
   createProfileHandler,
   getProfileByIdOrSlugHandler,
   getProfileDetailsController,
@@ -36,6 +38,10 @@ export const profilesRouter = createTRPCRouter({
   createProfile: profileProcedure
     .input(createProfileSchema)
     .mutation(createProfileHandler),
+
+  addView: publicProcedure
+    .input(addProfileViewSchema)
+    .mutation(addProfileViewHandler),
 
   getServiceRequestReservations: profileProcedure
     .input(getProfileServiceRequestReservationsSchema)

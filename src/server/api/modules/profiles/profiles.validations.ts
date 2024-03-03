@@ -30,6 +30,12 @@ export const getProfilesInfiniteSchema = z.object({
   type: z.nativeEnum(ProfileType).optional(),
 });
 
+export type AddProfileViewInput = z.infer<typeof addProfileViewSchema>;
+export const addProfileViewSchema = z.object({
+  viewerId: z.string().optional(),
+  profileId: z.string(),
+});
+
 export type GetProfilesInput = z.infer<typeof getProfilesSchema>;
 export const getProfilesSchema = getAllQuerySchema.extend({
   type: z.nativeEnum(ProfileType).optional(),

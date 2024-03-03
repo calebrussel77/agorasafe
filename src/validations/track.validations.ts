@@ -1,37 +1,57 @@
 import { z } from 'zod';
 
-export const addViewSchema = z.object({
-  type: z.enum([
-    'ProfileView',
-    'ServiceRequestView',
-    'PostView',
-    'ModelView',
-    'ModelVersionView',
-    'ArticleView',
-    'BountyView',
-    'BountyEntryView',
-  ]),
-  entityType: z.enum([
-    'User',
-    'ServiceRequest',
-    'Post',
-    'Model',
-    'ModelVersion',
-    'Article',
-    'Bounty',
-    'BountyEntry',
-  ]),
-  entityId: z.number(),
+import { trackedReasons } from '@/features/auth';
+
+export const getViewPeerDaySchema = z.object({
+  type: z.enum(['ProfileView', 'ServiceRequestView']),
+  entityType: z.enum(['Profile', 'ServiceRequest']),
+  entityId: z.string(),
   details: z.object({}).passthrough().optional(),
 });
 
-export type AddViewSchema = z.infer<typeof addViewSchema>;
+export const addViewSchema = z.object({
+  type: z.enum(['ProfileView', 'ServiceRequestView']),
+  entityType: z.enum(['Profile', 'ServiceRequest']),
+  entityId: z.string(),
+  details: z.object({}).passthrough().optional(),
+});
+
+export const getDaysSchema = z.object({
+  namespace: z.enum([
+    'views',
+    'actions',
+    'activities',
+    'modelEvents',
+    'modelVersionEvents',
+    'partnerEvents',
+    'userActivities',
+    'resourceReviews',
+    'comments',
+    'commentEvents',
+    'posts',
+    'userEngagements',
+    'shares',
+    'files',
+    'search',
+  ]),
+  nDays: z.number(),
+  profileId: z.string().optional(),
+});
+export type GetDaysInput = z.infer<typeof getDaysSchema>;
+
+export type AddViewInput = z.infer<typeof addViewSchema>;
 
 export type TrackShareInput = z.infer<typeof trackShareSchema>;
-
 export const trackShareSchema = z.object({
-  platform: z.enum(['whatsapp', 'twitter', 'linkedin', 'clipboard']),
-  url: z.string().url().trim().min(1),
+  platform: z.enum(['linkedIn', 'twitter', 'whatsapp', 'clipboard']),
+  url: z.string().url().trim().nonempty(),
+});
+
+export type TrackSearchInput = z.infer<typeof trackSearchSchema>;
+export const trackSearchSchema = z.object({
+  query: z.string().trim(),
+  index: z.string(),
+  filters: z.object({}).passthrough().optional(),
 });
 
 // action tracking schemas
@@ -98,6 +118,10 @@ const purchaseFundsConfirmSchema = z.object({
     })
     .optional(),
 });
+const loginRedirectSchema = z.object({
+  type: z.literal('LoginRedirect'),
+  reason: z.enum(trackedReasons),
+});
 export type TrackActionInput = z.infer<typeof trackActionSchema>;
 export const trackActionSchema = z.discriminatedUnion('type', [
   z.object({ type: z.literal('AddToBounty_Click') }),
@@ -111,4 +135,5 @@ export const trackActionSchema = z.discriminatedUnion('type', [
   notEnoughFundsSchema,
   purchaseFundsCancelSchema,
   purchaseFundsConfirmSchema,
+  loginRedirectSchema,
 ]);

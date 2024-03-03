@@ -21,6 +21,8 @@ export const loginRedirectReasons = {
 
 export type LoginRedirectReason = keyof typeof loginRedirectReasons;
 
+export const trackedReasons = ['image-gen', 'train-model', 'blur-toggle'] as const;
+
 export function getLoginLink({
   redirectUrl,
   reason,

@@ -59,3 +59,5 @@ export const profilesDescription: Record<
     description: `Je souhaite créer des démandes de services et payer des personnes capables de satisfaire mes besoins.`,
   },
 };
+
+export const appPrimaryColor = '#354cd0';

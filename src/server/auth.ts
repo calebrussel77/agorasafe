@@ -1,7 +1,6 @@
 import { sessionVersion } from '@/constants';
 import { env } from '@/env.mjs';
 import { PrismaAdapter } from '@next-auth/prisma-adapter';
-import { type Role, User } from '@prisma/client';
 import { type GetServerSidePropsContext } from 'next';
 import {
   type DefaultSession,

@@ -26,6 +26,8 @@ export const env = createEnv({
     UPLOADTHING_SECRET: z.string(),
     UPLOADTHING_APP_ID: z.string(),
     RATE_LIMITING: z.string(),
+    UPSTASH_REDIS_REST_URL: z.string(),
+    UPSTASH_REDIS_REST_TOKEN: z.string(),
   },
 
   /**
@@ -72,6 +74,8 @@ export const env = createEnv({
     UPLOADTHING_SECRET: process.env.UPLOADTHING_SECRET,
     UPLOADTHING_APP_ID: process.env.UPLOADTHING_APP_ID,
     RATE_LIMITING: process.env.RATE_LIMITING,
+    UPSTASH_REDIS_REST_URL: process.env.UPSTASH_REDIS_REST_URL,
+    UPSTASH_REDIS_REST_TOKEN: process.env.UPSTASH_REDIS_REST_TOKEN,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation.

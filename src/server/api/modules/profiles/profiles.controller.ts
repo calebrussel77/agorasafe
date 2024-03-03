@@ -3,6 +3,7 @@ import { type ProfileType } from '@prisma/client';
 
 import { toTitleCase } from '@/utils/strings';
 
+import { prisma } from '@/server/db';
 import { getDynamicDbSlug } from '@/server/utils/db-slug';
 
 import {
@@ -16,6 +17,7 @@ import { getFormattedDatePeriod } from '../service-requests/service-requests.uti
 import { getUserById } from '../users';
 import { type CompleteUserOnboardingInput as CreateProfileInput } from '../users/users.validations';
 import {
+  addProfileView,
   createProfileByUserId,
   getProfileByIdOrSlug,
   getProfileBySlug,
@@ -29,6 +31,7 @@ import {
 } from './profiles.service';
 import { getProfileCreationMessage } from './profiles.utils';
 import {
+  AddProfileViewInput,
   type GetProfileServiceRequestReservationsInput,
   type GetProfilesByUserIdValidation,
   type GetProfilesInput,
@@ -98,6 +101,41 @@ export const getProfilesHandler = async ({
 }) => {
   try {
     return await getProfiles({ input });
+  } catch (error) {
+    throw throwDbError(error);
+  }
+};
+
+export const addProfileViewHandler = async ({
+  ctx,
+  input,
+}: {
+  ctx: Context;
+  input: AddProfileViewInput;
+}) => {
+  const viewerId = ctx?.profile ? ctx?.profile.id : input.viewerId;
+
+  try {
+    if (viewerId && input.profileId === viewerId) {
+      throwBadRequestError('Vue invalide');
+    }
+
+    // Avant d'enregistrer une nouvelle vue
+    const existingView = await prisma.profileView.findFirst({
+      where: {
+        profileId: input.profileId,
+        viewerId,
+        createdAt: {
+          gte: new Date(new Date().getTime() - 24 * 60 * 60 * 1000), // Les dernières 24 heures
+        },
+      },
+      select: { id: true },
+    });
+
+    if (!existingView) {
+      return await addProfileView({ input });
+    }
+    return null;
   } catch (error) {
     throw throwDbError(error);
   }
